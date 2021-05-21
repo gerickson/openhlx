@@ -622,7 +622,7 @@ static void TestBadHexLeading(nlTestSuite *inSuite __attribute__((unused)),
     lResult = strntoul(lString, lLength, &lEnd, 16);
     NL_TEST_ASSERT(inSuite, lResult == 1);
     NL_TEST_ASSERT(inSuite, lEnd == lString + 1);
-    NL_TEST_ASSERT(inSuite, errno == 0);    
+    NL_TEST_ASSERT(inSuite, errno == 0);
 }
 
 /**
