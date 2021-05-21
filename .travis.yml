@@ -39,16 +39,16 @@ matrix:
       script: ./bootstrap && ./configure -C --with-boost=/usr/local && make pretty-check
     - name: "macOS clang/LLVM (Unit Tests [Debug])"
       compiler: clang
-      script: ./bootstrap && ./configure -C --enable-debug --enable-coverage --with-boost=/usr/local && make check
+      script: ./bootstrap && ./configure -C --enable-debug --enable-coverage --with-boost=/usr/local && make && make check
     - name: "macOS clang/LLVM (Unit Tests [Release])"
       compiler: clang
-      script: ./bootstrap && ./configure -C --with-boost=/usr/local && make check
+      script: ./bootstrap && ./configure -C --with-boost=/usr/local && make && make check
     - name: "macOS GCC (Unit Tests [Debug])"
       compiler: gcc
-      script: ./bootstrap && ./configure -C --enable-debug --enable-coverage --with-boost=/usr/local && make check
+      script: ./bootstrap && ./configure -C --enable-debug --enable-coverage --with-boost=/usr/local && make && make check
     - name: "macOS GCC (Unit Tests [Release])"
       compiler: gcc
-      script: ./bootstrap && ./configure -C --with-boost=/usr/local && make check
+      script: ./bootstrap && ./configure -C --with-boost=/usr/local && make && make check
 
 after_success:
   - bash <(curl -s https://codecov.io/bash) -g 'src/*' -G 'src/lib/*/tests/*' -G 'tests/*' -G 'third_party/*'
