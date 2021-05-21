@@ -33,7 +33,7 @@ die()
 case "${TRAVIS_OS_NAME}" in
 
     osx)
-        HOMEBREW_NO_AUTO_UPDATE=1 brew install autoconf automake libtool boost cppunit asciidoc xmlto
+        HOMEBREW_NO_AUTO_UPDATE=1 brew install autoconf automake libtool boost cppunit asciidoc xmlto doxygen
 
         ;;
 
