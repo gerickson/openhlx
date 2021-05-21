@@ -1,0 +1,205 @@
+//
+//    Copyright (c) 2021 Grant Erickson
+//    All rights reserved.
+//
+//    Licensed under the Apache License, Version 2.0 (the "License");
+//    you may not use this file except in compliance with the License.
+//    You may obtain a copy of the License at
+//
+//        http://www.apache.org/licenses/LICENSE-2.0
+//
+//    Unless required by applicable law or agreed to in writing,
+//    software distributed under the License is distributed on an "AS
+//    IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+//    express or implied.  See the License for the specific language
+//    governing permissions and limitations under the License.
+//
+//    Description:
+//      This file is the manual page source in AsciiDoc format for the
+//      hlxsimd HLX control server simulator daemon.
+//
+
+hlxsimd(1)
+==========
+
+NAME
+----
+hlxsimd - HLX control server simulator daemon
+
+SYNOPSIS
+--------
+[verse]
+'hlxsimd' [<options>] [{ <URL> | <host[:port]> }]
+
+DESCRIPTION
+-----------
+The `hlxsimd` command line program is used to simulate an Audio
+Authority HLX Series Modular Matrix System High Definition Audio/Video
+Switching System.
+
+`hlxsimd` endeavors to represent with high-fidelity any implemented
+HLX control command responses and the attendant data model such that a
+client developed against it may be used interchangeably with real HLX
+hardware. Consequently, `hlxsimd` serves a useful role in developing
+and maintaining HLX clients.
+
+Buffering and Multiplexing
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+One significant departure between real HLX hardware and `hlxsimd` is
+the number of concurrent client sessions and how buffering and
+multiplexing across sessions are handled.
+
+In the case of real HLX hardware, concurrent client sessions are
+limited to two (2). Input/output is handled `character` at a time and
+command responses and data model state change notifications are
+multiplexed across all connections `character` at a time as
+well. There are two implications of this. First, particularly for
+query commands such as 'Query Current Configuration [QX]', the
+response is incredibly slow. Second, particularly when more than one
+connection is active, the output among any client is interleaved,
+resulting in unparseable and, by extension, corrupt output. This
+renders concurrent client usage all but unusable when more than one
+command request and/or response is in flight.
+
+By contrast, the number of concurrent client sessions in `hlxsimd` is
+limited only by the system resources on which it runs. In addition,
+`hlxsimd` implements `buffer` at a time input/output and
+multiplexing. The latter not only speeds the responsiveness of the
+control protocol, speeding the initial data model configuration and
+state transfer by %1,000 or more, but allows for concurrent client
+sessions that do not corrupt one another.
+
+The HLX to be simulated by `hlxsimd` may be either a 'URL' or 'host' with
+optional port, where the hostname portion of 'URL' or the literal
+'host' can be a numerical IP address or symbolic hostname.
+
+OPTIONS
+-------
+`hlxsimd` supports the following general and server-specific options:
+
+General Options
+~~~~~~~~~~~~~~~
+-d::
+--debug ['LEVEL']::
+    Enable diagnostic output, optionally at level 'LEVEL'.
+
+-h::
+--help::                          
+    Print `hlxsimd` help, then exit.
+
+-q::
+--quiet::
+    Run silently, suppressing all diagnostic and informative output.
+
+-s::
+--syslog::
+    Write all error, diagnostic and informative output only to the
+    system log, rather than to both the system log as well as standard
+    error and standard output.
+
+-v::
+--verbose ['LEVEL']::
+    Enable verbose output, optionally at level 'LEVEL'.
+
+-V::
+--version::
+    Print the `hlxsimd` version, then exit.
+
+Server Options
+~~~~~~~~~~~~~~
+-4::
+--ipv4-only::
+    Force `hlxsimd` to use IPv4 addresses only.
+
+-6::
+--ipv6-only::
+    Force `hlxsimd` to use IPv6 addresses only.
+
+--configuration-file 'FILE'::
+    Use file 'FILE' as the configuration backing store (default:
+    $(prefix)/var/hlxsimd/hlxsimd.plist).
+
+FILES
+-----
+
+If not explicitly set with `--configuration-file`, there is one file where `hlxsimd` will both read and write active configuration and state for the HLX instance being simulated:
+
+$(prefix)/var/hlxsimd/hlxsimd.plist::
+    System-wide configuration and state.
+
+CONFIGURATION FILE
+------------------
+The `hlxsimd` configuration file contains the active configuration and
+state for the HLX being simulated. When present, it is loaded from on
+`hlxsimd` start-up or in response to the "Load Configuration [LOAD]"
+command. It is saved to in response to the "Save Configuration [SAVE]"
+command or, just like real HLX hardware, on a 30 second auto-save
+timer when there is "dirty" configuration or state to save.
+
+Format
+~~~~~~
+The `hlxsimd` configuration file is maintained in the Property List
+format.
+
+EXIT STATUS
+-----------
+'hlxsimd' exits with one of the following values:
+
+    0  `hlxsimd` teriminated successfully.
+
+    1  `hlxsimd` failed to initialize or start or terminated unsuccessfully.
+
+LIMITATIONS
+-----------
+In addition to the aforementioned changes in the number of supported
+client sessions, buffering, and multiplexing, `hlxsimd` does `not`
+presently support `all` of those control commands supported by real
+hardware and documented in 'HLX SeriesModular Matrix System High
+Definition Audio/Video Switching System: Installation and Operation'.
+
+Configuration
+~~~~~~~~~~~~~
+There is no support for the "Query Current Configuration, Respond in
+Square Brackets [QXSB]" command.
+
+Favorites
+~~~~~~~~~
+Beyond querying and naming favorites, there is no further support for
+the favorites commands and functionality.
+
+Groups
+~~~~~~
+
+- Breakaway (that is, independent) switching of audio and video
+  sources for a single group.
+
+Network
+~~~~~~~
+There is only support for querying the current network settings;
+however, there is no support for modifying the current network
+settings.
+
+Restrictions
+~~~~~~~~~~~~
+There is no support for the restrictions commands and functionality.
+
+Zones
+~~~~~
+
+- Breakaway (that is, independent) switching of audio and video
+  sources for a single or all zones.
+- Tracking.
+
+SEE ALSO
+--------
+hlxc(1),
+plutil(1)
+
+AUTHOR
+------
+Written by Grant Erickson.
+
+Open HLX
+--------
+Part of the Open HLX package.
+

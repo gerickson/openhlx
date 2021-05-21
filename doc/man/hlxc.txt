@@ -1,0 +1,265 @@
+//
+//    Copyright (c) 2021 Grant Erickson
+//    All rights reserved.
+//
+//    Licensed under the Apache License, Version 2.0 (the "License");
+//    you may not use this file except in compliance with the License.
+//    You may obtain a copy of the License at
+//
+//        http://www.apache.org/licenses/LICENSE-2.0
+//
+//    Unless required by applicable law or agreed to in writing,
+//    software distributed under the License is distributed on an "AS
+//    IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+//    express or implied.  See the License for the specific language
+//    governing permissions and limitations under the License.
+//
+//    Description:
+//      This file is the manual page source in AsciiDoc format for the
+//      hlxc HLX control client.
+//
+
+hlxc(1)
+=======
+
+NAME
+----
+hlxc - HLX control client
+
+SYNOPSIS
+--------
+[verse]
+'hlxc' [<options>] { <URL> | <host[:port]> } [ <identifier option> [ { equalizer preset | group | source | zone } <option> ]]
+
+DESCRIPTION
+-----------
+The `hlxc` command line program is used to display or modify the
+current configuration or state of an Audio Authority HLX Series
+Modular Matrix System High Definition Audio/Video Switching System or
+simulator of or proxy thereto.
+
+The HLX to be targeted by `hlxc` may be either a 'URL' or 'host' with
+optional port, where the hostname portion of 'URL' or the literal
+'host' can be a numerical IP address or symbolic hostname.
+
+With no further options, `hlxc` will simply request and display the
+current configuration or state.
+
+However, by using an identifier option (see `Identifier Options`
+below) to select a particular equalizer preset, group, source, or zone
+and an option specific to that identifier type, the current
+configuration or state of the HLX may be modified.
+
+OPTIONS
+-------
+
+`hlxc` supports the following general options, which are independent
+of any particular operation:
+
+General Options
+~~~~~~~~~~~~~~~
+-d::
+--debug ['LEVEL']::
+    Enable diagnostic output, optionally at level 'LEVEL'.
+
+-h::
+--help::                          
+    Print `hlxc` help, then exit.
+
+-q::
+--quiet::
+    Run silently, suppressing all diagnostic and informative output.
+
+-s::
+--syslog::
+    Write all error, diagnostic and informative output only to the
+    system log, rather than to both the system log as well as standard
+    error and standard output.
+
+-v::
+--verbose ['LEVEL']::
+    Enable verbose output, optionally at level 'LEVEL'.
+
+-V::
+--version::
+    Print the `hlxc` version, then exit.
+
+Identifier Options
+~~~~~~~~~~~~~~~~~~
+--equalizer-preset 'PRESET'::          
+    Perform operation on the equalizer preset name or identifier 'PRESET'.
+
+--group 'GROUP'::            
+    Perform operation on group name or identifier 'GROUP'.
+
+--source 'SOURCE'::
+    Perform operation on source name or identifier 'SOURCE'.
+
+--zone 'ZONE'::
+    Perform operation on zone name or identifier 'ZONE'.
+
+Balance Options
+~~~~~~~~~~~~~~~
+--increase-balance-left::
+    Increase the balance from the current position towards the left
+    channel by one (1) for the specified zone.
+
+--increase-balance-right::
+    Increase the balance from the current position towards the right
+    channel by one (1) for the specified zone.
+
+--set-balance 'POSITION'::
+    Set the balance to position 'POSITION' for the specified zone.
+
+Equalization Options
+~~~~~~~~~~~~~~~~~~~~
+--equalizer-band 'BAND'::
+    Perform operation on equalizer band 'BAND'.
+
+--decrease-equalizer-band::
+    Decrease the level from the current position by one (1) for the
+    specified equalizer band.
+
+--increase-equalizer-band::
+    Increase the level from the current position by one (1) for the specified
+    equalizer band.
+
+--set-equalizer-band 'LEVEL'::
+    Set the level to level 'LEVEL' for the specified equalizer band.
+
+Group Options
+~~~~~~~~~~~~~
+--add-zone 'ZONE'::
+    Add the zone name or identifier 'ZONE' to the specified group.
+
+--remove-zone 'ZONE'::
+    Remove the zone name or identifier 'ZONE' to the specified group.
+
+Name Options
+~~~~~~~~~~~~
+Name options are more generic in that they can apply to any identifier:
+
+--set-name 'NAME'::
+    Set the specified band, group, preset, source, or zone to the name
+    'NAME'.
+
+Source Options
+~~~~~~~~~~~~~~
+Source options may apply to identifiers that support the source
+property: groups and zones.
+
+--set-source 'SOURCE'::
+    Set the specified group or zone to the source name or identifier
+    'SOURCE'.
+
+Volume Options
+~~~~~~~~~~~~~~
+Volume options may apply to identifiers that support the volume
+property:
+
+--decrease-volume::
+    Decrease the volume from the current position by one (1) for the
+    specified group or zone.
+
+--increase-volume::
+    Increase the volume from the current position by one (1) for the
+    specified group or zone.
+
+--set-mute 'MUTE'::
+    Set the muting to 'MUTE' (zero (0) or one (1)) for the specified
+    group or zone.
+
+--set-volume 'VOLUME'::
+    Set the volume to volume 'VOLUME' for the specified group or zone.
+
+--toggle-mute::
+    Toggle (flip) the muting from the current value the specified
+    group or zone.
+
+Zone Options
+~~~~~~~~~~~~
+--decrease-bass::
+    Decrease the bass level from the current position by one (1) for
+    the specified zone.
+
+--decrease-treble::
+    Decrease the treble level from the current position by one (1) for
+    the specified zone.
+
+--increase-bass::
+    Increase the bass level from the current position by one (1) for
+    the specified zone.
+
+--increase-treble::
+    Increase the treble level from the current position by one (1) for
+    the specified zone.
+
+--set-bass 'LEVEL'::
+    Set the bass level to level 'LEVEL' for the specified zone.
+
+--set-equalizer-preset 'PRESET'::
+    Set the equalizer preset to preset 'PRESET' for the specified zone.
+
+--set-highpass-crossover 'FREQUENCY'::
+    Set the highpass crossover frequency to frequency 'FREQUENCY' for
+    the specified zone.
+
+--set-lowpass-crossover 'FREQUENCY'::
+    Set the lowpass crossover frequency to frequency 'FREQUENCY' for
+    the specified zone.
+
+--set-sound-mode 'MODE'::
+    Set the zone sound mode to mode 'MODE'.
+
+--set-treble 'LEVEL'::
+    Set the treble level to level 'LEVEL' for the specified zone.
+
+--set-volume-locked 'LOCK'::
+    Set the zone volume locking to 'LOCK' (zero (0) or one (1)) for
+    the specified zone. When locked the zone volume is locked at the
+    current volume level. When unlocked, to zone volume may be
+    changed.
+
+EXIT STATUS
+-----------
+'hlxc' exits with one of the following values:
+
+    0  The requested operation completed successfully.
+
+    1  The requested operation failed or completed unsuccessfully.
+
+EXAMPLES
+--------
+`hlxc 'telnet://192.168.1.12/'::
+    Display the current configuration and state for the HLX with the IPv4
+    address at `192.168.1.12`.
+
+`hlxc 'telnet://192.168.1.12:23/' --zone 24 --toggle-mute`::
+    Toggle the volume mute status for zone 24 for the HLX with the IPv4
+    address at `192.168.1.12`.
+
+`hlxc 'hlx.local' --group 10 --add-zone 21::
+    Add zone 21 to group 10 for the HLX with the host name `hlx.local`.
+
+`hlxc 'hlx.local' --group 2 --set-volume -20::
+    Set the volume for group 2 to -20 for the HLX with the host name
+    `hlx.local`.
+
+KNOWN BUGS AND LIMITATIONS
+--------------------------
+At present, `hlxc` will hang indefinitely waiting for a completion
+event that will never arrive when making a command request that is or
+has already been satisfied by the present server state. For example,
+attempting to mute a zone that is already muted.
+
+SEE ALSO
+--------
+hlxsimd(1)
+
+AUTHOR
+------
+Written by Grant Erickson.
+
+Open HLX
+--------
+Part of the Open HLX package.

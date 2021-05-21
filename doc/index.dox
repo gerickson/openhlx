@@ -1,0 +1,132 @@
+/*
+ *    Copyright (c) 2021 Grant Erickson
+ *    All rights reserved.
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing,
+ *    software distributed under the License is distributed on an "AS
+ *    IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *    express or implied.  See the License for the specific language
+ *    governing permissions and limitations under the License.
+ *
+ */
+
+/**
+ *  @mainpage notitle
+ *
+ *  @section introduction Introduction
+ *
+ *  Open %HLX provides a set of libraries and associated command line
+ *  programs for interacting with the Audio Authority %HLX Series
+ *  Modular Matrix System High Definition Audio/Video Switching
+ *  System, which has gone end-of-life and, as a result, is no longer
+ *  manufacturered or sold by Audio Authority.
+ *
+ *  However, thousands of such systems have been sold worldwide and
+ *  there remains a need to interact with and control such systems.
+ *
+ *  With that in mind this package, Open %HLX, provides the following
+ *  libraries:
+ *
+ *    <dl>
+ *        <dt><strong>libopenhlx-utilities</strong></dt>
+ *        <dd>
+ *            <p>A set of adjunct utility interfaces and objects for working
+ *            with the other Open %HLX libraries but that is not generally
+ *            part of the public package interface from release-to-release.</p>
+ *
+ *            <p>This library is covered by the @a HLX::Utilities namespace
+ *            and the @a src/lib/utilities files.</p>
+ *        </dd>
+ *        <dt><strong>libopenhlx-common</strong></dt>
+ *        <dd>
+ *            <p>A set of interfaces and objects common to both client and
+ *            server libraries and implementations.</p>
+ *
+ *            <p>This library is covered by the @a HLX::Common namespace
+ *            and the @a src/lib/common files.</p>
+ *        </dd>
+ *        <dt><strong>libopenhlx-client</strong></dt>
+ *        <dd>
+ *            <p>A set of interfaces and objects for building %HLX clients
+ *            such as command line utilities (for example, @a hlxc) or
+ *            mobile apps.</p>
+ *
+ *            <p>This library is covered by the @a HLX::Client namespace
+ *            and the @a src/lib/client files.</p>
+ *        </dd>
+ *        <dt><strong>libopenhlx-model</strong></dt>
+ *        <dd>
+ *            <p>A set of interfaces and objects for maintaining and
+ *            manipulating %HLX data and state, such as an equalizer preset
+ *            or zone.</p>
+ *
+ *            <p>This library is covered by the @a HLX::Model namespace
+ *            and the @a src/lib/model files.</p>
+ *        </dd>
+ *    </dl>
+ *
+ *  and the following command line programs, both built with the
+ *  aforementioned libraries:
+ *
+ *    <dl>
+ *        <dt><strong>hlxc</strong></dt>
+ *        <dd><p>A command line client for observing and mutating %HLX state
+ *            such as setting the volume of a zone (that is, output).</p></dd>
+ *        <dt><strong>hlxsimd</strong></dt>
+ *        <dd><p>A command line client that can simulate an %HLX server and,
+ *            as a result, actual %HLX Series hardware.</p></dd>
+ *    </dl>
+ *
+ *  The `hlxc` client functions both against real %HLX Series hardware as
+ *  well as the `hlxsimd` simulator.
+ *
+ *  @subsection background Background
+ *
+ *  Despite its end-of-life status, the %HLX Series remains a high-value
+ *  and high-function audio/video matrix unrivaled and unparalled even
+ *  among actively-sold and -produced competitive products.
+
+ *  In most situations, an %HLX system will find itself with its
+ *  telnet-based Ethernet network interface disabled and tethered, via a
+ *  serial cable, to an AMX, Crestron, Control4, or other controller where
+ *  those systems act as the primary user interface and experience surface
+ *  with the %HLX acting silently in the background.
+
+ *  However, despite its strong performance and value, whether using its
+ *  serial interface or the aforementioned network interface, the
+ *  implementation of the %HLX Series control protocol has some notable
+ *  limitations that severely limit its use as a general audio/video
+ *  matrix without an intervening controller such as those
+ *  previously-listed.
+ *
+ *  First, it is limited to no more than two (2) active telnet-based network
+ *  connections. This means in a consumer/residential or
+ *  commercial/enterprise environment, no more than two `hlxc` or mobile
+ *  app users may be active at a time. Given the one-shot nature of `hlxc`
+ *  and the short background time out of mobile app platforms, this ends
+ *  up being a secondary rather than primary limitation.
+ *
+ *  Second, and perhaps more limiting, is the fact that the %HLX Series
+ *  control protocol does @b character rather than @b line or @b buffer at
+ *  a time input/output and multiplexes across multiple connections at that
+ *  granularity. There are two implications of this. First, particularly
+ *  for query commands such as 'Query Current Configuration [QX]', the
+ *  response is incredibly slow. Second, particularly when more than one
+ *  connection is active, the output among any client is interleaved,
+ *  resulting in unparseable and, by extension, corrupt output. This
+ *  renders concurrent client usage all but unusable when more than one
+ *  command request and/or response is in flight.
+ *
+ *  `hlxsimd` addresses both of these limitations (and points the way for
+ *  a future effort, `hlxproxyd`) by allowing a number of client
+ *  connections limited only by the system resources on which it runs and
+ *  by performing @b buffer at a time input/output, speeding responsiveness
+ *  of the control protocol by 1,000% or more.
+ *
+ */

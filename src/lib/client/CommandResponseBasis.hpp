@@ -1,0 +1,69 @@
+/*
+ *    Copyright (c) 2019-2021 Grant Erickson
+ *    All rights reserved.
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing,
+ *    software distributed under the License is distributed on an "AS
+ *    IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *    express or implied.  See the License for the specific language
+ *    governing permissions and limitations under the License.
+ *
+ */
+
+/**
+ *    @file
+ *      This file defines an abstract base object for composing HLX
+ *      client command response regular expressions.
+ *
+ */
+
+#ifndef HLXCLIENTCOMMANDRESPONSEBASIS_HPP
+#define HLXCLIENTCOMMANDRESPONSEBASIS_HPP
+
+#include <CommandRegularExpressionBasis.hpp>
+#include <CommandRoleDelimitedRegularExpression.hpp>
+#include <OpenHLX/Common/Errors.hpp>
+
+
+namespace HLX
+{
+
+namespace Client
+{
+
+namespace Command
+{
+
+/**
+ *  @brief
+ *    An abstract base object for composing HLX client command
+ *    response regular expressions.
+ *
+ *  @ingroup client
+ *  @ingroup command
+ *
+ */
+class ResponseBasis :
+    public Common::Command::RegularExpressionBasis,
+    public Common::Command::RoleDelimitedRegularExpression
+{
+protected:
+    ResponseBasis(void) = default;
+    virtual ~ResponseBasis(void) = default;
+
+    virtual Common::Status Init(const char *aRegexp, const size_t &aExpectedMatchCount) final;
+};
+
+}; // namespace Command
+
+}; // namespace Client
+
+}; // namespace HLX
+
+#endif // HLXCLIENTCOMMANDRESPONSEBASIS_HPP
