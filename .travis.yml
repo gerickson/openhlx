@@ -1,0 +1,54 @@
+#
+#    Copyright (c) 2021 Grant Erickson. All Rights Reserved.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+#
+
+#
+#    Description:
+#      This file is the Travis CI hosted, distributed continuous 
+#      integration configuration file for Open HLX.
+#
+
+language: cpp
+
+sudo: false
+os:
+  - osx
+
+before_install:
+  - .travis/before_install.sh
+
+before_script:
+  - ./bootstrap
+
+matrix:
+  include:
+    - name: "macOS clang/LLVM (Coding Style Check)"
+      compiler: clang
+      script: ./configure -C --with-boost=/usr/local && make pretty-check
+    - name: "macOS clang/LLVM (Unit Tests [Debug])"
+      compiler: clang
+      script: ./configure -C --enable-debug --enable-coverage --with-boost=/usr/local && make check
+    - name: "macOS clang/LLVM (Unit Tests [Release])"
+      compiler: clang
+      script: ./configure -C --with-boost=/usr/local && make check
+    - name: "macOS GCC (Unit Tests [Debug])"
+      compiler: gcc
+      script: ./configure -C --enable-debug --enable-coverage --with-boost=/usr/local && make check
+    - name: "macOS GCC (Unit Tests [Release])"
+      compiler: gcc
+      script: ./configure -C --with-boost=/usr/local && make check
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash) -g 'src/*' -G 'src/lib/*/tests/*' -G 'tests/*' -G 'third_party/*'
