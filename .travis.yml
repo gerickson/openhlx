@@ -25,6 +25,9 @@ language: cpp
 sudo: false
 os:
   - osx
+env:
+  global:
+    - XML_CATALOG_FILES="/usr/local/etc/xml/catalog"
 
 before_install:
   - .travis/before_install.sh
