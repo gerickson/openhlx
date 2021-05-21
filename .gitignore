@@ -8,4 +8,5 @@ config.log
 config.status
 configure
 libtool
+src/include/openhlx-config.h.in
 Makefile.in
