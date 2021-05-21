@@ -136,6 +136,9 @@ C++ Standard Template Library (STL), Open HLX depends on:
   * [libtelnet](https://github.com/seanmiddleditch/libtelnet)
   * [nlassert](https://github.com/nestlabs/nlassert)
   * [nlunit-test](https://github.com/nestlabs/nlunit-test)
+  * [Doxygen](http://doxygen.nl/) (developer documentation only)
+  * [asciidoc](https://asciidoc.org/) (man pages only)
+  * [xmlto](https://pagure.io/xmlto/) (man pages only)
 
 However, nlunit-test is only required when building and running the Open
 HLX unit test suite.
