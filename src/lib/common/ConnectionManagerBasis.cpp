@@ -286,7 +286,7 @@ ConnectionManagerBasis :: Resolve(const char *aMaybeHost,
         if (lAddresses != nullptr)
         {
             freeaddrinfo(lAddresses);
-        }    
+        }
     }
 
 done:
@@ -362,7 +362,7 @@ done:
  *  up in @a aOutHost and the port, if present, in @a aOutPort. If no
  *  port is present, @a aOutPort will be assigned -1 to indicate the
  *  absence.
- * 
+ *
  *  @param[in]   aMaybeHost  A pointer to the null-terminated C string
  *                           potentially containing a host name or IP
  *                           address and, optionally, a TCP or UDP

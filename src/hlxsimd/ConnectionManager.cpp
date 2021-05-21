@@ -321,7 +321,7 @@ ConnectionManager :: Listen(const char *aMaybeURL,
         }
 
         lSocketAddresses.push_back(lSocketAddress);
-        
+
         lCurrent++;
     }
 

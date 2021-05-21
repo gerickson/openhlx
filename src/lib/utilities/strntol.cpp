@@ -64,7 +64,7 @@ _strntol(const char *aString, const size_t &aLength, char **aEnd, const int &aBa
             p++;
 
             lResult = strntoul(p,
-                               aLength - static_cast<size_t>(p - aString), 
+                               aLength - static_cast<size_t>(p - aString),
                                aEnd,
                                aBase);
             lRetval = static_cast<long>(-lResult);

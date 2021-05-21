@@ -88,7 +88,7 @@ CreateURL(const CFString &aScheme, const IPAddress &aIPAddress, const int32_t &a
     nlREQUIRE_ACTION(aPossiblePort >= -1, done, lRetval = -EINVAL);
 
     lRetval = aIPAddress.ToString(&lBuffer[0], sizeof (lBuffer));
-    nlREQUIRE_SUCCESS(lRetval, done);    
+    nlREQUIRE_SUCCESS(lRetval, done);
 
     switch (lVersion)
     {
