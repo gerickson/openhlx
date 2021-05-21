@@ -36,7 +36,7 @@ AC_INIT([openhlx],
         m4_esyscmd([third_party/nlbuild-autotools/repo/scripts/mkversion -b `cat .default-version` .]),
         [@PACKAGE_EMAIL@],
         [openhlx],
-        [@PACKAGE_URL@])
+        [https://github.com/gerickson/openhlx])
 
 # Tell the rest of the build system the absolute path where the
 # nlbuild-autotools repository is rooted at.
