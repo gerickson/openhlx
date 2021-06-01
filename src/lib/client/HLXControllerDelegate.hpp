@@ -295,7 +295,6 @@ public:
      *                                        to a notification
      *                                        describing the state
      *                                        change.
-
      *
      */
     virtual void ControllerStateDidChange(Controller &aController, const StateChange::NotificationBasis &aStateChangeNotification) = 0;
