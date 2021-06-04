@@ -29,8 +29,6 @@ jobs:
   macos:
     runs-on: macos-10.15
     name: "macOS ${{matrix.compiler['name']}} [${{matrix.configuration['name']}}]"
-    env:
-      XML_CATALOG_FILES: /usr/local/etc/xml/catalog
     strategy:
       matrix:
         compiler:
@@ -42,6 +40,7 @@ jobs:
     env:
       CC: ${{matrix.compiler['c']}}
       CXX: ${{matrix.compiler['cxx']}}
+      XML_CATALOG_FILES: /usr/local/etc/xml/catalog
     steps:
     - name: Checkout
       uses: actions/checkout@v2
