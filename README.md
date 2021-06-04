@@ -2,7 +2,7 @@
 [![Coverage Status][openhlx-codecov-svg]][openhlx-codecov]
 
 [openhlx-github]: https://github.com/gerickson/openhlx
-[openhlx-github-action]: https://github.com/gerickson/gerickson/actions?query=workflow%3Abuild+branch%3Amain+event%3Apush
+[openhlx-github-action]: https://github.com/gerickson/openhlx/actions?query=workflow%3Abuild+branch%3Amain+event%3Apush
 [openhlx-github-action-svg]: https://github.com/gerickson/actions/workflows/build.yml/badge.svg?branch=main&event=push
 [openhlx-codecov]: https://codecov.io/gh/gerickson/openhlx
 [openhlx-codecov-svg]: https://codecov.io/gh/gerickson/openhlx/branch/main/graph/badge.svg
