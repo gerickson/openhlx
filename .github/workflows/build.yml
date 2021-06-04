@@ -53,13 +53,13 @@ jobs:
         ./bootstrap-configure -C ${{matrix.configuration['options']}} --enable-coverage --with-boost=/usr/local --disable-docs
     - name: Coding Style
       run: |
-        make pretty-check
+        make -j pretty-check
     - name: Build
       run: |
-        make
+        make -j
     - name: Test
       run: |
-        make check
+        make -j check
     - name: Upload Coverage
       run: |
         bash <(curl -s https://codecov.io/bash) -g 'src/*' -G 'src/lib/*/tests/*' -G 'tests/*' -G 'third_party/*'
