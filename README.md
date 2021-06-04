@@ -1,10 +1,11 @@
-[![Build Status][openhlx-travis-svg]][openhlx-travis]
+[![Build Status][openhlx-github-action-svg]][openhlx-github-action]
 [![Coverage Status][openhlx-codecov-svg]][openhlx-codecov]
 
-[OpenHLX-travis]: https://travis-ci.com/gerickson/openhlx
-[OpenHLX-travis-svg]: https://travis-ci.com/gerickson/openhlx.svg?branch=main
-[OpenHLX-codecov]: https://codecov.io/gh/gerickson/openhlx
-[OpenHLX-codecov-svg]: https://codecov.io/gh/gerickson/openhlx/branch/main/graph/badge.svg
+[openhlx-github]: https://github.com/gerickson/openhlx
+[openhlx-github-action]: https://github.com/gerickson/gerickson/actions?query=workflow%3Abuild+branch%3Amain+event%3Apush
+[openhlx-github-action-svg]: https://github.com/gerickson/actions/workflows/build.yml/badge.svg?branch=main&event=push
+[openhlx-codecov]: https://codecov.io/gh/gerickson/openhlx
+[openhlx-codecov-svg]: https://codecov.io/gh/gerickson/openhlx/branch/main/graph/badge.svg
 
 Open HLX
 ========
