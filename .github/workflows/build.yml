@@ -56,7 +56,7 @@ jobs:
 
     - name: Install Open HLX Host Package Dependencies
       run: |
-        sudo apt-get -y install libboost-dev asciidoc xmlto doxygen
+        sudo apt-get -y install libboost-dev libcppunit-dev asciidoc xmlto doxygen
 
     - name: Download OpenCFLite Distribution Archive Dependencies
       run: |
