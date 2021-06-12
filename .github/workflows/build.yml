@@ -16,15 +16,110 @@
 
 #
 #    Description:
-#      This file is the GitHub Actions hosted, distributed continuous 
+#      This file is the GitHub Actions hosted, distributed continuous
 #      integration configuration file for Open HLX.
 #
 
+---
 name: Build
 
 on: [push, pull_request]
 
 jobs:
+
+  linux:
+    runs-on: ubuntu-latest
+    name: "Linux ${{matrix.compiler['name']}} [${{matrix.configuration['name']}}]"
+
+    strategy:
+      matrix:
+        compiler:
+          - { name: GCC,        c: gcc,   cxx: g++,     options: "" }
+          - { name: clang/LLVM, c: clang, cxx: clang++, options: "" }
+        configuration:
+          - { name: "Debug",   options: "--enable-debug" }
+          - { name: "Release", options: "" }
+    env:
+      CC: ${{matrix.compiler['c']}}
+      CXX: ${{matrix.compiler['cxx']}}
+
+    steps:
+
+    - name: Install Common Host Package Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get -y install autoconf automake libtool
+
+    - name: Install OpenCFLite Host Package Dependencies
+      run: |
+        sudo apt-get -y install gobjc gobjc++ uuid-dev libicu-dev
+
+    - name: Install Open HLX Host Package Dependencies
+      run: |
+        sudo apt-get -y install libboost-dev asciidoc xmlto doxygen
+
+    - name: Download OpenCFLite Distribution Archive Dependencies
+      run: |
+        cd /tmp
+        curl https://data.iana.org/time-zones/releases/tzcode2021a.tar.gz -o tzcode2021a.tar.gz || wget https://data.iana.org/time-zones/releases/tzcode2021a.tar.gz
+        mkdir tzcode2021a
+        tar --directory tzcode2021a -zxf tzcode2021a.tar.gz
+
+    - name: Checkout OpenCFLite Dependency
+      uses: actions/checkout@v2
+      with:
+        repository: gerickson/opencflite
+        ref: opencflite-476
+        path: opencflite
+
+    # Note that in Ubuntu 20 and later, with ICU 60 and later, neither
+    # 'pkg-config icu' nor 'icu-config' are supported. Consequently,
+    # we have to explicitly specify '--with-icu=/usr'.
+    #
+    # For this build, we also need neither debug nor profile instances.
+
+    - name: Configure OpenCFLite Dependency
+      run: |
+        cd "${GITHUB_WORKSPACE}/opencflite"
+        ./configure -C --with-icu=/usr --with-tz-includes=/tmp/tzcode2021a --disable-debug --disable-profile
+
+    - name: Build OpenCFLite Dependency
+      run: |
+        cd "${GITHUB_WORKSPACE}/opencflite"
+        make -j
+
+    # Make sure that 'ldconfig' is run such that run time execution
+    # picks up libCoreFoundation.so.476 in /usr/local.
+
+    - name: Install OpenCFLite Dependency
+      run: |
+        cd "${GITHUB_WORKSPACE}/opencflite"
+        sudo make install
+        sudo ldconfig
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Bootstrap and Configure
+      run: |
+        export PATH="$(brew --prefix m4)/bin:${PATH}"
+        ./bootstrap-configure -C ${{matrix.configuration['options']}} --enable-coverage --with-boost=/usr/local --with-corefoundation-source=cflite --disable-docs
+
+    - name: Coding Style
+      run: |
+        make -j pretty-check
+
+    - name: Build
+      run: |
+        make -j
+
+    - name: Test
+      run: |
+        make -j check
+
+    - name: Upload Coverage
+      run: |
+        bash <(curl -s https://codecov.io/bash) -g 'src/*' -G 'src/lib/*/tests/*' -G 'tests/*' -G 'third_party/*'
 
   macos:
     runs-on: macos-10.15
@@ -32,7 +127,7 @@ jobs:
     strategy:
       matrix:
         compiler:
-          - { name: gcc,        c: gcc,   cxx: g++ }
+          - { name: GCC,        c: gcc,   cxx: g++ }
           - { name: clang/LLVM, c: clang, cxx: clang++ }
         configuration:
           - { name: "Debug",   options: "--enable-debug" }
@@ -42,24 +137,31 @@ jobs:
       CXX: ${{matrix.compiler['cxx']}}
       XML_CATALOG_FILES: /usr/local/etc/xml/catalog
     steps:
+
     - name: Checkout
       uses: actions/checkout@v2
+
     - name: Install Dependencies
       run: |
         HOMEBREW_NO_AUTO_UPDATE=1 brew install autoconf automake libtool boost cppunit asciidoc xmlto doxygen
+
     - name: Bootstrap and Configure
       run: |
         export PATH="$(brew --prefix m4)/bin:${PATH}"
         ./bootstrap-configure -C ${{matrix.configuration['options']}} --enable-coverage --with-boost=/usr/local --disable-docs
+
     - name: Coding Style
       run: |
         make -j pretty-check
+
     - name: Build
       run: |
         make -j
+
     - name: Test
       run: |
         make -j check
+
     - name: Upload Coverage
       run: |
         bash <(curl -s https://codecov.io/bash) -g 'src/*' -G 'src/lib/*/tests/*' -G 'tests/*' -G 'third_party/*'
