@@ -26,6 +26,7 @@
 #ifndef HLXCOMMONCONNECTIONMANAGERBASIS_HPP
 #define HLXCOMMONCONNECTIONMANAGERBASIS_HPP
 
+#include <string>
 #include <vector>
 
 #include <stdint.h>
