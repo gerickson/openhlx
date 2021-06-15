@@ -26,12 +26,11 @@
 #ifndef HLXCLIENTCONFIGURATIONCONTROLLERCOMMANDS_HPP
 #define HLXCLIENTCONFIGURATIONCONTROLLERCOMMANDS_HPP
 
+#include <OpenHLX/Client/CommandExchangeBasis.hpp>
+#include <OpenHLX/Client/CommandQueryRequestBasis.hpp>
+#include <OpenHLX/Client/CommandResponseBasis.hpp>
+#include <OpenHLX/Common/CommandConfigurationRegularExpressionBases.hpp>
 #include <OpenHLX/Common/Errors.hpp>
-
-#include <CommandConfigurationRegularExpressionBases.hpp>
-#include <CommandExchangeBasis.hpp>
-#include <CommandQueryRequestBasis.hpp>
-#include <CommandResponseBasis.hpp>
 
 
 namespace HLX
@@ -59,7 +58,8 @@ namespace Configuration
  *
  */
 class QueryCurrentRequest :
-    public QueryRequestBasis
+    virtual public Client::Command::RequestBasis,
+    public Client::Command::QueryRequestBasis
 {
 public:
     QueryCurrentRequest(void) = default;

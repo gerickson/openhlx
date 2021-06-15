@@ -26,13 +26,12 @@
 #ifndef HLXCLIENTFRONTPANELCONTROLLERCOMMANDS_HPP
 #define HLXCLIENTFRONTPANELCONTROLLERCOMMANDS_HPP
 
+#include <OpenHLX/Client/CommandExchangeBasis.hpp>
+#include <OpenHLX/Client/CommandQueryRequestBasis.hpp>
+#include <OpenHLX/Client/CommandResponseBasis.hpp>
+#include <OpenHLX/Common/CommandFrontPanelBufferBases.hpp>
+#include <OpenHLX/Common/CommandFrontPanelRegularExpressionBases.hpp>
 #include <OpenHLX/Common/Errors.hpp>
-
-#include <CommandExchangeBasis.hpp>
-#include <CommandFrontPanelBufferBases.hpp>
-#include <CommandFrontPanelRegularExpressionBases.hpp>
-#include <CommandQueryRequestBasis.hpp>
-#include <CommandResponseBasis.hpp>
 #include <OpenHLX/Model/FrontPanelModel.hpp>
 
 
@@ -61,7 +60,7 @@ namespace FrontPanel
  *
  */
 class QueryRequest :
-    public RequestBasis,
+    public Client::Command::RequestBasis,
     public Common::Command::FrontPanel::QueryLockedBufferBasis
 {
 public:

@@ -26,13 +26,12 @@
 #ifndef HLXCLIENTFAVORITESCONTROLLERCOMMANDS_HPP
 #define HLXCLIENTFAVORITESCONTROLLERCOMMANDS_HPP
 
+#include <OpenHLX/Client/CommandExchangeBasis.hpp>
+#include <OpenHLX/Client/CommandNameSetRequestBasis.hpp>
+#include <OpenHLX/Client/CommandQueryRequestBasis.hpp>
+#include <OpenHLX/Client/CommandResponseBasis.hpp>
+#include <OpenHLX/Common/CommandFavoritesRegularExpressionBases.hpp>
 #include <OpenHLX/Common/Errors.hpp>
-
-#include <CommandExchangeBasis.hpp>
-#include <CommandFavoritesRegularExpressionBases.hpp>
-#include <CommandNameSetRequestBasis.hpp>
-#include <CommandQueryRequestBasis.hpp>
-#include <CommandResponseBasis.hpp>
 #include <OpenHLX/Model/FavoriteModel.hpp>
 
 
@@ -61,7 +60,8 @@ namespace Favorites
  *
  */
 class QueryRequest :
-    public QueryRequestBasis
+    virtual public Client::Command::RequestBasis,
+    public Client::Command::QueryRequestBasis
 {
 public:
     QueryRequest(void) = default;
