@@ -603,7 +603,7 @@ Status GroupsController :: GroupZonesLoadFromBackupConfiguration(CFDictionaryRef
         nlREQUIRE_ACTION(lStatus, done, lRetval = kError_InvalidConfiguration);
 
         lRetval = aGroupModel.AddZone(lZoneIdentifier);
-        nlREQUIRE(lStatus >= kStatus_Success, done);
+        nlREQUIRE(lRetval >= kStatus_Success, done);
 
         if (lRetval == kStatus_Success)
         {

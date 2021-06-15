@@ -153,8 +153,8 @@ Status ConnectionTelnet :: Connect(const int &aSocket, const Common::SocketAddre
 
     lFlags = fcntl(aSocket, F_GETFL);
 
-    lStatus = fcntl(aSocket, F_SETFL, lFlags | O_NONBLOCK);
-    nlREQUIRE_ACTION(lStatus >= 0, done, lRetval = -errno);
+    lRetval = fcntl(aSocket, F_SETFL, lFlags | O_NONBLOCK);
+    nlREQUIRE_ACTION(lRetval >= 0, done, lRetval = -errno);
 
     CFStreamCreatePairWithSocket(kCFAllocatorDefault,
                                  aSocket,
