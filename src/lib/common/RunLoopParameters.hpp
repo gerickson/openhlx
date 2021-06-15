@@ -30,6 +30,17 @@
 
 #include <OpenHLX/Common/Errors.hpp>
 
+
+#if !defined(__APPLE__) && !__APPLE__
+// One "lite" aspect of [Open]CFLite is that CFRunLoop.h does not
+// define CFRunLoopMode whereas the native platform CoreFoundation
+// framework does. Work around this by defining the type within
+// the scope of this object.
+
+typedef CFStringRef CFRunLoopMode;
+#endif // !defined(__APPLE__) && !__APPLE__
+
+
 namespace HLX
 {
 
