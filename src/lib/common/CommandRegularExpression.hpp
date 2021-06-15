@@ -29,12 +29,12 @@
 
 #include <vector>
 
-#include <regex.h>
 #include <stddef.h>
 
-#include <ConnectionBuffer.hpp>
-#include <RegularExpression.hpp>
+#include <OpenHLX/Common/ConnectionBuffer.hpp>
+#include <OpenHLX/Common/RegularExpression.hpp>
 #include <OpenHLX/Common/Errors.hpp>
+
 
 namespace HLX
 {
