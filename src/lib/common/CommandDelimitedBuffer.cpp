@@ -28,6 +28,8 @@
 
 #include <string>
 
+#include <string.h>
+
 #include <OpenHLX/Utilities/Assert.hpp>
 
 

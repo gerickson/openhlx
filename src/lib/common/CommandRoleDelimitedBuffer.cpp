@@ -27,6 +27,8 @@
 
 #include "CommandRoleDelimitedBuffer.hpp"
 
+#include <string.h>
+
 #include <CommandRoleDelimiters.hpp>
 
 

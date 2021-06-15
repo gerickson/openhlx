@@ -24,6 +24,8 @@
 
 #include "CommandBuffer.hpp"
 
+#include <string.h>
+
 
 namespace HLX
 {
