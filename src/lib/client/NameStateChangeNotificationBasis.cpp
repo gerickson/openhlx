@@ -27,6 +27,8 @@
 
 #include <string>
 
+#include <string.h>
+
 
 using namespace HLX::Common;
 
