@@ -396,23 +396,24 @@ Status Controller :: RegisterRequestHandler(Server::Command::RequestBasis &aRequ
 Status Controller :: LoadFromBackupConfiguration(ConfigurationController &aController, CFDictionaryRef aBackupDictionary)
 {
     DeclareScopedFunctionTracer(lTracer);
-    Controllers::iterator begin, end;
-    Status lRetval;
+    Controllers::iterator lCurrent;
+    Controllers::iterator lLast;
+    Status                lRetval = kStatus_Success;
 
 
     (void)aController;
 
     nlREQUIRE_ACTION(aBackupDictionary != nullptr, done, lRetval = -EINVAL);
 
-    begin = mControllers.begin();
-    end = mControllers.end();
+    lCurrent = mControllers.begin();
+    lLast = mControllers.end();
 
-    while (begin != end)
+    while (lCurrent != lLast)
     {
-        lRetval = begin->second.mController->LoadFromBackupConfiguration(aBackupDictionary);
+        lRetval = lCurrent->second.mController->LoadFromBackupConfiguration(aBackupDictionary);
         nlREQUIRE(lRetval >= kStatus_Success, done);
 
-        begin++;
+        lCurrent++;
     }
 
  done:
@@ -467,45 +468,47 @@ Status Controller :: LoadFromBackupConfigurationStorage(ConfigurationController 
 
 void Controller :: QueryCurrentConfiguration(ConfigurationController &aController, ConnectionBasis &aConnection, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    Controllers::iterator begin, end;
+    Controllers::iterator lCurrent;
+    Controllers::iterator lLast;
 
 
     (void)aController;
 
-    begin = mControllers.begin();
-    end = mControllers.end();
+    lCurrent = mControllers.begin();
+    lLast = mControllers.end();
 
-    while (begin != end)
+    while (lCurrent != lLast)
     {
-        begin->second.mController->QueryCurrentConfiguration(aConnection, aBuffer);
+        lCurrent->second.mController->QueryCurrentConfiguration(aConnection, aBuffer);
 
-        begin++;
+        lCurrent++;
     }
 }
 
 void Controller :: ResetToDefaultConfiguration(ConfigurationController &aController)
 {
-    Controllers::iterator begin, end;
+    Controllers::iterator lCurrent;
+    Controllers::iterator lLast;
 
 
     (void)aController;
 
-    begin = mControllers.begin();
-    end = mControllers.end();
+    lCurrent = mControllers.begin();
+    lLast = mControllers.end();
 
-    while (begin != end)
+    while (lCurrent != lLast)
     {
-        begin->second.mController->ResetToDefaultConfiguration();
+        lCurrent->second.mController->ResetToDefaultConfiguration();
 
-        begin++;
+        lCurrent++;
     }
 }
 
 void Controller :: SaveToBackupConfiguration(ConfigurationController &aController, CFMutableDictionaryRef aBackupDictionary)
 {
     DeclareScopedFunctionTracer(lTracer);
-    Controllers::iterator      lCurrent;
-    Controllers::iterator      lLast;
+    Controllers::iterator lCurrent;
+    Controllers::iterator lLast;
 
 
     (void)aController;
