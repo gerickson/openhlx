@@ -28,7 +28,6 @@
 #include <memory>
 
 #include <errno.h>
-#include <regex.h>
 #include <string.h>
 
 #include <LogUtilities/LogUtilities.hpp>
