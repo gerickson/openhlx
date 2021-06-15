@@ -465,10 +465,16 @@ void ListenerBasis :: CFSocketAcceptCallback(CFSocketRef aSocketRef,
     DeclareLogIndentWithValue(lLogIndent, 0);
     DeclareLogLevelWithValue(lLogLevel, 1);
     const State            lCurrentState = GetState();
+#if (defined(DEBUG) && DEBUG) && !defined(NDEBUG)
     CFSocketNativeHandle   lAcceptingSocket = CFSocketGetNative(aSocketRef);
+#endif // (defined(DEBUG) && DEBUG) && !defined(NDEBUG)
     CFSocketNativeHandle   lConnectedSocket = *static_cast<const CFSocketNativeHandle *>(aData);
     Status                 lStatus = kStatus_Success;
 
+
+#if ((!defined(DEBUG) && !DEBUG) || (defined(NDEBUG) && NDEBUG))
+	(void)aSocketRef;
+#endif // ((!defined(DEBUG) && !DEBUG) || (defined(NDEBUG) && NDEBUG))
 
     LogDebug(lLogIndent,
              lLogLevel,
