@@ -28,6 +28,7 @@
 #include <utility>
 
 #include <errno.h>
+#include <string.h>
 
 #include <CoreFoundation/CFSocket.h>
 
