@@ -211,7 +211,7 @@ Status ConnectionBuffer :: Reserve(const size_t &inCapacity)
 
     if (inCapacity > mCapacity)
     {
-        mData = static_cast<uint8_t *>(reallocf(mData, inCapacity));
+        mData = static_cast<uint8_t *>(realloc(mData, inCapacity));
         nlREQUIRE_ACTION(mData != nullptr, done, lRetval = -ENOMEM);
 
         mCapacity = inCapacity;
