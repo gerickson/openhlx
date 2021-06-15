@@ -310,7 +310,7 @@ SourceModel :: SetIdentifier(const IdentifierType &aIdentifier)
     Status lRetval = kStatus_Success;
 
     lRetval = mIdentifier.SetIdentifier(aIdentifier);
-    nlREQUIRE(lRetval >= 0, done);
+    nlREQUIRE(lRetval >= kStatus_Success, done);
 
  done:
     return (lRetval);
