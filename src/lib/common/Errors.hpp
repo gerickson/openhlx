@@ -64,20 +64,24 @@ typedef Status  Error;
 
 enum
 {
-    kStatus_Success             = 0,
+	// Negative, error status
+	//
+	// Values -1 through -255 are reserved for POSIX error status
+	// (such as -EINVAL).
 
-    kStatus_ValueAlreadySet     = 1
-};
-
-enum
-{
     kError_NotInitialized       = -(1 << 8),
     kError_InitializationFailed = -(2 << 8),
     kError_BufferNotOwned       = -(3 << 8),
     kError_BadCommand           = -(4 << 8),
     kError_InvalidConfiguration = -(5 << 8),
     kError_MissingConfiguration = -(6 << 8),
-    kError_HostNameResolution   = -(7 << 8)
+    kError_HostNameResolution   = -(7 << 8),
+
+	// Positive, non-error status
+
+    kStatus_Success             = 0,
+
+    kStatus_ValueAlreadySet     = 1
 };
 
 }; // namespace Common
