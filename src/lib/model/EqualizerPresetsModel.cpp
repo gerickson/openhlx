@@ -56,6 +56,7 @@ namespace Model
  *
  */
 EqualizerPresetsModel :: EqualizerPresetsModel(const EqualizerPresetsModel &aEqualizerPresetsModel) :
+	mEqualizerPresetsMax(aEqualizerPresetsModel.mEqualizerPresetsMax),
     mEqualizerPresets(aEqualizerPresetsModel.mEqualizerPresets)
 {
     return;
@@ -124,11 +125,8 @@ EqualizerPresetsModel :: Init(const EqualizerPresetsModel &aEqualizerPresetsMode
     Status lRetval = kStatus_Success;
 
 
-    nlREQUIRE_ACTION(aEqualizerPresetsModel.mEqualizerPresets.size() <= mEqualizerPresetsMax, done, lRetval = -EINVAL);
-
     *this = aEqualizerPresetsModel;
 
- done:
     return (lRetval);
 }
 
