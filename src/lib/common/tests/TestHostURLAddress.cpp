@@ -40,12 +40,14 @@ static void TestConstruction(nlTestSuite *inSuite __attribute__((unused)),
     return;
 }
 
-static void TestDefaultInitialization(nlTestSuite *inSuite, void *inContext __attribute__((unused)))
+static void TestDefaultInitialization(nlTestSuite *inSuite __attribute__((unused)),
+									  void *inContext __attribute__((unused)))
 {
     return;
 }
 
-static void TestValueInitialization(nlTestSuite *inSuite, void *inContext __attribute__((unused)))
+static void TestValueInitialization(nlTestSuite *inSuite __attribute__((unused)),
+									void *inContext __attribute__((unused)))
 {
     return;
 }
@@ -56,12 +58,14 @@ static void TestInitialization(nlTestSuite *inSuite, void *inContext)
     TestValueInitialization(inSuite, inContext);
 }
 
-static void TestObservation(nlTestSuite *inSuite, void *inContext __attribute__((unused)))
+static void TestObservation(nlTestSuite *inSuite __attribute__((unused)),
+							void *inContext __attribute__((unused)))
 {
     return;
 }
 
-static void TestMutation(nlTestSuite *inSuite, void *inContext __attribute__((unused)))
+static void TestMutation(nlTestSuite *inSuite __attribute__((unused)),
+						 void *inContext __attribute__((unused)))
 {
     return;
 }
