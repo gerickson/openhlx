@@ -137,6 +137,7 @@ C++ Standard Template Library (STL), Open HLX depends on:
   * [libtelnet](https://github.com/seanmiddleditch/libtelnet)
   * [nlassert](https://github.com/nestlabs/nlassert)
   * [nlunit-test](https://github.com/nestlabs/nlunit-test)
+  * [tre](https://github.com/laurikari/tre) (Linux only)
   * [Doxygen](http://doxygen.nl/) (developer documentation only)
   * [asciidoc](https://asciidoc.org/) (man pages only)
   * [xmlto](https://pagure.io/xmlto/) (man pages only)
@@ -150,10 +151,10 @@ CoreFoundation framework or library. The framework may be provided on
 the iOS or macOS (or other Apple) platforms as a native system
 framework.
 
-In the future and alternatively when supported, CoreFoundation may be
-provided as a static or shared library via either the [Apple
-CFLite](https://opensource.apple.com/source/CF/) project or via the
-[OpenCFLite](https://github.com/gerickson/opencflite/) project fork thereof.
+CoreFoundation may be provided as a static or shared library via either
+the [Apple CFLite](https://opensource.apple.com/source/CF/) project or
+via the [OpenCFLite](https://github.com/gerickson/opencflite/) project
+fork thereof.
 
 If you want to modify or otherwise maintain the Open HLX build
 system, see "Maintaining Open HLX" below for more information.
@@ -195,9 +196,8 @@ additional packages are required and are invoked by `bootstrap`:
 
 #### Linux
 
-When supported on Linux, on Debian-based Linux distributions such as
-Ubuntu, these Open HLX build system dependencies can be satisfied with
-the following:
+On Debian-based Linux distributions such as Ubuntu, these dependencies
+can be satisfied with the following:
 
     % sudo apt-get install autoconf automake libtool
 
