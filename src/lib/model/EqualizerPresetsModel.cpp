@@ -152,7 +152,8 @@ EqualizerPresetsModel :: Init(const EqualizerPresetsModel &aEqualizerPresetsMode
 EqualizerPresetsModel &
 EqualizerPresetsModel :: operator =(const EqualizerPresetsModel &aEqualizerPresetsModel)
 {
-    mEqualizerPresets = aEqualizerPresetsModel.mEqualizerPresets;
+	mEqualizerPresetsMax = aEqualizerPresetsModel.mEqualizerPresetsMax;
+    mEqualizerPresets    = aEqualizerPresetsModel.mEqualizerPresets;
 
     return (*this);
 }
@@ -394,7 +395,8 @@ EqualizerPresetsModel :: SetEqualizerPreset(const IdentifierType &aEqualizerPres
 bool
 EqualizerPresetsModel :: operator ==(const EqualizerPresetsModel &aEqualizerPresetsModel) const
 {
-    return (mEqualizerPresets == aEqualizerPresetsModel.mEqualizerPresets);
+    return ((mEqualizerPresetsMax == aEqualizerPresetsModel.mEqualizerPresetsMax) &&
+			(mEqualizerPresets    == aEqualizerPresetsModel.mEqualizerPresets   ));
 }
 
 }; // namespace Model
