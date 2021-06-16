@@ -116,6 +116,10 @@ jobs:
     - name: Test
       run: |
         make -j check
+
+    - name: Check Test Failure
+      if: ${{ failure() }}
+      run: |
         clang --version
         clang++ --version
         cat src/lib/model/tests/TestEqualizerPresetsModel.log
