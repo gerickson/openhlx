@@ -116,6 +116,9 @@ jobs:
     - name: Test
       run: |
         make -j check
+        clang --version
+        clang++ --version
+        cat src/lib/model/tests/TestEqualizerPresetsModel.log
 
     - name: Upload Coverage
       run: |
