@@ -659,7 +659,7 @@ if test "${with_corefoundation_source}" == "cflite"; then
     NL_WITH_REQUIRED_EXTERNAL_PACKAGE([CoreFoundation],
     [CF],
     [CoreFoundation],
-    [CoreFoundation],
+    [-lCoreFoundation],
     [
         # Check for required CoreFoundation (via [Open]CFLite) headers.
 
