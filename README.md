@@ -153,7 +153,7 @@ framework.
 In the future and alternatively when supported, CoreFoundation may be
 provided as a static or shared library via either the [Apple
 CFLite](https://opensource.apple.com/source/CF/) project or via the
-[OpenCFLite](https://opencflite.sourceforge.io/) project fork thereof.
+[OpenCFLite](https://github.com/gerickson/opencflite/) project fork thereof.
 
 If you want to modify or otherwise maintain the Open HLX build
 system, see "Maintaining Open HLX" below for more information.
