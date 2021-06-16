@@ -353,6 +353,7 @@ AC_MSG_RESULT(${with_corefoundation_source})
 #
 #   * nlunit-test
 #   * [Open]CFLite
+#   * TRE
 #
 AC_MSG_NOTICE([checking required package dependencies])
 
@@ -678,6 +679,48 @@ if test "${with_corefoundation_source}" == "cflite"; then
 
 fi
 
+#
+# TRE
+#
+# On Apple-defined and -supported platforms (that is, iOS/iPadOS/macOS/
+# tvOS/watchOS), the platform-supplied regex.h defines regnexec as a
+# Darwin-specific extension available since macOS 10.8 and iOS 6.0,
+# that is needed by this regular expression library to perform
+# regular expression matches on the non-null-terminated text-based
+# HLX protocol.
+#
+# Otherwise, regnexec is supplied by the TRE regular expression
+# library.
+#
+
+if test "${ac_no_link}" != "yes"; then
+    AC_CHECK_FUNCS([regnexec])
+fi
+
+if test "${ac_cv_func_regnexec}" = "no"; then
+
+    NL_WITH_REQUIRED_EXTERNAL_PACKAGE([TRE],
+    [TRE],
+    [tre],
+    [-ltre],
+    [
+        # Check for required TRE regular express library headers.
+
+        AC_LANG_PUSH([C])
+
+            AC_CHECK_HEADERS([tre/regex.h],
+                [],
+                [
+                    AC_MSG_ERROR(The TRE header "$ac_header" is required but cannot be found.)
+                ]
+                )
+
+        AC_LANG_POP
+    ]
+    )
+
+fi
+
 # At this point, the CoreFoundation source is one of the allowed
 # values and, if [Open]CFLite, we have detected the location of a
 # package providing it. If it's 'auto' we autodetect it.
@@ -811,6 +854,12 @@ LIBS="${LIBS} ${NLASSERT_LIBS}"
 CPPFLAGS="${CPPFLAGS} ${NLUNIT_TEST_CPPFLAGS}"
 LDFLAGS="${LDFLAGS} ${NLUNIT_TEST_LDFLAGS}"
 LIBS="${LIBS} ${NLUNIT_TEST_LIBS}"
+
+# Add any TRE CPPFLAGS, LDFLAGS, and LIBS
+
+CPPFLAGS="${CPPFLAGS} ${TRE_CPPFLAGS}"
+LDFLAGS="${LDFLAGS} ${TRE_LDFLAGS}"
+LIBS="${LIBS} ${TRE_LIBS}"
 
 # Add any code coverage CPPFLAGS, LDFLAGS, and LIBS
 
@@ -949,6 +998,9 @@ AC_MSG_NOTICE([
   Nlunit-test compile flags                 : ${NLUNIT_TEST_CPPFLAGS:--}
   Nlunit-test link flags                    : ${NLUNIT_TEST_LDFLAGS:--}
   Nlunit-test link libraries                : ${NLUNIT_TEST_LIBS:--}
+  TRE compile flags                         : ${TRE_CPPFLAGS:--}
+  TRE link flags                            : ${TRE_LDFLAGS:--}
+  TRE link libraries                        : ${TRE_LIBS:--}
   C Preprocessor                            : ${CPP}
   C Compiler                                : ${CC}
   C++ Preprocessor                          : ${CXXCPP}
