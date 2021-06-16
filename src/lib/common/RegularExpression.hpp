@@ -41,7 +41,7 @@
 // library.
 
 #if defined(__APPLE__) && __APPLE__
-#include <reghex.h>
+#include <regex.h>
 #else
 #include <tre/regex.h>
 #endif /* defined(__APPLE__) && __APPLE__ */
