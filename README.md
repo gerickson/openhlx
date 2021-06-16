@@ -47,7 +47,7 @@ aforementioned libraries:
       <dd>A command line client for observing and mutating HLX state
           such as setting the volume of a zone.</dd>
       <dt><strong>hlxsimd</strong></dt>
-      <dd>A command line client that can simulate an HLX server and,
+      <dd>A command line server that can simulate an HLX server and,
           as a result, actual HLX Series hardware.</dd>
   </dl>
 
