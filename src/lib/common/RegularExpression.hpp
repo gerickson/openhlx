@@ -30,9 +30,24 @@
 #include <string>
 #include <vector>
 
+// On Apple-defined and -supported platforms (that is, iOS/iPadOS/macOS/
+// tvOS/watchOS), the platform-supplied regex.h defines regnexec as a
+// Darwin-specific extension available since macOS 10.8 and iOS 6.0,
+// that is needed by this regular expression library to perform
+// regular expression matches on the non-null-terminated text-based
+// HLX protocol.
+//
+// Otherwise, regnexec is supplied by the TRE regular expression
+// library.
+
+#if defined(__APPLE__) && __APPLE__
 #include <regex.h>
+#else
+#include <tre/regex.h>
+#endif /* defined(__APPLE__) && __APPLE__ */
 
 #include <OpenHLX/Common/Errors.hpp>
+
 
 namespace HLX
 {

@@ -1551,7 +1551,7 @@ ZonesController :: SetMute(const IdentifierType &aZoneIdentifier,
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = ((aMute) ? SetMute(aZoneIdentifier) : ClearMute(aZoneIdentifier));
-    nlEXPECT(lRetval >= 0, done);
+    nlEXPECT(lRetval >= kStatus_Success, done);
 
 done:
     return (lRetval);

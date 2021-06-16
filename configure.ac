@@ -2,8 +2,8 @@
 # Process this file with autoconf to produce a configure script.
 
 #
-#    Copyright 2019-2021 Grant Erickson
-#    Copyright 2016-2018 Nest Labs, Inc.
+#    Copyright (c) 2019-2021 Grant Erickson
+#    Copyright (c) 2016-2018 Nest Labs, Inc.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License");
 #    you may not use this file except in compliance with the License.
@@ -73,8 +73,9 @@ AC_CONFIG_AUX_DIR([third_party/nlbuild-autotools/repo/third_party/autoconf])
 
 #
 # Tell autoconf where to find auxilliary M4 macros
+# Note that nlbuild-autotools has macros in two subdirs, for local vs third-party scripts
 #
-AC_CONFIG_MACRO_DIRS([third_party/nlbuild-autotools/repo/third_party/autoconf/m4 third_party/nlbuild-autotools/repo/autoconf/m4])
+AC_CONFIG_MACRO_DIRS([third_party/nlbuild-autotools/repo/third_party/autoconf/m4 third_party/nlbuild-autotools/repo/autoconf/m4 third_party/cycript/repo/m4])
 
 #
 # Tell autoconf what file the package is using to aggregate C preprocessor
@@ -101,14 +102,17 @@ NL_FILTERED_CANONICAL_TARGET
 
 #
 # Configure automake with the desired options, indicating that this is not
-# a native GNU package, that we want "silent" build rules, and that we want
+# a native GNU package, that we want "silent" build rules, that we want
 # objects built in the same subdirectory as their source rather than collapsed
-# together at the top-level directory.
+# together at the top-level directory, that we want support for the
+# PAX format for 'make dist', and that we do not want emission of
+# 'PACKAGE' and 'VERSION' since AC_INIT already emits 'PACKAGE_NAME'
+# and 'PACKAGE_VERSION'.
 #
 # Disable silent build rules by either passing --disable-silent-rules to
 # configure or passing V=1 to make
 #
-AM_INIT_AUTOMAKE([1.14 foreign silent-rules subdir-objects tar-pax])
+AM_INIT_AUTOMAKE([1.14 foreign silent-rules subdir-objects tar-pax no-define])
 
 #
 # Silent build rules requires at least automake-1.11. Employ
@@ -118,13 +122,14 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 AM_SILENT_RULES([yes])
 
 #
-# Enable maintainer mode to prevent the package from constantly trying
-# to rebuild configure, Makefile.in, etc. Rebuilding such files rarely,
-# if ever, needs to be done "in the field".
+# Disable maintainer mode to enable the package to automatically rebuild
+# configure, Makefile.in, etc. when the files on which they depend change (for
+# example, configure.ac, Makefile.am, etc).
 #
-# Use the included 'bootstrap' script instead when necessary.
+# For those that do not desire this behavior, run configure with
+# `--enable-maintainer-mode` and run the top-level `bootstrap` script manually.
 #
-AM_MAINTAINER_MODE
+AM_MAINTAINER_MODE([disable])
 
 #
 # Checks for build host programs
@@ -289,6 +294,51 @@ AC_ARG_WITH(default-hlxsimd-configuration-file,
 
 AC_SUBST(HLXSIMD_DEFAULT_CONFIG_PATH, [${with_default_hlxsimd_configuration_file}])
 
+# Check for the source of CoreFoundation, whether from a system
+# framework or from [Open]CFLite.
+
+CFUTILITIES_CF_SOURCE=
+CFUTILITIES_CF_SOURCE_FRAMEWORK=0
+CFUTILITIES_CF_SOURCE_CFLITE=0
+
+AC_MSG_CHECKING([for CoreFoundation source])
+
+AC_ARG_WITH(corefoundation-source,
+    [AS_HELP_STRING([--with-corefoundation-source=SOURCE],
+        [Specify the CoreFoundation source from one of: auto, framework, or cflite @<:@default=auto@:>@.])],
+    [
+        case "${with_corefoundation_source}" in
+
+        auto|framework|cflite)
+            ;;
+
+        *)
+            AC_MSG_ERROR([Invalid value ${with_corefoundation_source} for --with-corefoundation-source])
+            ;;
+
+        esac
+    ],
+    [with_corefoundation_source=auto])
+
+# At this point, the CoreFoundation source is one of the allowed
+# values. If it's 'auto' we autodetect it, based on the target OS.
+
+if test "${with_corefoundation_source}" = "auto"; then
+    case ${target_os} in
+
+	*darwin*)
+            with_corefoundation_source=framework
+	    ;;
+
+	*)
+            with_corefoundation_source=cflite
+	    ;;
+
+    esac
+fi
+
+AC_MSG_RESULT(${with_corefoundation_source})
+
 #
 # Checks for libraries and packages.
 #
@@ -302,6 +352,8 @@ AC_SUBST(HLXSIMD_DEFAULT_CONFIG_PATH, [${with_default_hlxsimd_configuration_file
 # The following packages are optional, depending on configuration:
 #
 #   * nlunit-test
+#   * [Open]CFLite
+#   * TRE
 #
 AC_MSG_NOTICE([checking required package dependencies])
 
@@ -600,11 +652,144 @@ AC_SUBST(NLUNIT_TEST_SUBDIRS, [${maybe_nlunit_test_dirstem}])
 AM_CONDITIONAL([OPENHLX_WITH_NLUNIT_TEST_INTERNAL], [test "${nl_with_nlunit_test}" = "internal"])
 
 #
+# [Open]CFLite
+#
+
+if test "${with_corefoundation_source}" == "cflite"; then
+
+    NL_WITH_REQUIRED_EXTERNAL_PACKAGE([CoreFoundation],
+    [CF],
+    [CoreFoundation],
+    [-lCoreFoundation],
+    [
+        # Check for required CoreFoundation (via [Open]CFLite) headers.
+
+        AC_LANG_PUSH([C])
+
+            AC_CHECK_HEADERS([CoreFoundation/CoreFoundation.h],
+                [],
+                [
+                    AC_MSG_ERROR(The CoreFoundation header "$ac_header" is required but cannot be found.)
+                ]
+                )
+
+        AC_LANG_POP
+    ]
+    )
+
+fi
+
+#
+# TRE
+#
+# On Apple-defined and -supported platforms (that is, iOS/iPadOS/macOS/
+# tvOS/watchOS), the platform-supplied regex.h defines regnexec as a
+# Darwin-specific extension available since macOS 10.8 and iOS 6.0,
+# that is needed by this regular expression library to perform
+# regular expression matches on the non-null-terminated text-based
+# HLX protocol.
+#
+# Otherwise, regnexec is supplied by the TRE regular expression
+# library.
+#
+
+if test "${ac_no_link}" != "yes"; then
+    AC_CHECK_FUNCS([regnexec])
+fi
+
+if test "${ac_cv_func_regnexec}" = "no"; then
+
+    NL_WITH_REQUIRED_EXTERNAL_PACKAGE([TRE],
+    [TRE],
+    [tre],
+    [-ltre],
+    [
+        # Check for required TRE regular express library headers.
+
+        AC_LANG_PUSH([C])
+
+            AC_CHECK_HEADERS([tre/regex.h],
+                [],
+                [
+                    AC_MSG_ERROR(The TRE header "$ac_header" is required but cannot be found.)
+                ]
+                )
+
+        AC_LANG_POP
+    ]
+    )
+
+fi
+
+# At this point, the CoreFoundation source is one of the allowed
+# values and, if [Open]CFLite, we have detected the location of a
+# package providing it. If it's 'auto' we autodetect it.
+
+if test "${with_corefoundation_source}" = "auto"; then
+
+    AC_CHECK_FRAMEWORK(CoreFoundation,
+                       [CFAllocatorGetDefault],
+                       [with_corefoundation_source="framework"
+                       LIBS="${LIBS} -framework CoreFoundation"],
+                       AC_CHECK_LIB(CoreFoundation,
+                                    CFAllocatorGetDefault,
+                                    [with_corefoundation_source="cflite"],
+                                    with_corefoundation_source="none",))
+
+elif test "${with_corefoundation_source}" = "framework"; then
+
+    AC_CHECK_FRAMEWORK(CoreFoundation,
+                       [CFAllocatorGetDefault],
+                       [LIBS="${LIBS} -framework CoreFoundation"],
+                       with_corefoundation_source="none")
+
+elif test "${with_corefoundation_source}" = "cflite"; then
+
+    AC_CHECK_LIB(CoreFoundation,
+                 CFAllocatorGetDefault,
+                 [],
+                 with_corefoundation_source="none",)
+
+fi
+
+if test "${with_corefoundation_source}" = "none"; then
+
+    AC_MSG_ERROR([Cannot determine a source for CoreFoundation.])
+
+fi
+
+OPENHLX_CF_SOURCE=${with_corefoundation_source}
+
+case ${with_corefoundation_source} in
+
+    framework)
+        OPENHLX_CF_SOURCE_FRAMEWORK=1
+        ;;
+
+    cflite)
+        OPENHLX_CF_SOURCE_CFLITE=1
+        ;;
+
+esac
+
+AC_SUBST(OPENHLX_CF_SOURCE)
+AC_DEFINE_UNQUOTED([OPENHLX_CF_SOURCE],[${OPENHLX_CF_SOURCE}],[CoreFoundation source])
+
+AC_SUBST(OPENHLX_CF_SOURCE_FRAMEWORK)
+AM_CONDITIONAL([OPENHLX_CF_SOURCE_FRAMEWORK], [test "${OPENHLX_CF_SOURCE}" = "framework"])
+AC_DEFINE_UNQUOTED([OPENHLX_CF_SOURCE_FRAMEWORK],[${OPENHLX_CF_SOURCE_FRAMEWORK}],[Define to 1 if you want to use a system framework implementation source of CoreFoundation for Open HLX])
+
+AC_SUBST(OPENHLX_CF_SOURCE_CFLITE)
+AM_CONDITIONAL([OPENHLX_CF_SOURCE_CFLITE], [test "${OPENHLX_CF_SOURCE}" = "cflite"])
+AC_DEFINE_UNQUOTED([OPENHLX_CF_SOURCE_CFLITE],[${OPENHLX_CF_SOURCE_CFLITE}],[Define to 1 if you want to use an [Open]CFLite implementation source of CoreFoundation for Open HLX])
+
+#
 # Check for headers
 #
 AC_HEADER_STDBOOL
 AC_HEADER_STDC
 
+AC_CHECK_HEADERS([regex.h])
 AC_CHECK_HEADERS([stdint.h])
 AC_CHECK_HEADERS([string.h])
 
@@ -627,6 +812,18 @@ AC_TYPE_UINT64_T
 if test "${ac_no_link}" != "yes"; then
     AC_CHECK_FUNCS([memcpy])
 fi
+
+# Add any Boost CPPFLAGS, LDFLAGS, and LIBS
+
+CPPFLAGS="${CPPFLAGS} ${BOOST_CPPFLAGS}"
+LIBS="${LIBS} ${BOOST_LIBS}"
+LDFLAGS="${LDFLAGS} ${BOOST_LDFLAGS}"
+
+# Add any CoreFoundation CPPFLAGS, LDFLAGS, and LIBS
+
+CPPFLAGS="${CPPFLAGS} ${CF_CPPFLAGS}"
+LIBS="${LIBS} ${CF_LIBS}"
+LDFLAGS="${LDFLAGS} ${CF_LDFLAGS}"
 
 # Add any CFUtilities CPPFLAGS, LDFLAGS, and LIBS
 
@@ -657,6 +854,12 @@ LIBS="${LIBS} ${NLASSERT_LIBS}"
 CPPFLAGS="${CPPFLAGS} ${NLUNIT_TEST_CPPFLAGS}"
 LDFLAGS="${LDFLAGS} ${NLUNIT_TEST_LDFLAGS}"
 LIBS="${LIBS} ${NLUNIT_TEST_LIBS}"
+
+# Add any TRE CPPFLAGS, LDFLAGS, and LIBS
+
+CPPFLAGS="${CPPFLAGS} ${TRE_CPPFLAGS}"
+LDFLAGS="${LDFLAGS} ${TRE_LDFLAGS}"
+LIBS="${LIBS} ${TRE_LIBS}"
 
 # Add any code coverage CPPFLAGS, LDFLAGS, and LIBS
 
@@ -775,6 +978,10 @@ AC_MSG_NOTICE([
   CFUtilities compile flags                 : ${CFUTILITIES_CPPFLAGS:--}
   CFUtilities link flags                    : ${CFUTILITIES_LDFLAGS:--}
   CFUtilities link libraries                : ${CFUTILITIES_LIBS:--}
+  CoreFoundation source                     : ${OPENHLX_CF_SOURCE:--}
+  CoreFoundation compile flags              : ${CF_CPPFLAGS:--}
+  CoreFoundation link flags                 : ${CF_LDFLAGS:--}
+  CoreFoundation link libraries             : ${CF_LIBS:--}
   Libtelnet source                          : ${nl_with_libtelnet:--}
   Libtelnet compile flags                   : ${LIBTELNET_CPPFLAGS:--}
   Libtelnet link flags                      : ${LIBTELNET_LDFLAGS:--}
@@ -791,6 +998,9 @@ AC_MSG_NOTICE([
   Nlunit-test compile flags                 : ${NLUNIT_TEST_CPPFLAGS:--}
   Nlunit-test link flags                    : ${NLUNIT_TEST_LDFLAGS:--}
   Nlunit-test link libraries                : ${NLUNIT_TEST_LIBS:--}
+  TRE compile flags                         : ${TRE_CPPFLAGS:--}
+  TRE link flags                            : ${TRE_LDFLAGS:--}
+  TRE link libraries                        : ${TRE_LIBS:--}
   C Preprocessor                            : ${CPP}
   C Compiler                                : ${CC}
   C++ Preprocessor                          : ${CXXCPP}

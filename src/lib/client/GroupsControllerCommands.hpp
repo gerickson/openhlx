@@ -65,7 +65,8 @@ namespace Groups
  *
  */
 class QueryRequest :
-    public QueryRequestBasis
+    virtual public Client::Command::RequestBasis,
+    public Client::Command::QueryRequestBasis
 {
 public:
     QueryRequest(void) = default;

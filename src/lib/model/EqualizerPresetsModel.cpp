@@ -28,6 +28,7 @@
 #include <utility>
 
 #include <errno.h>
+#include <string.h>
 
 #include <LogUtilities/LogUtilities.hpp>
 
@@ -55,6 +56,7 @@ namespace Model
  *
  */
 EqualizerPresetsModel :: EqualizerPresetsModel(const EqualizerPresetsModel &aEqualizerPresetsModel) :
+	mEqualizerPresetsMax(aEqualizerPresetsModel.mEqualizerPresetsMax),
     mEqualizerPresets(aEqualizerPresetsModel.mEqualizerPresets)
 {
     return;
@@ -123,11 +125,8 @@ EqualizerPresetsModel :: Init(const EqualizerPresetsModel &aEqualizerPresetsMode
     Status lRetval = kStatus_Success;
 
 
-    nlREQUIRE_ACTION(aEqualizerPresetsModel.mEqualizerPresets.size() <= mEqualizerPresetsMax, done, lRetval = -EINVAL);
-
     *this = aEqualizerPresetsModel;
 
- done:
     return (lRetval);
 }
 
@@ -151,7 +150,8 @@ EqualizerPresetsModel :: Init(const EqualizerPresetsModel &aEqualizerPresetsMode
 EqualizerPresetsModel &
 EqualizerPresetsModel :: operator =(const EqualizerPresetsModel &aEqualizerPresetsModel)
 {
-    mEqualizerPresets = aEqualizerPresetsModel.mEqualizerPresets;
+	mEqualizerPresetsMax = aEqualizerPresetsModel.mEqualizerPresetsMax;
+    mEqualizerPresets    = aEqualizerPresetsModel.mEqualizerPresets;
 
     return (*this);
 }
@@ -393,7 +393,8 @@ EqualizerPresetsModel :: SetEqualizerPreset(const IdentifierType &aEqualizerPres
 bool
 EqualizerPresetsModel :: operator ==(const EqualizerPresetsModel &aEqualizerPresetsModel) const
 {
-    return (mEqualizerPresets == aEqualizerPresetsModel.mEqualizerPresets);
+    return ((mEqualizerPresetsMax == aEqualizerPresetsModel.mEqualizerPresetsMax) &&
+			(mEqualizerPresets    == aEqualizerPresetsModel.mEqualizerPresets   ));
 }
 
 }; // namespace Model

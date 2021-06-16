@@ -31,11 +31,11 @@
 
 #include <stddef.h>
 
+#include <OpenHLX/Client/CommandRequestBasis.hpp>
+#include <OpenHLX/Common/CommandQueryBufferBasis.hpp>
 #include <OpenHLX/Common/Errors.hpp>
-
-#include <CommandQueryBufferBasis.hpp>
-#include <CommandRequestBasis.hpp>
 #include <OpenHLX/Model/IdentifierModel.hpp>
+
 
 namespace HLX
 {
@@ -59,7 +59,7 @@ namespace Command
  *
  */
 class QueryRequestBasis :
-    public RequestBasis,
+    virtual public Client::Command::RequestBasis,
     public Common::Command::QueryBufferBasis
 {
 protected:

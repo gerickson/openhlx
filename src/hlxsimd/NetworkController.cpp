@@ -31,6 +31,7 @@
 #include <inttypes.h>
 #include <limits.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <LogUtilities/LogUtilities.hpp>
 

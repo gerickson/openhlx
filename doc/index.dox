@@ -79,7 +79,7 @@
  *        <dd><p>A command line client for observing and mutating %HLX state
  *            such as setting the volume of a zone (that is, output).</p></dd>
  *        <dt><strong>hlxsimd</strong></dt>
- *        <dd><p>A command line client that can simulate an %HLX server and,
+ *        <dd><p>A command line server that can simulate an %HLX server and,
  *            as a result, actual %HLX Series hardware.</p></dd>
  *    </dl>
  *

@@ -25,6 +25,8 @@
 
 #include "CommandRequestBasis.hpp"
 
+#include <string.h>
+
 
 using namespace HLX::Common;
 using namespace HLX::Common::Command;

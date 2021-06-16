@@ -21,6 +21,7 @@
 #include <array>
 
 #include <errno.h>
+#include <string.h>
 
 #include <nlunit-test.h>
 

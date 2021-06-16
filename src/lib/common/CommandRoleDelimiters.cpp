@@ -71,6 +71,12 @@ static const Delimiters sResponseRegularExpressionDelimiters =
     kResponseRegularExpressionEnd
 };
 
+static const Delimiters sNullDelimiters =
+{
+	nullptr,
+	nullptr
+};
+
 /**
  *  @brief
  *    Return the command buffer delimiters for the specified role.
@@ -82,7 +88,8 @@ static const Delimiters sResponseRegularExpressionDelimiters =
  *           for the specified role.
  *
  */
-const Delimiters &GetRoleBufferDelimiters(const Role &inRole)
+const Delimiters &
+GetRoleBufferDelimiters(const Role &inRole)
 {
     switch (inRole)
     {
@@ -92,6 +99,9 @@ const Delimiters &GetRoleBufferDelimiters(const Role &inRole)
 
     case Role::kResponder:
         return (sResponseBufferDelimiters);
+
+	default:
+		return (sNullDelimiters);
 
     }
 }
@@ -108,7 +118,8 @@ const Delimiters &GetRoleBufferDelimiters(const Role &inRole)
  *           delimiters for the specified role.
  *
  */
-const Delimiters &GetRoleRegularExpressionDelimiters(const Role &inRole)
+const Delimiters &
+GetRoleRegularExpressionDelimiters(const Role &inRole)
 {
     switch (inRole)
     {
@@ -118,6 +129,9 @@ const Delimiters &GetRoleRegularExpressionDelimiters(const Role &inRole)
 
     case Role::kResponder:
         return (sResponseRegularExpressionDelimiters);
+
+	default:
+		return (sNullDelimiters);
 
     }
 }

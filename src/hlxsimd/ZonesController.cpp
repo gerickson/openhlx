@@ -2369,7 +2369,7 @@ ZonesController :: ZoneToneLoadFromBackupConfiguration(CFDictionaryRef aSoundMod
     nlREQUIRE_ACTION(lStatus, done, lRetval = kError_MissingConfiguration);
 
     lRetval = aZoneModel.SetTone(lBass, lTreble);
-    nlREQUIRE(lStatus >= kStatus_Success, done);
+    nlREQUIRE(lRetval >= kStatus_Success, done);
 
     if (lStatus == kStatus_Success)
     {

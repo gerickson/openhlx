@@ -615,7 +615,7 @@ GroupsController :: SetMute(const IdentifierType &aGroupIdentifier,
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = ((aMute) ? SetMute(aGroupIdentifier) : ClearMute(aGroupIdentifier));
-    nlEXPECT(lRetval >= 0, done);
+    nlEXPECT(lRetval >= kStatus_Success, done);
 
  done:
     return (lRetval);

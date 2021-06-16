@@ -28,15 +28,12 @@
 
 #include <vector>
 
-#include <regex.h>
-
-#include <ConnectionBuffer.hpp>
+#include <OpenHLX/Common/ConnectionBuffer.hpp>
 #include <OpenHLX/Common/Errors.hpp>
-#include <HostURLAddress.hpp>
-#include <RegularExpression.hpp>
-#include <RunLoopParameters.hpp>
-#include <SocketAddress.hpp>
-#include <Timeout.hpp>
+#include <OpenHLX/Common/HostURLAddress.hpp>
+#include <OpenHLX/Common/RegularExpression.hpp>
+#include <OpenHLX/Common/RunLoopParameters.hpp>
+#include <OpenHLX/Common/SocketAddress.hpp>
 
 #include <CoreFoundation/CFSocket.h>
 #include <CoreFoundation/CFURL.h>

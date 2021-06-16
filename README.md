@@ -47,7 +47,7 @@ aforementioned libraries:
       <dd>A command line client for observing and mutating HLX state
           such as setting the volume of a zone.</dd>
       <dt><strong>hlxsimd</strong></dt>
-      <dd>A command line client that can simulate an HLX server and,
+      <dd>A command line server that can simulate an HLX server and,
           as a result, actual HLX Series hardware.</dd>
   </dl>
 
@@ -153,7 +153,7 @@ framework.
 In the future and alternatively when supported, CoreFoundation may be
 provided as a static or shared library via either the [Apple
 CFLite](https://opensource.apple.com/source/CF/) project or via the
-[OpenCFLite](https://opencflite.sourceforge.io/) project fork thereof.
+[OpenCFLite](https://github.com/gerickson/opencflite/) project fork thereof.
 
 If you want to modify or otherwise maintain the Open HLX build
 system, see "Maintaining Open HLX" below for more information.
