@@ -117,13 +117,6 @@ jobs:
       run: |
         make -j check
 
-    - name: Check Test Failure
-      if: ${{ failure() }}
-      run: |
-        clang --version
-        clang++ --version
-        cat src/lib/model/tests/TestEqualizerPresetsModel.log
-
     - name: Upload Coverage
       run: |
         bash <(curl -s https://codecov.io/bash) -g 'src/*' -G 'src/lib/*/tests/*' -G 'tests/*' -G 'third_party/*'
