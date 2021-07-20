@@ -18,6 +18,10 @@
 /* Define to 1 if you have the <CFUtilities/CFUtilities.hpp> header file. */
 #undef HAVE_CFUTILITIES_CFUTILITIES_HPP
 
+/* Define to 1 if you have the <CoreFoundation/CoreFoundation.h> header file.
+   */
+#undef HAVE_COREFOUNDATION_COREFOUNDATION_H
+
 /* define if the compiler supports basic C++11 syntax */
 #undef HAVE_CXX11
 
@@ -26,6 +30,9 @@
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the `CoreFoundation' library (-lCoreFoundation). */
+#undef HAVE_LIBCOREFOUNDATION
 
 /* Define to 1 if you have the <libtelnet.h> header file. */
 #undef HAVE_LIBTELNET_H
@@ -44,6 +51,12 @@
 
 /* Define to 1 if you have the <nlunit-test.h> header file. */
 #undef HAVE_NLUNIT_TEST_H
+
+/* Define to 1 if you have the <regex.h> header file. */
+#undef HAVE_REGEX_H
+
+/* Define to 1 if you have the `regnexec' function. */
+#undef HAVE_REGNEXEC
 
 /* Define to 1 if stdbool.h conforms to C99. */
 #undef HAVE_STDBOOL_H
@@ -66,6 +79,9 @@
 /* Define to 1 if you have the <sys/types.h> header file. */
 #undef HAVE_SYS_TYPES_H
 
+/* Define to 1 if you have the <tre/regex.h> header file. */
+#undef HAVE_TRE_REGEX_H
+
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
@@ -79,8 +95,16 @@
 /* Define to 1 if your C compiler doesn't accept -c and -o together. */
 #undef NO_MINUS_C_MINUS_O
 
-/* Name of package */
-#undef PACKAGE
+/* CoreFoundation source */
+#undef OPENHLX_CF_SOURCE
+
+/* Define to 1 if you want to use an [Open]CFLite implementation source of
+   CoreFoundation for Open HLX */
+#undef OPENHLX_CF_SOURCE_CFLITE
+
+/* Define to 1 if you want to use a system framework implementation source of
+   CoreFoundation for Open HLX */
+#undef OPENHLX_CF_SOURCE_FRAMEWORK
 
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT
@@ -102,9 +126,6 @@
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
-
-/* Version number of package */
-#undef VERSION
 
 /* Define for Solaris 2.5.1 so the uint32_t typedef from <sys/synch.h>,
    <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the
