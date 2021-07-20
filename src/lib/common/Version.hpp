@@ -36,7 +36,7 @@ namespace Common
 struct Version
 {
     typedef uint32_t Code;
-    typdef  uint8_t  Component;
+    typedef uint8_t  Component;
 };
 
 extern const char *       GetCopyrightString(void);
