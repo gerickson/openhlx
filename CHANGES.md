@@ -4,6 +4,8 @@
           returning version information via '-V' or '--version' for
           hlxc, hlxproxyd, hlxsimd.
 
+        * Added Linux support via Tre, OpenCFLite, and OpenCFNetwork.
+
 1.0 (2021-05-21)
 
 	* First public release to Github.
