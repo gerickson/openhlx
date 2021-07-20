@@ -37,6 +37,7 @@ hlxproxyd_CPPFLAGS                                                         = \
     $(NULL)
 
 hlxproxyd_LDADD                                                            = \
+    $(top_builddir)/src/lib/common/libopenhlx-common.a                       \
     $(top_builddir)/src/lib/utilities/libopenhlx-utilities.a                 \
     $(top_builddir)/third_party/CFUtilities/repo/src/libCFUtilities.la       \
     $(top_builddir)/third_party/LogUtilities/repo/src/libLogUtilities.la     \
