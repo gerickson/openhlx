@@ -40,8 +40,10 @@
 #include <NuovationsUtilities/GenerateShortOptions.hpp>
 
 #include <OpenHLX/Common/Errors.hpp>
+#include <OpenHLX/Common/Version.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
 #include <OpenHLX/Utilities/ElementsOf.hpp>
+
 
 using namespace HLX;
 using namespace HLX::Common;
@@ -59,6 +61,7 @@ using namespace std;
 #define OPT_QUIET                   'q'
 #define OPT_SYSLOG                  's'
 #define OPT_VERBOSE                 'v'
+#define OPT_VERSION                 'V'
 
 // Type Declarations
 
@@ -83,6 +86,7 @@ static const struct option  sOptions[] = {
     { "help",                   no_argument,        nullptr,   OPT_HELP                   },
     { "quiet",                  no_argument,        nullptr,   OPT_QUIET                  },
     { "verbose",                optional_argument,  nullptr,   OPT_VERBOSE                },
+    { "version",                no_argument,        nullptr,   OPT_VERSION                },
 
     { nullptr,                  0,                  nullptr,   0                          }
 };
@@ -104,6 +108,8 @@ static const char * const   sLongUsageString =
 "                              both the system log as well as standard error \n"
 "                              and standard output.\n"
 "  -v, --verbose[=LEVEL]       Enable verbose output, optionally at level LEVEL.\n"
+"  -V, --version               Print version and copyright information, then\n"
+"                              exit.\n"
 "\n"
 " Client Options:\n"
 "\n"
@@ -221,6 +227,19 @@ PrintUsage(const char *inProgram, int inStatus)
     exit(inStatus);
 }
 
+static void
+PrintVersion(const char *inProgram)
+{
+    const char * const theName = path(inProgram).leaf().c_str();
+
+    printf("%s %s\n%s\n",
+           theName,
+           GetVersionString(),
+           GetCopyrightString());
+
+    exit(EXIT_SUCCESS);
+}
+
 /*
  *  void DecodeOptions()
  *
@@ -288,6 +307,10 @@ DecodeOptions(const char *inProgram,
 
         case OPT_VERBOSE:
             error += SetLevel(sVerbose, optarg);
+            break;
+
+        case OPT_VERSION:
+            PrintVersion(inProgram);
             break;
 
         default:

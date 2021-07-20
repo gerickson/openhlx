@@ -57,6 +57,7 @@
 #include <OpenHLX/Client/ZonesStateChangeNotifications.hpp>
 #include <OpenHLX/Common/OutputStringStream.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
+#include <OpenHLX/Common/Version.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
 #include <OpenHLX/Utilities/ElementsOf.hpp>
 #include <OpenHLX/Utilities/Utilities.hpp>
@@ -83,6 +84,7 @@ using namespace std;
 #define OPT_SYSLOG                   's'
 #define OPT_TIMEOUT                  't'
 #define OPT_VERBOSE                  'v'
+#define OPT_VERSION                  'V'
 
 // Command Object Options
 
@@ -245,11 +247,12 @@ static Client *             sHLXClient           = nullptr;
 static const struct option  sOptions[] = {
     { "debug",                   optional_argument,  nullptr,   OPT_DEBUG                   },
     { "help",                    no_argument,        nullptr,   OPT_HELP                    },
-    { "ipv4-only",               no_argument,        nullptr,   OPT_IPV4_ONLY              },
-    { "ipv6-only",               no_argument,        nullptr,   OPT_IPV6_ONLY              },
+    { "ipv4-only",               no_argument,        nullptr,   OPT_IPV4_ONLY               },
+    { "ipv6-only",               no_argument,        nullptr,   OPT_IPV6_ONLY               },
     { "quiet",                   no_argument,        nullptr,   OPT_QUIET                   },
     { "timeout",                 required_argument,  nullptr,   OPT_TIMEOUT                 },
     { "verbose",                 optional_argument,  nullptr,   OPT_VERBOSE                 },
+    { "version",                 no_argument,        nullptr,   OPT_VERSION                 },
 
     { "equalizer-band",          required_argument,  nullptr,   OPT_EQUALIZER_BAND          },
     { "equalizer-preset",        required_argument,  nullptr,   OPT_EQUALIZER_PRESET        },
@@ -318,6 +321,8 @@ static const char * const   sLongUsageString =
 "                                      error and standard output.\n"
 "  -v, --verbose[=LEVEL]               Enable verbose output, optionally at level\n"
 "                                      LEVEL.\n"
+"  -V, --version                       Print version and copyright information, \n"
+"                                      then exit.\n"
 "\n"
 " Client Options:\n"
 "\n"
@@ -1192,6 +1197,19 @@ PrintUsage(const char *inProgram, int inStatus)
 }
 
 static void
+PrintVersion(const char *inProgram)
+{
+    const char * const theName = path(inProgram).leaf().c_str();
+
+    printf("%s %s\n%s\n",
+           theName,
+           GetVersionString(),
+           GetCopyrightString());
+
+    exit(EXIT_SUCCESS);
+}
+
+static void
 SetObjectOption(ClientArgument &aClientArgument, const Option &aOption, const char *aArgument, uint32_t &aOptFlags)
 {
     aClientArgument.mObjectOptionArgument.mOption = aOption;
@@ -1458,6 +1476,10 @@ DecodeOptions(const char *inProgram,
 
         case OPT_VERBOSE:
             error += SetLevel(sVerbose, optarg);
+            break;
+
+        case OPT_VERSION:
+            PrintVersion(inProgram);
             break;
 
         case OPT_GROUP:

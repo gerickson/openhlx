@@ -98,6 +98,7 @@ libopenhlx_common_a_include_HEADERS                         = \
     SocketAddress.hpp                                         \
     SourcesControllerBasis.hpp                                \
     Timeout.hpp                                               \
+    Version.hpp                                               \
     ZonesControllerBasis.hpp                                  \
     $(NULL)
 
@@ -151,6 +152,7 @@ libopenhlx_common_a_SOURCES                                 = \
     SocketAddress.cpp                                         \
     SourcesControllerBasis.cpp                                \
     Timeout.cpp                                               \
+    Version.cpp                                               \
     ZonesControllerBasis.cpp                                  \
     $(NULL)
 
