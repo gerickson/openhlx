@@ -77,6 +77,18 @@ $(OpenHLXHeaderDir)/Model: $(abs_top_srcdir)/src/lib/model | $(OpenHLXHeaderDir)
 $(OpenHLXHeaderDir)/Utilities: $(abs_top_srcdir)/src/lib/utilities | $(OpenHLXHeaderDir)
 	$(call nl-create-link)
 
+# The 'install' target directory transform. Headers in
+# openhlx_include_HEADERS will get installed in openhlx_includedir.
+
+openhlx_includedir                              = \
+    ${includedir}/${OpenHLXHeaderDir}
+
+# Public library headers to distribute and install.
+
+openhlx_include_HEADERS                         = \
+    Version.h                                     \
+    $(NULL)
+
 clean-local:
 	-$(NL_V_AT)$(RM) -r -f $(OpenHLXHeaderDir)
 
