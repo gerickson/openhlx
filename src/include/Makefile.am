@@ -37,16 +37,33 @@ OpenHLXHeaderLinks                := \
     $(OpenHLXHeaderDir)/Utilities    \
     $(NULL)
 
-BUILT_SOURCES                     := \
-    $(OpenHLXHeaderLinks)            \
+OpenHLXVersionFile                := \
+    $(OpenHLXHeaderDir)/Version.h    \
     $(NULL)
 
-CLEANFILES                := \
-    $(OpenHLXHeaderLinks)    \
+BUILT_SOURCES                     := \
+    $(OpenHLXHeaderLinks)            \
+    $(OpenHLXVersionFile)            \
     $(NULL)
+
+CLEANFILES                        := \
+    $(OpenHLXHeaderLinks)            \
+    $(OpenHLXVersionFile)            \
+    $(NULL)
+
+define check-file-Version.h
+$(top_srcdir)/build/scripts/gen-openhlx-version "`cat $(1)`" -o "$(2)"
+endef # check-file-Version.h
 
 $(OpenHLXHeaderDir): | $(builddir)
 	$(call nl-create-dir,$(@))
+
+$(top_builddir)/.local-version:
+	$(NL_V_PROGRESS) "MAKE" "$(@)"
+	+$(NL_V_AT)$(MAKE) $(MFLAGS) -C "$(@D)" "$(@F)"
+
+$(OpenHLXVersionFile): $(top_builddir)/.local-version | $(OpenHLXHeaderDir)
+	$(call check-file,Version.h)
 
 $(OpenHLXHeaderDir)/Client: $(abs_top_srcdir)/src/lib/client | $(OpenHLXHeaderDir)
 	$(call nl-create-link)
