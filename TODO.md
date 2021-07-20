@@ -12,8 +12,8 @@ source code control and the project repository hosting site.
 
 ### In Progress
 
-- [x] Port the package to Linux.
+None
 
 ### Done
 
-None
+- [x] Port the package to Linux.
