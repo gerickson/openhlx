@@ -133,6 +133,8 @@ C++ Standard Template Library (STL), Open HLX depends on:
   * [Boost](https://www.boost.org/)
   * [CFUtilities](https://github.com/Nuovations/CFUtilities)
   * [CoreFoundation](https://developer.apple.com/documentation/corefoundation)
+      - [OpenCFLite](https://github.com/gerickson/opencflite) (Linux-only)
+      - [OpenCFNetwork](https://github.com/gerickson/opencfnetwork) (Linux-only)
   * [LogUtilities](https://github.com/Nuovations/LogUtilities)
   * [libtelnet](https://github.com/seanmiddleditch/libtelnet)
   * [nlassert](https://github.com/nestlabs/nlassert)
@@ -149,11 +151,6 @@ integration into iOS and macOS apps, Open HLX depends on the Apple
 CoreFoundation framework or library. The framework may be provided on
 the iOS or macOS (or other Apple) platforms as a native system
 framework.
-
-In the future and alternatively when supported, CoreFoundation may be
-provided as a static or shared library via either the [Apple
-CFLite](https://opensource.apple.com/source/CF/) project or via the
-[OpenCFLite](https://github.com/gerickson/opencflite/) project fork thereof.
 
 If you want to modify or otherwise maintain the Open HLX build
 system, see "Maintaining Open HLX" below for more information.
