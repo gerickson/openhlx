@@ -86,7 +86,7 @@ openhlx_includedir                              = \
 # Public library headers to distribute and install.
 
 openhlx_include_HEADERS                         = \
-    Version.h                                     \
+    ${OpenHLXVersionFile}                         \
     $(NULL)
 
 clean-local:
