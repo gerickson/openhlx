@@ -58,7 +58,7 @@ GetVersionCode(void)
 Version::Component
 GetVersionMajor(const Version::Code &aCode)
 {
-    constexpr Version::Component retval = OPENHLX_VERSION_CODE_DECODE_MAJOR(aCode);
+    const Version::Component retval = OPENHLX_VERSION_CODE_DECODE_MAJOR(aCode);
 
     return (retval);
 }
@@ -66,7 +66,7 @@ GetVersionMajor(const Version::Code &aCode)
 Version::Component
 GetVersionMinor(const Version::Code &aCode)
 {
-    constexpr Version::Component retval = OPENHLX_VERSION_CODE_DECODE_MINOR(aCode);
+    const Version::Component retval = OPENHLX_VERSION_CODE_DECODE_MINOR(aCode);
 
     return (retval);
 }
@@ -74,7 +74,7 @@ GetVersionMinor(const Version::Code &aCode)
 Version::Component
 GetVersionPatch(const Version::Code &aCode)
 {
-    constexpr Version::Component retval = OPENHLX_VERSION_CODE_DECODE_PATCH(aCode);
+    const Version::Component retval = OPENHLX_VERSION_CODE_DECODE_PATCH(aCode);
 
     return (retval);
 }
