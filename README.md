@@ -139,6 +139,7 @@ C++ Standard Template Library (STL), Open HLX depends on:
   * [libtelnet](https://github.com/seanmiddleditch/libtelnet)
   * [nlassert](https://github.com/nestlabs/nlassert)
   * [nlunit-test](https://github.com/nestlabs/nlunit-test)
+  * [tre](https://github.com/laurikari/tre) (Linux only)
   * [Doxygen](http://doxygen.nl/) (developer documentation only)
   * [asciidoc](https://asciidoc.org/) (man pages only)
   * [xmlto](https://pagure.io/xmlto/) (man pages only)
@@ -192,9 +193,8 @@ additional packages are required and are invoked by `bootstrap`:
 
 #### Linux
 
-When supported on Linux, on Debian-based Linux distributions such as
-Ubuntu, these Open HLX build system dependencies can be satisfied with
-the following:
+On Debian-based Linux distributions such as Ubuntu, these dependencies
+can be satisfied with the following:
 
     % sudo apt-get install autoconf automake libtool
 
