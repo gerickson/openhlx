@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file...
+ *      This file implements interfaces for accessing version and
+ *      copyright information for OpenHLX package.
  *
  */
 
@@ -31,6 +32,13 @@ namespace HLX
 namespace Common
 {
 
+/**
+ *  Get the package copyright string as a null-terminated C string.
+ *
+ *  @returns
+ *    A pointer to the package copyright string.
+ *
+ */
 const char *
 GetCopyrightString(void)
 {
@@ -39,6 +47,13 @@ GetCopyrightString(void)
     return (retval);
 }
 
+/**
+ *  Get the package version string as a null-terminated C string.
+ *
+ *  @returns
+ *    A pointer to the package version string.
+ *
+ */
 const char *
 GetVersionString(void)
 {
@@ -47,6 +62,30 @@ GetVersionString(void)
     return (retval);
 }
 
+/**
+ *  @brief
+ *    Get the package version code.
+ *
+ *  This returns an encoded version for the package, including major,
+ *  minor, and patch components.
+ *
+ *  These encoded version can be decomposed into its constituent components
+ *  using the functions #GetVersionMajor, #GetVersionMinor, and
+ *  #GetVersionPatch or using the preprocessor macros
+ *  #OPENHLX_VERSION_CODE_DECODE_MAJOR, #OPENHLX_VERSION_CODE_DECODE_MINOR,
+ *  and #OPENHLX_VERSION_CODE_DECODE_PATCH.
+ *
+ *  @returns
+ *    The package version code.
+ *
+ *  @sa GetVersionMajor
+ *  @sa GetVersionMinor
+ *  @sa GetVersionPatch
+ *  @sa OPENHLX_VERSION_CODE_DECODE_MAJOR
+ *  @sa OPENHLX_VERSION_CODE_DECODE_MINOR
+ *  @sa OPENHLX_VERSION_CODE_DECODE_PATCH
+ *
+ */
 Version::Code
 GetVersionCode(void)
 {
@@ -55,6 +94,16 @@ GetVersionCode(void)
     return (retval);
 }
 
+/**
+ *  Get the package major subversion component from the specified
+ *  package version code.
+ *
+ *  @param[in]  aCode  An immutable reference to the encoded package
+ *                     version code.
+ *
+ *  @returns
+ *    The package version code major subversion component.
+ */
 Version::Component
 GetVersionMajor(const Version::Code &aCode)
 {
@@ -63,6 +112,16 @@ GetVersionMajor(const Version::Code &aCode)
     return (retval);
 }
 
+/**
+ *  Get the package minor subversion component from the specified
+ *  package version code.
+ *
+ *  @param[in]  aCode  An immutable reference to the encoded package
+ *                     version code.
+ *
+ *  @returns
+ *    The package version code minor subversion component.
+ */
 Version::Component
 GetVersionMinor(const Version::Code &aCode)
 {
@@ -71,6 +130,16 @@ GetVersionMinor(const Version::Code &aCode)
     return (retval);
 }
 
+/**
+ *  Get the package patch subversion component from the specified
+ *  package version code.
+ *
+ *  @param[in]  aCode  An immutable reference to the encoded package
+ *                     version code.
+ *
+ *  @returns
+ *    The package version code patch subversion component.
+ */
 Version::Component
 GetVersionPatch(const Version::Code &aCode)
 {
