@@ -37,6 +37,10 @@
 // framework does. Work around this by defining the type within
 // the scope of this object.
 
+/**
+ *  A string denoting the run loop group or mode an object should be
+ *  observed or dispatched in when the run loop runs.
+ */
 typedef CFStringRef CFRunLoopMode;
 #endif // !defined(__APPLE__) && !__APPLE__
 
