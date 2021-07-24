@@ -72,8 +72,8 @@ GetVersionString(void)
  *  These encoded version can be decomposed into its constituent components
  *  using the functions #GetVersionMajor, #GetVersionMinor, and
  *  #GetVersionPatch or using the preprocessor macros
- *  #OPENHLX_VERSION_CODE_DECODE_MAJOR, #OPENHLX_VERSION_CODE_DECODE_MINOR,
- *  and #OPENHLX_VERSION_CODE_DECODE_PATCH.
+ *  OPENHLX_VERSION_CODE_DECODE_MAJOR, OPENHLX_VERSION_CODE_DECODE_MINOR,
+ *  and OPENHLX_VERSION_CODE_DECODE_PATCH.
  *
  *  @returns
  *    The package version code.
