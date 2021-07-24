@@ -1,3 +1,7 @@
+1.0.2 (2021-07-24)
+
+        * Addressed missing Doxygen content warnings/errors.
+
 1.0.1 (2021-07-20)
 
         * Added version information and interfaces plus support for
