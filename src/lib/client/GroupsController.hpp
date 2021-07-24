@@ -149,6 +149,9 @@ private:
     void HandleVolumeChange(const IdentifierType &aGroupIdentifier, Model::GroupModel &aGroupModel, const Model::VolumeModel::LevelType &aVolume, const bool &aHandleUnmute);
 
 private:
+    //!< Ensure the base class can access the Handle*Change methods
+    //!< for cross zone-to-group and group-to-zone state synthesis.
+
     friend class Controller;
 
     void HandleMuteChange(const IdentifierType &aGroupIdentifier, const Model::VolumeModel::MuteType &aMute);

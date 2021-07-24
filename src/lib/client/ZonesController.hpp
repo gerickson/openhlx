@@ -194,6 +194,9 @@ private:
     void VolumeFixedNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 
 private:
+    //!< Ensure the base class can access the Handle*Change methods
+    //!< for cross zone-to-group and group-to-zone state synthesis.
+
     friend class Controller;
 
     void HandleMuteChange(const IdentifierType &aZoneIdentifier, const Model::VolumeModel::MuteType &aMute);

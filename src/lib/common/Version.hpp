@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file...
+ *      This file defines types and interfaces for accessing version
+ *      and copyright information for OpenHLX package.
  *
  */
 
@@ -33,10 +34,16 @@ namespace HLX
 namespace Common
 {
 
+/**
+ *  Types for encoding and decoding package version information.
+ *
+ */
 struct Version
 {
-    typedef uint32_t Code;
-    typedef uint8_t  Component;
+    typedef uint32_t Code;       //!< Encoded version type, including major,
+                                 //!< minor, and patch components.
+    typedef uint8_t  Component;  //!< Decoded version component type, for
+                                 //!< major, minor, or patch component.
 };
 
 extern const char *       GetCopyrightString(void);
