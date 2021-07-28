@@ -85,30 +85,31 @@ using namespace Nuovations;
 using namespace boost::filesystem;
 using namespace std;
 
+
 // Preprocessor Definitions
 
-#define OPT_BASE                    0x00001000
+#define OPT_BASE                     0x00001000
 
-#define OPT_DEBUG                   'd'
-#define OPT_HELP                    'h'
-#define OPT_IPV4_ONLY               '4'
-#define OPT_IPV6_ONLY               '6'
-#define OPT_QUIET                   'q'
-#define OPT_SYSLOG                  's'
-#define OPT_VERBOSE                 'v'
-#define OPT_VERSION                 'V'
+#define OPT_DEBUG                    'd'
+#define OPT_HELP                     'h'
+#define OPT_IPV4_ONLY                '4'
+#define OPT_IPV6_ONLY                '6'
+#define OPT_QUIET                    'q'
+#define OPT_SYSLOG                   's'
+#define OPT_VERBOSE                  'v'
+#define OPT_VERSION                  'V'
 
-#define OPT_CONFIGURATION_FILE      (OPT_BASE +  1)
+#define OPT_CONFIGURATION_FILE       (OPT_BASE +  1)
 
 // Type Declarations
 
 enum OptFlags {
-    kOptNone          = 0x00000000,
-    kOptIPv4Only      = 0x00000001,
-    kOptIPv6Only      = 0x00000002,
-    kOptPriority      = 0x00000004,
-    kOptQuiet         = 0x00000008,
-    kOptSyslog        = 0x00000010
+    kOptNone            = 0x00000000,
+    kOptIPv4Only        = 0x00000001,
+    kOptIPv6Only        = 0x00000002,
+    kOptPriority        = 0x00000004,
+    kOptQuiet           = 0x00000008,
+    kOptSyslog          = 0x00000010
 };
 
 class HLXServer;
@@ -129,16 +130,16 @@ static const char *         sConfigurationFile   = HLXSIMD_DEFAULT_CONFIG_PATH;
 static HLXServer *          sHLXServer           = nullptr;
 
 static const struct option  sOptions[] = {
-    { "configuration-file",     required_argument,  nullptr,   OPT_CONFIGURATION_FILE     },
-    { "debug",                  optional_argument,  nullptr,   OPT_DEBUG                  },
-    { "help",                   no_argument,        nullptr,   OPT_HELP                   },
-    { "ipv4-only",              no_argument,        nullptr,   OPT_IPV4_ONLY              },
-    { "ipv6-only",              no_argument,        nullptr,   OPT_IPV6_ONLY              },
-    { "quiet",                  no_argument,        nullptr,   OPT_QUIET                  },
-    { "verbose",                optional_argument,  nullptr,   OPT_VERBOSE                },
-    { "version",                no_argument,        nullptr,   OPT_VERSION                },
+    { "configuration-file",      required_argument,  nullptr,   OPT_CONFIGURATION_FILE     },
+    { "debug",                   optional_argument,  nullptr,   OPT_DEBUG                   },
+    { "help",                    no_argument,        nullptr,   OPT_HELP                    },
+    { "ipv4-only",               no_argument,        nullptr,   OPT_IPV4_ONLY               },
+    { "ipv6-only",               no_argument,        nullptr,   OPT_IPV6_ONLY               },
+    { "quiet",                   no_argument,        nullptr,   OPT_QUIET                   },
+    { "verbose",                 optional_argument,  nullptr,   OPT_VERBOSE                 },
+    { "version",                 no_argument,        nullptr,   OPT_VERSION                 },
 
-    { nullptr,                  0,                  nullptr,   0                          }
+    { nullptr,                   0,                  nullptr,   0                           }
 };
 
 static const char * const   sShortUsageString =
