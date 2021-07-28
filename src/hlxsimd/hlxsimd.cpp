@@ -58,6 +58,7 @@
 #include <NuovationsUtilities/GenerateShortOptions.hpp>
 
 #include <OpenHLX/Common/ConnectionBuffer.hpp>
+#include <OpenHLX/Common/ConnectionManagerBasis.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/RegularExpression.hpp>
 #include <OpenHLX/Common/RunLoopParameters.hpp>
@@ -189,8 +190,11 @@ public:
 
     Status Init(void);
 
-    Status Start(const bool &aUseIPv6, const bool &aUseIPv4);
-    Status Start(const char *aMaybeURL, const bool &aUseIPv6, const bool &aUseIPv4);
+    Status Start(const bool &aUseIPv6,
+                 const bool &aUseIPv4);
+    Status Start(const char *aMaybeURL,
+                 const bool &aUseIPv6,
+                 const bool &aUseIPv4);
     Status Stop(void);
     Status Stop(const Status &aStatus);
 
@@ -270,21 +274,12 @@ Status HLXServer :: Init(void)
     return (lRetval);
 }
 
-static ConnectionManager::Versions
-GetVersions(const bool &aUseIPv6, const bool &aUseIPv4)
+Status
+HLXServer :: Start(const bool &aUseIPv6,
+                   const bool &aUseIPv4)
 {
-    using Version  = ConnectionManagerBasis::Version;
-    using Versions = ConnectionManagerBasis::Versions;
+    using Common::Utilities::GetVersions;
 
-    const Versions kVersions =
-        (((aUseIPv6) ? Version::kIPv6 : 0) |
-         ((aUseIPv4) ? Version::kIPv4 : 0));
-
-    return (kVersions);
-}
-
-Status HLXServer :: Start(const bool &aUseIPv6, const bool &aUseIPv4)
-{
     Status lRetval = kStatus_Success;
 
     lRetval = mHLXServerController.Listen(GetVersions(aUseIPv6, aUseIPv4));
@@ -292,8 +287,13 @@ Status HLXServer :: Start(const bool &aUseIPv6, const bool &aUseIPv4)
     return (lRetval);
 }
 
-Status HLXServer :: Start(const char *aMaybeURL, const bool &aUseIPv6, const bool &aUseIPv4)
+Status
+HLXServer :: Start(const char *aMaybeURL,
+                   const bool &aUseIPv6,
+                   const bool &aUseIPv4)
 {
+    using Common::Utilities::GetVersions;
+
     Status lRetval = kStatus_Success;
 
     lRetval = mHLXServerController.Listen(aMaybeURL, GetVersions(aUseIPv6, aUseIPv4));

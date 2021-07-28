@@ -55,6 +55,7 @@
 #include <OpenHLX/Client/InfraredStateChangeNotifications.hpp>
 #include <OpenHLX/Client/SourcesStateChangeNotifications.hpp>
 #include <OpenHLX/Client/ZonesStateChangeNotifications.hpp>
+#include <OpenHLX/Common/ConnectionManagerBasis.hpp>
 #include <OpenHLX/Common/OutputStringStream.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
 #include <OpenHLX/Common/Version.hpp>
@@ -532,21 +533,10 @@ Status Client :: Init(void)
     return (lRetval);
 }
 
-static ConnectionManager::Versions
-GetVersions(const bool &aUseIPv6, const bool &aUseIPv4)
-{
-    using Version  = ConnectionManagerBasis::Version;
-    using Versions = ConnectionManagerBasis::Versions;
-
-    const Versions kVersions =
-        (((aUseIPv6) ? Version::kIPv6 : 0) |
-         ((aUseIPv4) ? Version::kIPv4 : 0));
-
-    return (kVersions);
-}
-
 Status Client :: Start(const char *aMaybeURL, const bool &aUseIPv6, const bool &aUseIPv4, const Timeout &aTimeout)
 {
+    using HLX::Common::Utilities::GetVersions;
+
     Status lStatus = kStatus_Success;
 
     lStatus = mHLXClientController.Connect(aMaybeURL, GetVersions(aUseIPv6, aUseIPv4), aTimeout);
