@@ -1,5 +1,5 @@
 /*
- *    Copyright (c) 2018-2019 Grant Erickson
+ *    Copyright (c) 2018-2021 Grant Erickson
  *    All rights reserved.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,8 +14,12 @@
  *    express or implied.  See the License for the specific language
  *    governing permissions and limitations under the License.
  *
- *    Description:
- *      This file...
+ */
+
+/**
+ *    @file
+ *      This file....
+ *
  */
 
 #include <errno.h>
@@ -40,37 +44,50 @@
 #include <NuovationsUtilities/GenerateShortOptions.hpp>
 
 #include <OpenHLX/Common/Errors.hpp>
+#include <OpenHLX/Common/RunLoopParameters.hpp>
 #include <OpenHLX/Common/Version.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
 #include <OpenHLX/Utilities/ElementsOf.hpp>
 
+#include "HLXProxyController.hpp"
+
 
 using namespace HLX;
 using namespace HLX::Common;
+using namespace HLX::Proxy;
 using namespace HLX::Utilities;
 using namespace Nuovations;
 using namespace boost::filesystem;
 using namespace std;
 
+
 // Preprocessor Definitions
 
-#define OPT_BASE                    0x00001000
+#define OPT_BASE                     0x00001000
 
-#define OPT_DEBUG                   'd'
-#define OPT_HELP                    'h'
-#define OPT_QUIET                   'q'
-#define OPT_SYSLOG                  's'
-#define OPT_VERBOSE                 'v'
-#define OPT_VERSION                 'V'
+#define OPT_DEBUG                    'd'
+#define OPT_HELP                     'h'
+#define OPT_IPV4_ONLY                '4'
+#define OPT_IPV6_ONLY                '6'
+#define OPT_QUIET                    'q'
+#define OPT_SYSLOG                   's'
+#define OPT_VERBOSE                  'v'
+#define OPT_VERSION                  'V'
 
 // Type Declarations
 
 enum OptFlags {
-    kOptNone          = 0x00000000,
-    kOptPriority      = 0x00000001,
-    kOptQuiet         = 0x00000002,
-    kOptSyslog        = 0x00000004
+    kOptNone            = 0x00000000,
+    kOptIPv4Only        = 0x00000001,
+    kOptIPv6Only        = 0x00000002,
+    kOptPriority        = 0x00000004,
+    kOptQuiet           = 0x00000008,
+    kOptSyslog          = 0x00000010
 };
+
+class HLXProxy;
+
+// Function Prototypes
 
 // Global Variables
 
@@ -81,18 +98,22 @@ static Log::Level           sVerbose             = 0;
 
 static const char *         sProgram             = nullptr;
 
-static const struct option  sOptions[] = {
-    { "debug",                  optional_argument,  nullptr,   OPT_DEBUG                  },
-    { "help",                   no_argument,        nullptr,   OPT_HELP                   },
-    { "quiet",                  no_argument,        nullptr,   OPT_QUIET                  },
-    { "verbose",                optional_argument,  nullptr,   OPT_VERBOSE                },
-    { "version",                no_argument,        nullptr,   OPT_VERSION                },
+static HLXProxy *           sHLXProxy            = nullptr;
 
-    { nullptr,                  0,                  nullptr,   0                          }
+static const struct option  sOptions[] = {
+    { "debug",                   optional_argument,  nullptr,   OPT_DEBUG                   },
+    { "help",                    no_argument,        nullptr,   OPT_HELP                    },
+    { "ipv4-only",               no_argument,        nullptr,   OPT_IPV4_ONLY               },
+    { "ipv6-only",               no_argument,        nullptr,   OPT_IPV6_ONLY               },
+    { "quiet",                   no_argument,        nullptr,   OPT_QUIET                   },
+    { "verbose",                 optional_argument,  nullptr,   OPT_VERBOSE                 },
+    { "version",                 no_argument,        nullptr,   OPT_VERSION                 },
+
+    { nullptr,                   0,                  nullptr,   0                           }
 };
 
 static const char * const   sShortUsageString =
-"Usage: %s [ options ] { <URL> | <host[:port]> | <file> }\n";
+"Usage: %s [ options ] TBD\n";
 
 static const char * const   sLongUsageString =
 "\n"
@@ -111,23 +132,142 @@ static const char * const   sLongUsageString =
 "  -V, --version               Print version and copyright information, then\n"
 "                              exit.\n"
 "\n"
-" Client Options:\n"
+" Proxy Options:\n"
 "\n"
-"  -t, --timeout=MILLISECONDS  Set a connection timeout of MILLISECONDS \n"
-"                              milliseconds.\n"
+"  -4, --ipv4-only             Force hlxproxyd to use IPv4 addresses only.\n"
+"  -6, --ipv6-only             Force hlxproxyd to use IPv6 addresses only.\n"
 "\n";
+
+class HLXProxy :
+    public ControllerDelegate
+{
+public:
+    HLXProxy(void);
+    ~HLXProxy(void);
+
+    Status Init(void);
+
+    Status Start(void);
+    Status Stop(void);
+    Status Stop(const Status &aStatus);
+
+    const HLX::Proxy::Controller &GetController(void) const;
+    HLX::Proxy::Controller &GetController(void);
+    Status GetStatus(void) const;
+    void SetStatus(const Status &aStatus);
+
+private:
+    static void OnSignal(int aSignal);
+
+private:
+    RunLoopParameters                mRunLoopParameters;
+    HLX::Proxy::Controller           mHLXProxyController;
+    Status                           mStatus;
+};
+
+HLXProxy :: HLXProxy(void) :
+    ControllerDelegate(),
+    mRunLoopParameters(),
+    mHLXProxyController(),
+    mStatus(kStatus_Success)
+{
+    return;
+}
+
+HLXProxy :: ~HLXProxy(void)
+{
+    return;
+}
+
+Status HLXProxy :: Init(void)
+{
+    Status lRetval = kStatus_Success;
+
+    lRetval = mRunLoopParameters.Init(CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = mHLXProxyController.Init(mRunLoopParameters);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = mHLXProxyController.SetDelegate(this, nullptr);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status HLXProxy :: Start(void)
+{
+    Status lRetval = kStatus_Success;
+
+    lRetval = mHLXProxyController.Connect();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = mHLXProxyController.Listen();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
+Status HLXProxy :: Stop(void)
+{
+    return (Stop(kStatus_Success));
+}
+
+Status HLXProxy :: Stop(const Status &aStatus)
+{
+    Status lStatus = kStatus_Success;
+
+    SetStatus(aStatus);
+
+    CFRunLoopStop(mRunLoopParameters.GetRunLoop());
+
+    return (lStatus);
+}
+
+const HLX::Proxy::Controller &HLXProxy :: GetController(void) const
+{
+    return (mHLXProxyController);
+}
+
+HLX::Proxy::Controller &HLXProxy :: GetController(void)
+{
+    return (mHLXProxyController);
+}
+
+Status HLXProxy :: GetStatus(void) const
+{
+    return (mStatus);
+}
+
+void HLXProxy :: SetStatus(const Status &aStatus)
+{
+    mStatus = aStatus;
+}
+
+
+void HLXProxy :: OnSignal(int aSignal)
+{
+    Log::Debug().Write("%s: caught signal %d\n", __func__, aSignal);
+}
 
 static void OnSignal(int aSignal)
 {
     DeclareScopedFunctionTracer(lTracer);
 
     Log::Debug().Write("%s: caught signal %d\n", __func__, aSignal);
+
+    if (sHLXProxy != nullptr)
+    {
+        sHLXProxy->Stop(-errno);
+    }
 }
 
 static void SetSignalHandler(int aSignal, void (*aHandler)(int aSignal))
 {
     struct sigaction sa;
-    int signals[] = { aSignal };
+    int              signals[] = { aSignal };
 
     memset(&sa, 0, sizeof(sa));
     sa.sa_handler = aHandler;
@@ -297,6 +437,30 @@ DecodeOptions(const char *inProgram,
             PrintUsage(inProgram, EXIT_SUCCESS);
             break;
 
+        case OPT_IPV4_ONLY:
+            if (sOptFlags & kOptIPv6Only)
+            {
+                Log::Error().Write("The '-6' and '-4' options are mutually-exclusive. Please choose one or the other.\n");
+                error++;
+            }
+            else
+            {
+                sOptFlags |= kOptIPv4Only;
+            }
+            break;
+
+        case OPT_IPV6_ONLY:
+            if (sOptFlags & kOptIPv4Only)
+            {
+                Log::Error().Write("The '-4' and '-6' options are mutually-exclusive. Please choose one or the other.\n");
+                error++;
+            }
+            else
+            {
+                sOptFlags |= kOptIPv6Only;
+            }
+            break;
+
         case OPT_QUIET:
             sOptFlags |= kOptQuiet;
             break;
@@ -460,7 +624,9 @@ FilterSyslog(Log::Logger &inLogger)
 int main(int argc, char * const argv[])
 {
     DeclareScopedFunctionTracer(lTracer);
-    size_t n = 0;
+    HLXProxy     lHLXProxy;
+    Status       lStatus;
+    size_t       n = 0;
 
     // Cache the program invocation name for later use
 
@@ -488,5 +654,23 @@ int main(int argc, char * const argv[])
         FilterSyslog(Log::Info());
     }
 
-    return((true) ? EXIT_SUCCESS : EXIT_FAILURE);
+    {
+        const bool lUseIPv4 = (((sOptFlags & kOptIPv6Only) == kOptIPv6Only) ? false : true);
+        const bool lUseIPv6 = (((sOptFlags & kOptIPv4Only) == kOptIPv4Only) ? false : true);
+
+        sHLXProxy = &lHLXProxy;
+
+        lStatus = lHLXProxy.Init();
+        nlREQUIRE_SUCCESS_ACTION(lStatus, done, lHLXProxy.SetStatus(lStatus));
+
+        lStatus = lHLXProxy.Start();
+        nlREQUIRE_SUCCESS_ACTION(lStatus, done, lHLXProxy.SetStatus(lStatus));
+
+        Log::Debug().Write("Proxy started with status %d\n", lStatus);
+    }
+
+    CFRunLoopRun();
+
+ done:
+    return((lHLXProxy.GetStatus() == 0) ? EXIT_SUCCESS : EXIT_FAILURE);
 }
