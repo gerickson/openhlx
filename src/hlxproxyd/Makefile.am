@@ -17,11 +17,16 @@
 
 #
 #    Description:
-#      This file is the GNU automake template for a future HLX
-#      proxy program executable.
+#      This file is the GNU automake template for a HLX proxy
+#      program executable.
 #
 
 include $(abs_top_nlbuild_autotools_dir)/automake/pre.am
+
+noinst_HEADERS                                                             = \
+    HLXProxyController.hpp                                                   \
+    HLXProxyControllerDelegate.hpp                                           \
+    $(NULL)
 
 bin_PROGRAMS                                                               = \
     hlxproxyd                                                                \
@@ -52,6 +57,7 @@ hlxproxyd_LDFLAGS                                                          = \
     $(NULL)
 
 hlxproxyd_SOURCES                                                          = \
+    HLXProxyController.cpp                                                   \
     hlxproxyd.cpp                                                            \
     $(NULL)
 
