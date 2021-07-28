@@ -32,13 +32,13 @@
 
 #include <CoreFoundation/CFRunLoop.h>
 
+#include <OpenHLX/Common/Errors.hpp>
+#include <OpenHLX/Common/RunLoopParameters.hpp>
+
 #include <CommandManager.hpp>
 #include <CommandManagerDelegate.hpp>
 #include <ConnectionManagerDelegate.hpp>
 #include <ConnectionManager.hpp>
-#include <HLXServerControllerDelegate.hpp>
-#include <OpenHLX/Common/Errors.hpp>
-
 #include <ConfigurationController.hpp>
 #include <ConfigurationControllerDelegate.hpp>
 #include <EqualizerPresetsController.hpp>
@@ -46,6 +46,7 @@
 #include <FrontPanelController.hpp>
 #include <GroupsController.hpp>
 #include <GroupsControllerDelegate.hpp>
+#include <HLXServerControllerDelegate.hpp>
 #include <InfraredController.hpp>
 #include <NetworkController.hpp>
 #include <SourcesController.hpp>
@@ -53,13 +54,6 @@
 
 namespace HLX
 {
-
-namespace Common
-{
-
-    class RunLoopParameters;
-
-}; // namespace Common
 
 namespace Server
 {
