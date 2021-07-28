@@ -1,5 +1,5 @@
 /*
- *    Copyright (c) 2018-2020 Grant Erickson
+ *    Copyright (c) 2018-2021 Grant Erickson
  *    All rights reserved.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -517,19 +517,19 @@ Client :: ~Client(void)
 
 Status Client :: Init(void)
 {
-    Status lStatus = kStatus_Success;
+    Status lRetval = kStatus_Success;
 
-    lStatus = mRunLoopParameters.Init(CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
-    nlREQUIRE_SUCCESS(lStatus, done);
+    lRetval = mRunLoopParameters.Init(CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
-    lStatus = mHLXClientController.Init(mRunLoopParameters);
-    nlREQUIRE_SUCCESS(lStatus, done);
+    lRetval = mHLXClientController.Init(mRunLoopParameters);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
-    lStatus = mHLXClientController.SetDelegate(this);
-    nlREQUIRE_SUCCESS(lStatus, done);
+    lRetval = mHLXClientController.SetDelegate(this);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
  done:
-    return (lStatus);
+    return (lRetval);
 }
 
 static ConnectionManager::Versions
