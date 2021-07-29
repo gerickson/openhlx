@@ -28,6 +28,9 @@
 
 #include <vector>
 
+#include <CoreFoundation/CFSocket.h>
+#include <CoreFoundation/CFURL.h>
+
 #include <OpenHLX/Common/ConnectionBuffer.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/HostURLAddress.hpp>
@@ -35,8 +38,6 @@
 #include <OpenHLX/Common/RunLoopParameters.hpp>
 #include <OpenHLX/Common/SocketAddress.hpp>
 
-#include <CoreFoundation/CFSocket.h>
-#include <CoreFoundation/CFURL.h>
 
 namespace HLX
 {

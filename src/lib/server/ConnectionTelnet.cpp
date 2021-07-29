@@ -41,10 +41,10 @@
 
 #include <LogUtilities/LogUtilities.hpp>
 
+#include <OpenHLX/Common/ConnectionBuffer.hpp>
+#include <OpenHLX/Common/SocketAddress.hpp>
+#include <OpenHLX/Common/Timeout.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
-#include <ConnectionBuffer.hpp>
-#include <SocketAddress.hpp>
-#include <Timeout.hpp>
 
 
 using namespace HLX::Common;

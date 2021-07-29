@@ -31,10 +31,6 @@
 
 #include <sys/socket.h>
 
-#include <ListenerBasisAcceptDelegate.hpp>
-#include <ListenerBasisDelegate.hpp>
-#include <OpenHLX/Common/Errors.hpp>
-
 #include <CoreFoundation/CFSocket.h>
 
 #include <CFUtilities/CFString.hpp>
@@ -42,6 +38,9 @@
 
 #include <LogUtilities/LogUtilities.hpp>
 
+#include <OpenHLX/Common/Errors.hpp>
+#include <OpenHLX/Server/ListenerBasisAcceptDelegate.hpp>
+#include <OpenHLX/Server/ListenerBasisDelegate.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
 
 

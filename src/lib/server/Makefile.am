@@ -44,6 +44,17 @@ libopenhlx_server_a_includedir                              = \
 # Public library headers to distribute and install.
 
 libopenhlx_server_a_include_HEADERS                         = \
+    ConnectionBasis.hpp                                       \
+    ConnectionBasisDelegate.hpp                               \
+    ConnectionFactory.hpp                                     \
+    ConnectionManager.hpp                                     \
+    ConnectionManagerDelegate.hpp                             \
+    ConnectionTelnet.hpp                                      \
+    ListenerBasis.hpp                                         \
+    ListenerBasisDelegate.hpp                                 \
+    ListenerBasisAcceptDelegate.hpp                           \
+    ListenerFactory.hpp                                       \
+    ListenerTelnet.hpp                                        \
     $(NULL)
 
 libopenhlx_server_a_CPPFLAGS                                = \
@@ -55,6 +66,14 @@ libopenhlx_server_a_CPPFLAGS                                = \
     $(NULL)
 
 libopenhlx_server_a_SOURCES                                 = \
+    ConnectionBasis.cpp                                       \
+    ConnectionFactory.cpp                                     \
+    ConnectionManager.cpp                                     \
+    ConnectionTelnet.cpp                                      \
+    ListenerBasis.cpp                                         \
+    ListenerBasisDelegate.cpp                                 \
+    ListenerFactory.cpp                                       \
+    ListenerTelnet.cpp                                        \
     $(NULL)
 
 include $(abs_top_nlbuild_autotools_dir)/automake/post.am

@@ -27,7 +27,8 @@
 #define HLXSERVERLISTENERBASISACCEPTDELEGATE_HPP
 
 #include <OpenHLX/Common/Errors.hpp>
-#include <SocketAddress.hpp>
+#include <OpenHLX/Common/SocketAddress.hpp>
+
 
 namespace HLX
 {

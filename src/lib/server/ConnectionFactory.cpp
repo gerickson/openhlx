@@ -27,9 +27,9 @@
 #include <CFUtilities/CFString.hpp>
 #include <LogUtilities/LogUtilities.hpp>
 
-#include <OpenHLX/Utilities/Assert.hpp>
 #include <OpenHLX/Common/Errors.hpp>
-#include <ConnectionTelnet.hpp>
+#include <OpenHLX/Server/ConnectionTelnet.hpp>
+#include <OpenHLX/Utilities/Assert.hpp>
 
 
 using namespace HLX::Common;

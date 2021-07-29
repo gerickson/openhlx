@@ -26,11 +26,12 @@
 #ifndef HLXSERVERCONNECTIONBASISDELEGATE_HPP
 #define HLXSERVERCONNECTIONBASISDELEGATE_HPP
 
-#include <ConnectionBuffer.hpp>
-#include <OpenHLX/Common/Errors.hpp>
-#include <Timeout.hpp>
-
 #include <CoreFoundation/CFURL.h>
+
+#include <OpenHLX/Common/ConnectionBuffer.hpp>
+#include <OpenHLX/Common/Errors.hpp>
+#include <OpenHLX/Common/Timeout.hpp>
+
 
 namespace HLX
 {
@@ -51,8 +52,8 @@ class ConnectionBasis;
 class ConnectionBasisDelegate
 {
 public:
-    ConnectionBasisDelegate(void);
-    ~ConnectionBasisDelegate(void);
+    ConnectionBasisDelegate(void) = default;
+    ~ConnectionBasisDelegate(void) = default;
 
     // Accept
 
