@@ -34,6 +34,7 @@ OpenHLXHeaderLinks                := \
     $(OpenHLXHeaderDir)/Client       \
     $(OpenHLXHeaderDir)/Common       \
     $(OpenHLXHeaderDir)/Model        \
+    $(OpenHLXHeaderDir)/Server       \
     $(OpenHLXHeaderDir)/Utilities    \
     $(NULL)
 
@@ -72,6 +73,9 @@ $(OpenHLXHeaderDir)/Common: $(abs_top_srcdir)/src/lib/common | $(OpenHLXHeaderDi
 	$(call nl-create-link)
 
 $(OpenHLXHeaderDir)/Model: $(abs_top_srcdir)/src/lib/model | $(OpenHLXHeaderDir)
+	$(call nl-create-link)
+
+$(OpenHLXHeaderDir)/Server: $(abs_top_srcdir)/src/lib/server | $(OpenHLXHeaderDir)
 	$(call nl-create-link)
 
 $(OpenHLXHeaderDir)/Utilities: $(abs_top_srcdir)/src/lib/utilities | $(OpenHLXHeaderDir)
