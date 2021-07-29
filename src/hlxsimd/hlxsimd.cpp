@@ -64,6 +64,8 @@
 #include <OpenHLX/Common/RunLoopParameters.hpp>
 #include <OpenHLX/Common/Version.hpp>
 #include <OpenHLX/Model/IdentifierModel.hpp>
+#include <OpenHLX/Server/ConnectionBasisDelegate.hpp>
+#include <OpenHLX/Server/ConnectionTelnet.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
 #include <OpenHLX/Utilities/ElementsOf.hpp>
 #include <OpenHLX/Utilities/Utilities.hpp>
@@ -71,8 +73,6 @@
 #include <CommandManager.hpp>
 #include <CommandRegularExpression.hpp>
 #include <CommandRequestBasis.hpp>
-#include <ConnectionBasisDelegate.hpp>
-#include <ConnectionTelnet.hpp>
 #include <HLXServerController.hpp>
 #include <SourcesControllerCommands.hpp>
 

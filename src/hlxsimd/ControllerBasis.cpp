@@ -27,14 +27,14 @@
 
 #include <errno.h>
 
-#include <CommandManager.hpp>
-#include <ConnectionManager.hpp>
-#include <ControllerBasisDelegate.hpp>
-
 #include <LogUtilities/LogUtilities.hpp>
 
-#include <OpenHLX/Utilities/Assert.hpp>
 #include <OpenHLX/Common/Errors.hpp>
+#include <OpenHLX/Server/ConnectionManager.hpp>
+#include <OpenHLX/Utilities/Assert.hpp>
+
+#include <CommandManager.hpp>
+#include <ControllerBasisDelegate.hpp>
 
 
 using namespace HLX::Common;
