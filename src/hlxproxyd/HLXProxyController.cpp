@@ -41,10 +41,14 @@ namespace Proxy
 {
 
 Controller :: Controller(void) :
+    Client::ConnectionManagerDelegate(),
+    Client::CommandManagerDelegate(),
+    mClientConnectionManager(),
+    mClientCommandManager(),
     mDelegate(nullptr),
     mDelegateContext(nullptr)
 {
-    return;
+    DeclareScopedFunctionTracer(lTracer);
 }
 
 /**
@@ -82,9 +86,21 @@ Controller :: Init(const RunLoopParameters &aRunLoopParameters)
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
+    lRetval = mClientConnectionManager.Init(aRunLoopParameters);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = mClientConnectionManager.AddDelegate(this);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = mClientCommandManager.Init(mClientConnectionManager, aRunLoopParameters);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = mClientCommandManager.SetDelegate(this);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
     mRunLoopParameters = aRunLoopParameters;
 
+done:
     return (lRetval);
 }
 
@@ -163,6 +179,8 @@ Controller :: Connect(const char *aMaybeURL, const Timeout &aTimeout)
 {
     Status lRetval = kStatus_Success;
 
+    lRetval = mClientConnectionManager.Connect(aMaybeURL, aTimeout);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
  done:
     return (lRetval);
@@ -210,6 +228,8 @@ Controller :: Connect(const char *aMaybeURL,
 {
     Status lRetval = kStatus_Success;
 
+    lRetval = mClientConnectionManager.Connect(aMaybeURL, aVersions, aTimeout);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
  done:
     return (lRetval);
@@ -279,6 +299,312 @@ Controller :: SetDelegate(ControllerDelegate *aDelegate, void *aContext)
 
  done:
     return (lRetval);
+}
+
+// MARK: Server-facing Client Command Manager Delegate Methods
+
+// MARK: Server-facing Client Connection Manager Delegate Methods
+
+// MARK: Server-facing Client Connection Manager Connect Delegate Methods
+
+/**
+ *  @brief
+ *    Delegation from the connection manager that a connection to a
+ *    peer server will connect.
+ *
+ *  @param[in]  aConnectionManager  A reference to the connection
+ *                                  manager that issued the delegation.
+ *  @param[in]  aURLRef             The URL associated with the peer
+ *                                  server.
+ *  @param[in]  aTimeout            The timeout for the connection.
+ *
+ */
+void
+Controller :: ConnectionManagerWillConnect(Client::ConnectionManager &aConnectionManager, CFURLRef aURLRef, const Timeout &aTimeout)
+{
+    (void)aConnectionManager;
+
+    if (mDelegate != nullptr)
+    {
+        mDelegate->ControllerWillConnect(*this, aURLRef, aTimeout);
+    }
+}
+
+/**
+ *  @brief
+ *    Delegation from the connection manager that a connection to a
+ *    peer server is connecting.
+ *
+ *  @param[in]  aConnectionManager  A reference to the connection
+ *                                  manager that issued the delegation.
+ *  @param[in]  aURLRef             The URL associated with the peer
+ *                                  server.
+ *  @param[in]  aTimeout            The timeout for the connection.
+ *
+ */
+void
+Controller :: ConnectionManagerIsConnecting(Client::ConnectionManager &aConnectionManager, CFURLRef aURLRef, const Timeout &aTimeout)
+{
+    (void)aConnectionManager;
+
+    if (mDelegate != nullptr)
+    {
+        mDelegate->ControllerIsConnecting(*this, aURLRef, aTimeout);
+    }
+}
+
+/**
+ *  @brief
+ *    Delegation from the connection manager that a connection to a
+ *    peer server did connect.
+ *
+ *  @param[in]  aConnectionManager  A reference to the connection
+ *                                  manager that issued the delegation.
+ *  @param[in]  aURLRef             The URL associated with the peer
+ *                                  server.
+ *
+ */
+void
+Controller :: ConnectionManagerDidConnect(Client::ConnectionManager &aConnectionManager, CFURLRef aURLRef)
+{
+    (void)aConnectionManager;
+
+    if (mDelegate != nullptr)
+    {
+        mDelegate->ControllerDidConnect(*this, aURLRef);
+    }
+}
+
+/**
+ *  @brief
+ *    Delegation from the connection manager that a connection to a
+ *    peer server did not connect.
+ *
+ *  @param[in]  aConnectionManager  A reference to the connection
+ *                                  manager that issued the delegation.
+ *  @param[in]  aURLRef             The URL associated with the peer
+ *                                  server.
+ *  @param[in]  aError              An immutable reference to the error
+ *                                  associated with the failed connection.
+ *
+ */
+void
+Controller :: ConnectionManagerDidNotConnect(Client::ConnectionManager &aConnectionManager, CFURLRef aURLRef, const Common::Error &aError)
+{
+    (void)aConnectionManager;
+
+    if (mDelegate != nullptr)
+    {
+        mDelegate->ControllerDidNotConnect(*this, aURLRef, aError);
+    }
+}
+
+// MARK: Common Connection Manager Delegate Methods
+
+// MARK: Common Connection Manager Resolve Delegate Methods
+
+/**
+ *  @brief
+ *    Delegation from the connection manager that a host name will
+ *    resolve.
+ *
+ *  @param[in]  aConnectionManager  A reference to the connection
+ *                                  manager that issued the delegation.
+ *  @param[in]  aHost               A pointer to a null-terminated C
+ *                                  string containing the host
+ *                                  name that will resolve.
+ *
+ */
+void
+Controller :: ConnectionManagerWillResolve(Common::ConnectionManagerBasis &aConnectionManager, const char *aHost)
+{
+    (void)aConnectionManager;
+
+    if (mDelegate != nullptr)
+    {
+        mDelegate->ControllerWillResolve(*this, aHost);
+    }
+}
+
+/**
+ *  @brief
+ *    Delegation from the connection manager that a host name is
+ *    resolving.
+ *
+ *  @param[in]  aConnectionManager  A reference to the connection
+ *                                  manager that issued the delegation.
+ *  @param[in]  aHost               A pointer to a null-terminated C
+ *                                  string containing the host
+ *                                  name that is resolving.
+ *
+ */
+void
+Controller :: ConnectionManagerIsResolving(Common::ConnectionManagerBasis &aConnectionManager, const char *aHost)
+{
+    (void)aConnectionManager;
+
+    if (mDelegate != nullptr)
+    {
+        mDelegate->ControllerIsResolving(*this, aHost);
+    }
+}
+
+/**
+ *  @brief
+ *    Delegation from the connection manager that a host name has
+ *    resolved to an IP address.
+ *
+ *  @note
+ *    This delegation may be called more than once for a
+ *    resolution, once for each IP address the host name resolves
+ *    to.
+ *
+ *  @param[in]  aConnectionManager  A reference to the connection
+ *                                  manager that issued the delegation.
+ *  @param[in]  aHost               A pointer to a null-terminated C
+ *                                  string containing the host
+ *                                  name that did resolve.
+ *  @param[in]  aIPAddress          An immutable reference to an IP
+ *                                  address that the host name
+ *                                  resolved to.
+ *
+ */
+void
+Controller :: ConnectionManagerDidResolve(Common::ConnectionManagerBasis &aConnectionManager, const char *aHost, const Common::IPAddress &aIPAddress)
+{
+    (void)aConnectionManager;
+
+    if (mDelegate != nullptr)
+    {
+        mDelegate->ControllerDidResolve(*this, aHost, aIPAddress);
+    }
+}
+
+/**
+ *  @brief
+ *    Delegation from the connection manager that a host name did
+ *    not resolve.
+ *
+ *  @param[in]  aConnectionManager  A reference to the connection
+ *                                  manager that issued the delegation.
+ *  @param[in]  aHost               A pointer to a null-terminated C
+ *                                  string containing the host
+ *                                  name that did not resolve.
+ *  @param[in]  aError              An immutable reference to the error
+ *                                  associated with the failed
+ *                                  resolution.
+ *
+ */
+void
+Controller :: ConnectionManagerDidNotResolve(Common::ConnectionManagerBasis &aConnectionManager, const char *aHost, const Common::Error &aError)
+{
+    (void)aConnectionManager;
+
+    if (mDelegate != nullptr)
+    {
+        mDelegate->ControllerDidNotResolve(*this, aHost, aError);
+    }
+}
+
+// MARK: Common Connection Manager Disconnect Delegate Methods
+
+/**
+ *  @brief
+ *    Delegation from the connection manager that a connection to a
+ *    peer server will disconnect.
+ *
+ *  @param[in]  aConnectionManager  A reference to the connection
+ *                                  manager that issued the delegation.
+ *  @param[in]  aURLRef             The URL associated with the peer
+ *                                  server.
+ *
+ */
+void
+Controller :: ConnectionManagerWillDisconnect(Common::ConnectionManagerBasis &aConnectionManager, CFURLRef aURLRef)
+{
+    (void)aConnectionManager;
+
+    if (mDelegate != nullptr)
+    {
+        mDelegate->ControllerWillDisconnect(*this, aURLRef);
+    }
+}
+
+/**
+ *  @brief
+ *    Delegation from the connection manager that a connection to a
+ *    peer server did disconnect.
+ *
+ *  @param[in]  aConnectionManager  A reference to the connection
+ *                                  manager that issued the delegation.
+ *  @param[in]  aURLRef             The URL associated with the peer
+ *                                  server.
+ *  @param[in]  aError              An immutable reference to the error
+ *                                  associated with the disconnection.
+ *
+ */
+void
+Controller :: ConnectionManagerDidDisconnect(Common::ConnectionManagerBasis &aConnectionManager, CFURLRef aURLRef, const Common::Error &aError)
+{
+    (void)aConnectionManager;
+
+    if (mDelegate != nullptr)
+    {
+        mDelegate->ControllerDidDisconnect(*this, aURLRef, aError);
+    }
+}
+
+/**
+ *  @brief
+ *    Delegation from the connection manager that a connection to a
+ *    peer server did not disconnect.
+ *
+ *  @param[in]  aConnectionManager  A reference to the connection
+ *                                  manager that issued the delegation.
+ *  @param[in]  aURLRef             The URL associated with the peer
+ *                                  server.
+ *  @param[in]  aError              An immutable reference to the error
+ *                                  associated with the failed
+ *                                  disconnection.
+ *
+ */
+void
+Controller :: ConnectionManagerDidNotDisconnect(Common::ConnectionManagerBasis &aConnectionManager, CFURLRef aURLRef, const Common::Error &aError)
+{
+    (void)aConnectionManager;
+
+    if (mDelegate != nullptr)
+    {
+        mDelegate->ControllerDidNotDisconnect(*this, aURLRef, aError);
+    }
+}
+
+// MARK: Common Connection Manager Error Delegate Method
+
+/**
+ *  @brief
+ *    Delegation from the connection manager that a connection to a
+ *    peer server experienced an error.
+ *
+ *  @note
+ *    This delegation may occur along with other delegations with
+ *    respect to the same underlying event or cause.
+ *
+ *  @param[in]  aConnectionManager  A reference to the connection
+ *                                  manager that issued the delegation.
+ *  @param[in]  aError              An immutable reference to the error
+ *                                  associated with the event.
+ *
+ */
+void
+Controller :: ConnectionManagerError(Common::ConnectionManagerBasis &aConnectionManager, const Common::Error &aError)
+{
+    (void)aConnectionManager;
+
+    if (mDelegate != nullptr)
+    {
+        mDelegate->ControllerError(*this, aError);
+    }
 }
 
 }; // namespace Proxy
