@@ -54,6 +54,7 @@
 
 
 using namespace HLX;
+using namespace HLX::Client;
 using namespace HLX::Common;
 using namespace HLX::Proxy;
 using namespace HLX::Utilities;
@@ -173,6 +174,42 @@ public:
     void SetStatus(const Status &aStatus);
 
 private:
+    // Resolve
+
+    void ControllerWillResolve(Controller &aController, const char *aHost) final;
+    void ControllerIsResolving(Controller &aController, const char *aHost) final;
+    void ControllerDidResolve(Controller &aController, const char *aHost, const IPAddress &aIPAddress) final;
+    void ControllerDidNotResolve(Controller &aController, const char *aHost, const Error &aError) final;
+
+    // Server-facing Client Connect
+
+    void ControllerWillConnect(Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout) final;
+    void ControllerIsConnecting(Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout) final;
+    void ControllerDidConnect(Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidNotConnect(Controller &aController, CFURLRef aURLRef, const Error &aError) final;
+
+    // Disconnect
+
+    void ControllerWillDisconnect(Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidDisconnect(Controller &aController, CFURLRef aURLRef, const Error &aError) final;
+    void ControllerDidNotDisconnect(Controller &aController, CFURLRef aURLRef, const Error &aError) final;
+
+    // Server-facing Client Refresh / Reload
+
+    void ControllerWillRefresh(Controller &aController) final;
+    void ControllerIsRefreshing(Controller &aController, const uint8_t &aPercentComplete) final;
+    void ControllerDidRefresh(Controller &aController) final;
+    void ControllerDidNotRefresh(Controller &aController, const Error &aError) final;
+
+    // Server-facing Client State Change
+
+    void ControllerStateDidChange(Controller &aController, const StateChange::NotificationBasis &aStateChangeNotification) final;
+
+    // Error
+
+    void ControllerError(Controller &aController, const Error &aError) final;
+
+private:
     static void OnSignal(int aSignal);
 
 private:
@@ -287,6 +324,189 @@ void HLXProxy :: SetStatus(const Status &aStatus)
     mStatus = aStatus;
 }
 
+// Controller Delegate Methods
+
+// Resolve
+
+void HLXProxy :: ControllerWillResolve(Controller &aController, const char *aHost)
+{
+    (void)aController;
+
+    Log::Info().Write("Will resolve \"%s\".\n", aHost);
+}
+
+void HLXProxy :: ControllerIsResolving(Controller &aController, const char *aHost)
+{
+    (void)aController;
+
+    Log::Info().Write("Is resolving \"%s\".\n", aHost);
+}
+
+void HLXProxy :: ControllerDidResolve(Controller &aController, const char *aHost, const IPAddress &aIPAddress)
+{
+    char   lBuffer[INET6_ADDRSTRLEN];
+    Status lStatus;
+
+    (void)aController;
+
+    lStatus = aIPAddress.ToString(lBuffer, sizeof (lBuffer));
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    Log::Info().Write("Did resolve \"%s\" to '%s'.\n", aHost, lBuffer);
+
+ done:
+    return;
+}
+
+void HLXProxy :: ControllerDidNotResolve(Controller &aController, const char *aHost, const Error &aError)
+{
+    (void)aController;
+
+    Log::Error().Write("Did not resolve \"%s\": %d (%s).\n", aHost, aError, strerror(-aError));
+}
+
+// Server-facing Client Connect
+
+void HLXProxy :: ControllerWillConnect(Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout)
+{
+    (void)aController;
+
+    Log::Info().Write("Will connect to %s with %u ms timeout.\n", CFString(CFURLGetString(aURLRef)).GetCString(), aTimeout.GetMilliseconds());
+}
+
+void HLXProxy :: ControllerIsConnecting(Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout)
+{
+    (void)aController;
+
+    Log::Info().Write("Connecting to %s with %u ms timeout.\n", CFString(CFURLGetString(aURLRef)).GetCString(), aTimeout.GetMilliseconds());
+}
+
+void HLXProxy :: ControllerDidConnect(Controller &aController, CFURLRef aURLRef)
+{
+    Status lStatus;
+
+    (void)aController;
+
+    Log::Info().Write("Connected to %s.\n", CFString(CFURLGetString(aURLRef)).GetCString());
+
+ done:
+    return;
+}
+
+void HLXProxy :: ControllerDidNotConnect(Controller &aController, CFURLRef aURLRef, const Error &aError)
+{
+    (void)aController;
+
+    Log::Error().Write("Did not connect to %s: %d (%s).\n", CFString(CFURLGetString(aURLRef)).GetCString(), aError, strerror(-aError));
+
+    Stop(aError);
+}
+
+// Disconnect
+
+void HLXProxy :: ControllerWillDisconnect(Controller &aController, CFURLRef aURLRef)
+{
+    (void)aController;
+
+    Log::Info().Write("Will disconnect from %s.\n", CFString(CFURLGetString(aURLRef)).GetCString());
+}
+
+void HLXProxy :: ControllerDidDisconnect(Controller &aController, CFURLRef aURLRef, const Error &aError)
+{
+    Status lStatus;
+
+    if (aError >= kStatus_Success)
+    {
+        Log::Info().Write("Disconnected from %s.\n", CFString(CFURLGetString(aURLRef)).GetCString());
+    }
+    else
+    {
+        Log::Info().Write("Disconnected from %s: %d (%s).\n", CFString(CFURLGetString(aURLRef)).GetCString(), aError, strerror(-aError));
+    }
+
+    // Only call stop if we have non-error status; otherwise a
+    // DidNot... or Error delegation already called it.
+
+    if (aError != kStatus_Success)
+    {
+        Stop(aError);
+    }
+
+ done:
+    return;
+}
+
+void HLXProxy :: ControllerDidNotDisconnect(Controller &aController, CFURLRef aURLRef, const Error &aError)
+{
+    (void)aController;
+
+    Log::Error().Write("Did not disconnect from %s: %d.\n", CFString(CFURLGetString(aURLRef)).GetCString(), aError);
+}
+
+// Server-facing Client Refresh / Reload
+
+void HLXProxy :: ControllerWillRefresh(Controller &aController)
+{
+    (void)aController;
+
+    Log::Info().Write("Waiting for client data...\n");
+
+    return;
+}
+
+void HLXProxy :: ControllerIsRefreshing(Controller &aController, const uint8_t &aPercentComplete)
+{
+    (void)aController;
+
+    Log::Info().Write("%u%% of client data received.\n", aPercentComplete);
+}
+
+void HLXProxy :: ControllerDidRefresh(Controller &aController)
+{
+    Status lStatus;
+
+    (void)aController;
+
+    Log::Info().Write("Client data received.\n");
+
+    return;
+}
+
+void HLXProxy :: ControllerDidNotRefresh(Controller &aController, const Error &aError)
+{
+    (void)aController;
+
+    Stop(aError);
+}
+
+// Server-facing Client State Change
+
+void HLXProxy :: ControllerStateDidChange(Controller &aController, const Client::StateChange::NotificationBasis &aStateChangeNotification)
+{
+    const StateChange::Type lType = aStateChangeNotification.GetType();
+
+    (void)aController;
+
+    switch (lType)
+    {
+    default:
+        Log::Error().Write("Unhandled state change notification type %d\n", lType);
+        break;
+    }
+
+    return;
+}
+
+// Error
+
+void HLXProxy :: ControllerError(Controller &aController, const Error &aError)
+{
+    (void)aController;
+
+    Log::Error().Write("Error: %d (%s).\n", aError, strerror(-aError));
+
+    Stop(aError);
+}
 
 void HLXProxy :: OnSignal(int aSignal)
 {
