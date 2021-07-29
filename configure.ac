@@ -927,6 +927,7 @@ src/lib/common/Makefile
 src/lib/common/tests/Makefile
 src/lib/model/Makefile
 src/lib/model/tests/Makefile
+src/lib/server/Makefile
 src/lib/utilities/Makefile
 src/lib/utilities/tests/Makefile
 tests/Makefile
