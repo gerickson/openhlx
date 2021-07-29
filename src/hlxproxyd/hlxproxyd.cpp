@@ -43,6 +43,7 @@
 #include <LogUtilities/LogUtilities.hpp>
 #include <NuovationsUtilities/GenerateShortOptions.hpp>
 
+#include <OpenHLX/Common/ConnectionManagerBasis.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/RunLoopParameters.hpp>
 #include <OpenHLX/Common/Version.hpp>
@@ -65,10 +66,12 @@ using namespace std;
 
 #define OPT_BASE                     0x00001000
 
+#define OPT_CONNECT                  'c'
 #define OPT_DEBUG                    'd'
 #define OPT_HELP                     'h'
 #define OPT_IPV4_ONLY                '4'
 #define OPT_IPV6_ONLY                '6'
+#define OPT_LISTEN                   'l'
 #define OPT_QUIET                    'q'
 #define OPT_SYSLOG                   's'
 #define OPT_VERBOSE                  'v'
@@ -98,13 +101,18 @@ static Log::Level           sVerbose             = 0;
 
 static const char *         sProgram             = nullptr;
 
+static const char *         sConnectMaybeURL     = nullptr;
+static const char *         sListenMaybeURL      = nullptr;
+
 static HLXProxy *           sHLXProxy            = nullptr;
 
 static const struct option  sOptions[] = {
+    { "connect",                 required_argument,  nullptr,   OPT_CONNECT                 },
     { "debug",                   optional_argument,  nullptr,   OPT_DEBUG                   },
     { "help",                    no_argument,        nullptr,   OPT_HELP                    },
     { "ipv4-only",               no_argument,        nullptr,   OPT_IPV4_ONLY               },
     { "ipv6-only",               no_argument,        nullptr,   OPT_IPV6_ONLY               },
+    { "listen",                  optional_argument,  nullptr,   OPT_LISTEN                  },
     { "quiet",                   no_argument,        nullptr,   OPT_QUIET                   },
     { "verbose",                 optional_argument,  nullptr,   OPT_VERBOSE                 },
     { "version",                 no_argument,        nullptr,   OPT_VERSION                 },
@@ -136,6 +144,8 @@ static const char * const   sLongUsageString =
 "\n"
 "  -4, --ipv4-only             Force hlxproxyd to use IPv4 addresses only.\n"
 "  -6, --ipv6-only             Force hlxproxyd to use IPv6 addresses only.\n"
+"  -c, --connect=HOST          TBD.\n"
+"  -l, --listen=HOST           TBD.\n"
 "\n";
 
 class HLXProxy :
@@ -147,7 +157,13 @@ public:
 
     Status Init(void);
 
-    Status Start(void);
+    Status Start(const char *aConnectMaybeURL,
+                 const bool &aUseIPv6,
+                 const bool &aUseIPv4);
+    Status Start(const char *aConnectMaybeURL,
+                 const char *aListenMaybeURL,
+                 const bool &aUseIPv6,
+                 const bool &aUseIPv4);
     Status Stop(void);
     Status Stop(const Status &aStatus);
 
@@ -196,14 +212,39 @@ Status HLXProxy :: Init(void)
     return (lRetval);
 }
 
-Status HLXProxy :: Start(void)
+Status
+HLXProxy :: Start(const char *aConnectMaybeURL,
+                  const bool &aUseIPv6,
+                  const bool &aUseIPv4)
 {
+    using Common::Utilities::GetVersions;
+
     Status lRetval = kStatus_Success;
 
-    lRetval = mHLXProxyController.Connect();
+    lRetval = mHLXProxyController.Connect(aConnectMaybeURL, GetVersions(aUseIPv4, aUseIPv6));
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mHLXProxyController.Listen();
+    lRetval = mHLXProxyController.Listen(GetVersions(aUseIPv6, aUseIPv4));
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
+Status
+HLXProxy :: Start(const char *aConnectMaybeURL,
+                  const char *aListenMaybeURL,
+                  const bool &aUseIPv6,
+                  const bool &aUseIPv4)
+{
+    using Common::Utilities::GetVersions;
+
+    Status lRetval = kStatus_Success;
+
+    lRetval = mHLXProxyController.Connect(aConnectMaybeURL, GetVersions(aUseIPv6, aUseIPv4));
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = mHLXProxyController.Listen(aListenMaybeURL, GetVersions(aUseIPv6, aUseIPv4));
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -429,6 +470,10 @@ DecodeOptions(const char *inProgram,
 
         switch (c) {
 
+        case OPT_CONNECT:
+            sConnectMaybeURL = optarg;
+            break;
+
         case OPT_DEBUG:
             error += SetLevel(sDebug, optarg);
             break;
@@ -459,6 +504,10 @@ DecodeOptions(const char *inProgram,
             {
                 sOptFlags |= kOptIPv6Only;
             }
+            break;
+
+        case OPT_LISTEN:
+            sListenMaybeURL = optarg;
             break;
 
         case OPT_QUIET:
@@ -505,14 +554,6 @@ DecodeOptions(const char *inProgram,
     // processing actually starts.
 
     optind = 0;
-
-    // At this point, we should have exactly one other argument, the
-    // URL, path, or host and optional port to connect to.
-
-    if (argc != 1) {
-        error++;
-        goto exit;
-    }
 
     // If there were any errors parsing the command line arguments,
     // remind the user of proper invocation semantics and return an
@@ -663,8 +704,16 @@ int main(int argc, char * const argv[])
         lStatus = lHLXProxy.Init();
         nlREQUIRE_SUCCESS_ACTION(lStatus, done, lHLXProxy.SetStatus(lStatus));
 
-        lStatus = lHLXProxy.Start();
-        nlREQUIRE_SUCCESS_ACTION(lStatus, done, lHLXProxy.SetStatus(lStatus));
+        if (sListenMaybeURL != NULL)
+        {
+            lStatus = lHLXProxy.Start(sConnectMaybeURL, sListenMaybeURL, lUseIPv4, lUseIPv6);
+            nlREQUIRE_SUCCESS_ACTION(lStatus, done, lHLXProxy.SetStatus(lStatus));
+        }
+        else
+        {
+            lStatus = lHLXProxy.Start(sConnectMaybeURL, lUseIPv4, lUseIPv6);
+            nlREQUIRE_SUCCESS_ACTION(lStatus, done, lHLXProxy.SetStatus(lStatus));
+        }
 
         Log::Debug().Write("Proxy started with status %d\n", lStatus);
     }
