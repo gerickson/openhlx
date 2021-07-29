@@ -129,6 +129,20 @@ public:
      */
     virtual void ControllerDidNotResolve(Controller &aController, const char *aHost, const Common::Error &aError) = 0;
 
+    // Client-facing Server Listen Delegation Methods
+
+    virtual void ControllerWillListen(Controller &aController, CFURLRef aURLRef) = 0;
+    virtual void ControllerIsListening(Controller &aController, CFURLRef aURLRef) = 0;
+    virtual void ControllerDidListen(Controller &aController, CFURLRef aURLRef) = 0;
+    virtual void ControllerDidNotListen(Controller &aController, CFURLRef aURLRef, const Common::Error &aError) = 0;
+
+    // Client-facing Server Accept Delegation Methods
+
+    virtual void ControllerWillAccept(Controller &aController, CFURLRef aURLRef) = 0;
+    virtual void ControllerIsAccepting(Controller &aController, CFURLRef aURLRef) = 0;
+    virtual void ControllerDidAccept(Controller &aController, CFURLRef aURLRef) = 0;
+    virtual void ControllerDidNotAccept(Controller &aController, CFURLRef aURLRef, const Common::Error &aError) = 0;
+
     // Server-facing Client Connect Delegation Methods
 
     /**

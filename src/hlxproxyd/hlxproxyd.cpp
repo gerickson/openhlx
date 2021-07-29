@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file....
+ *      This file implements a HLX control caching proxy daemon program
+ *      executable.
  *
  */
 
@@ -181,6 +182,20 @@ private:
     void ControllerDidResolve(Controller &aController, const char *aHost, const IPAddress &aIPAddress) final;
     void ControllerDidNotResolve(Controller &aController, const char *aHost, const Error &aError) final;
 
+    // Client-facing Server Listen
+
+    void ControllerWillListen(Controller &aController, CFURLRef aURLRef) final;
+    void ControllerIsListening(Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidListen(Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidNotListen(Controller &aController, CFURLRef aURLRef, const Common::Error &aError) final;
+
+    // Client-facing Server Accept
+
+    void ControllerWillAccept(Controller &aController, CFURLRef aURLRef) final;
+    void ControllerIsAccepting(Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidAccept(Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidNotAccept(Controller &aController, CFURLRef aURLRef, const Error &aError) final;
+
     // Server-facing Client Connect
 
     void ControllerWillConnect(Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout) final;
@@ -209,7 +224,6 @@ private:
 
     void ControllerError(Controller &aController, const Error &aError) final;
 
-private:
     static void OnSignal(int aSignal);
 
 private:
@@ -365,6 +379,66 @@ void HLXProxy :: ControllerDidNotResolve(Controller &aController, const char *aH
     Log::Error().Write("Did not resolve \"%s\": %d (%s).\n", aHost, aError, strerror(-aError));
 }
 
+// Client-facing Server Listen
+
+void HLXProxy :: ControllerWillListen(Controller &aController, CFURLRef aURLRef)
+{
+    (void)aController;
+
+    Log::Info().Write("Will listen at %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
+}
+
+void HLXProxy :: ControllerIsListening(Controller &aController, CFURLRef aURLRef)
+{
+    (void)aController;
+
+    Log::Info().Write("Listening at %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
+}
+
+void HLXProxy :: ControllerDidListen(Controller &aController, CFURLRef aURLRef)
+{
+    (void)aController;
+
+    Log::Info().Write("Listened at %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
+}
+
+void HLXProxy :: ControllerDidNotListen(Controller &aController, CFURLRef aURLRef, const Common::Error &aError)
+{
+    (void)aController;
+
+    Log::Error().Write("Did not listen at %s: %d (%s).\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString(), aError, strerror(-aError));
+}
+
+// Client-facing Server Accept
+
+void HLXProxy :: ControllerWillAccept(Controller &aController, CFURLRef aURLRef)
+{
+    (void)aController;
+
+    Log::Info().Write("Will accept from %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
+}
+
+void HLXProxy :: ControllerIsAccepting(Controller &aController, CFURLRef aURLRef)
+{
+    (void)aController;
+
+    Log::Info().Write("Accepting from %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
+}
+
+void HLXProxy :: ControllerDidAccept(Controller &aController, CFURLRef aURLRef)
+{
+    (void)aController;
+
+    Log::Info().Write("Accepted from %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
+}
+
+void HLXProxy :: ControllerDidNotAccept(Controller &aController, CFURLRef aURLRef, const Error &aError)
+{
+    (void)aController;
+
+    Log::Error().Write("Did not accept from %s: %d (%s).\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString(), aError, strerror(-aError));
+}
+
 // Server-facing Client Connect
 
 void HLXProxy :: ControllerWillConnect(Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout)
@@ -383,8 +457,6 @@ void HLXProxy :: ControllerIsConnecting(Controller &aController, CFURLRef aURLRe
 
 void HLXProxy :: ControllerDidConnect(Controller &aController, CFURLRef aURLRef)
 {
-    Status lStatus;
-
     (void)aController;
 
     Log::Info().Write("Connected to %s.\n", CFString(CFURLGetString(aURLRef)).GetCString());
@@ -413,7 +485,7 @@ void HLXProxy :: ControllerWillDisconnect(Controller &aController, CFURLRef aURL
 
 void HLXProxy :: ControllerDidDisconnect(Controller &aController, CFURLRef aURLRef, const Error &aError)
 {
-    Status lStatus;
+    (void)aController;
 
     if (aError >= kStatus_Success)
     {
@@ -463,8 +535,6 @@ void HLXProxy :: ControllerIsRefreshing(Controller &aController, const uint8_t &
 
 void HLXProxy :: ControllerDidRefresh(Controller &aController)
 {
-    Status lStatus;
-
     (void)aController;
 
     Log::Info().Write("Client data received.\n");
