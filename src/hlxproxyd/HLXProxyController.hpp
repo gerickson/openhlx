@@ -26,8 +26,10 @@
 #ifndef OPENHLXPROXYCONTROLLER_HPP
 #define OPENHLXPROXYCONTROLLER_HPP
 
+#include <OpenHLX/Common/ConnectionManagerBasis.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/RunLoopParameters.hpp>
+#include <OpenHLX/Common/Timeout.hpp>
 
 #include "HLXProxyControllerDelegate.hpp"
 
@@ -57,8 +59,14 @@ public:
 
     Common::Status SetDelegate(ControllerDelegate *aDelegate, void *aContext);
 
-    Common::Status Connect(void);
+    Common::Status Connect(const char *aMaybeURL);
+    Common::Status Connect(const char *aMaybeURL, const Common::Timeout &aTimeout);
+    Common::Status Connect(const char *aMaybeURL, const Common::ConnectionManagerBasis::Versions &aVersions, const Common::Timeout &aTimeout);
+
     Common::Status Listen(void);
+    Common::Status Listen(const Common::ConnectionManagerBasis::Versions &aVersions);
+    Common::Status Listen(const char *aMaybeURL);
+    Common::Status Listen(const char *aMaybeURL, const Common::ConnectionManagerBasis::Versions &aVersions);
 
 private:
     Common::RunLoopParameters       mRunLoopParameters;

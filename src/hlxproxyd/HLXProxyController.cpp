@@ -47,11 +47,35 @@ Controller :: Controller(void) :
     return;
 }
 
+/**
+ *  @brief
+ *    This is the class destructor.
+ *
+ */
 Controller :: ~Controller(void)
 {
     DeclareScopedFunctionTracer(lTracer);
 }
 
+/**
+ *  @brief
+ *    This is a class initializer.
+ *
+ *  This initializes the client controller with the specified run loop
+ *  parameters.
+ *
+ *  @param[in]  aRunLoopParameters  An immutable reference to the run
+ *                                  loop parameters to initialize the
+ *                                  client controller with.
+ *
+ *  @retval  kStatus_Success          If successful.
+ *  @retval  -ENOMEM                  Resources could not be allocated.
+ *  @retval  kStatus_ValueAlreadySet  If the client controller was already
+ *                                    added as a delegate to the
+ *                                    connection manager, command
+ *                                    manager, or child controllers.
+ *
+ */
 Status
 Controller :: Init(const RunLoopParameters &aRunLoopParameters)
 {
@@ -64,13 +88,130 @@ Controller :: Init(const RunLoopParameters &aRunLoopParameters)
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Connect to a HLX server peer.
+ *
+ *  This attempts to asynchronously connect to the HLX server peer at
+ *  the specified URL with the default timeout.
+ *
+ *  @param[in]  aMaybeURL  A pointer to a null-terminated C string
+ *                         containing the URL, host name, or host name
+ *                         and port of the HLX server peer to connect
+ *                         to. The URL or host name may be a name to
+ *                         be resolved or a literal IP address.
+ *                         HLX server peer to connect to.
+ *
+ *  @retval  kStatus_Success          If successful.
+ *  @retval  -EALREADY                The client connection is already
+ *                                    connected.
+ *  @retval  -EINPROGRESS             The client connection is in
+ *                                    progress.
+ *  @retval  -EINVAL                  The port number for the URL was
+ *                                    invalid.
+ *  @retval  -EPROTONOSUPPORT         The protocol scheme associated
+ *                                    with the specified URL is not
+ *                                    supported.
+ *  @retval  kStatus_ValueAlreadySet  This manager is already the delegate
+ *                                    for the connection.
+ *
+ */
 Status
-Controller :: Connect(void)
+Controller :: Connect(const char *aMaybeURL)
 {
-    DeclareScopedFunctionTracer(lTracer);
+    Status lRetval = kStatus_Success;
+
+    lRetval = Connect(aMaybeURL, kTimeoutDefault);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Connect to a HLX server peer.
+ *
+ *  This attempts to asynchronously connect to the HLX server peer at
+ *  the specified URL with the provided timeout.
+ *
+ *  @param[in]  aMaybeURL  A pointer to a null-terminated C string
+ *                         containing the URL, host name, or host name
+ *                         and port of the HLX server peer to connect
+ *                         to. The URL or host name may be a name to
+ *                         be resolved or a literal IP address.
+ *                         HLX server peer to connect to.
+ *  @param[in]  aTimeout   An immutable reference to the timeout by
+ *                         which the connection should complete.
+ *
+ *  @retval  kStatus_Success          If successful.
+ *  @retval  -EALREADY                The client connection is already
+ *                                    connected.
+ *  @retval  -EINPROGRESS             The client connection is in
+ *                                    progress.
+ *  @retval  -EINVAL                  The port number for the URL was
+ *                                    invalid.
+ *  @retval  -EPROTONOSUPPORT         The protocol scheme associated
+ *                                    with the specified URL is not
+ *                                    supported.
+ *  @retval  kStatus_ValueAlreadySet  This manager is already the delegate
+ *                                    for the connection.
+ *
+ */
+Status
+Controller :: Connect(const char *aMaybeURL, const Timeout &aTimeout)
+{
     Status lRetval = kStatus_Success;
 
 
+ done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Connect to a HLX server peer.
+ *
+ *  This attempts to asynchronously connect to the HLX server peer at
+ *  the specified URL, host name, or host name and port with the
+ *  provided timeout using IPv4 or IPv6 resolved addresses as
+ *  specified.
+ *
+ *  @param[in]  aMaybeURL  A pointer to a null-terminated C string
+ *                         containing the URL, host name, or host name
+ *                         and port of the HLX server peer to connect
+ *                         to. The URL or host name may be a name to
+ *                         be resolved or a literal IP address.
+ *                         HLX server peer to connect to.
+ *  @param[in]  aVersions  An immutable references to those IP address
+ *                         versions that should be used for resolving
+ *                         the host name.
+ *  @param[in]  aTimeout   An immutable reference to the timeout by
+ *                         which the connection should complete.
+ *
+ *  @retval  kStatus_Success          If successful.
+ *  @retval  -EALREADY                The client connection is already
+ *                                    connected.
+ *  @retval  -EINPROGRESS             The client connection is in
+ *                                    progress.
+ *  @retval  -EINVAL                  The port number for the URL was
+ *                                    invalid.
+ *  @retval  -EPROTONOSUPPORT         The protocol scheme associated
+ *                                    with the specified URL is not
+ *                                    supported.
+ *  @retval  kStatus_ValueAlreadySet  This manager is already the delegate
+ *                                    for the connection.
+ *
+ */
+Status
+Controller :: Connect(const char *aMaybeURL,
+                      const Common::ConnectionManagerBasis::Versions &aVersions,
+                      const Timeout &aTimeout)
+{
+    Status lRetval = kStatus_Success;
+
+
+ done:
     return (lRetval);
 }
 
@@ -84,7 +225,40 @@ Controller :: Listen(void)
     return (lRetval);
 }
 
-ControllerDelegate *Controller :: GetDelegate(void) const
+Status
+Controller :: Listen(const Common::ConnectionManagerBasis::Versions &aVersions)
+{
+    DeclareScopedFunctionTracer(lTracer);
+    Status lRetval = kStatus_Success;
+
+
+    return (lRetval);
+}
+
+Status
+Controller :: Listen(const char *aMaybeURL)
+{
+    DeclareScopedFunctionTracer(lTracer);
+    Status lRetval = kStatus_Success;
+
+
+ done:
+    return (lRetval);
+}
+
+Status
+Controller :: Listen(const char *aMaybeURL, const Common::ConnectionManagerBasis::Versions &aVersions)
+{
+    DeclareScopedFunctionTracer(lTracer);
+    Status lRetval = kStatus_Success;
+
+
+ done:
+    return (lRetval);
+}
+
+ControllerDelegate *
+Controller :: GetDelegate(void) const
 {
     return (mDelegate);
 }
