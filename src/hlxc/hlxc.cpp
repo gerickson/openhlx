@@ -493,7 +493,6 @@ private:
 
     void ControllerError(Controller &aController, const Error &aError) final;
 
-private:
     static void OnSignal(int aSignal);
 
 private:
@@ -537,11 +536,13 @@ Status Client :: Start(const char *aMaybeURL, const bool &aUseIPv6, const bool &
 {
     using HLX::Common::Utilities::GetVersions;
 
-    Status lStatus = kStatus_Success;
+    Status lRetval = kStatus_Success;
 
-    lStatus = mHLXClientController.Connect(aMaybeURL, GetVersions(aUseIPv6, aUseIPv4), aTimeout);
+    lRetval = mHLXClientController.Connect(aMaybeURL, GetVersions(aUseIPv6, aUseIPv4), aTimeout);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
-    return (lStatus);
+done:
+    return (lRetval);
 }
 
 Status Client :: Stop(void)
