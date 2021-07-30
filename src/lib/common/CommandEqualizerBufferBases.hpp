@@ -27,13 +27,14 @@
 #ifndef HLXCOMMONCOMMANDEQUALIZERBUFFERBASES_HPP
 #define HLXCOMMONCOMMANDEQUALIZERBUFFERBASES_HPP
 
-#include <CommandPropertyBufferBases.hpp>
+#include <OpenHLX/Common/CommandPropertyBufferBases.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Model/EqualizerBandsModel.hpp>
 #include <OpenHLX/Model/EqualizerBandModel.hpp>
 #include <OpenHLX/Model/IdentifierModel.hpp>
 #include <OpenHLX/Model/CrossoverModel.hpp>
 #include <OpenHLX/Model/SoundModel.hpp>
+
 
 namespace HLX
 {

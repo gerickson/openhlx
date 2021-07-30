@@ -28,8 +28,8 @@
 #ifndef HLXCOMMONCOMMANDROLEDELIMITEDBUFFER_HPP
 #define HLXCOMMONCOMMANDROLEDELIMITEDBUFFER_HPP
 
-#include <CommandDelimitedBuffer.hpp>
-#include <CommandRole.hpp>
+#include <OpenHLX/Common/CommandDelimitedBuffer.hpp>
+#include <OpenHLX/Common/CommandRole.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 
 namespace HLX

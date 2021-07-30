@@ -28,8 +28,9 @@
 #define HLXCOMMONCOMMANDDELIMITEDBUFFER_HPP
 
 #include <OpenHLX/Common/CommandBuffer.hpp>
-#include <CommandDelimiters.hpp>
+#include <OpenHLX/Common/CommandDelimiters.hpp>
 #include <OpenHLX/Common/Errors.hpp>
+
 
 namespace HLX
 {

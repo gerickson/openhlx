@@ -26,7 +26,7 @@
 #ifndef HLXCOMMONCOMMANDTONEBUFFERBASIS_HPP
 #define HLXCOMMONCOMMANDTONEBUFFERBASIS_HPP
 
-#include <CommandPropertyBufferBases.hpp>
+#include <OpenHLX/Common/CommandPropertyBufferBases.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Model/IdentifierModel.hpp>
 #include <OpenHLX/Model/ToneModel.hpp>

@@ -36,6 +36,8 @@
 #include <CFUtilities/CFUtilities.hpp>
 
 #include <LogUtilities/LogUtilities.hpp>
+
+#include <OpenHLX/Client/CommandRequestBasis.hpp>
 #include <OpenHLX/Common/ConnectionBuffer.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
@@ -43,7 +45,6 @@
 #include <CommandErrorResponse.hpp>
 #include <CommandExchangeBasis.hpp>
 #include <CommandManager.hpp>
-#include <CommandRequestBasis.hpp>
 #include <CommandResponseBasis.hpp>
 
 

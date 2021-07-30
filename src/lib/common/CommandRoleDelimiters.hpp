@@ -27,8 +27,9 @@
 #ifndef HLXCOMMONCOMMANDROLEDELIMITERS_HPP
 #define HLXCOMMONCOMMANDROLEDELIMITERS_HPP
 
-#include <CommandDelimiters.hpp>
-#include <CommandRole.hpp>
+#include <OpenHLX/Common/CommandDelimiters.hpp>
+#include <OpenHLX/Common/CommandRole.hpp>
+
 
 namespace HLX
 {

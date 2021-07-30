@@ -29,9 +29,8 @@
 
 #include <stddef.h>
 
+#include <OpenHLX/Common/CommandPropertyBufferBases.hpp>
 #include <OpenHLX/Common/Errors.hpp>
-
-#include <CommandPropertyBufferBases.hpp>
 
 
 namespace HLX

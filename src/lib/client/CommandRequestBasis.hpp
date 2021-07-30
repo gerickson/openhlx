@@ -30,9 +30,10 @@
 
 #include <stddef.h>
 
-#include <CommandBufferBasis.hpp>
-#include <CommandRoleDelimitedBuffer.hpp>
+#include <OpenHLX/Common/CommandBufferBasis.hpp>
+#include <OpenHLX/Common/CommandRoleDelimitedBuffer.hpp>
 #include <OpenHLX/Common/Errors.hpp>
+
 
 namespace HLX
 {

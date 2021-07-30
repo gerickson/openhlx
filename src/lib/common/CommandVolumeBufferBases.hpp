@@ -30,10 +30,11 @@
 
 #include <OpenHLX/Common/Errors.hpp>
 
-#include <CommandPropertyBufferBases.hpp>
+#include <OpenHLX/Common/CommandPropertyBufferBases.hpp>
 #include <OpenHLX/Common/CommandBuffer.hpp>
 #include <OpenHLX/Model/IdentifierModel.hpp>
 #include <OpenHLX/Model/VolumeModel.hpp>
+
 
 namespace HLX
 {
