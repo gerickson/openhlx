@@ -42,7 +42,9 @@ namespace Proxy
 
 Controller :: Controller(void) :
     Client::ConnectionManagerDelegate(),
+    Server::ConnectionManagerDelegate(),
     Client::CommandManagerDelegate(),
+    Server::CommandManagerDelegate(),
     mClientConnectionManager(),
     mClientCommandManager(),
     mServerConnectionManager(),
