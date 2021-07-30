@@ -457,9 +457,19 @@ void HLXProxy :: ControllerIsConnecting(Controller &aController, CFURLRef aURLRe
 
 void HLXProxy :: ControllerDidConnect(Controller &aController, CFURLRef aURLRef)
 {
+    Status lStatus;
+
     (void)aController;
 
     Log::Info().Write("Connected to %s.\n", CFString(CFURLGetString(aURLRef)).GetCString());
+
+    // XXX - We may need to know whether this connection was on the
+    // server-facing client side versus the client-facing server side
+    // of the proxy since only the former should trigger a refresh,
+    // not the latter.
+
+    lStatus = mHLXProxyController.Refresh();
+    nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
     return;
