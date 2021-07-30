@@ -30,6 +30,7 @@
 #include <OpenHLX/Client/CommandManagerDelegate.hpp>
 #include <OpenHLX/Client/ConnectionManager.hpp>
 #include <OpenHLX/Client/ConnectionManagerDelegate.hpp>
+#include <OpenHLX/Client/ControllerBasisDelegate.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/RunLoopParameters.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
@@ -58,7 +59,8 @@ class Controller :
     public Client::ConnectionManagerDelegate,
     public Server::ConnectionManagerDelegate,
     public Client::CommandManagerDelegate,
-    public Server::CommandManagerDelegate
+    public Server::CommandManagerDelegate,
+    public Client::ControllerBasisDelegate
 {
 public:
     Controller(void);
@@ -78,6 +80,8 @@ public:
     Common::Status Listen(const Common::ConnectionManagerBasis::Versions &aVersions);
     Common::Status Listen(const char *aMaybeURL);
     Common::Status Listen(const char *aMaybeURL, const Common::ConnectionManagerBasis::Versions &aVersions);
+
+    Common::Status Refresh(void);
 
     // Server-facing Client Command Manager Delegate Methods
 
@@ -125,6 +129,15 @@ public:
 
     void ConnectionManagerError(Common::ConnectionManagerBasis &aConnectionManager, const Common::Error &aError) final;
 
+    // Server-facing Client Controller Delegate Methods
+
+    void ControllerIsRefreshing(Client::ControllerBasis &aController, const uint8_t &aPercentComplete) final;
+    void ControllerDidRefresh(Client::ControllerBasis &aController) final;
+    void ControllerError(Client::ControllerBasis &aController, const Common::Error &aError) final;
+    void ControllerStateDidChange(Client::ControllerBasis &aController, const Client::StateChange::NotificationBasis &aStateChangeNotification) final;
+
+    // Client-facing Server Controller Delegate Methods
+
 private:
     Common::Status InitClient(const Common::RunLoopParameters &aRunLoopParameters);
     Common::Status InitClientConnectionManager(const Common::RunLoopParameters &aRunLoopParameters);
@@ -133,12 +146,15 @@ private:
     Common::Status InitServerConnectionManager(const Common::RunLoopParameters &aRunLoopParameters);
     Common::Status InitServerCommandManager(const Common::RunLoopParameters &aRunLoopParameters);
 
+    bool IsRefreshing(void) const;
+
 private:
     Common::RunLoopParameters       mRunLoopParameters;
     Client::ConnectionManager       mClientConnectionManager;
     Client::CommandManager          mClientCommandManager;
     Server::ConnectionManager       mServerConnectionManager;
     Server::CommandManager          mServerCommandManager;
+    size_t                          mControllersDidRefreshCount;
     ControllerDelegate *            mDelegate;
     void *                          mDelegateContext;
 };

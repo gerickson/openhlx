@@ -45,10 +45,12 @@ Controller :: Controller(void) :
     Server::ConnectionManagerDelegate(),
     Client::CommandManagerDelegate(),
     Server::CommandManagerDelegate(),
+    Client::ControllerBasisDelegate(),
     mClientConnectionManager(),
     mClientCommandManager(),
     mServerConnectionManager(),
     mServerCommandManager(),
+    mControllersDidRefreshCount(0),
     mDelegate(nullptr),
     mDelegateContext(nullptr)
 {
@@ -382,12 +384,87 @@ done:
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Refresh the state of the client controller.
+ *
+ *  This should be called on first-time client start-up or whenever
+ *  the client controller state needs to be forcibly refreshed.
+ *
+ *  This iterates through each of the sub-controllers, tasking each
+ *  with taking care of the refresh activity appropriate for its scope
+ *  of concern.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated
+ *                                        by a controller to perform the
+ *                                        refresh.
+ *
+ */
+Status
+Controller :: Refresh(void)
+{
+    Status lRetval = kStatus_Success;
+
+
+    if (mDelegate != nullptr)
+    {
+        mDelegate->ControllerWillRefresh(*this);
+    }
+
+    // Reset the overall refresh count.
+
+    mControllersDidRefreshCount = 0;
+
+ done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Returns whether or not the controller is in the middle of a refresh.
+ *
+ *  This returns a Boolean indicating whether (true) or not (false)
+ *  the controller is in the middle of a refresh operation with the
+ *  peer server controller for up-to-date state.
+ *
+ *  @returns
+ *    True if the controller is refreshing; otherwise, false.
+ *
+ */
+bool
+Controller :: IsRefreshing(void) const
+{
+    return (false);
+}
+
+/**
+ *  @brief
+ *    Return the delegate for the proxy controller.
+ *
+ *  @returns
+ *    A pointer to the delegate for the proxy controller.
+ *
+ */
 ControllerDelegate *
 Controller :: GetDelegate(void) const
 {
     return (mDelegate);
 }
 
+/**
+ *  @brief
+ *    Set the delegate for the proxy controller.
+ *
+ *  This attempts to set a delegate for the proxy controller.
+ *
+ *  @param[in]  aDelegate  A pointer to the delegate to set.
+ *
+ *  @retval  kStatus_Success          If successful.
+ *  @retval  kStatus_ValueAlreadySet  If the delegate was already set to
+ *                                    the specified value.
+ *
+ */
 Status
 Controller :: SetDelegate(ControllerDelegate *aDelegate, void *aContext)
 {
@@ -796,6 +873,81 @@ Controller :: ConnectionManagerError(Common::ConnectionManagerBasis &aConnection
     {
         mDelegate->ControllerError(*this, aError);
     }
+}
+
+// MARK: Server-facing Client Controller Basis Delegate Methods
+
+void
+Controller :: ControllerIsRefreshing(Client::ControllerBasis &aController, const uint8_t &aPercentComplete)
+{
+    return;
+}
+
+/**
+ *  @brief
+ *    Delegation from a controller that the specified controller is
+ *    done refreshing.
+ *
+ *  On the refresh completion of any one controller, this refreshes
+ *  the overall refresh state of the parent client controller.
+ *
+ *  @param[in]  aController       A reference to the controller
+ *                                that issued the delegation.
+ *
+ */
+void
+Controller :: ControllerDidRefresh(Client::ControllerBasis &aController)
+{
+    return;
+}
+
+/**
+ *  Delegation callback for individual sub-controller state change
+ *  notifications.
+ *
+ *  This is not simply a pass-through of sub-controller state change
+ *  delegate to the end client due to the fact that some group
+ *  sub-controller state changes need to be fanned out to the zone
+ *  sub-controller for the zones that belong to a particular group.
+ *
+ *  In theory and ideally, Audio Authority would have implemented a
+ *  group mute, source, or volume change as follows:
+ *
+ *    \<Group j Mute or Volume or Source Command Request>
+ *    \<Zone i Mute or Volume or Source State Change>
+ *    ...
+ *    \<Zone n Mute or Volume or Source State Change>
+ *    \<Group Mute or Volume or Source Command Response>
+ *
+ *  However, instead, all that we get in practice is:
+ *
+ *    \<Group j Mute or Volume or Source Command Request>
+ *    \<Group j Mute or Volume or Source Command Response>
+ *
+ *  Leaving us to extract zone membership for the relevant group from
+ *  the group sub-controller and to then intuit and apply the mute,
+ *  volume, or source changes to the zone members based on the group
+ *  command response.
+ *
+ *  @param[in]  aController               A reference to the controller
+ *                                        that initiated the state change
+ *                                        notification.
+ *
+ *  @param[in]  aStateChangeNotification  A read-only reference to the
+ *                                        state change notification.
+ *
+ */
+void
+Controller :: ControllerStateDidChange(Client::ControllerBasis &aController,
+                                       const Client::StateChange::NotificationBasis &aStateChangeNotification)
+{
+    return;
+}
+
+void
+Controller :: ControllerError(Client::ControllerBasis &aController, const Common::Error &aError)
+{
+    return;
 }
 
 }; // namespace Proxy
