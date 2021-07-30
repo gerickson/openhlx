@@ -33,6 +33,8 @@
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/RunLoopParameters.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
+#include <OpenHLX/Server/CommandManager.hpp>
+#include <OpenHLX/Server/CommandManagerDelegate.hpp>
 #include <OpenHLX/Server/ConnectionManager.hpp>
 #include <OpenHLX/Server/ConnectionManagerDelegate.hpp>
 
@@ -55,7 +57,8 @@ namespace Proxy
 class Controller :
     public Client::ConnectionManagerDelegate,
     public Server::ConnectionManagerDelegate,
-    public Client::CommandManagerDelegate
+    public Client::CommandManagerDelegate,
+    public Server::CommandManagerDelegate
 {
 public:
     Controller(void);
@@ -123,13 +126,23 @@ public:
     void ConnectionManagerError(Common::ConnectionManagerBasis &aConnectionManager, const Common::Error &aError) final;
 
 private:
+    Common::Status InitClient(const Common::RunLoopParameters &aRunLoopParameters);
+    Common::Status InitClientConnectionManager(const Common::RunLoopParameters &aRunLoopParameters);
+    Common::Status InitClientCommandManager(const Common::RunLoopParameters &aRunLoopParameters);
+    Common::Status InitServer(const Common::RunLoopParameters &aRunLoopParameters);
+    Common::Status InitServerConnectionManager(const Common::RunLoopParameters &aRunLoopParameters);
+    Common::Status InitServerCommandManager(const Common::RunLoopParameters &aRunLoopParameters);
+
+private:
     Common::RunLoopParameters       mRunLoopParameters;
     Client::ConnectionManager       mClientConnectionManager;
     Client::CommandManager          mClientCommandManager;
     Server::ConnectionManager       mServerConnectionManager;
+    Server::CommandManager          mServerCommandManager;
     ControllerDelegate *            mDelegate;
     void *                          mDelegateContext;
 };
+
 }; // namespace Proxy
 
 }; // namespace HLX

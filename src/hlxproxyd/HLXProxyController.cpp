@@ -46,6 +46,7 @@ Controller :: Controller(void) :
     mClientConnectionManager(),
     mClientCommandManager(),
     mServerConnectionManager(),
+    mServerCommandManager(),
     mDelegate(nullptr),
     mDelegateContext(nullptr)
 {
@@ -66,16 +67,16 @@ Controller :: ~Controller(void)
  *  @brief
  *    This is a class initializer.
  *
- *  This initializes the client controller with the specified run loop
+ *  This initializes the proxy controller with the specified run loop
  *  parameters.
  *
  *  @param[in]  aRunLoopParameters  An immutable reference to the run
  *                                  loop parameters to initialize the
- *                                  client controller with.
+ *                                  proxy controller with.
  *
  *  @retval  kStatus_Success          If successful.
  *  @retval  -ENOMEM                  Resources could not be allocated.
- *  @retval  kStatus_ValueAlreadySet  If the client controller was already
+ *  @retval  kStatus_ValueAlreadySet  If the proxy controller was already
  *                                    added as a delegate to the
  *                                    connection manager, command
  *                                    manager, or child controllers.
@@ -87,22 +88,10 @@ Controller :: Init(const RunLoopParameters &aRunLoopParameters)
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
-    lRetval = mClientConnectionManager.Init(aRunLoopParameters);
+    lRetval = InitClient(aRunLoopParameters);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mClientConnectionManager.AddDelegate(this);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = mClientCommandManager.Init(mClientConnectionManager, aRunLoopParameters);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = mClientCommandManager.SetDelegate(this);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = mServerConnectionManager.Init(aRunLoopParameters);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = mServerConnectionManager.AddDelegate(this);
+    lRetval = InitServer(aRunLoopParameters);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     mRunLoopParameters = aRunLoopParameters;
@@ -110,6 +99,103 @@ Controller :: Init(const RunLoopParameters &aRunLoopParameters)
 done:
     return (lRetval);
 }
+
+Status
+Controller :: InitClient(const RunLoopParameters &aRunLoopParameters)
+{
+    Status  lRetval;
+
+
+    lRetval = InitClientConnectionManager(aRunLoopParameters);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = InitClientCommandManager(aRunLoopParameters);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+Controller :: InitClientConnectionManager(const RunLoopParameters &aRunLoopParameters)
+{
+    Status  lRetval;
+
+
+    lRetval = mClientConnectionManager.Init(aRunLoopParameters);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = mClientConnectionManager.AddDelegate(this);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+Controller :: InitClientCommandManager(const RunLoopParameters &aRunLoopParameters)
+{
+    Status  lRetval;
+
+
+    lRetval = mClientCommandManager.Init(mClientConnectionManager, aRunLoopParameters);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = mClientCommandManager.SetDelegate(this);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+Controller :: InitServer(const RunLoopParameters &aRunLoopParameters)
+{
+    Status  lRetval;
+
+
+    lRetval = InitServerConnectionManager(aRunLoopParameters);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = InitServerCommandManager(aRunLoopParameters);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+Controller :: InitServerConnectionManager(const RunLoopParameters &aRunLoopParameters)
+{
+    Status  lRetval;
+
+
+    lRetval = mServerConnectionManager.Init(aRunLoopParameters);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = mServerConnectionManager.AddDelegate(this);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+Controller :: InitServerCommandManager(const RunLoopParameters &aRunLoopParameters)
+{
+    Status  lRetval;
+
+
+    lRetval = mServerCommandManager.Init(mServerConnectionManager, aRunLoopParameters);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = mServerCommandManager.SetDelegate(this);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
 
 /**
  *  @brief
