@@ -625,7 +625,7 @@ static CFStringRef kZonesSchemaKey                 = CFSTR("Zones");
 ZonesController :: ZonesController(void) :
     ControllerBasis(),
     ContainerControllerBasis(),
-    ZonesControllerBasis(),
+    Common::ZonesControllerBasis(),
     mZones()
 {
     return;
