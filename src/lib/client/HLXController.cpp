@@ -190,6 +190,7 @@ Controller :: DerivedGroupState :: UpdateVolume(const VolumeModel::LevelType &aV
 Controller :: Controller(void) :
     ConnectionManagerDelegate(),
     CommandManagerDelegate(),
+    ControllerBasisDelegate(),
     mConnectionManager(),
     mCommandManager(),
     mConfigurationController(),
@@ -550,7 +551,8 @@ Controller :: Disconnect(void)
  *    A pointer to the delegate for the client controller.
  *
  */
-ControllerDelegate *Controller :: GetDelegate(void) const
+ControllerDelegate *
+Controller :: GetDelegate(void) const
 {
     return (mDelegate);
 }
