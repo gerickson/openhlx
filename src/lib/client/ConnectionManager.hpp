@@ -30,14 +30,13 @@
 
 #include <CoreFoundation/CFURL.h>
 
+#include <OpenHLX/Client/ConnectionBasis.hpp>
+#include <OpenHLX/Client/ConnectionBasisDelegate.hpp>
+#include <OpenHLX/Client/ConnectionFactory.hpp>
+#include <OpenHLX/Client/ConnectionManagerDelegate.hpp>
 #include <OpenHLX/Common/ConnectionManagerApplicationDataDelegate.hpp>
 #include <OpenHLX/Common/ConnectionManagerBasis.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
-
-#include <ConnectionBasis.hpp>
-#include <ConnectionBasisDelegate.hpp>
-#include <ConnectionFactory.hpp>
-#include <ConnectionManagerDelegate.hpp>
 
 
 namespace HLX

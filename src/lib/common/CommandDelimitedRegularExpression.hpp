@@ -29,8 +29,8 @@
 
 #include <stddef.h>
 
-#include <CommandDelimiters.hpp>
-#include <CommandRegularExpression.hpp>
+#include <OpenHLX/Common/CommandDelimiters.hpp>
+#include <OpenHLX/Common/CommandRegularExpression.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 
 

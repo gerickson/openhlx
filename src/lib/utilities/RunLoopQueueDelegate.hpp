@@ -26,7 +26,7 @@
 #define HLXCLIENTRUNLOOPQUEUEDELEGATE_HPP
 
 #include <OpenHLX/Common/Errors.hpp>
-#include <Timeout.hpp>
+#include <OpenHLX/Common/Timeout.hpp>
 
 #include <CoreFoundation/CFURL.h>
 

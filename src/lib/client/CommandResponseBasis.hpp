@@ -26,8 +26,8 @@
 #ifndef HLXCLIENTCOMMANDRESPONSEBASIS_HPP
 #define HLXCLIENTCOMMANDRESPONSEBASIS_HPP
 
-#include <CommandRegularExpressionBasis.hpp>
-#include <CommandRoleDelimitedRegularExpression.hpp>
+#include <OpenHLX/Common/CommandRegularExpressionBasis.hpp>
+#include <OpenHLX/Common/CommandRoleDelimitedRegularExpression.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 
 
