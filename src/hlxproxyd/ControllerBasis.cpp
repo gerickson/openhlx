@@ -48,14 +48,27 @@ ControllerBasis :: ~ControllerBasis(void)
 }
 
 Status
-ControllerBasis :: Init(void)
+ControllerBasis :: Init(Client::CommandManager &aCommandManager)
 {
+    DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
+
+    lRetval = Init(aCommandManager, kTimeoutDefault);
 
     return (lRetval);
 }
 
+Status
+ControllerBasis :: Init(Client::CommandManager &aCommandManager, const Common::Timeout &aTimeout)
+{
+    Status lRetval = kStatus_Success;
+
+    (void)aCommandManager;
+    (void)aTimeout;
+
+    return (lRetval);
+}
 
 }; // namespace Proxy
 
