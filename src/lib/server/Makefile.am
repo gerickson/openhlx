@@ -44,11 +44,18 @@ libopenhlx_server_a_includedir                              = \
 # Public library headers to distribute and install.
 
 libopenhlx_server_a_include_HEADERS                         = \
+    CommandBalanceResponseBasis.hpp                           \
+    CommandEqualizerBandResponseBasis.hpp                     \
     CommandErrorResponse.hpp                                  \
     CommandManager.hpp                                        \
     CommandManagerDelegate.hpp                                \
+    CommandNameSetResponseBasis.hpp                           \
+    CommandPropertyResponseBases.hpp                          \
+    CommandQueryResponseBasis.hpp                             \
     CommandRequestBasis.hpp                                   \
     CommandResponseBasis.hpp                                  \
+    CommandSourceResponseBases.hpp                            \
+    CommandVolumeResponseBases.hpp                            \
     ConnectionBasis.hpp                                       \
     ConnectionBasisDelegate.hpp                               \
     ConnectionFactory.hpp                                     \
@@ -60,6 +67,7 @@ libopenhlx_server_a_include_HEADERS                         = \
     ListenerBasisAcceptDelegate.hpp                           \
     ListenerFactory.hpp                                       \
     ListenerTelnet.hpp                                        \
+    ZonesControllerCommands.hpp                               \
     $(NULL)
 
 libopenhlx_server_a_CPPFLAGS                                = \
@@ -71,10 +79,17 @@ libopenhlx_server_a_CPPFLAGS                                = \
     $(NULL)
 
 libopenhlx_server_a_SOURCES                                 = \
+    CommandBalanceResponseBasis.cpp                           \
+    CommandEqualizerBandResponseBasis.cpp                     \
     CommandErrorResponse.cpp                                  \
     CommandManager.cpp                                        \
+    CommandNameSetResponseBasis.cpp                           \
+    CommandPropertyResponseBases.cpp                          \
+    CommandQueryResponseBasis.cpp                             \
     CommandRequestBasis.cpp                                   \
     CommandResponseBasis.cpp                                  \
+    CommandSourceResponseBases.cpp                            \
+    CommandVolumeResponseBases.cpp                            \
     ConnectionBasis.cpp                                       \
     ConnectionFactory.cpp                                     \
     ConnectionManager.cpp                                     \
@@ -83,6 +98,7 @@ libopenhlx_server_a_SOURCES                                 = \
     ListenerBasisDelegate.cpp                                 \
     ListenerFactory.cpp                                       \
     ListenerTelnet.cpp                                        \
+    ZonesControllerCommands.cpp                               \
     $(NULL)
 
 include $(abs_top_nlbuild_autotools_dir)/automake/post.am

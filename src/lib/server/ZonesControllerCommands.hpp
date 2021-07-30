@@ -26,22 +26,22 @@
 #ifndef HLXSERVERZONESCONTROLLERCOMMANDS_HPP
 #define HLXSERVERZONESCONTROLLERCOMMANDS_HPP
 
-#include <CommandBalanceResponseBasis.hpp>
-#include <CommandEqualizerBandResponseBasis.hpp>
-#include <CommandEqualizerBufferBases.hpp>
-#include <CommandNameSetResponseBasis.hpp>
-#include <CommandPropertyResponseBases.hpp>
-#include <CommandQueryResponseBasis.hpp>
-#include <CommandRequestBasis.hpp>
-#include <CommandSourceResponseBases.hpp>
-#include <CommandToneBufferBasis.hpp>
-#include <CommandVolumeResponseBases.hpp>
-#include <CommandZonesRegularExpressionBases.hpp>
+#include <OpenHLX/Common/CommandEqualizerBufferBases.hpp>
+#include <OpenHLX/Common/CommandToneBufferBasis.hpp>
+#include <OpenHLX/Common/CommandZonesRegularExpressionBases.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Model/SoundModel.hpp>
 #include <OpenHLX/Model/SourceModel.hpp>
 #include <OpenHLX/Model/VolumeModel.hpp>
 #include <OpenHLX/Model/ZoneModel.hpp>
+#include <OpenHLX/Server/CommandBalanceResponseBasis.hpp>
+#include <OpenHLX/Server/CommandEqualizerBandResponseBasis.hpp>
+#include <OpenHLX/Server/CommandNameSetResponseBasis.hpp>
+#include <OpenHLX/Server/CommandPropertyResponseBases.hpp>
+#include <OpenHLX/Server/CommandQueryResponseBasis.hpp>
+#include <OpenHLX/Server/CommandRequestBasis.hpp>
+#include <OpenHLX/Server/CommandSourceResponseBases.hpp>
+#include <OpenHLX/Server/CommandVolumeResponseBases.hpp>
 
 
 namespace HLX

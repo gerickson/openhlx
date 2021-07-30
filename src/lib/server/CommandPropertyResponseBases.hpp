@@ -32,8 +32,7 @@
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/CommandPropertyBufferBases.hpp>
 #include <OpenHLX/Model/IdentifierModel.hpp>
-
-#include <CommandResponseBasis.hpp>
+#include <OpenHLX/Server/CommandResponseBasis.hpp>
 
 
 namespace HLX

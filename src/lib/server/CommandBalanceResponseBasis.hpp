@@ -19,17 +19,20 @@
 /**
  *    @file
  *      This file defines a derived object for composing HLX server
- *      command response buffers for the equalizer band level data
- *      model property.
+ *      command response buffers for the stereophonic channel balance
+ *      data model property.
  *
  */
 
-#ifndef HLXSERVERCOMMANDEQUALIZERBANDRESPONSEBASIS_HPP
-#define HLXSERVERCOMMANDEQUALIZERBANDRESPONSEBASIS_HPP
+#ifndef HLXSERVERCOMMANDBALANCERESPONSEBASIS_HPP
+#define HLXSERVERCOMMANDBALANCERESPONSEBASIS_HPP
 
-#include <CommandResponseBasis.hpp>
-#include <CommandEqualizerBufferBases.hpp>
+#include <stddef.h>
+
+#include <OpenHLX/Common/CommandBalanceBufferBasis.hpp>
 #include <OpenHLX/Common/Errors.hpp>
+#include <OpenHLX/Server/CommandResponseBasis.hpp>
+
 
 namespace HLX
 {
@@ -43,29 +46,28 @@ namespace Command
 /**
  *  @brief
  *    A derived object for composing HLX server command response
- *    buffers for the equalizer band level data model property.
+ *    buffers for the stereophonic channel balance data model
+ *    property.
  *
  *  @ingroup server
  *  @ingroup command
- *  @ingroup equalizer-band
+ *  @ingroup balance
  *
  */
-class EqualizerBandResponseBasis :
+class BalanceResponseBasis :
     public ResponseBasis,
-    public Common::Command::EqualizerBandBufferBasis
+    public Common::Command::BalanceBufferBasis
 {
 protected:
-    EqualizerBandResponseBasis(void) = default;
-    virtual ~EqualizerBandResponseBasis(void) = default;
+    BalanceResponseBasis(void) = default;
+    virtual ~BalanceResponseBasis(void) = default;
 
     // Allow both the base and derived class initializers
 
     using ResponseBasis::Init;
 
-    Common::Status Init(const char *aObject, const Model::EqualizerBandsModel::IdentifierType &aEqualizerIdentifier, const Model::EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier, const LevelType &aLevel);
-
-private:
-    Common::Status Init(const char *aObject, const Model::EqualizerBandsModel::IdentifierType &aEqualizerIdentifier, const Model::EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier, const char *aOperation);
+    Common::Status Init(const char *aObject, const IdentifierType &aIdentifier, const ChannelType &aChannel, const BalanceType &aBalance);
+    Common::Status Init(const char *aObject, const IdentifierType &aIdentifier, const BalanceType &aBalance);
 };
 
 }; // namespace Command
@@ -74,4 +76,4 @@ private:
 
 }; // namespace HLX
 
-#endif // HLXSERVERCOMMANDEQUALIZERBANDRESPONSEBASIS_HPP
+#endif // HLXSERVERCOMMANDBALANCERESPONSEBASIS_HPP

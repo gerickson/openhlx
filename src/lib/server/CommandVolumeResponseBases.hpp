@@ -28,11 +28,11 @@
 
 #include <stddef.h>
 
+#include <OpenHLX/Common/CommandVolumeBufferBases.hpp>
 #include <OpenHLX/Common/Errors.hpp>
-
-#include <CommandResponseBasis.hpp>
-#include <CommandVolumeBufferBases.hpp>
 #include <OpenHLX/Model/VolumeModel.hpp>
+#include <OpenHLX/Server/CommandResponseBasis.hpp>
+
 
 namespace HLX
 {

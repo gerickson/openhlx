@@ -1,5 +1,5 @@
 /*
- *    Copyright (c) 2019-2021 Grant Erickson
+ *    Copyright (c) 2018-2021 Grant Erickson
  *    All rights reserved.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,20 +18,24 @@
 
 /**
  *    @file
- *      This file defines a derived object for composing HLX server
- *      command response buffers for the stereophonic channel balance
- *      data model property.
+ *      This file defines an object for composing HLX server response
+ *      buffers for commands that query a data model object or
+ *      property thereof.
  *
  */
 
-#ifndef HLXSERVERCOMMANDBALANCERESPONSEBASIS_HPP
-#define HLXSERVERCOMMANDBALANCERESPONSEBASIS_HPP
+#ifndef HLXSERVERCOMMANDQUERYRESPONSEBASIS_HPP
+#define HLXSERVERCOMMANDQUERYRESPONSEBASIS_HPP
+
+#include <vector>
 
 #include <stddef.h>
 
-#include <CommandResponseBasis.hpp>
-#include <CommandBalanceBufferBasis.hpp>
+#include <OpenHLX/Common/CommandQueryBufferBasis.hpp>
 #include <OpenHLX/Common/Errors.hpp>
+#include <OpenHLX/Model/IdentifierModel.hpp>
+#include <OpenHLX/Server/CommandResponseBasis.hpp>
+
 
 namespace HLX
 {
@@ -44,29 +48,27 @@ namespace Command
 
 /**
  *  @brief
- *    A derived object for composing HLX server command response
- *    buffers for the stereophonic channel balance data model
- *    property.
+ *    An object for composing HLX server response buffers for commands
+ *    that query a data model object or property thereof.
  *
  *  @ingroup server
  *  @ingroup command
- *  @ingroup balance
  *
  */
-class BalanceResponseBasis :
+class QueryResponseBasis :
     public ResponseBasis,
-    public Common::Command::BalanceBufferBasis
+    public Common::Command::QueryBufferBasis
 {
 protected:
-    BalanceResponseBasis(void) = default;
-    virtual ~BalanceResponseBasis(void) = default;
+    QueryResponseBasis(void) = default;
+    virtual ~QueryResponseBasis(void) = default;
 
     // Allow both the base and derived class initializers
 
     using ResponseBasis::Init;
 
-    Common::Status Init(const char *aObject, const IdentifierType &aIdentifier, const ChannelType &aChannel, const BalanceType &aBalance);
-    Common::Status Init(const char *aObject, const IdentifierType &aIdentifier, const BalanceType &aBalance);
+    Common::Status Init(const char *aObject);
+    Common::Status Init(const char *aObject, const Model::IdentifierModel::IdentifierType &aIdentifier);
 };
 
 }; // namespace Command
@@ -75,4 +77,4 @@ protected:
 
 }; // namespace HLX
 
-#endif // HLXSERVERCOMMANDBALANCERESPONSEBASIS_HPP
+#endif // HLXSERVERCOMMANDQUERYRESPONSEBASIS_HPP

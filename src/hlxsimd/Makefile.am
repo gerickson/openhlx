@@ -24,13 +24,6 @@
 include $(abs_top_nlbuild_autotools_dir)/automake/pre.am
 
 noinst_HEADERS                                                             = \
-    CommandBalanceResponseBasis.hpp                                          \
-    CommandEqualizerBandResponseBasis.hpp                                    \
-    CommandNameSetResponseBasis.hpp                                          \
-    CommandPropertyResponseBases.hpp                                         \
-    CommandQueryResponseBasis.hpp                                            \
-    CommandSourceResponseBases.hpp                                           \
-    CommandVolumeResponseBases.hpp                                           \
     ConfigurationController.hpp                                              \
     ConfigurationControllerCommands.hpp                                      \
     ConfigurationControllerDelegate.hpp                                      \
@@ -58,7 +51,6 @@ noinst_HEADERS                                                             = \
     SourcesControllerCommands.hpp                                            \
     Utilities.hpp                                                            \
     ZonesController.hpp                                                      \
-    ZonesControllerCommands.hpp                                              \
     $(NULL)
 
 bin_PROGRAMS                                                               = \
@@ -94,13 +86,6 @@ hlxsimd_LDFLAGS                                                            = \
     $(NULL)
 
 hlxsimd_SOURCES                                                            = \
-    CommandBalanceResponseBasis.cpp                                          \
-    CommandEqualizerBandResponseBasis.cpp                                    \
-    CommandNameSetResponseBasis.cpp                                          \
-    CommandPropertyResponseBases.cpp                                         \
-    CommandQueryResponseBasis.cpp                                            \
-    CommandSourceResponseBases.cpp                                           \
-    CommandVolumeResponseBases.cpp                                           \
     ConfigurationController.cpp                                              \
     ConfigurationControllerCommands.cpp                                      \
     ContainerControllerBasis.cpp                                             \
@@ -123,7 +108,6 @@ hlxsimd_SOURCES                                                            = \
     SourcesControllerCommands.cpp                                            \
     Utilities.cpp                                                            \
     ZonesController.cpp                                                      \
-    ZonesControllerCommands.cpp                                              \
     hlxsimd.cpp                                                              \
     $(NULL)
 

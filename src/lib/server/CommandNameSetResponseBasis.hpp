@@ -28,10 +28,11 @@
 
 #include <stdint.h>
 
-#include <CommandResponseBasis.hpp>
 #include <OpenHLX/Common/CommandNameSetBufferBasis.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Model/IdentifierModel.hpp>
+#include <OpenHLX/Server/CommandResponseBasis.hpp>
+
 
 namespace HLX
 {

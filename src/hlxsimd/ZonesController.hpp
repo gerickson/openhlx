@@ -33,9 +33,9 @@
 #include <OpenHLX/Model/SoundModel.hpp>
 #include <OpenHLX/Model/ToneModel.hpp>
 #include <ZonesControllerBasis.hpp>
-#include <ZonesControllerCommands.hpp>
 #include <OpenHLX/Model/ZoneModel.hpp>
 #include <OpenHLX/Model/ZonesModel.hpp>
+#include <OpenHLX/Server/ZonesControllerCommands.hpp>
 
 
 namespace HLX
@@ -192,7 +192,7 @@ private:
     static Common::Status HandleVolumeResponse(const IdentifierType &aZoneIdentifier, const Model::VolumeModel::LevelType &aVolume, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
     static Common::Status HandleVolumeFixedResponse(const IdentifierType &aZoneIdentifier, const Model::VolumeModel::FixedType &aVolumeFixed, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
 
-    // Command Completion Handlers
+    // Command Request Completion Handlers
 
     void AdjustBalanceRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
     void DecreaseBassRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
