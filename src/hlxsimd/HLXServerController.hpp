@@ -34,11 +34,11 @@
 
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/RunLoopParameters.hpp>
+#include <OpenHLX/Server/CommandManager.hpp>
+#include <OpenHLX/Server/CommandManagerDelegate.hpp>
 #include <OpenHLX/Server/ConnectionManager.hpp>
 #include <OpenHLX/Server/ConnectionManagerDelegate.hpp>
 
-#include <CommandManager.hpp>
-#include <CommandManagerDelegate.hpp>
 #include <ConfigurationController.hpp>
 #include <ConfigurationControllerDelegate.hpp>
 #include <EqualizerPresetsController.hpp>

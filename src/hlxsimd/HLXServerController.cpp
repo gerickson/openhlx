@@ -84,6 +84,11 @@ Controller :: Controller(void) :
     return;
 }
 
+/**
+ *  @brief
+ *    This is the class destructor.
+ *
+ */
 Controller :: ~Controller(void)
 {
     DeclareScopedFunctionTracer(lTracer);
