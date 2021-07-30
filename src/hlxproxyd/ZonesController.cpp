@@ -45,6 +45,7 @@ namespace Proxy
  *
  */
 ZonesController :: ZonesController(void) :
+    ControllerBasis(),
     Common::ZonesControllerBasis()
 {
     return;

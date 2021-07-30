@@ -29,6 +29,8 @@
 #include <OpenHLX/Common/Timeout.hpp>
 #include <OpenHLX/Common/ZonesControllerBasis.hpp>
 
+#include "ControllerBasis.hpp"
+
 
 namespace HLX
 {
@@ -45,13 +47,14 @@ namespace Proxy
  *
  */
 class ZonesController :
+    public ControllerBasis,
     public Common::ZonesControllerBasis
 {
 public:
     ZonesController(void);
     virtual ~ZonesController(void);
 
-    Common::Status Init(void) /* final */;
+    Common::Status Init(void) final;
 
     Common::Status Refresh(const Common::Timeout &aTimeout) /* final */;
 
