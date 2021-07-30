@@ -56,17 +56,25 @@ libopenhlx_server_a_include_HEADERS                         = \
     CommandResponseBasis.hpp                                  \
     CommandSourceResponseBases.hpp                            \
     CommandVolumeResponseBases.hpp                            \
+    ConfigurationControllerCommands.hpp                       \
     ConnectionBasis.hpp                                       \
     ConnectionBasisDelegate.hpp                               \
     ConnectionFactory.hpp                                     \
     ConnectionManager.hpp                                     \
     ConnectionManagerDelegate.hpp                             \
     ConnectionTelnet.hpp                                      \
+    EqualizerPresetsControllerCommands.hpp                    \
+    FavoritesControllerCommands.hpp                           \
+    FrontPanelControllerCommands.hpp                          \
+    GroupsControllerCommands.hpp                              \
+    InfraredControllerCommands.hpp                            \
     ListenerBasis.hpp                                         \
     ListenerBasisDelegate.hpp                                 \
     ListenerBasisAcceptDelegate.hpp                           \
     ListenerFactory.hpp                                       \
     ListenerTelnet.hpp                                        \
+    NetworkControllerCommands.hpp                             \
+    SourcesControllerCommands.hpp                             \
     ZonesControllerCommands.hpp                               \
     $(NULL)
 
@@ -90,14 +98,22 @@ libopenhlx_server_a_SOURCES                                 = \
     CommandResponseBasis.cpp                                  \
     CommandSourceResponseBases.cpp                            \
     CommandVolumeResponseBases.cpp                            \
+    ConfigurationControllerCommands.cpp                       \
     ConnectionBasis.cpp                                       \
     ConnectionFactory.cpp                                     \
     ConnectionManager.cpp                                     \
     ConnectionTelnet.cpp                                      \
+    EqualizerPresetsControllerCommands.cpp                    \
+    FavoritesControllerCommands.cpp                           \
+    FrontPanelControllerCommands.cpp                          \
+    GroupsControllerCommands.cpp                              \
+    InfraredControllerCommands.cpp                            \
     ListenerBasis.cpp                                         \
     ListenerBasisDelegate.cpp                                 \
     ListenerFactory.cpp                                       \
     ListenerTelnet.cpp                                        \
+    NetworkControllerCommands.cpp                             \
+    SourcesControllerCommands.cpp                             \
     ZonesControllerCommands.cpp                               \
     $(NULL)
 

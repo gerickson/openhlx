@@ -25,30 +25,22 @@ include $(abs_top_nlbuild_autotools_dir)/automake/pre.am
 
 noinst_HEADERS                                                             = \
     ConfigurationController.hpp                                              \
-    ConfigurationControllerCommands.hpp                                      \
     ConfigurationControllerDelegate.hpp                                      \
     ContainerControllerBasis.hpp                                             \
     ControllerBasis.hpp                                                      \
     ControllerBasisDelegate.hpp                                              \
     EqualizerBandModelDefaults.hpp                                           \
     EqualizerPresetsController.hpp                                           \
-    EqualizerPresetsControllerCommands.hpp                                   \
     FavoritesController.hpp                                                  \
-    FavoritesControllerCommands.hpp                                          \
     FrontPanelController.hpp                                                 \
-    FrontPanelControllerCommands.hpp                                         \
     GroupsController.hpp                                                     \
-    GroupsControllerCommands.hpp                                             \
     GroupsControllerDelegate.hpp                                             \
     HLXServerController.hpp                                                  \
     HLXServerControllerDelegate.hpp                                          \
     InfraredController.hpp                                                   \
-    InfraredControllerCommands.hpp                                           \
     NameModelDefaults.hpp                                                    \
     NetworkController.hpp                                                    \
-    NetworkControllerCommands.hpp                                            \
     SourcesController.hpp                                                    \
-    SourcesControllerCommands.hpp                                            \
     Utilities.hpp                                                            \
     ZonesController.hpp                                                      \
     $(NULL)
@@ -87,25 +79,17 @@ hlxsimd_LDFLAGS                                                            = \
 
 hlxsimd_SOURCES                                                            = \
     ConfigurationController.cpp                                              \
-    ConfigurationControllerCommands.cpp                                      \
     ContainerControllerBasis.cpp                                             \
     ControllerBasis.cpp                                                      \
     ControllerBasisDelegate.cpp                                              \
     EqualizerPresetsController.cpp                                           \
-    EqualizerPresetsControllerCommands.cpp                                   \
     FavoritesController.cpp                                                  \
-    FavoritesControllerCommands.cpp                                          \
     FrontPanelController.cpp                                                 \
-    FrontPanelControllerCommands.cpp                                         \
     GroupsController.cpp                                                     \
-    GroupsControllerCommands.cpp                                             \
     HLXServerController.cpp                                                  \
     InfraredController.cpp                                                   \
-    InfraredControllerCommands.cpp                                           \
     NetworkController.cpp                                                    \
-    NetworkControllerCommands.cpp                                            \
     SourcesController.cpp                                                    \
-    SourcesControllerCommands.cpp                                            \
     Utilities.cpp                                                            \
     ZonesController.cpp                                                      \
     hlxsimd.cpp                                                              \
