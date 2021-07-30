@@ -996,12 +996,12 @@ int main(int argc, char * const argv[])
 
         if (sListenMaybeURL != NULL)
         {
-            lStatus = lHLXProxy.Start(sConnectMaybeURL, sListenMaybeURL, lUseIPv4, lUseIPv6);
+            lStatus = lHLXProxy.Start(sConnectMaybeURL, sListenMaybeURL, lUseIPv6, lUseIPv4);
             nlREQUIRE_SUCCESS_ACTION(lStatus, done, lHLXProxy.SetStatus(lStatus));
         }
         else
         {
-            lStatus = lHLXProxy.Start(sConnectMaybeURL, lUseIPv4, lUseIPv6);
+            lStatus = lHLXProxy.Start(sConnectMaybeURL, lUseIPv6, lUseIPv4);
             nlREQUIRE_SUCCESS_ACTION(lStatus, done, lHLXProxy.SetStatus(lStatus));
         }
 
