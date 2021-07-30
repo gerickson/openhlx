@@ -25,6 +25,9 @@
 #ifndef OPENHLXPROXYCONTROLLERBASIS_HPP
 #define OPENHLXPROXYCONTROLLERBASIS_HPP
 
+#include <OpenHLX/Common/Errors.hpp>
+
+
 namespace HLX
 {
 
