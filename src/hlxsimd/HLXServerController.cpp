@@ -57,10 +57,10 @@ typedef std::vector<ZoneModel::IdentifierType>   ZoneIdentifiers;
 };
 
 Controller :: Controller(void) :
+    ConnectionManagerDelegate(),
     CommandManagerDelegate(),
     ConfigurationControllerDelegate(),
     ControllerBasisDelegate(),
-    ConnectionManagerDelegate(),
     GroupsControllerDelegate(),
     mRunLoopParameters(),
     mConfigurationPath(),
@@ -127,7 +127,7 @@ Controller :: Init(const RunLoopParameters &aRunLoopParameters, const boost::fil
 
     mRunLoopParameters = aRunLoopParameters;
 
- done:
+done:
     return (lRetval);
 }
 
@@ -325,7 +325,7 @@ Status Controller :: Listen(void)
     lRetval = mConnectionManager.Listen();
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
@@ -338,7 +338,7 @@ Controller :: Listen(const ConnectionManager::Versions &aVersions)
     lRetval = mConnectionManager.Listen(aVersions);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
@@ -364,7 +364,7 @@ Controller :: Listen(const char *aMaybeURL, const ConnectionManager::Versions &a
     lRetval = mConnectionManager.Listen(aMaybeURL, aVersions);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
