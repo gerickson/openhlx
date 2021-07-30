@@ -50,6 +50,7 @@ Controller :: Controller(void) :
     mClientCommandManager(),
     mServerConnectionManager(),
     mServerCommandManager(),
+    mZonesController(),
     mControllersDidRefreshCount(0),
     mDelegate(nullptr),
     mDelegateContext(nullptr)

@@ -40,6 +40,7 @@
 #include <OpenHLX/Server/ConnectionManagerDelegate.hpp>
 
 #include "HLXProxyControllerDelegate.hpp"
+#include "ZonesController.hpp"
 
 
 namespace HLX
@@ -154,6 +155,7 @@ private:
     Client::CommandManager          mClientCommandManager;
     Server::ConnectionManager       mServerConnectionManager;
     Server::CommandManager          mServerCommandManager;
+    ZonesController                 mZonesController;
     size_t                          mControllersDidRefreshCount;
     ControllerDelegate *            mDelegate;
     void *                          mDelegateContext;
