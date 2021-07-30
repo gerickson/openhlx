@@ -46,6 +46,7 @@ libopenhlx_server_a_includedir                              = \
 libopenhlx_server_a_include_HEADERS                         = \
     CommandErrorResponse.hpp                                  \
     CommandManager.hpp                                        \
+    CommandManagerDelegate.hpp                                \
     CommandRequestBasis.hpp                                   \
     CommandResponseBasis.hpp                                  \
     ConnectionBasis.hpp                                       \

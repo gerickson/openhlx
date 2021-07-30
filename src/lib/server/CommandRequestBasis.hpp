@@ -26,8 +26,8 @@
 #ifndef HLXSERVERCOMMANDREQUESTBASIS_HPP
 #define HLXSERVERCOMMANDREQUESTBASIS_HPP
 
-#include <CommandRegularExpressionBasis.hpp>
-#include <CommandRoleDelimitedRegularExpression.hpp>
+#include <OpenHLX/Common/CommandRegularExpressionBasis.hpp>
+#include <OpenHLX/Common/CommandRoleDelimitedRegularExpression.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 
 

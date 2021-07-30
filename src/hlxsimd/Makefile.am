@@ -26,7 +26,6 @@ include $(abs_top_nlbuild_autotools_dir)/automake/pre.am
 noinst_HEADERS                                                             = \
     CommandBalanceResponseBasis.hpp                                          \
     CommandEqualizerBandResponseBasis.hpp                                    \
-    CommandManagerDelegate.hpp                                               \
     CommandNameSetResponseBasis.hpp                                          \
     CommandPropertyResponseBases.hpp                                         \
     CommandQueryResponseBasis.hpp                                            \
