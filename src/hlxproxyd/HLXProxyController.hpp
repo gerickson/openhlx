@@ -26,6 +26,8 @@
 #ifndef OPENHLXPROXYCONTROLLER_HPP
 #define OPENHLXPROXYCONTROLLER_HPP
 
+#include <map>
+
 #include <OpenHLX/Client/CommandManager.hpp>
 #include <OpenHLX/Client/CommandManagerDelegate.hpp>
 #include <OpenHLX/Client/ConnectionManager.hpp>
@@ -146,16 +148,31 @@ private:
     Common::Status InitServer(const Common::RunLoopParameters &aRunLoopParameters);
     Common::Status InitServerConnectionManager(const Common::RunLoopParameters &aRunLoopParameters);
     Common::Status InitServerCommandManager(const Common::RunLoopParameters &aRunLoopParameters);
+    Common::Status InitControllers(const Common::RunLoopParameters &aRunLoopParameters);
+
+    void AddController(ControllerBasis &aController);
 
     bool IsRefreshing(void) const;
 
 private:
+    struct ControllerState
+    {
+        ControllerBasis * mController;
+    };
+
+    typedef std::map<ControllerBasis *, ControllerState> Controllers;
+
+    // Sub-controller order is important since 1) this is the order that
+    // most closely matches the order in which the actual HLX hardware
+    // responds to for the 'query current configuration' command and 2) ...
+
     Common::RunLoopParameters       mRunLoopParameters;
     Client::ConnectionManager       mClientConnectionManager;
     Client::CommandManager          mClientCommandManager;
     Server::ConnectionManager       mServerConnectionManager;
     Server::CommandManager          mServerCommandManager;
     ZonesController                 mZonesController;
+    Controllers                     mControllers;
     size_t                          mControllersDidRefreshCount;
     ControllerDelegate *            mDelegate;
     void *                          mDelegateContext;

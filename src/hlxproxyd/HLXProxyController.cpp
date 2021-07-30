@@ -51,6 +51,7 @@ Controller :: Controller(void) :
     mServerConnectionManager(),
     mServerCommandManager(),
     mZonesController(),
+    mControllers(),
     mControllersDidRefreshCount(0),
     mDelegate(nullptr),
     mDelegateContext(nullptr)
@@ -159,6 +160,7 @@ Controller :: InitServer(const RunLoopParameters &aRunLoopParameters)
     Status  lRetval;
 
 
+
     lRetval = InitServerConnectionManager(aRunLoopParameters);
     nlREQUIRE_SUCCESS(lRetval, done);
 
@@ -201,6 +203,62 @@ Controller :: InitServerCommandManager(const RunLoopParameters &aRunLoopParamete
     return (lRetval);
 }
 
+Status
+Controller :: InitControllers(const RunLoopParameters &aRunLoopParameters)
+{
+    DeclareScopedFunctionTracer(lTracer);
+    Controllers::iterator  lCurrent, lEnd;
+    Status                 lRetval;
+
+
+    (void)aRunLoopParameters;
+
+    // Place the various controllers into the controller
+    // container. Order is important since:
+    //
+    // 1) this is the order that most closely matches the order in
+    //    which the actual HLX hardware responds to for the 'query
+    //    current configuration' command.
+    //
+    // 2) this is the priority we want to run operations like refresh.
+
+    AddController(mZonesController);
+
+    // Intialize the controllers (skipping the configuration
+    // controller as we just handled that).
+
+    lCurrent = mControllers.begin();
+    lEnd     = mControllers.end();
+
+    while (lCurrent != lEnd)
+    {
+        lRetval = lCurrent->second.mController->Init();
+        nlREQUIRE_SUCCESS(lRetval, done);
+
+        // Unconditionally set the delegate (including the
+        // configuration and groups controllers since here, we are
+        // handling their upcast class).
+
+        //lRetval = lCurrent->second.mController->SetDelegate(this);
+        //nlREQUIRE_SUCCESS(lRetval, done);
+
+        lCurrent++;
+    }
+
+ done:
+    return (lRetval);
+}
+
+void
+Controller :: AddController(ControllerBasis &aController)
+{
+    const ControllerState lControllerState = { &aController };
+
+
+    mControllers[&aController] = lControllerState;
+
+    return;
+}
 
 /**
  *  @brief
