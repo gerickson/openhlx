@@ -232,7 +232,7 @@ Controller :: InitControllers(const RunLoopParameters &aRunLoopParameters)
 
     while (lCurrent != lEnd)
     {
-        lRetval = lCurrent->second.mController->Init();
+        lRetval = lCurrent->second.mController->Init(mClientCommandManager);
         nlREQUIRE_SUCCESS(lRetval, done);
 
         // Unconditionally set the delegate (including the
