@@ -24,6 +24,7 @@
 include $(abs_top_nlbuild_autotools_dir)/automake/pre.am
 
 noinst_HEADERS                                                             = \
+    ControllerBasis.hpp                                                      \
     HLXProxyController.hpp                                                   \
     HLXProxyControllerDelegate.hpp                                           \
     ZonesController.hpp                                                      \
@@ -59,6 +60,7 @@ hlxproxyd_LDFLAGS                                                          = \
     $(NULL)
 
 hlxproxyd_SOURCES                                                          = \
+    ControllerBasis.cpp                                                      \
     HLXProxyController.cpp                                                   \
     ZonesController.cpp                                                      \
     hlxproxyd.cpp                                                            \
