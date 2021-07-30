@@ -1,5 +1,5 @@
 /*
- *    Copyright (c) 2020-2021 Grant Erickson
+ *    Copyright (c) 2018-2021 Grant Erickson
  *    All rights reserved.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,16 +18,19 @@
 
 /**
  *    @file
- *      This file defines a delegate interface for the server
- *      connection listener basis object.
+ *      This file defines an object for a HLX server command error
+ *      response buffer.
  *
  */
 
-#ifndef HLXSERVERLISTENERBASISACCEPTDELEGATE_HPP
-#define HLXSERVERLISTENERBASISACCEPTDELEGATE_HPP
+#ifndef HLXSERVERCOMMANDERRORRESPONSE_HPP
+#define HLXSERVERCOMMANDERRORRESPONSE_HPP
+
+#include <stddef.h>
 
 #include <OpenHLX/Common/Errors.hpp>
-#include <SocketAddress.hpp>
+#include <OpenHLX/Server/CommandResponseBasis.hpp>
+
 
 namespace HLX
 {
@@ -35,29 +38,35 @@ namespace HLX
 namespace Server
 {
 
-class ConnectionManager;
+namespace Command
+{
 
 /**
  *  @brief
- *    A delegate interface for the server connection listener basis
- *    object.
+ *    An object for a HLX server command error response buffer.
  *
  *  @ingroup server
+ *  @ingroup command
  *
  */
-class ListenerBasisAcceptDelegate
+class ErrorResponse :
+    public ResponseBasis
 {
 public:
-    ListenerBasisAcceptDelegate(void) = default;
-    ~ListenerBasisAcceptDelegate(void) = default;
+    ErrorResponse(void) = default;
+    virtual ~ErrorResponse(void) = default;
 
-    // Accept
+    // Allow both the base and derived class initializers
 
-    virtual Common::Status ListenerDidAccept(ListenerBasis &aListener, const int &aSocket, const Common::SocketAddress &aAddress) = 0;
+    using ResponseBasis::Init;
+
+    Common::Status Init(void);
 };
+
+}; // namespace Command
 
 }; // namespace Server
 
 }; // namespace HLX
 
-#endif // HLXSERVERLISTENERBASISACCEPTDELEGATE_HPP
+#endif // HLXSERVERCOMMANDERRORRESPONSE_HPP

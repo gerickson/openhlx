@@ -34,11 +34,11 @@
 
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/RunLoopParameters.hpp>
+#include <OpenHLX/Server/ConnectionManager.hpp>
+#include <OpenHLX/Server/ConnectionManagerDelegate.hpp>
 
 #include <CommandManager.hpp>
 #include <CommandManagerDelegate.hpp>
-#include <ConnectionManagerDelegate.hpp>
-#include <ConnectionManager.hpp>
 #include <ConfigurationController.hpp>
 #include <ConfigurationControllerDelegate.hpp>
 #include <EqualizerPresetsController.hpp>
@@ -66,10 +66,10 @@ namespace Server
  *
  */
 class Controller :
+    public ConnectionManagerDelegate,
     public CommandManagerDelegate,
     public ConfigurationControllerDelegate,
     public ControllerBasisDelegate,
-    public ConnectionManagerDelegate,
     public GroupsControllerDelegate
 {
 public:
@@ -118,20 +118,20 @@ public:
     void ConnectionManagerDidListen(ConnectionManager &aConnectionManager, CFURLRef aURLRef) final;
     void ConnectionManagerDidNotListen(ConnectionManager &aConnectionManager, CFURLRef aURLRef, const Common::Error &aError) final;
 
-    // Accept
+    // Accept Delegate Methods
 
     void ConnectionManagerWillAccept(ConnectionManager &aConnectionManager, CFURLRef aURLRef) final;
     void ConnectionManagerIsAccepting(ConnectionManager &aConnectionManager, CFURLRef aURLRef) final;
     void ConnectionManagerDidAccept(ConnectionManager &aConnectionManager, CFURLRef aURLRef) final;
     void ConnectionManagerDidNotAccept(ConnectionManager &aConnectionManager, CFURLRef aURLRef, const Common::Error &aError) final;
 
-    // Disconnect
+    // Disconnect Delegate Methods
 
     void ConnectionManagerWillDisconnect(Common::ConnectionManagerBasis &aConnectionManager, CFURLRef aURLRef) final;
     void ConnectionManagerDidDisconnect(Common::ConnectionManagerBasis &aConnectionManager, CFURLRef aURLRef, const Common::Error &aError) final;
     void ConnectionManagerDidNotDisconnect(Common::ConnectionManagerBasis &aConnectionManager, CFURLRef aURLRef, const Common::Error &aError) final;
 
-    // Error
+    // Error Delegate Method
 
     void ConnectionManagerError(Common::ConnectionManagerBasis &aConnectionManager, const Common::Error &aError) final;
 

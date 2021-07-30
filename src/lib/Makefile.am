@@ -27,6 +27,7 @@ SUBDIRS                       = utilities \
                                 common    \
                                 model     \
                                 client    \
+                                server    \
                                 $(NULL)
 
 include $(abs_top_nlbuild_autotools_dir)/automake/post.am

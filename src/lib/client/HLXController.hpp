@@ -77,8 +77,8 @@ namespace Client
  *
  */
 class Controller :
-    public CommandManagerDelegate,
     public ConnectionManagerDelegate,
+    public CommandManagerDelegate,
     public ControllerBasisDelegate
 {
 public:

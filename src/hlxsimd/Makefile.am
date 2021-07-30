@@ -26,25 +26,15 @@ include $(abs_top_nlbuild_autotools_dir)/automake/pre.am
 noinst_HEADERS                                                             = \
     CommandBalanceResponseBasis.hpp                                          \
     CommandEqualizerBandResponseBasis.hpp                                    \
-    CommandErrorResponse.hpp                                                 \
-    CommandManager.hpp                                                       \
     CommandManagerDelegate.hpp                                               \
     CommandNameSetResponseBasis.hpp                                          \
     CommandPropertyResponseBases.hpp                                         \
     CommandQueryResponseBasis.hpp                                            \
-    CommandRequestBasis.hpp                                                  \
-    CommandResponseBasis.hpp                                                 \
     CommandSourceResponseBases.hpp                                           \
     CommandVolumeResponseBases.hpp                                           \
     ConfigurationController.hpp                                              \
     ConfigurationControllerCommands.hpp                                      \
     ConfigurationControllerDelegate.hpp                                      \
-    ConnectionBasis.hpp                                                      \
-    ConnectionBasisDelegate.hpp                                              \
-    ConnectionFactory.hpp                                                    \
-    ConnectionManager.hpp                                                    \
-    ConnectionManagerDelegate.hpp                                            \
-    ConnectionTelnet.hpp                                                     \
     ContainerControllerBasis.hpp                                             \
     ControllerBasis.hpp                                                      \
     ControllerBasisDelegate.hpp                                              \
@@ -62,11 +52,6 @@ noinst_HEADERS                                                             = \
     HLXServerControllerDelegate.hpp                                          \
     InfraredController.hpp                                                   \
     InfraredControllerCommands.hpp                                           \
-    ListenerBasis.hpp                                                        \
-    ListenerBasisAcceptDelegate.hpp                                          \
-    ListenerBasisDelegate.hpp                                                \
-    ListenerFactory.hpp                                                      \
-    ListenerTelnet.hpp                                                       \
     NameModelDefaults.hpp                                                    \
     NetworkController.hpp                                                    \
     NetworkControllerCommands.hpp                                            \
@@ -88,10 +73,12 @@ hlxsimd_CPPFLAGS                                                           = \
     -I$(top_srcdir)/third_party/NuovationsUtilities/repo/include             \
     -I$(top_srcdir)/src/lib/common                                           \
     -I$(top_srcdir)/src/lib/model                                            \
+    -I$(top_srcdir)/src/lib/server                                           \
     -I$(top_srcdir)/src/lib/utilities                                        \
     $(NULL)
 
 hlxsimd_LDADD                                                              = \
+    $(top_builddir)/src/lib/server/libopenhlx-server.a                       \
     $(top_builddir)/src/lib/common/libopenhlx-common.a                       \
     $(top_builddir)/src/lib/model/libopenhlx-model.a                         \
     $(top_builddir)/src/lib/utilities/libopenhlx-utilities.a                 \
@@ -110,22 +97,13 @@ hlxsimd_LDFLAGS                                                            = \
 hlxsimd_SOURCES                                                            = \
     CommandBalanceResponseBasis.cpp                                          \
     CommandEqualizerBandResponseBasis.cpp                                    \
-    CommandErrorResponse.cpp                                                 \
-    CommandManager.cpp                                                       \
     CommandNameSetResponseBasis.cpp                                          \
     CommandPropertyResponseBases.cpp                                         \
     CommandQueryResponseBasis.cpp                                            \
-    CommandRequestBasis.cpp                                                  \
-    CommandResponseBasis.cpp                                                 \
     CommandSourceResponseBases.cpp                                           \
     CommandVolumeResponseBases.cpp                                           \
     ConfigurationController.cpp                                              \
     ConfigurationControllerCommands.cpp                                      \
-    ConnectionBasis.cpp                                                      \
-    ConnectionBasisDelegate.cpp                                              \
-    ConnectionFactory.cpp                                                    \
-    ConnectionManager.cpp                                                    \
-    ConnectionTelnet.cpp                                                     \
     ContainerControllerBasis.cpp                                             \
     ControllerBasis.cpp                                                      \
     ControllerBasisDelegate.cpp                                              \
@@ -140,10 +118,6 @@ hlxsimd_SOURCES                                                            = \
     HLXServerController.cpp                                                  \
     InfraredController.cpp                                                   \
     InfraredControllerCommands.cpp                                           \
-    ListenerBasis.cpp                                                        \
-    ListenerBasisDelegate.cpp                                                \
-    ListenerFactory.cpp                                                      \
-    ListenerTelnet.cpp                                                       \
     NetworkController.cpp                                                    \
     NetworkControllerCommands.cpp                                            \
     SourcesController.cpp                                                    \

@@ -28,7 +28,7 @@
 
 #include <stddef.h>
 
-#include <CommandResponseBasis.hpp>
+#include <OpenHLX/Client/CommandResponseBasis.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 
 namespace HLX

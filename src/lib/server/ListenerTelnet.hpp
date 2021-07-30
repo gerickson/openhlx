@@ -26,8 +26,9 @@
 #ifndef HLXSERVERLISTENERTELNET_HPP
 #define HLXSERVERLISTENERTELNET_HPP
 
-#include <ListenerBasis.hpp>
 #include <OpenHLX/Common/Errors.hpp>
+#include <OpenHLX/Server/ListenerBasis.hpp>
+
 
 namespace HLX
 {

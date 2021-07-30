@@ -43,11 +43,10 @@
 #include <LogUtilities/LogUtilities.hpp>
 
 #include <OpenHLX/Common/IPAddress.hpp>
+#include <OpenHLX/Server/ConnectionBasis.hpp>
+#include <OpenHLX/Server/ConnectionTelnet.hpp>
+#include <OpenHLX/Server/ListenerTelnet.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
-
-#include <ConnectionBasis.hpp>
-#include <ConnectionTelnet.hpp>
-#include <ListenerTelnet.hpp>
 
 
 using namespace HLX::Common;

@@ -34,9 +34,8 @@
 #include <LogUtilities/LogUtilities.hpp>
 
 #include <OpenHLX/Common/Errors.hpp>
+#include <OpenHLX/Server/ConnectionBasisDelegate.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
-
-#include "ConnectionBasisDelegate.hpp"
 
 
 using namespace HLX::Common;

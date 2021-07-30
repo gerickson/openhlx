@@ -28,8 +28,8 @@
 #ifndef HLXCOMMONCOMMANDROLEDELIMITEDREGULAREXPRESSION_HPP
 #define HLXCOMMONCOMMANDROLEDELIMITEDREGULAREXPRESSION_HPP
 
-#include <CommandDelimitedRegularExpression.hpp>
-#include <CommandRole.hpp>
+#include <OpenHLX/Common/CommandDelimitedRegularExpression.hpp>
+#include <OpenHLX/Common/CommandRole.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 
 namespace HLX

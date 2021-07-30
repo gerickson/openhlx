@@ -37,8 +37,7 @@
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/RegularExpression.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
-
-#include <ConnectionBasis.hpp>
+#include <OpenHLX/Server/ConnectionBasis.hpp>
 
 
 namespace HLX

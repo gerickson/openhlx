@@ -57,10 +57,10 @@ typedef std::vector<ZoneModel::IdentifierType>   ZoneIdentifiers;
 };
 
 Controller :: Controller(void) :
+    ConnectionManagerDelegate(),
     CommandManagerDelegate(),
     ConfigurationControllerDelegate(),
     ControllerBasisDelegate(),
-    ConnectionManagerDelegate(),
     GroupsControllerDelegate(),
     mRunLoopParameters(),
     mConfigurationPath(),
@@ -98,7 +98,8 @@ Controller :: ~Controller(void)
     }
 }
 
-Status Controller :: Init(const RunLoopParameters &aRunLoopParameters, const boost::filesystem::path &aConfigurationPath)
+Status
+Controller :: Init(const RunLoopParameters &aRunLoopParameters, const boost::filesystem::path &aConfigurationPath)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
@@ -126,11 +127,12 @@ Status Controller :: Init(const RunLoopParameters &aRunLoopParameters, const boo
 
     mRunLoopParameters = aRunLoopParameters;
 
- done:
+done:
     return (lRetval);
 }
 
-Status Controller :: InitConnectionManager(const RunLoopParameters &aRunLoopParameters)
+Status
+Controller :: InitConnectionManager(const RunLoopParameters &aRunLoopParameters)
 {
     Status  lRetval;
 
@@ -160,7 +162,8 @@ Status Controller :: InitCommandManager(const RunLoopParameters &aRunLoopParamet
     return (lRetval);
 }
 
-Status Controller :: InitControllers(const RunLoopParameters &aRunLoopParameters)
+Status
+Controller :: InitControllers(const RunLoopParameters &aRunLoopParameters)
 {
     Controllers::iterator  lCurrent, lEnd;
     Status                 lRetval;
@@ -239,7 +242,8 @@ Status Controller :: InitControllers(const RunLoopParameters &aRunLoopParameters
     return (lRetval);
 }
 
-Status Controller :: InitConfiguration(const RunLoopParameters &aRunLoopParameters, const boost::filesystem::path &aPath)
+Status
+Controller :: InitConfiguration(const RunLoopParameters &aRunLoopParameters, const boost::filesystem::path &aPath)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status  lRetval;
@@ -321,7 +325,7 @@ Status Controller :: Listen(void)
     lRetval = mConnectionManager.Listen();
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
@@ -334,7 +338,7 @@ Controller :: Listen(const ConnectionManager::Versions &aVersions)
     lRetval = mConnectionManager.Listen(aVersions);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
@@ -360,16 +364,18 @@ Controller :: Listen(const char *aMaybeURL, const ConnectionManager::Versions &a
     lRetval = mConnectionManager.Listen(aMaybeURL, aVersions);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
-ControllerDelegate *Controller :: GetDelegate(void) const
+ControllerDelegate *
+Controller :: GetDelegate(void) const
 {
     return (mDelegate);
 }
 
-Status Controller :: SetDelegate(ControllerDelegate *aDelegate, void *aContext)
+Status
+Controller :: SetDelegate(ControllerDelegate *aDelegate, void *aContext)
 {
     Status lRetval = kStatus_Success;
 

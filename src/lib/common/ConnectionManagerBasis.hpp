@@ -159,6 +159,13 @@ private:
     ConnectionManagerApplicationDataDelegate *  mApplicationDataDelegate;
 };
 
+namespace Utilities
+{
+
+extern ConnectionManagerBasis::Versions GetVersions(const bool &aUseIPv6, const bool &aUseIPv4);
+
+}; // namespace Utilities
+
 }; // namespace Common
 
 }; // namespace HLX

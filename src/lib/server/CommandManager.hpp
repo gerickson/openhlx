@@ -37,10 +37,9 @@
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/RegularExpression.hpp>
 #include <OpenHLX/Common/RunLoopParameters.hpp>
-
-#include <CommandRequestBasis.hpp>
-#include <ConnectionManager.hpp>
-#include <ConnectionManagerDelegate.hpp>
+#include <OpenHLX/Server/CommandRequestBasis.hpp>
+#include <OpenHLX/Server/ConnectionManager.hpp>
+#include <OpenHLX/Server/ConnectionManagerDelegate.hpp>
 
 
 namespace HLX

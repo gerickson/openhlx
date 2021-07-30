@@ -19,12 +19,12 @@
 /**
  *    @file
  *      This file defines an object for creating HLX server
- *      network connection listeners.
+ *      peer-to-peer network connections.
  *
  */
 
-#ifndef HLXSERVERLISTENERFACTORY_HPP
-#define HLXSERVERLISTENERFACTORY_HPP
+#ifndef HLXSERVERCONNECTIONFACTORY_HPP
+#define HLXSERVERCONNECTIONFACTORY_HPP
 
 #include <map>
 #include <memory>
@@ -32,7 +32,8 @@
 #include <CoreFoundation/CFURL.h>
 
 #include <OpenHLX/Common/Errors.hpp>
-#include <RunLoopParameters.hpp>
+#include <OpenHLX/Common/RunLoopParameters.hpp>
+
 
 namespace HLX
 {
@@ -40,36 +41,37 @@ namespace HLX
 namespace Server
 {
 
-class ListenerBasis;
+class ConnectionBasis;
 
 /**
  *  @brief
- *    An object for creating HLX server network connection listeners.
+ *    An object for creating HLX server peer-to-peer network
+ *    connections.
  *
  *  @ingroup server
  *
  */
-class ListenerFactory
+class ConnectionFactory
 {
 
 public:
-    ListenerFactory(void);
-    ~ListenerFactory(void);
+    ConnectionFactory(void);
+    ~ConnectionFactory(void);
 
     Common::Status Init(const Common::RunLoopParameters &aRunLoopParameters);
 
     bool SupportsScheme(CFStringRef aSchemeRef) const;
-    std::unique_ptr<ListenerBasis> CreateListener(CFStringRef aSchemeRef) const;
+    std::unique_ptr<ConnectionBasis> CreateConnection(CFStringRef aSchemeRef) const;
 
 private:
-    typedef std::map<CFStringRef, ListenerBasis *> Listeners;
+    typedef std::map<CFStringRef, ConnectionBasis *> Connections;
 
     Common::RunLoopParameters  mRunLoopParameters;
-    Listeners                  mListeners;
+    Connections                mConnections;
 };
 
 }; // namespace Server
 
 }; // namespace HLX
 
-#endif // HLXSERVERLISTENERFACTORY_HPP
+#endif // HLXSERVERCONNECTIONFACTORY_HPP

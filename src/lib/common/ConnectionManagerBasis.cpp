@@ -574,6 +574,36 @@ ConnectionManagerBasis :: ParseURL(const char *aMaybeURL, CFURLRef &aOutURL)
     return (lRetval);
 }
 
+namespace Utilities
+{
+
+/**
+ *  Return a version object indicating which IP versions are desired.
+ *
+ *  @param[in]  aUseIPv6  An immutable reference indicating whether
+ *                        IPv6 should be used.
+ *  @param[in]  aUseIPv4  An immutable reference indicating
+ *                        IPv4 should be used.
+ *
+ *  @returns
+ *    The IP versions appropriate for the specified parameters.
+ *
+ */
+ConnectionManagerBasis::Versions
+GetVersions(const bool &aUseIPv6, const bool &aUseIPv4)
+{
+    using Version  = ConnectionManagerBasis::Version;
+    using Versions = ConnectionManagerBasis::Versions;
+
+    const Versions kVersions =
+        (((aUseIPv6) ? Version::kIPv6 : 0) |
+         ((aUseIPv4) ? Version::kIPv4 : 0));
+
+    return (kVersions);
+}
+
+}; // namespace Utilities
+
 }; // namespace Common
 
 }; // namespace HLX

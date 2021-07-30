@@ -188,6 +188,7 @@ Controller :: DerivedGroupState :: UpdateVolume(const VolumeModel::LevelType &aV
  *
  */
 Controller :: Controller(void) :
+    ConnectionManagerDelegate(),
     CommandManagerDelegate(),
     mConnectionManager(),
     mCommandManager(),

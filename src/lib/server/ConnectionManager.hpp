@@ -30,21 +30,20 @@
 #include <unordered_set>
 #include <vector>
 
+#include <CoreFoundation/CFURL.h>
+
 #include <OpenHLX/Common/ConnectionManagerApplicationDataDelegate.hpp>
 #include <OpenHLX/Common/ConnectionManagerBasis.hpp>
 #include <OpenHLX/Common/SocketAddress.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
-
-#include <ConnectionBasis.hpp>
-#include <ConnectionBasisDelegate.hpp>
-#include <ConnectionFactory.hpp>
-#include <ConnectionManagerDelegate.hpp>
-#include <ListenerBasis.hpp>
-#include <ListenerBasisAcceptDelegate.hpp>
-#include <ListenerBasisDelegate.hpp>
-#include <ListenerFactory.hpp>
-
-#include <CoreFoundation/CFURL.h>
+#include <OpenHLX/Server/ConnectionBasis.hpp>
+#include <OpenHLX/Server/ConnectionBasisDelegate.hpp>
+#include <OpenHLX/Server/ConnectionFactory.hpp>
+#include <OpenHLX/Server/ConnectionManagerDelegate.hpp>
+#include <OpenHLX/Server/ListenerBasis.hpp>
+#include <OpenHLX/Server/ListenerBasisAcceptDelegate.hpp>
+#include <OpenHLX/Server/ListenerBasisDelegate.hpp>
+#include <OpenHLX/Server/ListenerFactory.hpp>
 
 
 namespace HLX

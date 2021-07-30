@@ -26,11 +26,12 @@
 #ifndef HLXSERVERLISTENERBASISDELEGATE_HPP
 #define HLXSERVERLISTENERBASISDELEGATE_HPP
 
-#include <ConnectionBuffer.hpp>
+#include <OpenHLX/Common/ConnectionBuffer.hpp>
 #include <OpenHLX/Common/Errors.hpp>
-#include <Timeout.hpp>
+#include <OpenHLX/Common/Timeout.hpp>
 
 #include <CoreFoundation/CFURL.h>
+
 
 namespace HLX
 {

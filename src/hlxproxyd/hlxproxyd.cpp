@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file....
+ *      This file implements a HLX control caching proxy daemon program
+ *      executable.
  *
  */
 
@@ -43,6 +44,7 @@
 #include <LogUtilities/LogUtilities.hpp>
 #include <NuovationsUtilities/GenerateShortOptions.hpp>
 
+#include <OpenHLX/Common/ConnectionManagerBasis.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/RunLoopParameters.hpp>
 #include <OpenHLX/Common/Version.hpp>
@@ -53,6 +55,7 @@
 
 
 using namespace HLX;
+using namespace HLX::Client;
 using namespace HLX::Common;
 using namespace HLX::Proxy;
 using namespace HLX::Utilities;
@@ -65,10 +68,12 @@ using namespace std;
 
 #define OPT_BASE                     0x00001000
 
+#define OPT_CONNECT                  'c'
 #define OPT_DEBUG                    'd'
 #define OPT_HELP                     'h'
 #define OPT_IPV4_ONLY                '4'
 #define OPT_IPV6_ONLY                '6'
+#define OPT_LISTEN                   'l'
 #define OPT_QUIET                    'q'
 #define OPT_SYSLOG                   's'
 #define OPT_VERBOSE                  'v'
@@ -98,13 +103,18 @@ static Log::Level           sVerbose             = 0;
 
 static const char *         sProgram             = nullptr;
 
+static const char *         sConnectMaybeURL     = nullptr;
+static const char *         sListenMaybeURL      = nullptr;
+
 static HLXProxy *           sHLXProxy            = nullptr;
 
 static const struct option  sOptions[] = {
+    { "connect",                 required_argument,  nullptr,   OPT_CONNECT                 },
     { "debug",                   optional_argument,  nullptr,   OPT_DEBUG                   },
     { "help",                    no_argument,        nullptr,   OPT_HELP                    },
     { "ipv4-only",               no_argument,        nullptr,   OPT_IPV4_ONLY               },
     { "ipv6-only",               no_argument,        nullptr,   OPT_IPV6_ONLY               },
+    { "listen",                  required_argument,  nullptr,   OPT_LISTEN                  },
     { "quiet",                   no_argument,        nullptr,   OPT_QUIET                   },
     { "verbose",                 optional_argument,  nullptr,   OPT_VERBOSE                 },
     { "version",                 no_argument,        nullptr,   OPT_VERSION                 },
@@ -136,6 +146,8 @@ static const char * const   sLongUsageString =
 "\n"
 "  -4, --ipv4-only             Force hlxproxyd to use IPv4 addresses only.\n"
 "  -6, --ipv6-only             Force hlxproxyd to use IPv6 addresses only.\n"
+"  -c, --connect=HOST          TBD.\n"
+"  -l, --listen=HOST           TBD.\n"
 "\n";
 
 class HLXProxy :
@@ -147,7 +159,13 @@ public:
 
     Status Init(void);
 
-    Status Start(void);
+    Status Start(const char *aConnectMaybeURL,
+                 const bool &aUseIPv6,
+                 const bool &aUseIPv4);
+    Status Start(const char *aConnectMaybeURL,
+                 const char *aListenMaybeURL,
+                 const bool &aUseIPv6,
+                 const bool &aUseIPv4);
     Status Stop(void);
     Status Stop(const Status &aStatus);
 
@@ -157,6 +175,55 @@ public:
     void SetStatus(const Status &aStatus);
 
 private:
+    // Resolve
+
+    void ControllerWillResolve(Controller &aController, const char *aHost) final;
+    void ControllerIsResolving(Controller &aController, const char *aHost) final;
+    void ControllerDidResolve(Controller &aController, const char *aHost, const IPAddress &aIPAddress) final;
+    void ControllerDidNotResolve(Controller &aController, const char *aHost, const Error &aError) final;
+
+    // Client-facing Server Listen
+
+    void ControllerWillListen(Controller &aController, CFURLRef aURLRef) final;
+    void ControllerIsListening(Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidListen(Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidNotListen(Controller &aController, CFURLRef aURLRef, const Common::Error &aError) final;
+
+    // Client-facing Server Accept
+
+    void ControllerWillAccept(Controller &aController, CFURLRef aURLRef) final;
+    void ControllerIsAccepting(Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidAccept(Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidNotAccept(Controller &aController, CFURLRef aURLRef, const Error &aError) final;
+
+    // Server-facing Client Connect
+
+    void ControllerWillConnect(Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout) final;
+    void ControllerIsConnecting(Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout) final;
+    void ControllerDidConnect(Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidNotConnect(Controller &aController, CFURLRef aURLRef, const Error &aError) final;
+
+    // Disconnect
+
+    void ControllerWillDisconnect(Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidDisconnect(Controller &aController, CFURLRef aURLRef, const Error &aError) final;
+    void ControllerDidNotDisconnect(Controller &aController, CFURLRef aURLRef, const Error &aError) final;
+
+    // Server-facing Client Refresh / Reload
+
+    void ControllerWillRefresh(Controller &aController) final;
+    void ControllerIsRefreshing(Controller &aController, const uint8_t &aPercentComplete) final;
+    void ControllerDidRefresh(Controller &aController) final;
+    void ControllerDidNotRefresh(Controller &aController, const Error &aError) final;
+
+    // Server-facing Client State Change
+
+    void ControllerStateDidChange(Controller &aController, const StateChange::NotificationBasis &aStateChangeNotification) final;
+
+    // Error
+
+    void ControllerError(Controller &aController, const Error &aError) final;
+
     static void OnSignal(int aSignal);
 
 private:
@@ -196,14 +263,39 @@ Status HLXProxy :: Init(void)
     return (lRetval);
 }
 
-Status HLXProxy :: Start(void)
+Status
+HLXProxy :: Start(const char *aConnectMaybeURL,
+                  const bool &aUseIPv6,
+                  const bool &aUseIPv4)
 {
+    using Common::Utilities::GetVersions;
+
     Status lRetval = kStatus_Success;
 
-    lRetval = mHLXProxyController.Connect();
+    lRetval = mHLXProxyController.Connect(aConnectMaybeURL, GetVersions(aUseIPv4, aUseIPv6));
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mHLXProxyController.Listen();
+    lRetval = mHLXProxyController.Listen(GetVersions(aUseIPv6, aUseIPv4));
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
+Status
+HLXProxy :: Start(const char *aConnectMaybeURL,
+                  const char *aListenMaybeURL,
+                  const bool &aUseIPv6,
+                  const bool &aUseIPv4)
+{
+    using Common::Utilities::GetVersions;
+
+    Status lRetval = kStatus_Success;
+
+    lRetval = mHLXProxyController.Connect(aConnectMaybeURL, GetVersions(aUseIPv6, aUseIPv4));
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = mHLXProxyController.Listen(aListenMaybeURL, GetVersions(aUseIPv6, aUseIPv4));
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -246,6 +338,245 @@ void HLXProxy :: SetStatus(const Status &aStatus)
     mStatus = aStatus;
 }
 
+// Controller Delegate Methods
+
+// Resolve
+
+void HLXProxy :: ControllerWillResolve(Controller &aController, const char *aHost)
+{
+    (void)aController;
+
+    Log::Info().Write("Will resolve \"%s\".\n", aHost);
+}
+
+void HLXProxy :: ControllerIsResolving(Controller &aController, const char *aHost)
+{
+    (void)aController;
+
+    Log::Info().Write("Is resolving \"%s\".\n", aHost);
+}
+
+void HLXProxy :: ControllerDidResolve(Controller &aController, const char *aHost, const IPAddress &aIPAddress)
+{
+    char   lBuffer[INET6_ADDRSTRLEN];
+    Status lStatus;
+
+    (void)aController;
+
+    lStatus = aIPAddress.ToString(lBuffer, sizeof (lBuffer));
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    Log::Info().Write("Did resolve \"%s\" to '%s'.\n", aHost, lBuffer);
+
+ done:
+    return;
+}
+
+void HLXProxy :: ControllerDidNotResolve(Controller &aController, const char *aHost, const Error &aError)
+{
+    (void)aController;
+
+    Log::Error().Write("Did not resolve \"%s\": %d (%s).\n", aHost, aError, strerror(-aError));
+}
+
+// Client-facing Server Listen
+
+void HLXProxy :: ControllerWillListen(Controller &aController, CFURLRef aURLRef)
+{
+    (void)aController;
+
+    Log::Info().Write("Will listen at %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
+}
+
+void HLXProxy :: ControllerIsListening(Controller &aController, CFURLRef aURLRef)
+{
+    (void)aController;
+
+    Log::Info().Write("Listening at %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
+}
+
+void HLXProxy :: ControllerDidListen(Controller &aController, CFURLRef aURLRef)
+{
+    (void)aController;
+
+    Log::Info().Write("Listened at %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
+}
+
+void HLXProxy :: ControllerDidNotListen(Controller &aController, CFURLRef aURLRef, const Common::Error &aError)
+{
+    (void)aController;
+
+    Log::Error().Write("Did not listen at %s: %d (%s).\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString(), aError, strerror(-aError));
+}
+
+// Client-facing Server Accept
+
+void HLXProxy :: ControllerWillAccept(Controller &aController, CFURLRef aURLRef)
+{
+    (void)aController;
+
+    Log::Info().Write("Will accept from %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
+}
+
+void HLXProxy :: ControllerIsAccepting(Controller &aController, CFURLRef aURLRef)
+{
+    (void)aController;
+
+    Log::Info().Write("Accepting from %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
+}
+
+void HLXProxy :: ControllerDidAccept(Controller &aController, CFURLRef aURLRef)
+{
+    (void)aController;
+
+    Log::Info().Write("Accepted from %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
+}
+
+void HLXProxy :: ControllerDidNotAccept(Controller &aController, CFURLRef aURLRef, const Error &aError)
+{
+    (void)aController;
+
+    Log::Error().Write("Did not accept from %s: %d (%s).\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString(), aError, strerror(-aError));
+}
+
+// Server-facing Client Connect
+
+void HLXProxy :: ControllerWillConnect(Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout)
+{
+    (void)aController;
+
+    Log::Info().Write("Will connect to %s with %u ms timeout.\n", CFString(CFURLGetString(aURLRef)).GetCString(), aTimeout.GetMilliseconds());
+}
+
+void HLXProxy :: ControllerIsConnecting(Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout)
+{
+    (void)aController;
+
+    Log::Info().Write("Connecting to %s with %u ms timeout.\n", CFString(CFURLGetString(aURLRef)).GetCString(), aTimeout.GetMilliseconds());
+}
+
+void HLXProxy :: ControllerDidConnect(Controller &aController, CFURLRef aURLRef)
+{
+    (void)aController;
+
+    Log::Info().Write("Connected to %s.\n", CFString(CFURLGetString(aURLRef)).GetCString());
+
+ done:
+    return;
+}
+
+void HLXProxy :: ControllerDidNotConnect(Controller &aController, CFURLRef aURLRef, const Error &aError)
+{
+    (void)aController;
+
+    Log::Error().Write("Did not connect to %s: %d (%s).\n", CFString(CFURLGetString(aURLRef)).GetCString(), aError, strerror(-aError));
+
+    Stop(aError);
+}
+
+// Disconnect
+
+void HLXProxy :: ControllerWillDisconnect(Controller &aController, CFURLRef aURLRef)
+{
+    (void)aController;
+
+    Log::Info().Write("Will disconnect from %s.\n", CFString(CFURLGetString(aURLRef)).GetCString());
+}
+
+void HLXProxy :: ControllerDidDisconnect(Controller &aController, CFURLRef aURLRef, const Error &aError)
+{
+    (void)aController;
+
+    if (aError >= kStatus_Success)
+    {
+        Log::Info().Write("Disconnected from %s.\n", CFString(CFURLGetString(aURLRef)).GetCString());
+    }
+    else
+    {
+        Log::Info().Write("Disconnected from %s: %d (%s).\n", CFString(CFURLGetString(aURLRef)).GetCString(), aError, strerror(-aError));
+    }
+
+    // Only call stop if we have non-error status; otherwise a
+    // DidNot... or Error delegation already called it.
+
+    if (aError != kStatus_Success)
+    {
+        Stop(aError);
+    }
+
+ done:
+    return;
+}
+
+void HLXProxy :: ControllerDidNotDisconnect(Controller &aController, CFURLRef aURLRef, const Error &aError)
+{
+    (void)aController;
+
+    Log::Error().Write("Did not disconnect from %s: %d.\n", CFString(CFURLGetString(aURLRef)).GetCString(), aError);
+}
+
+// Server-facing Client Refresh / Reload
+
+void HLXProxy :: ControllerWillRefresh(Controller &aController)
+{
+    (void)aController;
+
+    Log::Info().Write("Waiting for client data...\n");
+
+    return;
+}
+
+void HLXProxy :: ControllerIsRefreshing(Controller &aController, const uint8_t &aPercentComplete)
+{
+    (void)aController;
+
+    Log::Info().Write("%u%% of client data received.\n", aPercentComplete);
+}
+
+void HLXProxy :: ControllerDidRefresh(Controller &aController)
+{
+    (void)aController;
+
+    Log::Info().Write("Client data received.\n");
+
+    return;
+}
+
+void HLXProxy :: ControllerDidNotRefresh(Controller &aController, const Error &aError)
+{
+    (void)aController;
+
+    Stop(aError);
+}
+
+// Server-facing Client State Change
+
+void HLXProxy :: ControllerStateDidChange(Controller &aController, const Client::StateChange::NotificationBasis &aStateChangeNotification)
+{
+    const StateChange::Type lType = aStateChangeNotification.GetType();
+
+    (void)aController;
+
+    switch (lType)
+    {
+    default:
+        Log::Error().Write("Unhandled state change notification type %d\n", lType);
+        break;
+    }
+
+    return;
+}
+
+// Error
+
+void HLXProxy :: ControllerError(Controller &aController, const Error &aError)
+{
+    (void)aController;
+
+    Log::Error().Write("Error: %d (%s).\n", aError, strerror(-aError));
+
+    Stop(aError);
+}
 
 void HLXProxy :: OnSignal(int aSignal)
 {
@@ -429,6 +760,10 @@ DecodeOptions(const char *inProgram,
 
         switch (c) {
 
+        case OPT_CONNECT:
+            sConnectMaybeURL = optarg;
+            break;
+
         case OPT_DEBUG:
             error += SetLevel(sDebug, optarg);
             break;
@@ -459,6 +794,10 @@ DecodeOptions(const char *inProgram,
             {
                 sOptFlags |= kOptIPv6Only;
             }
+            break;
+
+        case OPT_LISTEN:
+            sListenMaybeURL = optarg;
             break;
 
         case OPT_QUIET:
@@ -505,14 +844,6 @@ DecodeOptions(const char *inProgram,
     // processing actually starts.
 
     optind = 0;
-
-    // At this point, we should have exactly one other argument, the
-    // URL, path, or host and optional port to connect to.
-
-    if (argc != 1) {
-        error++;
-        goto exit;
-    }
 
     // If there were any errors parsing the command line arguments,
     // remind the user of proper invocation semantics and return an
@@ -663,8 +994,16 @@ int main(int argc, char * const argv[])
         lStatus = lHLXProxy.Init();
         nlREQUIRE_SUCCESS_ACTION(lStatus, done, lHLXProxy.SetStatus(lStatus));
 
-        lStatus = lHLXProxy.Start();
-        nlREQUIRE_SUCCESS_ACTION(lStatus, done, lHLXProxy.SetStatus(lStatus));
+        if (sListenMaybeURL != NULL)
+        {
+            lStatus = lHLXProxy.Start(sConnectMaybeURL, sListenMaybeURL, lUseIPv6, lUseIPv4);
+            nlREQUIRE_SUCCESS_ACTION(lStatus, done, lHLXProxy.SetStatus(lStatus));
+        }
+        else
+        {
+            lStatus = lHLXProxy.Start(sConnectMaybeURL, lUseIPv6, lUseIPv4);
+            nlREQUIRE_SUCCESS_ACTION(lStatus, done, lHLXProxy.SetStatus(lStatus));
+        }
 
         Log::Debug().Write("Proxy started with status %d\n", lStatus);
     }
