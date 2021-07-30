@@ -258,11 +258,11 @@ private:
         Common::Status AddSource(const Model::SourceModel::IdentifierType &aSourceIdentifier);
         void UpdateVolume(const Model::VolumeModel::LevelType &aVolume);
 
-        size_t                           mZoneCount;
-        Model::VolumeModel::MuteType            mGroupMute;
-        mutable Model::VolumeModel::LevelType  mGroupVolume;
-        int16_t                          mGroupVolumeAccumulator;
-        Model::GroupModel::Sources              mGroupSources;
+        size_t                                mZoneCount;
+        Model::VolumeModel::MuteType          mGroupMute;
+        mutable Model::VolumeModel::LevelType mGroupVolume;
+        int16_t                               mGroupVolumeAccumulator;
+        Model::GroupModel::Sources            mGroupSources;
     };
 
     void HandleGroupZoneStateChangeInteractions(const StateChange::GroupsNotificationBasis &aGroupStateChangeNotification, const StateChange::Type &aType, const Model::GroupModel &aGroupModel, DerivedGroupState &aDerivedGroupState);
