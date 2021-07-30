@@ -36,14 +36,12 @@ hlxproxyd_CPPFLAGS                                                         = \
     -I$(top_srcdir)/third_party/CFUtilities/repo/include                     \
     -I$(top_srcdir)/third_party/LogUtilities/repo/include                    \
     -I$(top_srcdir)/third_party/NuovationsUtilities/repo/include             \
-    -I$(top_srcdir)/src/lib/client                                           \
-    -I$(top_srcdir)/src/lib/common                                           \
-    -I$(top_srcdir)/src/lib/model                                            \
-    -I$(top_srcdir)/src/lib/utilities                                        \
+    -I$(top_srcdir)/src/include                                              \
     $(NULL)
 
 hlxproxyd_LDADD                                                            = \
     $(top_builddir)/src/lib/client/libopenhlx-client.a                       \
+    $(top_builddir)/src/lib/server/libopenhlx-server.a                       \
     $(top_builddir)/src/lib/common/libopenhlx-common.a                       \
     $(top_builddir)/src/lib/model/libopenhlx-model.a                         \
     $(top_builddir)/src/lib/utilities/libopenhlx-utilities.a                 \
