@@ -44,6 +44,10 @@ libopenhlx_server_a_includedir                              = \
 # Public library headers to distribute and install.
 
 libopenhlx_server_a_include_HEADERS                         = \
+    CommandErrorResponse.hpp                                  \
+    CommandManager.hpp                                        \
+    CommandRequestBasis.hpp                                   \
+    CommandResponseBasis.hpp                                  \
     ConnectionBasis.hpp                                       \
     ConnectionBasisDelegate.hpp                               \
     ConnectionFactory.hpp                                     \
@@ -66,6 +70,10 @@ libopenhlx_server_a_CPPFLAGS                                = \
     $(NULL)
 
 libopenhlx_server_a_SOURCES                                 = \
+    CommandErrorResponse.cpp                                  \
+    CommandManager.cpp                                        \
+    CommandRequestBasis.cpp                                   \
+    CommandResponseBasis.cpp                                  \
     ConnectionBasis.cpp                                       \
     ConnectionFactory.cpp                                     \
     ConnectionManager.cpp                                     \

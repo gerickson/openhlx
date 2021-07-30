@@ -18,21 +18,19 @@
 
 /**
  *    @file
- *      This file defines an abstract base object for composing HLX
- *      server command response buffers.
+ *      This file defines an object for a HLX server command error
+ *      response buffer.
  *
  */
 
-#ifndef HLXSERVERCOMMANDRESPONSEBASIS_HPP
-#define HLXSERVERCOMMANDRESPONSEBASIS_HPP
-
-#include <vector>
+#ifndef HLXSERVERCOMMANDERRORRESPONSE_HPP
+#define HLXSERVERCOMMANDERRORRESPONSE_HPP
 
 #include <stddef.h>
 
-#include <CommandBufferBasis.hpp>
-#include <CommandRoleDelimitedBuffer.hpp>
 #include <OpenHLX/Common/Errors.hpp>
+#include <OpenHLX/Server/CommandResponseBasis.hpp>
+
 
 namespace HLX
 {
@@ -45,24 +43,24 @@ namespace Command
 
 /**
  *  @brief
- *    An abstract base object for composing HLX server command
- *    response buffers.
+ *    An object for a HLX server command error response buffer.
  *
  *  @ingroup server
  *  @ingroup command
  *
  */
-class ResponseBasis :
-    public Common::Command::BufferBasis,
-    public Common::Command::RoleDelimitedBuffer
+class ErrorResponse :
+    public ResponseBasis
 {
-protected:
-    ResponseBasis(void) = default;
-    virtual ~ResponseBasis(void) = default;
+public:
+    ErrorResponse(void) = default;
+    virtual ~ErrorResponse(void) = default;
 
-    virtual Common::Status Init(const char *inBuffer);
-    virtual Common::Status Init(const char *inBuffer, const size_t &inSize) final;
-    virtual Common::Status Init(const char *inStart, const char *inEnd) final;
+    // Allow both the base and derived class initializers
+
+    using ResponseBasis::Init;
+
+    Common::Status Init(void);
 };
 
 }; // namespace Command
@@ -71,4 +69,4 @@ protected:
 
 }; // namespace HLX
 
-#endif // HLXSERVERCOMMANDRESPONSEBASIS_HPP
+#endif // HLXSERVERCOMMANDERRORRESPONSE_HPP

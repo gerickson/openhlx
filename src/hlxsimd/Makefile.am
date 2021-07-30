@@ -26,14 +26,10 @@ include $(abs_top_nlbuild_autotools_dir)/automake/pre.am
 noinst_HEADERS                                                             = \
     CommandBalanceResponseBasis.hpp                                          \
     CommandEqualizerBandResponseBasis.hpp                                    \
-    CommandErrorResponse.hpp                                                 \
-    CommandManager.hpp                                                       \
     CommandManagerDelegate.hpp                                               \
     CommandNameSetResponseBasis.hpp                                          \
     CommandPropertyResponseBases.hpp                                         \
     CommandQueryResponseBasis.hpp                                            \
-    CommandRequestBasis.hpp                                                  \
-    CommandResponseBasis.hpp                                                 \
     CommandSourceResponseBases.hpp                                           \
     CommandVolumeResponseBases.hpp                                           \
     ConfigurationController.hpp                                              \
@@ -101,13 +97,9 @@ hlxsimd_LDFLAGS                                                            = \
 hlxsimd_SOURCES                                                            = \
     CommandBalanceResponseBasis.cpp                                          \
     CommandEqualizerBandResponseBasis.cpp                                    \
-    CommandErrorResponse.cpp                                                 \
-    CommandManager.cpp                                                       \
     CommandNameSetResponseBasis.cpp                                          \
     CommandPropertyResponseBases.cpp                                         \
     CommandQueryResponseBasis.cpp                                            \
-    CommandRequestBasis.cpp                                                  \
-    CommandResponseBasis.cpp                                                 \
     CommandSourceResponseBases.cpp                                           \
     CommandVolumeResponseBases.cpp                                           \
     ConfigurationController.cpp                                              \

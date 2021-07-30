@@ -35,14 +35,14 @@
 #include <CFUtilities/CFUtilities.hpp>
 
 #include <LogUtilities/LogUtilities.hpp>
+
 #include <OpenHLX/Common/ConnectionBuffer.hpp>
 #include <OpenHLX/Common/Errors.hpp>
+#include <OpenHLX/Server/CommandErrorResponse.hpp>
+#include <OpenHLX/Server/CommandManager.hpp>
+#include <OpenHLX/Server/CommandRequestBasis.hpp>
+#include <OpenHLX/Server/CommandResponseBasis.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
-
-#include <CommandErrorResponse.hpp>
-#include <CommandManager.hpp>
-#include <CommandRequestBasis.hpp>
-#include <CommandResponseBasis.hpp>
 
 
 using namespace HLX::Common;
