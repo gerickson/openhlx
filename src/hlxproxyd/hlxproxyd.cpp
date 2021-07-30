@@ -114,7 +114,7 @@ static const struct option  sOptions[] = {
     { "help",                    no_argument,        nullptr,   OPT_HELP                    },
     { "ipv4-only",               no_argument,        nullptr,   OPT_IPV4_ONLY               },
     { "ipv6-only",               no_argument,        nullptr,   OPT_IPV6_ONLY               },
-    { "listen",                  optional_argument,  nullptr,   OPT_LISTEN                  },
+    { "listen",                  required_argument,  nullptr,   OPT_LISTEN                  },
     { "quiet",                   no_argument,        nullptr,   OPT_QUIET                   },
     { "verbose",                 optional_argument,  nullptr,   OPT_VERBOSE                 },
     { "version",                 no_argument,        nullptr,   OPT_VERSION                 },
