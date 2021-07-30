@@ -45,6 +45,7 @@ Controller :: Controller(void) :
     Client::CommandManagerDelegate(),
     mClientConnectionManager(),
     mClientCommandManager(),
+    mServerConnectionManager(),
     mDelegate(nullptr),
     mDelegateContext(nullptr)
 {
@@ -96,6 +97,12 @@ Controller :: Init(const RunLoopParameters &aRunLoopParameters)
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mClientCommandManager.SetDelegate(this);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = mServerConnectionManager.Init(aRunLoopParameters);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = mServerConnectionManager.AddDelegate(this);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     mRunLoopParameters = aRunLoopParameters;
@@ -241,7 +248,10 @@ Controller :: Listen(void)
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
+    lRetval = mServerConnectionManager.Listen();
+    nlREQUIRE_SUCCESS(lRetval, done);
 
+done:
     return (lRetval);
 }
 
@@ -251,7 +261,10 @@ Controller :: Listen(const Common::ConnectionManagerBasis::Versions &aVersions)
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
+    lRetval = mServerConnectionManager.Listen(aVersions);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
+done:
     return (lRetval);
 }
 
@@ -261,6 +274,8 @@ Controller :: Listen(const char *aMaybeURL)
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
+    lRetval = mServerConnectionManager.Listen(aMaybeURL);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
  done:
     return (lRetval);
@@ -272,8 +287,10 @@ Controller :: Listen(const char *aMaybeURL, const Common::ConnectionManagerBasis
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
+    lRetval = mServerConnectionManager.Listen(aMaybeURL, aVersions);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
@@ -396,6 +413,92 @@ Controller :: ConnectionManagerDidNotConnect(Client::ConnectionManager &aConnect
     if (mDelegate != nullptr)
     {
         mDelegate->ControllerDidNotConnect(*this, aURLRef, aError);
+    }
+}
+
+// MARK: Client-facing Server Connection Manager Delegate Methods
+
+// MARK: Client-facing Server Connection Manager Listen Delegate Methods
+
+void Controller :: ConnectionManagerWillListen(Server::ConnectionManager &aConnectionManager, CFURLRef aURLRef)
+{
+    (void)aConnectionManager;
+
+    if (mDelegate != nullptr)
+    {
+        mDelegate->ControllerWillListen(*this, aURLRef);
+    }
+}
+
+void Controller :: ConnectionManagerIsListening(Server::ConnectionManager &aConnectionManager, CFURLRef aURLRef)
+{
+    (void)aConnectionManager;
+
+    if (mDelegate != nullptr)
+    {
+        mDelegate->ControllerIsListening(*this, aURLRef);
+    }
+}
+
+void Controller :: ConnectionManagerDidListen(Server::ConnectionManager &aConnectionManager, CFURLRef aURLRef)
+{
+    (void)aConnectionManager;
+
+    if (mDelegate != nullptr)
+    {
+        mDelegate->ControllerDidListen(*this, aURLRef);
+    }
+}
+
+void Controller :: ConnectionManagerDidNotListen(Server::ConnectionManager &aConnectionManager, CFURLRef aURLRef, const Common::Error &aError)
+{
+    (void)aConnectionManager;
+
+    if (mDelegate != nullptr)
+    {
+        mDelegate->ControllerDidNotListen(*this, aURLRef, aError);
+    }
+}
+
+// MARK: Client-facing Server Connection Manager Accept Delegate Methods
+
+void Controller :: ConnectionManagerWillAccept(Server::ConnectionManager &aConnectionManager, CFURLRef aURLRef)
+{
+    (void)aConnectionManager;
+
+    if (mDelegate != nullptr)
+    {
+        mDelegate->ControllerWillAccept(*this, aURLRef);
+    }
+}
+
+void Controller :: ConnectionManagerIsAccepting(Server::ConnectionManager &aConnectionManager, CFURLRef aURLRef)
+{
+    (void)aConnectionManager;
+
+    if (mDelegate != nullptr)
+    {
+        mDelegate->ControllerIsAccepting(*this, aURLRef);
+    }
+}
+
+void Controller :: ConnectionManagerDidAccept(Server::ConnectionManager &aConnectionManager, CFURLRef aURLRef)
+{
+    (void)aConnectionManager;
+
+    if (mDelegate != nullptr)
+    {
+        mDelegate->ControllerDidAccept(*this, aURLRef);
+    }
+}
+
+void Controller :: ConnectionManagerDidNotAccept(Server::ConnectionManager &aConnectionManager, CFURLRef aURLRef, const Common::Error &aError)
+{
+    (void)aConnectionManager;
+
+    if (mDelegate != nullptr)
+    {
+        mDelegate->ControllerDidNotAccept(*this, aURLRef, aError);
     }
 }
 

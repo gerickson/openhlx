@@ -33,6 +33,8 @@
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/RunLoopParameters.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
+#include <OpenHLX/Server/ConnectionManager.hpp>
+#include <OpenHLX/Server/ConnectionManagerDelegate.hpp>
 
 #include "HLXProxyControllerDelegate.hpp"
 
@@ -52,6 +54,7 @@ namespace Proxy
  */
 class Controller :
     public Client::ConnectionManagerDelegate,
+    public Server::ConnectionManagerDelegate,
     public Client::CommandManagerDelegate
 {
 public:
@@ -84,32 +87,46 @@ public:
     void ConnectionManagerDidConnect(Client::ConnectionManager &aConnectionManager, CFURLRef aURLRef) final;
     void ConnectionManagerDidNotConnect(Client::ConnectionManager &aConnectionManager, CFURLRef aURLRef, const Common::Error &aError) final;
 
+    // Client-facing Server Connection Manager Delegate Methods
+
+    // Client-facing Server Connection Manager Listen Delegate Methods
+
+    void ConnectionManagerWillListen(Server::ConnectionManager &aConnectionManager, CFURLRef aURLRef) final;
+    void ConnectionManagerIsListening(Server::ConnectionManager &aConnectionManager, CFURLRef aURLRef) final;
+    void ConnectionManagerDidListen(Server::ConnectionManager &aConnectionManager, CFURLRef aURLRef) final;
+    void ConnectionManagerDidNotListen(Server::ConnectionManager &aConnectionManager, CFURLRef aURLRef, const Common::Error &aError) final;
+
+    // Client-facing Server Connection Manager Accept Delegate Methods
+
+    void ConnectionManagerWillAccept(Server::ConnectionManager &aConnectionManager, CFURLRef aURLRef) final;
+    void ConnectionManagerIsAccepting(Server::ConnectionManager &aConnectionManager, CFURLRef aURLRef) final;
+    void ConnectionManagerDidAccept(Server::ConnectionManager &aConnectionManager, CFURLRef aURLRef) final;
+    void ConnectionManagerDidNotAccept(Server::ConnectionManager &aConnectionManager, CFURLRef aURLRef, const Common::Error &aError) final;
+
     // Common Connection Manager Delegate Methods
 
-    // Resolve
+    // Common Connection Manager Resolve Delegate Methods
 
     void ConnectionManagerWillResolve(Common::ConnectionManagerBasis &aConnectionManager, const char *aHost) final;
     void ConnectionManagerIsResolving(Common::ConnectionManagerBasis &aConnectionManager, const char *aHost) final;
     void ConnectionManagerDidResolve(Common::ConnectionManagerBasis &aConnectionManager, const char *aHost, const Common::IPAddress &aIPAddress) final;
     void ConnectionManagerDidNotResolve(Common::ConnectionManagerBasis &aConnectionManager, const char *aHost, const Common::Error &aError) final;
 
-    // Disconnect
+    // Common Connection Manager Disconnect Delegate Methods
 
     void ConnectionManagerWillDisconnect(Common::ConnectionManagerBasis &aConnectionManager, CFURLRef aURLRef) final;
     void ConnectionManagerDidDisconnect(Common::ConnectionManagerBasis &aConnectionManager, CFURLRef aURLRef, const Common::Error &aError) final;
     void ConnectionManagerDidNotDisconnect(Common::ConnectionManagerBasis &aConnectionManager, CFURLRef aURLRef, const Common::Error &aError) final;
 
-    // Error
+    // Common Connection Manager Error Delegate Method
 
     void ConnectionManagerError(Common::ConnectionManagerBasis &aConnectionManager, const Common::Error &aError) final;
-
-
-    // Client-facing Server Connection Manager Delegate Methods
 
 private:
     Common::RunLoopParameters       mRunLoopParameters;
     Client::ConnectionManager       mClientConnectionManager;
     Client::CommandManager          mClientCommandManager;
+    Server::ConnectionManager       mServerConnectionManager;
     ControllerDelegate *            mDelegate;
     void *                          mDelegateContext;
 };
