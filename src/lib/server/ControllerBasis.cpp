@@ -56,6 +56,7 @@ ControllerBasis :: ~ControllerBasis(void)
 Status
 ControllerBasis :: Init(CommandManager &aCommandManager)
 {
+    DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 
@@ -67,6 +68,7 @@ ControllerBasis :: Init(CommandManager &aCommandManager)
 Status
 ControllerBasis :: Init(CommandManager &aCommandManager, const Timeout &aTimeout)
 {
+    DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 
