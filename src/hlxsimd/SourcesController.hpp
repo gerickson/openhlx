@@ -26,12 +26,13 @@
 #ifndef HLXSERVERSOURCESCONTROLLER_HPP
 #define HLXSERVERSOURCESCONTROLLER_HPP
 
-#include <ContainerControllerBasis.hpp>
-#include <ControllerBasis.hpp>
-#include <SourcesControllerBasis.hpp>
-#include <SourcesControllerCommands.hpp>
+#include <OpenHLX/Common/SourcesControllerBasis.hpp>
 #include <OpenHLX/Model/SourceModel.hpp>
 #include <OpenHLX/Model/SourcesModel.hpp>
+#include <OpenHLX/Server/SourcesControllerCommands.hpp>
+
+#include "ContainerControllerBasis.hpp"
+#include "ControllerBasis.hpp"
 
 
 namespace HLX
@@ -50,7 +51,7 @@ namespace Server
  *
  */
 class SourcesController :
-    public ControllerBasis,
+    public Simulator::ControllerBasis,
     public ContainerControllerBasis,
     public Common::SourcesControllerBasis
 {

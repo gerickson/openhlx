@@ -49,6 +49,7 @@ using namespace HLX::Common;
 using namespace HLX::Model;
 using namespace Nuovations;
 
+
 namespace HLX
 {
 
@@ -90,7 +91,7 @@ static CFStringRef      kFavoritesSchemaKey = CFSTR("Favorites");
 static CFStringRef      kNameSchemaKey = CFSTR("Name");
 
 FavoritesController :: FavoritesController(void) :
-    ControllerBasis(),
+    Simulator::ControllerBasis(),
     ContainerControllerBasis(),
     FavoritesControllerBasis(),
     mFavorites()

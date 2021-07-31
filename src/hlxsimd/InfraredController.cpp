@@ -46,6 +46,7 @@ using namespace HLX::Common;
 using namespace HLX::Model;
 using namespace Nuovations;
 
+
 namespace HLX
 {
 
@@ -81,7 +82,7 @@ static CFStringRef           kInfraredSchemaKey = CFSTR("Infrared");
 static CFStringRef           kDisabledSchemaKey = CFSTR("Disabled");
 
 InfraredController :: InfraredController(void) :
-    ControllerBasis(),
+    Simulator::ControllerBasis(),
     mInfraredModel()
 {
     return;

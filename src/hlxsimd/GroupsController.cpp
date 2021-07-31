@@ -82,6 +82,7 @@ using namespace HLX::Common;
 using namespace HLX::Model;
 using namespace Nuovations;
 
+
 namespace HLX
 {
 
@@ -141,7 +142,7 @@ static CFStringRef      kZonesSchemaKey  = CFSTR("Zones");
 
 
 GroupsController :: GroupsController(void) :
-    ControllerBasis(),
+    Simulator::ControllerBasis(),
     ContainerControllerBasis(),
     GroupsControllerBasis(),
     mGroups(),

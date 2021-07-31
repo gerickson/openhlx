@@ -26,9 +26,12 @@
 #ifndef HLXSERVERNETWORKCONTROLLER_HPP
 #define HLXSERVERNETWORKCONTROLLER_HPP
 
-#include <ControllerBasis.hpp>
-#include <NetworkControllerCommands.hpp>
 #include <OpenHLX/Model/NetworkModel.hpp>
+#include <OpenHLX/Server/NetworkControllerCommands.hpp>
+
+#include "ContainerControllerBasis.hpp"
+#include "ControllerBasis.hpp"
+
 
 namespace HLX
 {
@@ -46,7 +49,7 @@ namespace Server
  *
  */
 class NetworkController :
-    public ControllerBasis
+    public Simulator::ControllerBasis
 {
 public:
     NetworkController(void);

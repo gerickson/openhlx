@@ -28,14 +28,15 @@
 
 #include <stddef.h>
 
-#include <ContainerControllerBasis.hpp>
-#include <ControllerBasis.hpp>
+#include <OpenHLX/Common/ZonesControllerBasis.hpp>
 #include <OpenHLX/Model/SoundModel.hpp>
 #include <OpenHLX/Model/ToneModel.hpp>
-#include <ZonesControllerBasis.hpp>
 #include <OpenHLX/Model/ZoneModel.hpp>
 #include <OpenHLX/Model/ZonesModel.hpp>
 #include <OpenHLX/Server/ZonesControllerCommands.hpp>
+
+#include "ContainerControllerBasis.hpp"
+#include "ControllerBasis.hpp"
 
 
 namespace HLX
@@ -54,7 +55,7 @@ namespace Server
  *
  */
 class ZonesController :
-    public ControllerBasis,
+    public Simulator::ControllerBasis,
     public ContainerControllerBasis,
     public Common::ZonesControllerBasis
 {

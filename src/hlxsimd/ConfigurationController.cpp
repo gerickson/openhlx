@@ -58,7 +58,7 @@ Command::Configuration::ResetToDefaultsRequest  ConfigurationController::kResetT
 Command::Configuration::SaveToBackupRequest     ConfigurationController::kSaveToBackupRequest;
 
 ConfigurationController :: ConfigurationController(void) :
-    ControllerBasis(),
+    Simulator::ControllerBasis(),
     mDelegate(nullptr)
 {
     return;

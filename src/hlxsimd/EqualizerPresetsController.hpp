@@ -30,12 +30,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <ContainerControllerBasis.hpp>
-#include <ControllerBasis.hpp>
-#include <EqualizerPresetsControllerBasis.hpp>
-#include <EqualizerPresetsControllerCommands.hpp>
+#include <OpenHLX/Common/EqualizerPresetsControllerBasis.hpp>
 #include <OpenHLX/Model/EqualizerPresetModel.hpp>
 #include <OpenHLX/Model/EqualizerPresetsModel.hpp>
+#include <OpenHLX/Server/EqualizerPresetsControllerCommands.hpp>
+
+#include "ContainerControllerBasis.hpp"
+#include "ControllerBasis.hpp"
 
 
 namespace HLX
@@ -54,7 +55,7 @@ namespace Server
  *
  */
 class EqualizerPresetsController :
-    public ControllerBasis,
+    public Simulator::ControllerBasis,
     public ContainerControllerBasis,
     public Common::EqualizerPresetsControllerBasis
 {

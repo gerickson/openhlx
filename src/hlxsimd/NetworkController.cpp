@@ -43,6 +43,7 @@ using namespace HLX::Common;
 using namespace HLX::Model;
 using namespace Nuovations;
 
+
 namespace HLX
 {
 
@@ -93,7 +94,7 @@ struct NetworkModelDefaults
 };
 
 NetworkController :: NetworkController(void) :
-    ControllerBasis(),
+    Simulator::ControllerBasis(),
     mNetworkModel()
 {
     return;

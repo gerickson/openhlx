@@ -26,9 +26,11 @@
 #ifndef HLXSERVERFRONTPANELCONTROLLER_HPP
 #define HLXSERVERFRONTPANELCONTROLLER_HPP
 
-#include <ControllerBasis.hpp>
-#include <FrontPanelControllerCommands.hpp>
 #include <OpenHLX/Model/FrontPanelModel.hpp>
+#include <OpenHLX/Server/FrontPanelControllerCommands.hpp>
+
+#include "ControllerBasis.hpp"
+
 
 namespace HLX
 {
@@ -46,7 +48,7 @@ namespace Server
  *
  */
 class FrontPanelController :
-    public ControllerBasis
+    public Simulator::ControllerBasis
 {
 public:
     FrontPanelController(void);

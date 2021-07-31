@@ -27,9 +27,11 @@
 #ifndef HLXSERVERINFRAREDCONTROLLER_HPP
 #define HLXSERVERINFRAREDCONTROLLER_HPP
 
-#include <ControllerBasis.hpp>
-#include <InfraredControllerCommands.hpp>
 #include <OpenHLX/Model/InfraredModel.hpp>
+#include <OpenHLX/Server/InfraredControllerCommands.hpp>
+
+#include "ControllerBasis.hpp"
+
 
 namespace HLX
 {
@@ -48,11 +50,11 @@ namespace Server
  *
  */
 class InfraredController :
-    public ControllerBasis
+    public Simulator::ControllerBasis
 {
 public:
     InfraredController(void);
-    ~InfraredController(void);
+    virtual ~InfraredController(void);
 
     Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
 

@@ -26,12 +26,13 @@
 #ifndef HLXSERVERGROUPSCONTROLLER_HPP
 #define HLXSERVERGROUPSCONTROLLER_HPP
 
-#include <ContainerControllerBasis.hpp>
-#include <ControllerBasis.hpp>
-#include <GroupsControllerBasis.hpp>
-#include <GroupsControllerCommands.hpp>
+#include <OpenHLX/Common/GroupsControllerBasis.hpp>
 #include <OpenHLX/Model/GroupModel.hpp>
 #include <OpenHLX/Model/GroupsModel.hpp>
+#include <OpenHLX/Server/GroupsControllerCommands.hpp>
+
+#include "ContainerControllerBasis.hpp"
+#include "ControllerBasis.hpp"
 
 
 namespace HLX
@@ -52,7 +53,7 @@ class GroupsControllerDelegate;
  *
  */
 class GroupsController :
-    public ControllerBasis,
+    public Simulator::ControllerBasis,
     public ContainerControllerBasis,
     public Common::GroupsControllerBasis
 {

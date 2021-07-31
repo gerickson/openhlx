@@ -28,8 +28,9 @@
 
 #include <CoreFoundation/CFDictionary.h>
 
-#include <ControllerBasis.hpp>
-#include <ConfigurationControllerCommands.hpp>
+#include <OpenHLX/Server/ConfigurationControllerCommands.hpp>
+
+#include "ControllerBasis.hpp"
 
 
 namespace HLX
@@ -50,7 +51,7 @@ class ConfigurationControllerDelegate;
  *
  */
 class ConfigurationController :
-    public ControllerBasis
+    public Simulator::ControllerBasis
 {
 public:
     ConfigurationController(void);

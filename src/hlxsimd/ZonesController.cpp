@@ -623,7 +623,7 @@ static CFStringRef kVolumeMutedSchemaKey           = CFSTR("Muted");
 static CFStringRef kZonesSchemaKey                 = CFSTR("Zones");
 
 ZonesController :: ZonesController(void) :
-    ControllerBasis(),
+    Simulator::ControllerBasis(),
     ContainerControllerBasis(),
     Common::ZonesControllerBasis(),
     mZones()

@@ -45,6 +45,7 @@ using namespace HLX::Common;
 using namespace HLX::Model;
 using namespace Nuovations;
 
+
 namespace HLX
 {
 
@@ -85,7 +86,7 @@ static CFStringRef               kBrightnessSchemaKey = CFSTR("Brightness");
 static CFStringRef               kLockedSchemaKey = CFSTR("Locked");
 
 FrontPanelController :: FrontPanelController(void) :
-    ControllerBasis(),
+    Simulator::ControllerBasis(),
     mFrontPanelModel()
 {
     return;

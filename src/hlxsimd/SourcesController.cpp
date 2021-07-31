@@ -47,6 +47,7 @@ using namespace HLX::Common;
 using namespace HLX::Model;
 using namespace Nuovations;
 
+
 namespace HLX
 {
 
@@ -86,9 +87,9 @@ static CFStringRef      kSourcesSchemaKey = CFSTR("Sources");
 static CFStringRef      kNameSchemaKey = CFSTR("Name");
 
 SourcesController :: SourcesController(void) :
-    ControllerBasis(),
+    Simulator::ControllerBasis(),
     ContainerControllerBasis(),
-    SourcesControllerBasis(),
+    Common::SourcesControllerBasis(),
     mSources()
 {
     return;

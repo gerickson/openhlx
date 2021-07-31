@@ -46,6 +46,7 @@
 #include <NameModelDefaults.hpp>
 #include <Utilities.hpp>
 
+
 using namespace HLX::Common;
 using namespace HLX::Model;
 using namespace Nuovations;
@@ -239,7 +240,7 @@ static CFStringRef      kNameSchemaKey = CFSTR("Name");
 static CFStringRef      kEqualizerLevelsPresetSchemaKey = CFSTR("Equalizer Levels");
 
 EqualizerPresetsController :: EqualizerPresetsController(void) :
-    ControllerBasis(),
+    Simulator::ControllerBasis(),
     ContainerControllerBasis(),
     EqualizerPresetsControllerBasis(),
     mEqualizerPresets()

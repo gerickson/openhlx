@@ -26,12 +26,13 @@
 #ifndef HLXSERVERFAVORITESCONTROLLER_HPP
 #define HLXSERVERFAVORITESCONTROLLER_HPP
 
-#include <ContainerControllerBasis.hpp>
-#include <ControllerBasis.hpp>
-#include <FavoritesControllerBasis.hpp>
-#include <FavoritesControllerCommands.hpp>
+#include <OpenHLX/Common/FavoritesControllerBasis.hpp>
 #include <OpenHLX/Model/FavoriteModel.hpp>
 #include <OpenHLX/Model/FavoritesModel.hpp>
+#include <OpenHLX/Server/FavoritesControllerCommands.hpp>
+
+#include "ContainerControllerBasis.hpp"
+#include "ControllerBasis.hpp"
 
 
 namespace HLX
@@ -50,7 +51,7 @@ namespace Server
  *
  */
 class FavoritesController :
-    public ControllerBasis,
+    public Simulator::ControllerBasis,
     public ContainerControllerBasis,
     public Common::FavoritesControllerBasis
 {
