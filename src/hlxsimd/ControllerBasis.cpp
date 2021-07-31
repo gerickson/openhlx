@@ -18,8 +18,7 @@
 
 /**
  *    @file
- *      This file implements a base object for all server-side HLX
- *      controllers.
+ *      This file implements a base object for....
  *
  */
 
@@ -44,12 +43,11 @@ using namespace Nuovations;
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
 
 ControllerBasis :: ControllerBasis(void) :
-    mDelegate(nullptr),
-    mCommandManager(nullptr)
+    mDelegate(nullptr)
 {
     return;
 }
@@ -59,62 +57,14 @@ ControllerBasis :: ~ControllerBasis(void)
     return;
 }
 
-Status ControllerBasis :: Init(CommandManager &aCommandManager)
-{
-    Status lRetval = kStatus_Success;
-
-
-    lRetval = Init(aCommandManager, kTimeoutDefault);
-
-    return (lRetval);
-}
-
-Status ControllerBasis :: Init(CommandManager &aCommandManager, const Timeout &aTimeout)
-{
-    Status lRetval = kStatus_Success;
-
-
-    (void)aTimeout;
-
-    mCommandManager = &aCommandManager;
-
-    return (lRetval);
-}
-
-Status ControllerBasis :: DoRequestHandlers(const RequestHandlerBasis *aFirstRequestHandler, const RequestHandlerBasis *aLastRequestHandler, const bool &aRegister)
-{
-    Status lRetval = kStatus_Success;
-
-    nlREQUIRE_ACTION(mCommandManager != nullptr,      done, lRetval = kError_NotInitialized);
-    nlREQUIRE_ACTION(aFirstRequestHandler != nullptr, done, lRetval = -EINVAL);
-    nlREQUIRE_ACTION(aLastRequestHandler  != nullptr, done, lRetval = -EINVAL);
-
-    while (aFirstRequestHandler != aLastRequestHandler)
-    {
-        if (aRegister)
-        {
-            lRetval = mCommandManager->RegisterRequestHandler(aFirstRequestHandler->mRequest, this, aFirstRequestHandler->mOnRequestReceivedHandler);
-            nlREQUIRE_SUCCESS(lRetval, done);
-        }
-        else
-        {
-            lRetval = mCommandManager->UnregisterRequestHandler(aFirstRequestHandler->mRequest, this);
-            nlREQUIRE_SUCCESS(lRetval, done);
-        }
-
-        ++aFirstRequestHandler;
-    }
-
- done:
-    return (lRetval);
-}
-
-ControllerBasisDelegate * ControllerBasis :: GetDelegate(void) const
+ControllerBasisDelegate *
+ControllerBasis :: GetDelegate(void) const
 {
     return (mDelegate);
 }
 
-Status ControllerBasis :: SetDelegate(ControllerBasisDelegate *aDelegate)
+Status
+ControllerBasis :: SetDelegate(ControllerBasisDelegate *aDelegate)
 {
     Status lRetval = kStatus_Success;
 
@@ -126,46 +76,8 @@ Status ControllerBasis :: SetDelegate(ControllerBasisDelegate *aDelegate)
     return (lRetval);
 }
 
-Status ControllerBasis :: SendResponse(ConnectionBasis &aConnection, ConnectionBuffer::ImmutableCountedPointer aBuffer) const
-{
-    Status lRetval = kStatus_Success;
-
-    nlREQUIRE_ACTION(mCommandManager != nullptr, done, lRetval = kError_NotInitialized);
-
-    lRetval = mCommandManager->SendResponse(aConnection, aBuffer);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status ControllerBasis :: SendErrorResponse(ConnectionBasis &aConnection) const
-{
-    Status lRetval = kStatus_Success;
-
-    nlREQUIRE_ACTION(mCommandManager != nullptr, done, lRetval = kError_NotInitialized);
-
-    lRetval = mCommandManager->SendErrorResponse(aConnection);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status ControllerBasis :: SendErrorResponse(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
-{
-    Status lRetval = kStatus_Success;
-
-    nlREQUIRE_ACTION(mCommandManager != nullptr, done, lRetval = kError_NotInitialized);
-
-    lRetval = mCommandManager->SendErrorResponse(aConnection, aBuffer);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-void ControllerBasis :: OnConfigurationIsDirty(void)
+void
+ControllerBasis :: OnConfigurationIsDirty(void)
 {
     if (mDelegate != nullptr)
     {
@@ -175,7 +87,8 @@ void ControllerBasis :: OnConfigurationIsDirty(void)
 
 // MARK: Configuration Management Methods
 
-Status ControllerBasis :: LoadFromBackupConfiguration(CFDictionaryRef aBackupDictionary)
+Status
+ControllerBasis :: LoadFromBackupConfiguration(CFDictionaryRef aBackupDictionary)
 {
     Status lRetval = kStatus_Success;
 
@@ -185,7 +98,8 @@ Status ControllerBasis :: LoadFromBackupConfiguration(CFDictionaryRef aBackupDic
     return (lRetval);
 }
 
-void ControllerBasis :: QueryCurrentConfiguration(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+void
+ControllerBasis :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     (void)aConnection;
     (void)aBuffer;
@@ -193,18 +107,20 @@ void ControllerBasis :: QueryCurrentConfiguration(ConnectionBasis &aConnection, 
     return;
 }
 
-void ControllerBasis :: ResetToDefaultConfiguration(void)
+void
+ControllerBasis :: ResetToDefaultConfiguration(void)
 {
     return;
 }
 
-void ControllerBasis :: SaveToBackupConfiguration(CFMutableDictionaryRef aBackupDictionary)
+void
+ControllerBasis :: SaveToBackupConfiguration(CFMutableDictionaryRef aBackupDictionary)
 {
     (void)aBackupDictionary;
 
     return;
 }
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX

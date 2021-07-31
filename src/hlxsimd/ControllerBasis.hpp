@@ -23,50 +23,41 @@
  *
  */
 
-#ifndef HLXSERVERCONTROLLERBASIS_HPP
-#define HLXSERVERCONTROLLERBASIS_HPP
+#ifndef HLXSIMULATORCONTROLLERBASIS_HPP
+#define HLXSIMULATORCONTROLLERBASIS_HPP
 
+#include <OpenHLX/Common/ConnectionBuffer.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
-
-#include <CommandRequestBasis.hpp>
-#include <CommandManager.hpp>
-#include <CommandManagerDelegate.hpp>
+#include <OpenHLX/Server/ControllerBasis.hpp>
 
 
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
 
 class ControllerBasisDelegate;
 
 /**
  *  @brief
- *    A base object for all server-side HLX controllers.
+ *    A base object for....
  *
- *  @ingroup server
+ *  @ingroup simulator
  *
  */
-class ControllerBasis
+class ControllerBasis :
+    public Server::ControllerBasis
 {
 public:
-    virtual Common::Status Init(CommandManager &aCommandManager);
-    virtual Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout);
-
     Common::Status SetDelegate(ControllerBasisDelegate *aDelegate);
     ControllerBasisDelegate *GetDelegate(void) const;
-
-    Common::Status SendResponse(ConnectionBasis &aConnection, Common::ConnectionBuffer::ImmutableCountedPointer aBuffer) const;
-
-    Common::Status SendErrorResponse(ConnectionBasis &aConnection) const;
-    Common::Status SendErrorResponse(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
 
     // Configuration Management Methods
 
     virtual Common::Status LoadFromBackupConfiguration(CFDictionaryRef aBackupDictionary);
-    virtual void QueryCurrentConfiguration(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
+    virtual void QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
     virtual void ResetToDefaultConfiguration(void);
     virtual void SaveToBackupConfiguration(CFMutableDictionaryRef aBackupDictionary);
 
@@ -74,31 +65,14 @@ public:
 
 protected:
     ControllerBasis(void);
-    ~ControllerBasis(void);
-
-    /**
-     *  @brief
-     *    A base object for registering server-side handlers for
-     *    command requests.
-     *
-     *  @ingroup server
-     *
-     */
-    struct RequestHandlerBasis
-    {
-        Command::RequestBasis &                mRequest;
-        CommandManager::OnRequestReceivedFunc  mOnRequestReceivedHandler;
-    };
-
-    Common::Status DoRequestHandlers(const RequestHandlerBasis *aFirst, const RequestHandlerBasis *aLast, const bool &aRegister);
+    virtual ~ControllerBasis(void);
 
 private:
     ControllerBasisDelegate *  mDelegate;
-    CommandManager *           mCommandManager;
 };
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX
 
-#endif // HLXSERVERCONTROLLERBASIS_HPP
+#endif // HLXSIMULATORCONTROLLERBASIS_HPP
