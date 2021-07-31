@@ -30,7 +30,6 @@
 
 #include <LogUtilities/LogUtilities.hpp>
 
-#include <OpenHLX/Client/ZonesControllerCommands.hpp>
 #include <OpenHLX/Client/ZonesStateChangeNotifications.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
 #include <OpenHLX/Utilities/ElementsOf.hpp>
@@ -48,9 +47,17 @@ namespace HLX
 namespace Proxy
 {
 
-// Server-facing Client notification response data
+// MARK: Server-facing client command response notification data
 
 Client::Command::Zones::VolumeResponse             ZonesController::kVolumeResponse;
+
+// MARK: Client-facing server command request data
+
+Server::Command::Zones::DecreaseVolumeRequest      ZonesController::kDecreaseVolumeRequest;
+Server::Command::Zones::IncreaseVolumeRequest      ZonesController::kIncreaseVolumeRequest;
+Server::Command::Zones::QueryRequest               ZonesController::kQueryRequest;
+Server::Command::Zones::SetVolumeRequest           ZonesController::kSetVolumeRequest;
+
 /**
  *  @brief
  *    This is the class default constructor.
@@ -104,6 +111,27 @@ done:
     return (lRetval);
 }
 
+Status
+ZonesController :: RequestInit(void)
+{
+    Status lRetval = kStatus_Success;
+
+    lRetval = kDecreaseVolumeRequest.Init();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = kIncreaseVolumeRequest.Init();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = kQueryRequest.Init();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = kSetVolumeRequest.Init();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
 /**
  *  @brief
  *    Register or unregister notification handlers.
@@ -128,6 +156,15 @@ done:
  */
 Status
 ZonesController :: DoNotificationHandlers(const bool &aRegister)
+{
+    Status lRetval = kStatus_Success;
+
+
+    return (lRetval);
+}
+
+Status
+ZonesController :: DoRequestHandlers(const bool &aRegister)
 {
     Status lRetval = kStatus_Success;
 
@@ -169,16 +206,22 @@ ZonesController :: Init(Client::CommandManager &aCommandManager, const Timeout &
     lRetval = ResponseInit();
     nlREQUIRE_SUCCESS(lRetval, done);
 
+    lRetval = RequestInit();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
     lRetval = mZones.Init(kZonesMax);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = ControllerBasis::Init(aCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    // This MUST come AFTER the base class initialization due to a
+    // These MUST come AFTER the base class initialization due to a
     // dependency on the command manager instance.
 
     lRetval = DoNotificationHandlers(kRegister);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = DoRequestHandlers(kRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -758,6 +801,247 @@ ZonesController :: VolumeNotificationReceivedHandler(const uint8_t *aBuffer, con
     }
 }
 
+// MARK: Client-facing Server Command Request Completion Handlers
+
+void ZonesController :: DecreaseVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    static const VolumeModel::MuteType       kMuted = true;
+    static const VolumeModel::LevelType     kAdjustment = -1;
+    IdentifierType                           lZoneIdentifier;
+    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
+    Status                                   lStatus;
+
+
+    (void)aSize;
+
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::DecreaseVolumeRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+
+    // Match 2/3: Zone Identifier
+    //
+    // The validity of the zone identifier will be range checked at
+    // HandleSetMuteConditionally below.
+
+    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
+                                                Common::Utilities::Distance(aMatches.at(1)),
+                                                lZoneIdentifier);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lResponseBuffer.reset(new ConnectionBuffer);
+    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
+
+    lStatus = lResponseBuffer->Init();
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // First, ensure that the zone is unmuted.
+    //
+    // A mute response will only be conditionally generated if the
+    // mute status changed as a result.
+
+    lStatus = HandleSetMuteConditionally(lZoneIdentifier, !kMuted, lResponseBuffer);
+    nlREQUIRE(lStatus >= kStatus_Success, done);
+
+    // Next, go ahead and process the volume adjustment.
+
+    lStatus = HandleAdjustVolumeReceived(lZoneIdentifier, kAdjustment, lResponseBuffer);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    if (lStatus >= kStatus_Success)
+    {
+        ;
+    }
+    else
+    {
+        ;
+    }
+
+    return;
+}
+
+void ZonesController :: IncreaseVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    static const VolumeModel::MuteType       kMuted = true;
+    static const VolumeModel::LevelType     kAdjustment = 1;
+    IdentifierType                           lZoneIdentifier;
+    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
+    Status                                   lStatus;
+
+
+    (void)aSize;
+
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::IncreaseVolumeRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+
+    // Match 2/3: Zone Identifier
+    //
+    // The validity of the zone identifier will be range checked at
+    // HandleSetMuteConditionally below.
+
+    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
+                                                Common::Utilities::Distance(aMatches.at(1)),
+                                                lZoneIdentifier);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lResponseBuffer.reset(new ConnectionBuffer);
+    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
+
+    lStatus = lResponseBuffer->Init();
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // First, ensure that the zone is unmuted.
+    //
+    // A mute response will only be conditionally generated if the
+    // mute status changed as a result.
+
+    lStatus = HandleSetMuteConditionally(lZoneIdentifier, !kMuted, lResponseBuffer);
+    nlREQUIRE(lStatus >= kStatus_Success, done);
+
+    // Next, go ahead and process the volume adjustment.
+
+    lStatus = HandleAdjustVolumeReceived(lZoneIdentifier, kAdjustment, lResponseBuffer);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    if (lStatus >= kStatus_Success)
+    {
+        ;
+    }
+    else
+    {
+        ;
+    }
+
+    return;
+}
+
+void ZonesController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    static const bool                        kIsConfiguration = true;
+    IdentifierType                           lZoneIdentifier;
+    Server::Command::Zones::QueryResponse            lResponse;
+    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
+    Status                                   lStatus;
+    const uint8_t *                          lBuffer;
+    size_t                                   lSize;
+
+
+    (void)aSize;
+
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+
+    // Match 2/2: Zone Identifier
+    //
+    // The validity of the zone identifier will be range checked at
+    // HandleQueryReceived below.
+
+    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
+                                                Common::Utilities::Distance(aMatches.at(1)),
+                                                lZoneIdentifier);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lStatus = lResponse.Init(lZoneIdentifier);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lResponseBuffer.reset(new ConnectionBuffer);
+    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
+
+    lStatus = lResponseBuffer->Init();
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // First, put the solicited notifications portion, indicating that
+    // this is a zone-specific query, not a general configuration
+    // query.
+
+    lStatus = HandleQueryReceived(!kIsConfiguration, lZoneIdentifier, lResponseBuffer);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // Second, put the response completion portion.
+
+    lBuffer = lResponse.GetBuffer();
+    lSize = lResponse.GetSize();
+
+    lStatus = Common::Utilities::Put(*lResponseBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    if (lStatus >= kStatus_Success)
+    {
+        ;
+    }
+    else
+    {
+        ;
+    }
+
+    return;
+}
+
+void ZonesController :: SetVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    static const VolumeModel::MuteType       kMuted = true;
+    IdentifierType                           lZoneIdentifier;
+    VolumeModel::LevelType                  lVolume;
+    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
+    Status                                   lStatus;
+
+
+    (void)aSize;
+
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::SetVolumeRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+
+    // Match 2/3: Zone Identifier
+    //
+    // The validity of the zone identifier will be range checked at
+    // HandleSetMuteConditionally below.
+
+    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
+                                                Common::Utilities::Distance(aMatches.at(1)),
+                                                lZoneIdentifier);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // Match 3/3: Volume Level
+    //
+    // The validity of the volume level will be range checked at
+    // HandleSetVolumeReceived below.
+
+    lStatus = ::HLX::Utilities::Parse(aBuffer + aMatches.at(2).rm_so,
+                                      Common::Utilities::Distance(aMatches.at(2)),
+                                      lVolume);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lResponseBuffer.reset(new ConnectionBuffer);
+    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
+
+    lStatus = lResponseBuffer->Init();
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // First, ensure that the zone is unmuted.
+    //
+    // A mute response will only be conditionally generated if the
+    // mute status changed as a result.
+
+    lStatus = HandleSetMuteConditionally(lZoneIdentifier, !kMuted, lResponseBuffer);
+    nlREQUIRE(lStatus >= kStatus_Success, done);
+
+    // Next, go ahead and process the volume adjustment.
+
+    lStatus = HandleSetVolumeReceived(lZoneIdentifier, lVolume, lResponseBuffer);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    if (lStatus >= kStatus_Success)
+    {
+        ;
+    }
+    else
+    {
+        ;
+    }
+
+    return;
+}
+
+// MARK: Server-facing Client Implementation
+
 void
 ZonesController :: HandleVolumeChange(const IdentifierType &aZoneIdentifier, const VolumeModel::LevelType &aVolume)
 {
@@ -783,6 +1067,314 @@ ZonesController :: HandleVolumeChange(const IdentifierType &aZoneIdentifier, con
 
 done:
     return;
+}
+
+// MARK: Client-facing Server Implementation
+
+// MARK: Client-facing Server Data Model Mutation State Change Methods
+
+Status
+ZonesController :: AdjustVolume(const IdentifierType &aZoneIdentifier, const VolumeModel::LevelType &aAdjustment, VolumeModel::LevelType &aVolume)
+{
+    ZoneModel *                        lZoneModel;
+    Status                             lRetval;
+
+
+    nlREQUIRE_ACTION(aAdjustment != 0, done, lRetval = -EINVAL);
+
+    lRetval = mZones.GetZone(aZoneIdentifier, lZoneModel);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    if (aAdjustment < 0)
+    {
+        lRetval = lZoneModel->DecreaseVolume(aVolume);
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
+    else if (aAdjustment > 0)
+    {
+        lRetval = lZoneModel->IncreaseVolume(aVolume);
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
+
+    if (lRetval == kStatus_Success)
+    {
+        ;
+    }
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesController :: SetMute(const IdentifierType &aZoneIdentifier, const Model::VolumeModel::MuteType &aMute)
+{
+    ZoneModel *                        lZoneModel;
+    Status                             lRetval;
+
+
+    lRetval = mZones.GetZone(aZoneIdentifier, lZoneModel);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = lZoneModel->SetMute(aMute);
+    nlREQUIRE(lRetval >= kStatus_Success, done);
+
+    if (lRetval == kStatus_Success)
+    {
+        ;
+    }
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesController :: HandleQueryReceived(const bool &aIsConfiguration, const IdentifierType &aZoneIdentifier, ConnectionBuffer::MutableCountedPointer &aOutputBuffer) const
+{
+    const ZoneModel *                  lZoneModel;
+    const char *                       lName;
+    Server::Command::Zones::NameResponse       lNameResponse;
+    BalanceModel::BalanceType          lBalance;
+    Server::Command::Zones::BalanceResponse    lBalanceResponse;
+    const uint8_t *                    lBuffer;
+    size_t                             lSize;
+    Status                             lRetval;
+
+
+    lRetval = mZones.GetZone(aZoneIdentifier, lZoneModel);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // Name Response
+
+    lRetval = lZoneModel->GetName(lName);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = lNameResponse.Init(aZoneIdentifier, lName);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lBuffer = lNameResponse.GetBuffer();
+    lSize = lNameResponse.GetSize();
+
+    lRetval = Common::Utilities::Put(*aOutputBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // Source Response
+
+    ;
+
+    // Volume Response
+
+    lRetval = HandleQueryVolumeReceived(aZoneIdentifier, *lZoneModel, aOutputBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // Volume Fixed Response (include if for configuration)
+
+    ;
+
+    // Mute Response
+
+    ;
+
+    // Sound Mode Response
+
+    ;
+
+    // Balance Response
+
+    ;
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesController :: HandleQueryVolumeReceived(const IdentifierType &aZoneIdentifier,
+                                             Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+{
+    const ZoneModel *                  lZoneModel;
+    Status                             lRetval;
+
+
+    lRetval = mZones.GetZone(aZoneIdentifier, lZoneModel);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = HandleQueryVolumeReceived(aZoneIdentifier, *lZoneModel, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesController :: HandleQueryVolumeReceived(const IdentifierType &aZoneIdentifier,
+                                             const Model::ZoneModel &aZoneModel,
+                                             Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    VolumeModel::LevelType            lVolume;
+    Status                             lRetval;
+
+
+    lRetval = aZoneModel.GetVolume(lVolume);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = HandleVolumeResponse(aZoneIdentifier, lVolume, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesController :: HandleSetMute(const bool &aConditionally, const IdentifierType &aZoneIdentifier, const VolumeModel::MuteType &aMute, ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    Status                             lRetval;
+
+
+    lRetval = SetMute(aZoneIdentifier, aMute);
+    nlREQUIRE(lRetval >= kStatus_Success, done);
+
+    // If the mute status was unchanged, SetMute will have returned
+    // kStatus_ValueAlreadySet and there will be no need to generate
+    // (and subsequently send) a response, unless the caller requested
+    // an unconditional response. If we receive kStatus_Success, it is
+    // the first time set or a change and response needs to be
+    // unconditionally generated (and subsequently sent).
+
+    if ((lRetval == kStatus_Success) || ((lRetval == kStatus_ValueAlreadySet) && !aConditionally))
+    {
+        lRetval = HandleMuteResponse(aZoneIdentifier, aMute, aBuffer);
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesController :: HandleSetMuteConditionally(const IdentifierType &aZoneIdentifier, const VolumeModel::MuteType &aMute, ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    const bool kConditionally = true;
+
+    return (HandleSetMute(kConditionally, aZoneIdentifier, aMute, aBuffer));
+}
+
+Status
+ZonesController :: HandleAdjustVolumeReceived(const IdentifierType &aZoneIdentifier, const VolumeModel::LevelType &aAdjustment, ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    VolumeModel::LevelType            lVolume;
+    Status                             lRetval;
+
+
+    nlREQUIRE_ACTION(aAdjustment != 0, done, lRetval = -EINVAL);
+
+    lRetval = AdjustVolume(aZoneIdentifier, aAdjustment, lVolume);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = HandleVolumeResponse(aZoneIdentifier, lVolume, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesController :: HandleSetVolumeReceived(const IdentifierType &aZoneIdentifier, const VolumeModel::LevelType &aVolume, ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    Status                             lRetval;
+
+
+    lRetval = SetVolume(aZoneIdentifier, aVolume);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = HandleVolumeResponse(aZoneIdentifier, aVolume, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesController :: HandleMuteResponse(const IdentifierType &aZoneIdentifier, const VolumeModel::MuteType &aMute, ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    Server::Command::Zones::MuteResponse  lMuteResponse;
+    const uint8_t *               lBuffer;
+    size_t                        lSize;
+    Status                        lRetval;
+
+    lRetval = lMuteResponse.Init(aZoneIdentifier, aMute);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lBuffer = lMuteResponse.GetBuffer();
+    lSize = lMuteResponse.GetSize();
+
+    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesController :: HandleVolumeResponse(const IdentifierType &aZoneIdentifier, const VolumeModel::LevelType &aVolume, ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    Server::Command::Zones::VolumeResponse  lVolumeResponse;
+    const uint8_t *                 lBuffer;
+    size_t                          lSize;
+    Status                          lRetval;
+
+
+    lRetval = lVolumeResponse.Init(aZoneIdentifier, aVolume);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lBuffer = lVolumeResponse.GetBuffer();
+    lSize = lVolumeResponse.GetSize();
+
+    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+// MARK: Client-facing Server Command Request Handler Trampolines
+
+void ZonesController :: DecreaseVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->DecreaseVolumeRequestReceivedHandler(aConnection, aBuffer, aSize, aMatches);
+    }
+}
+
+void ZonesController :: IncreaseVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->IncreaseVolumeRequestReceivedHandler(aConnection, aBuffer, aSize, aMatches);
+    }
+}
+
+void ZonesController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->QueryRequestReceivedHandler(aConnection, aBuffer, aSize, aMatches);
+    }
+}
+
+void ZonesController :: SetVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->SetVolumeRequestReceivedHandler(aConnection, aBuffer, aSize, aMatches);
+    }
 }
 
 }; // namespace Proxy

@@ -24,6 +24,9 @@
 
 #ifndef OPENHLXPROXYZONESCONTROLLER_HPP
 #define OPENHLXPROXYZONESCONTROLLER_HPP
+
+#include <stddef.h>
+
 #include <OpenHLX/Client/CommandManager.hpp>
 #include <OpenHLX/Client/ZonesControllerCommands.hpp>
 #include <OpenHLX/Common/Errors.hpp>
@@ -32,12 +35,20 @@
 #include <OpenHLX/Model/VolumeModel.hpp>
 #include <OpenHLX/Model/ZoneModel.hpp>
 #include <OpenHLX/Model/ZonesModel.hpp>
+#include <OpenHLX/Server/ZonesControllerCommands.hpp>
 
 #include "ControllerBasis.hpp"
 
 
 namespace HLX
 {
+
+namespace Server
+{
+
+    class ConnectionBasis;
+
+}; // namespace Server
 
 namespace Proxy
 {
@@ -91,9 +102,18 @@ public:
 
     static void VolumeNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
+    // Client-facing Server Command Request Handler Trampolines
+
+    static void DecreaseVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void IncreaseVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void SetVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+
 private:
     Common::Status ResponseInit(void);
+    Common::Status RequestInit(void);
     Common::Status DoNotificationHandlers(const bool &aRegister);
+    Common::Status DoRequestHandlers(const bool &aRegister);
 
     // Server-facing Client Command Completion Handlers
 
@@ -106,15 +126,53 @@ private:
 
     void VolumeNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 
+    // Client-facing Server Command Request Completion Handlers
+
+    void DecreaseVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void IncreaseVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void SetVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+
+
 private:
+    // Server-facing Client Implementation
+
     void HandleVolumeChange(const IdentifierType &aZoneIdentifier, const Model::VolumeModel::LevelType &aVolume);
 
+private:
+    // Client-facing Server Implementation
+
+    Common::Status AdjustVolume(const IdentifierType &aZoneIdentifier, const Model::VolumeModel::LevelType &aAdjustment, Model::VolumeModel::LevelType &aVolume);
+    Common::Status SetMute(const IdentifierType &aZoneIdentifier, const Model::VolumeModel::MuteType &aMute);
+
+    Common::Status HandleQueryReceived(const bool &aIsConfiguration, const IdentifierType &aZoneIdentifier, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer) const;
+
+    Common::Status HandleQueryVolumeReceived(const IdentifierType &aZoneIdentifier, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
+    static Common::Status HandleQueryVolumeReceived(const IdentifierType &aZoneIdentifier, const Model::ZoneModel &aZoneModel, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    Common::Status HandleSetMute(const bool &aConditionally, const IdentifierType &aZoneIdentifier, const Model::VolumeModel::MuteType &aMute, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    Common::Status HandleSetMuteConditionally(const IdentifierType &aZoneIdentifier, const Model::VolumeModel::MuteType &aMute, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+
+    Common::Status HandleAdjustVolumeReceived(const IdentifierType &aZoneIdentifier, const Model::VolumeModel::LevelType &aAdjustment, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    Common::Status HandleSetVolumeReceived(const IdentifierType &aZoneIdentifier, const Model::VolumeModel::LevelType &aVolume, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+
+    static Common::Status HandleMuteResponse(const IdentifierType &aZoneIdentifier, const Model::VolumeModel::MuteType &aMute, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    static Common::Status HandleVolumeResponse(const IdentifierType &aZoneIdentifier, const Model::VolumeModel::LevelType &aVolume, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
 private:
     size_t                                            mZonesDidRefreshCount;
     Model::ZonesModel                                 mZones;
 
 private:
-    static Client::Command::Zones::VolumeResponse     kVolumeResponse;
+    // Server-facing Client Command Response Data
+
+    static Client::Command::Zones::VolumeResponse                kVolumeResponse;
+
+private:
+    // Client-facing Server Command Request Data
+    
+    static Server::Command::Zones::DecreaseVolumeRequest         kDecreaseVolumeRequest;
+    static Server::Command::Zones::IncreaseVolumeRequest         kIncreaseVolumeRequest;
+    static Server::Command::Zones::QueryRequest                  kQueryRequest;
+    static Server::Command::Zones::SetVolumeRequest              kSetVolumeRequest;
 };
 
 }; // namespace Proxy
