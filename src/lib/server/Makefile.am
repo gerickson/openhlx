@@ -63,6 +63,7 @@ libopenhlx_server_a_include_HEADERS                         = \
     ConnectionManager.hpp                                     \
     ConnectionManagerDelegate.hpp                             \
     ConnectionTelnet.hpp                                      \
+    ControllerBasis.hpp                                       \
     EqualizerPresetsControllerCommands.hpp                    \
     FavoritesControllerCommands.hpp                           \
     FrontPanelControllerCommands.hpp                          \
@@ -103,6 +104,7 @@ libopenhlx_server_a_SOURCES                                 = \
     ConnectionFactory.cpp                                     \
     ConnectionManager.cpp                                     \
     ConnectionTelnet.cpp                                      \
+    ControllerBasis.cpp                                       \
     EqualizerPresetsControllerCommands.cpp                    \
     FavoritesControllerCommands.cpp                           \
     FrontPanelControllerCommands.cpp                          \
