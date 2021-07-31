@@ -18,13 +18,13 @@
 
 /**
  *    @file
- *      This file defines an object for effecting a HLX server
- *      controller.
+ *      This file defines an object for effecting a HLX simulated
+ *      server controller.
  *
  */
 
-#ifndef HLXSERVERCONTROLLER_HPP
-#define HLXSERVERCONTROLLER_HPP
+#ifndef OPENHLXSIMULATORCONTROLLER_HPP
+#define OPENHLXSIMULATORCONTROLLER_HPP
 
 #include <map>
 
@@ -46,7 +46,7 @@
 #include <FrontPanelController.hpp>
 #include <GroupsController.hpp>
 #include <GroupsControllerDelegate.hpp>
-#include <HLXServerControllerDelegate.hpp>
+#include <HLXSimulatorControllerDelegate.hpp>
 #include <InfraredController.hpp>
 #include <NetworkController.hpp>
 #include <SourcesController.hpp>
@@ -56,7 +56,7 @@
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
 
 /**
@@ -67,10 +67,10 @@ namespace Server
  *
  */
 class Controller :
-    public ConnectionManagerDelegate,
-    public CommandManagerDelegate,
+    public Server::ConnectionManagerDelegate,
+    public Server::CommandManagerDelegate,
     public ConfigurationControllerDelegate,
-    public ControllerBasisDelegate,
+    public Simulator::ControllerBasisDelegate,
     public GroupsControllerDelegate
 {
 public:
@@ -84,24 +84,24 @@ public:
     Common::Status SetDelegate(ControllerDelegate *aDelegate, void *aContext);
 
     Common::Status Listen(void);
-    Common::Status Listen(const ConnectionManager::Versions &aVersions);
+    Common::Status Listen(const Common::ConnectionManagerBasis::Versions &aVersions);
     Common::Status Listen(const char *aMaybeURL);
-    Common::Status Listen(const char *aMaybeURL, const ConnectionManager::Versions &aVersions);
+    Common::Status Listen(const char *aMaybeURL, const Common::ConnectionManagerBasis::Versions &aVersions);
 
-    Common::Status RegisterRequestHandler(Server::Command::RequestBasis &aRequest, void *aContext, CommandManager::OnRequestReceivedFunc aOnRequestReceivedHandler);
+    Common::Status RegisterRequestHandler(Server::Command::RequestBasis &aRequest, void *aContext, Server::CommandManager::OnRequestReceivedFunc aOnRequestReceivedHandler);
 
     // Configuration Controller Delegate Methods
 
     Common::Status LoadFromBackupConfiguration(ConfigurationController &aController, CFDictionaryRef aBackupDictionary) final;
     Common::Status LoadFromBackupConfigurationStorage(ConfigurationController &aController, CFDictionaryRef &aBackupDictionary) final;
-    void QueryCurrentConfiguration(ConfigurationController &aController, ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) final;
+    void QueryCurrentConfiguration(ConfigurationController &aController, Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) final;
     void ResetToDefaultConfiguration(ConfigurationController &aController) final;
     void SaveToBackupConfiguration(ConfigurationController &aController, CFMutableDictionaryRef aBackupDictionary) final;
     Common::Status SaveToBackupConfigurationStorage(ConfigurationController &aController, CFDictionaryRef aBackupDictionary) final;
 
     // Controller Delegate Methods
 
-    void ControllerConfigurationIsDirty(ControllerBasis &aController) final;
+    void ControllerConfigurationIsDirty(Simulator::ControllerBasis &aController) final;
 
     // Connection Manager Delegate Methods
 
@@ -114,17 +114,17 @@ public:
 
     // Listen
 
-    void ConnectionManagerWillListen(ConnectionManager &aConnectionManager, CFURLRef aURLRef) final;
-    void ConnectionManagerIsListening(ConnectionManager &aConnectionManager, CFURLRef aURLRef) final;
-    void ConnectionManagerDidListen(ConnectionManager &aConnectionManager, CFURLRef aURLRef) final;
-    void ConnectionManagerDidNotListen(ConnectionManager &aConnectionManager, CFURLRef aURLRef, const Common::Error &aError) final;
+    void ConnectionManagerWillListen(Server::ConnectionManager &aConnectionManager, CFURLRef aURLRef) final;
+    void ConnectionManagerIsListening(Server::ConnectionManager &aConnectionManager, CFURLRef aURLRef) final;
+    void ConnectionManagerDidListen(Server::ConnectionManager &aConnectionManager, CFURLRef aURLRef) final;
+    void ConnectionManagerDidNotListen(Server::ConnectionManager &aConnectionManager, CFURLRef aURLRef, const Common::Error &aError) final;
 
     // Accept Delegate Methods
 
-    void ConnectionManagerWillAccept(ConnectionManager &aConnectionManager, CFURLRef aURLRef) final;
-    void ConnectionManagerIsAccepting(ConnectionManager &aConnectionManager, CFURLRef aURLRef) final;
-    void ConnectionManagerDidAccept(ConnectionManager &aConnectionManager, CFURLRef aURLRef) final;
-    void ConnectionManagerDidNotAccept(ConnectionManager &aConnectionManager, CFURLRef aURLRef, const Common::Error &aError) final;
+    void ConnectionManagerWillAccept(Server::ConnectionManager &aConnectionManager, CFURLRef aURLRef) final;
+    void ConnectionManagerIsAccepting(Server::ConnectionManager &aConnectionManager, CFURLRef aURLRef) final;
+    void ConnectionManagerDidAccept(Server::ConnectionManager &aConnectionManager, CFURLRef aURLRef) final;
+    void ConnectionManagerDidNotAccept(Server::ConnectionManager &aConnectionManager, CFURLRef aURLRef, const Common::Error &aError) final;
 
     // Disconnect Delegate Methods
 
@@ -226,17 +226,17 @@ private:
     Common::Status InitControllers(const Common::RunLoopParameters &aRunLoopParameters);
     Common::Status InitConfiguration(const Common::RunLoopParameters &aRunLoopParameters, const boost::filesystem::path &aPath);
 
-    void AddController(ControllerBasis &aController);
+    void AddController(Simulator::ControllerBasis &aController);
 
     void TimerCallBack(CFRunLoopTimerRef aTimerRef);
 
 private:
     struct ControllerState
     {
-        ControllerBasis * mController;
+        Simulator::ControllerBasis * mController;
     };
 
-    typedef std::map<ControllerBasis *, ControllerState> Controllers;
+    typedef std::map<Simulator::ControllerBasis *, ControllerState> Controllers;
 
     // Sub-controller order is important since this is the order that
     // most closely matches the order in which the actual HLX hardware
@@ -244,8 +244,8 @@ private:
 
     Common::RunLoopParameters       mRunLoopParameters;
     boost::filesystem::path         mConfigurationPath;
-    ConnectionManager               mConnectionManager;
-    CommandManager                  mCommandManager;
+    Server::ConnectionManager       mConnectionManager;
+    Server::CommandManager          mCommandManager;
     ConfigurationController         mConfigurationController;
     NetworkController               mNetworkController;
     FavoritesController             mFavoritesController;
@@ -262,8 +262,8 @@ private:
     bool                            mConfigurationIsDirty;
 };
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX
 
-#endif // HLXSERVERCONTROLLER_HPP
+#endif // OPENHLXSIMULATORCONTROLLER_HPP

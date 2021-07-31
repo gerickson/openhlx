@@ -35,8 +35,8 @@ noinst_HEADERS                                                             = \
     FrontPanelController.hpp                                                 \
     GroupsController.hpp                                                     \
     GroupsControllerDelegate.hpp                                             \
-    HLXServerController.hpp                                                  \
-    HLXServerControllerDelegate.hpp                                          \
+    HLXSimulatorController.hpp                                               \
+    HLXSimulatorControllerDelegate.hpp                                       \
     InfraredController.hpp                                                   \
     NameModelDefaults.hpp                                                    \
     NetworkController.hpp                                                    \
@@ -81,12 +81,11 @@ hlxsimd_SOURCES                                                            = \
     ConfigurationController.cpp                                              \
     ContainerControllerBasis.cpp                                             \
     ControllerBasis.cpp                                                      \
-    ControllerBasisDelegate.cpp                                              \
     EqualizerPresetsController.cpp                                           \
     FavoritesController.cpp                                                  \
     FrontPanelController.cpp                                                 \
     GroupsController.cpp                                                     \
-    HLXServerController.cpp                                                  \
+    HLXSimulatorController.cpp                                               \
     InfraredController.cpp                                                   \
     NetworkController.cpp                                                    \
     SourcesController.cpp                                                    \

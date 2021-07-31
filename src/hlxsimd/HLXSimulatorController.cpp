@@ -18,12 +18,12 @@
 
 /**
  *    @file
- *      This file implements an object for effecting a HLX server
- *      controller.
+ *      This file implements an object for effecting a HLX simulated
+ *      server controller.
  *
  */
 
-#include "HLXServerController.hpp"
+#include "HLXSimulatorController.hpp"
 
 #include <vector>
 
@@ -40,13 +40,14 @@
 
 using namespace HLX::Common;
 using namespace HLX::Model;
+using namespace HLX::Server;
 using namespace Nuovations;
 
 
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
 
 namespace Detail
@@ -60,7 +61,7 @@ Controller :: Controller(void) :
     ConnectionManagerDelegate(),
     CommandManagerDelegate(),
     ConfigurationControllerDelegate(),
-    ControllerBasisDelegate(),
+    Simulator::ControllerBasisDelegate(),
     GroupsControllerDelegate(),
     mRunLoopParameters(),
     mConfigurationPath(),
@@ -312,7 +313,7 @@ Controller :: InitConfiguration(const RunLoopParameters &aRunLoopParameters, con
 }
 
 void
-Controller :: AddController(ControllerBasis &aController)
+Controller :: AddController(Simulator::ControllerBasis &aController)
 {
     const ControllerState lControllerState = { &aController };
 
@@ -335,7 +336,7 @@ done:
 }
 
 Status
-Controller :: Listen(const ConnectionManager::Versions &aVersions)
+Controller :: Listen(const Common::ConnectionManagerBasis::Versions &aVersions)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
@@ -361,7 +362,7 @@ Controller :: Listen(const char *aMaybeURL)
 }
 
 Status
-Controller :: Listen(const char *aMaybeURL, const ConnectionManager::Versions &aVersions)
+Controller :: Listen(const char *aMaybeURL, const Common::ConnectionManagerBasis::Versions &aVersions)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
@@ -477,7 +478,7 @@ Status Controller :: LoadFromBackupConfigurationStorage(ConfigurationController 
     return (lRetval);
 }
 
-void Controller :: QueryCurrentConfiguration(ConfigurationController &aController, ConnectionBasis &aConnection, ConnectionBuffer::MutableCountedPointer &aBuffer)
+void Controller :: QueryCurrentConfiguration(ConfigurationController &aController, Server::ConnectionBasis &aConnection, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     Controllers::iterator lCurrent;
     Controllers::iterator lLast;
@@ -577,7 +578,7 @@ Status Controller :: SaveToBackupConfigurationStorage(ConfigurationController &a
 
 // MARK: Controller Delegate Methods
 
-void Controller :: ControllerConfigurationIsDirty(ControllerBasis &aController)
+void Controller :: ControllerConfigurationIsDirty(Simulator::ControllerBasis &aController)
 {
     (void)aController;
 
@@ -983,6 +984,6 @@ void Controller :: TimerCallBack(CFRunLoopTimerRef aTimerRef, void *aContext)
     }
 }
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX
