@@ -23,14 +23,17 @@
  *
  */
 
-#ifndef HLXSERVERCONTROLLERBASISDELEGATE_HPP
-#define HLXSERVERCONTROLLERBASISDELEGATE_HPP
+#ifndef HLXSIMULATORCONTROLLERBASISDELEGATE_HPP
+#define HLXSIMULATORCONTROLLERBASISDELEGATE_HPP
+
 
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
+
+class ControllerBasis;
 
 /**
  *  @brief
@@ -45,11 +48,11 @@ public:
     ControllerBasisDelegate(void) = default;
     virtual ~ControllerBasisDelegate(void) = default;
 
-    virtual void ControllerConfigurationIsDirty(ControllerBasis &aController) = 0;
+    virtual void ControllerConfigurationIsDirty(Simulator::ControllerBasis &aController) = 0;
 };
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX
 
-#endif // HLXSERVERCONTROLLERBASISDELEGATE_HPP
+#endif // HLXSIMULATORCONTROLLERBASISDELEGATE_HPP
