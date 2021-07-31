@@ -168,7 +168,7 @@ private:
 
 private:
     // Client-facing Server Command Request Data
-    
+
     static Server::Command::Zones::DecreaseVolumeRequest         kDecreaseVolumeRequest;
     static Server::Command::Zones::IncreaseVolumeRequest         kIncreaseVolumeRequest;
     static Server::Command::Zones::QueryRequest                  kQueryRequest;
