@@ -53,45 +53,46 @@
 
 using namespace HLX::Common;
 using namespace HLX::Model;
+using namespace HLX::Server;
 using namespace Nuovations;
 
 
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
 
 // Request data
 
-Command::Zones::AdjustBalanceRequest          ZonesController::kAdjustBalanceRequest;
-Command::Zones::DecreaseBassRequest           ZonesController::kDecreaseBassRequest;
-Command::Zones::IncreaseBassRequest           ZonesController::kIncreaseBassRequest;
-Command::Zones::DecreaseTrebleRequest         ZonesController::kDecreaseTrebleRequest;
-Command::Zones::IncreaseTrebleRequest         ZonesController::kIncreaseTrebleRequest;
-Command::Zones::DecreaseEqualizerBandRequest  ZonesController::kDecreaseEqualizerBandRequest;
-Command::Zones::IncreaseEqualizerBandRequest  ZonesController::kIncreaseEqualizerBandRequest;
-Command::Zones::DecreaseVolumeRequest         ZonesController::kDecreaseVolumeRequest;
-Command::Zones::IncreaseVolumeRequest         ZonesController::kIncreaseVolumeRequest;
-Command::Zones::MuteRequest                   ZonesController::kMuteRequest;
-Command::Zones::QueryRequest                  ZonesController::kQueryRequest;
-Command::Zones::QueryMuteRequest              ZonesController::kQueryMuteRequest;
-Command::Zones::QuerySourceRequest            ZonesController::kQuerySourceRequest;
-Command::Zones::QueryVolumeRequest            ZonesController::kQueryVolumeRequest;
-Command::Zones::SetBalanceRequest             ZonesController::kSetBalanceRequest;
-Command::Zones::SetEqualizerBandRequest       ZonesController::kSetEqualizerBandRequest;
-Command::Zones::SetEqualizerPresetRequest     ZonesController::kSetEqualizerPresetRequest;
-Command::Zones::SetHighpassCrossoverRequest   ZonesController::kSetHighpassCrossoverRequest;
-Command::Zones::SetLowpassCrossoverRequest    ZonesController::kSetLowpassCrossoverRequest;
-Command::Zones::SetNameRequest                ZonesController::kSetNameRequest;
-Command::Zones::SetSoundModeRequest           ZonesController::kSetSoundModeRequest;
-Command::Zones::SetSourceRequest              ZonesController::kSetSourceRequest;
-Command::Zones::SetSourceAllRequest           ZonesController::kSetSourceAllRequest;
-Command::Zones::SetToneRequest                ZonesController::kSetToneRequest;
-Command::Zones::SetVolumeRequest              ZonesController::kSetVolumeRequest;
-Command::Zones::SetVolumeAllRequest           ZonesController::kSetVolumeAllRequest;
-Command::Zones::SetVolumeFixedRequest         ZonesController::kSetVolumeFixedRequest;
-Command::Zones::ToggleMuteRequest             ZonesController::kToggleMuteRequest;
+Server::Command::Zones::AdjustBalanceRequest          ZonesController::kAdjustBalanceRequest;
+Server::Command::Zones::DecreaseBassRequest           ZonesController::kDecreaseBassRequest;
+Server::Command::Zones::IncreaseBassRequest           ZonesController::kIncreaseBassRequest;
+Server::Command::Zones::DecreaseTrebleRequest         ZonesController::kDecreaseTrebleRequest;
+Server::Command::Zones::IncreaseTrebleRequest         ZonesController::kIncreaseTrebleRequest;
+Server::Command::Zones::DecreaseEqualizerBandRequest  ZonesController::kDecreaseEqualizerBandRequest;
+Server::Command::Zones::IncreaseEqualizerBandRequest  ZonesController::kIncreaseEqualizerBandRequest;
+Server::Command::Zones::DecreaseVolumeRequest         ZonesController::kDecreaseVolumeRequest;
+Server::Command::Zones::IncreaseVolumeRequest         ZonesController::kIncreaseVolumeRequest;
+Server::Command::Zones::MuteRequest                   ZonesController::kMuteRequest;
+Server::Command::Zones::QueryRequest                  ZonesController::kQueryRequest;
+Server::Command::Zones::QueryMuteRequest              ZonesController::kQueryMuteRequest;
+Server::Command::Zones::QuerySourceRequest            ZonesController::kQuerySourceRequest;
+Server::Command::Zones::QueryVolumeRequest            ZonesController::kQueryVolumeRequest;
+Server::Command::Zones::SetBalanceRequest             ZonesController::kSetBalanceRequest;
+Server::Command::Zones::SetEqualizerBandRequest       ZonesController::kSetEqualizerBandRequest;
+Server::Command::Zones::SetEqualizerPresetRequest     ZonesController::kSetEqualizerPresetRequest;
+Server::Command::Zones::SetHighpassCrossoverRequest   ZonesController::kSetHighpassCrossoverRequest;
+Server::Command::Zones::SetLowpassCrossoverRequest    ZonesController::kSetLowpassCrossoverRequest;
+Server::Command::Zones::SetNameRequest                ZonesController::kSetNameRequest;
+Server::Command::Zones::SetSoundModeRequest           ZonesController::kSetSoundModeRequest;
+Server::Command::Zones::SetSourceRequest              ZonesController::kSetSourceRequest;
+Server::Command::Zones::SetSourceAllRequest           ZonesController::kSetSourceAllRequest;
+Server::Command::Zones::SetToneRequest                ZonesController::kSetToneRequest;
+Server::Command::Zones::SetVolumeRequest              ZonesController::kSetVolumeRequest;
+Server::Command::Zones::SetVolumeAllRequest           ZonesController::kSetVolumeAllRequest;
+Server::Command::Zones::SetVolumeFixedRequest         ZonesController::kSetVolumeFixedRequest;
+Server::Command::Zones::ToggleMuteRequest             ZonesController::kToggleMuteRequest;
 
 static const BalanceModel::BalanceType             kBalanceDefault           = BalanceModel::kBalanceCenter;
 static const SoundModel::SoundMode                 kSoundModeDefault         = SoundModel::kSoundModeDisabled;
@@ -884,7 +885,7 @@ ZonesController :: DoRequestHandlers(const bool &aRegister)
 }
 
 Status
-ZonesController :: Init(CommandManager &aCommandManager, const Timeout &aTimeout)
+ZonesController :: Init(Server::CommandManager &aCommandManager, const Timeout &aTimeout)
 {
     DeclareScopedFunctionTracer(lTracer);
     constexpr bool  kRegister = true;
@@ -1057,14 +1058,14 @@ ZonesController :: GetEqualizerBand(const IdentifierType &aZoneIdentifier, const
 Status
 ZonesController :: HandleQueryReceived(const bool &aIsConfiguration, const IdentifierType &aZoneIdentifier, ConnectionBuffer::MutableCountedPointer &aOutputBuffer) const
 {
-    const ZoneModel *                  lZoneModel;
-    const char *                       lName;
-    Command::Zones::NameResponse       lNameResponse;
-    BalanceModel::BalanceType          lBalance;
-    Command::Zones::BalanceResponse    lBalanceResponse;
-    const uint8_t *                    lBuffer;
-    size_t                             lSize;
-    Status                             lRetval;
+    const ZoneModel *                        lZoneModel;
+    const char *                             lName;
+    Server::Command::Zones::NameResponse     lNameResponse;
+    BalanceModel::BalanceType                lBalance;
+    Server::Command::Zones::BalanceResponse  lBalanceResponse;
+    const uint8_t *                          lBuffer;
+    size_t                                   lSize;
+    Status                                   lRetval;
 
 
     lRetval = mZones.GetZone(aZoneIdentifier, lZoneModel);
@@ -1326,11 +1327,11 @@ ZonesController :: HandleQuerySourceReceived(const IdentifierType &aZoneIdentifi
                                              const Model::ZoneModel &aZoneModel,
                                              Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    SourceModel::IdentifierType        lSourceIdentifier;
-    Command::Zones::SourceResponse     lSourceResponse;
-    const uint8_t *                    lBuffer;
-    size_t                             lSize;
-    Status                             lRetval;
+    SourceModel::IdentifierType             lSourceIdentifier;
+    Server::Command::Zones::SourceResponse  lSourceResponse;
+    const uint8_t *                         lBuffer;
+    size_t                                  lSize;
+    Status                                  lRetval;
 
 
     lRetval = aZoneModel.GetSource(lSourceIdentifier);
@@ -1406,12 +1407,12 @@ ZonesController :: HandleQueryVolumeFixed(const IdentifierType &aZoneIdentifier,
 Status
 ZonesController :: HandleAdjustBalanceReceived(const IdentifierType &aZoneIdentifier, const BalanceModel::ChannelType &aChannel, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    ZoneModel *                        lZoneModel;
-    BalanceModel::BalanceType          lBalance;
-    Command::Zones::BalanceResponse    lBalanceResponse;
-    const uint8_t *                    lBuffer;
-    size_t                             lSize;
-    Status                             lRetval;
+    ZoneModel *                              lZoneModel;
+    BalanceModel::BalanceType                lBalance;
+    Server::Command::Zones::BalanceResponse  lBalanceResponse;
+    const uint8_t *                          lBuffer;
+    size_t                                   lSize;
+    Status                                   lRetval;
 
 
     nlREQUIRE_ACTION(((aChannel == BalanceModel::kChannelLeft) ||
@@ -1453,11 +1454,11 @@ ZonesController :: HandleAdjustBalanceReceived(const IdentifierType &aZoneIdenti
 Status
 ZonesController :: HandleSetBalanceReceived(const IdentifierType &aZoneIdentifier, const BalanceModel::BalanceType &aBalance, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    ZoneModel *                        lZoneModel;
-    Command::Zones::BalanceResponse    lBalanceResponse;
-    const uint8_t *                    lBuffer;
-    size_t                             lSize;
-    Status                             lRetval;
+    ZoneModel *                              lZoneModel;
+    Server::Command::Zones::BalanceResponse  lBalanceResponse;
+    const uint8_t *                          lBuffer;
+    size_t                                   lSize;
+    Status                                   lRetval;
 
 
     lRetval = mZones.GetZone(aZoneIdentifier, lZoneModel);
@@ -1485,7 +1486,7 @@ ZonesController :: HandleSetBalanceReceived(const IdentifierType &aZoneIdentifie
 }
 
 Status
-ZonesController :: HandleAdjustBassReceived(ConnectionBasis &aConnection,
+ZonesController :: HandleAdjustBassReceived(Server::ConnectionBasis &aConnection,
                                             const IdentifierType &aZoneIdentifier,
                                             const Model::ToneModel::LevelType &aAdjustment)
 {
@@ -1572,7 +1573,7 @@ ZonesController :: HandleAdjustBassReceived(const IdentifierType &aZoneIdentifie
 }
 
 Status
-ZonesController :: HandleAdjustTrebleReceived(ConnectionBasis &aConnection, const IdentifierType &aZoneIdentifier, const Model::ToneModel::LevelType &aAdjustment)
+ZonesController :: HandleAdjustTrebleReceived(Server::ConnectionBasis &aConnection, const IdentifierType &aZoneIdentifier, const Model::ToneModel::LevelType &aAdjustment)
 {
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lRetval;
@@ -1785,7 +1786,7 @@ ZonesController :: HandleSetVolumeReceived(const IdentifierType &aZoneIdentifier
 }
 
 Status
-ZonesController :: HandleAdjustEqualizerBandReceived(ConnectionBasis &aConnection, const IdentifierType &aZoneIdentifier, const Model::EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier, const Model::EqualizerBandModel::LevelType &aBandAdjustment)
+ZonesController :: HandleAdjustEqualizerBandReceived(Server::ConnectionBasis &aConnection, const IdentifierType &aZoneIdentifier, const Model::EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier, const Model::EqualizerBandModel::LevelType &aBandAdjustment)
 {
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lRetval;
@@ -1901,10 +1902,10 @@ ZonesController :: HandleSetEqualizerBandReceived(const IdentifierType &aZoneIde
 Status
 ZonesController :: HandleEqualizerBandResponse(const IdentifierType &aZoneIdentifier, const EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier, const EqualizerBandModel::LevelType &aBandLevel, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    Command::Zones::EqualizerBandResponse      lEqualizerBandResponse;
-    const uint8_t *                            lBuffer;
-    size_t                                     lSize;
-    Status                                     lRetval;
+    Server::Command::Zones::EqualizerBandResponse  lEqualizerBandResponse;
+    const uint8_t *                                lBuffer;
+    size_t                                         lSize;
+    Status                                         lRetval;
 
     lRetval = lEqualizerBandResponse.Init(aZoneIdentifier, aEqualizerBandIdentifier, aBandLevel);
     nlREQUIRE_SUCCESS(lRetval, done);
@@ -1922,10 +1923,10 @@ ZonesController :: HandleEqualizerBandResponse(const IdentifierType &aZoneIdenti
 Status
 ZonesController :: HandleEqualizerPresetResponse(const IdentifierType &aZoneIdentifier, const EqualizerPresetModel::IdentifierType &aEqualizerPresetIdentifier, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    Command::Zones::EqualizerPresetResponse    lEqualizerPresetResponse;
-    const uint8_t *                            lBuffer;
-    size_t                                     lSize;
-    Status                                     lRetval;
+    Server::Command::Zones::EqualizerPresetResponse  lEqualizerPresetResponse;
+    const uint8_t *                                  lBuffer;
+    size_t                                           lSize;
+    Status                                           lRetval;
 
     lRetval = lEqualizerPresetResponse.Init(aZoneIdentifier, aEqualizerPresetIdentifier);
     nlREQUIRE_SUCCESS(lRetval, done);
@@ -1943,10 +1944,10 @@ ZonesController :: HandleEqualizerPresetResponse(const IdentifierType &aZoneIden
 Status
 ZonesController :: HandleHighpassCrossoverResponse(const IdentifierType &aZoneIdentifier, const CrossoverModel::FrequencyType &aHighpassFrequency, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    Command::Zones::HighpassCrossoverResponse  lHighpassCrossoverResponse;
-    const uint8_t *                            lBuffer;
-    size_t                                     lSize;
-    Status                                     lRetval;
+    Server::Command::Zones::HighpassCrossoverResponse  lHighpassCrossoverResponse;
+    const uint8_t *                                    lBuffer;
+    size_t                                             lSize;
+    Status                                             lRetval;
 
     lRetval = lHighpassCrossoverResponse.Init(aZoneIdentifier, aHighpassFrequency);
     nlREQUIRE_SUCCESS(lRetval, done);
@@ -1964,10 +1965,10 @@ ZonesController :: HandleHighpassCrossoverResponse(const IdentifierType &aZoneId
 Status
 ZonesController :: HandleLowpassCrossoverResponse(const IdentifierType &aZoneIdentifier, const CrossoverModel::FrequencyType &aLowpassFrequency, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    Command::Zones::LowpassCrossoverResponse  lLowpassCrossoverResponse;
-    const uint8_t *                           lBuffer;
-    size_t                                    lSize;
-    Status                                    lRetval;
+    Server::Command::Zones::LowpassCrossoverResponse  lLowpassCrossoverResponse;
+    const uint8_t *                                   lBuffer;
+    size_t                                            lSize;
+    Status                                            lRetval;
 
     lRetval = lLowpassCrossoverResponse.Init(aZoneIdentifier, aLowpassFrequency);
     nlREQUIRE_SUCCESS(lRetval, done);
@@ -1985,10 +1986,10 @@ ZonesController :: HandleLowpassCrossoverResponse(const IdentifierType &aZoneIde
 Status
 ZonesController :: HandleMuteResponse(const IdentifierType &aZoneIdentifier, const VolumeModel::MuteType &aMute, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    Command::Zones::MuteResponse  lMuteResponse;
-    const uint8_t *               lBuffer;
-    size_t                        lSize;
-    Status                        lRetval;
+    Server::Command::Zones::MuteResponse  lMuteResponse;
+    const uint8_t *                       lBuffer;
+    size_t                                lSize;
+    Status                                lRetval;
 
     lRetval = lMuteResponse.Init(aZoneIdentifier, aMute);
     nlREQUIRE_SUCCESS(lRetval, done);
@@ -2006,10 +2007,10 @@ ZonesController :: HandleMuteResponse(const IdentifierType &aZoneIdentifier, con
 Status
 ZonesController :: HandleSoundModeResponse(const IdentifierType &aZoneIdentifier, const SoundModel::SoundMode &aSoundMode, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    Command::Zones::SoundModeResponse  lSoundModeResponse;
-    const uint8_t *                    lBuffer;
-    size_t                             lSize;
-    Status                             lRetval;
+    Server::Command::Zones::SoundModeResponse  lSoundModeResponse;
+    const uint8_t *                            lBuffer;
+    size_t                                     lSize;
+    Status                                     lRetval;
 
 
     lRetval = lSoundModeResponse.Init(aZoneIdentifier, aSoundMode);
@@ -2028,10 +2029,10 @@ ZonesController :: HandleSoundModeResponse(const IdentifierType &aZoneIdentifier
     Status
 ZonesController :: HandleToneResponse(const IdentifierType &aZoneIdentifier, const Model::ToneModel::LevelType &aBass, Model::ToneModel::LevelType &aTreble, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    Command::Zones::ToneResponse       lToneResponse;
-    const uint8_t *                    lBuffer;
-    size_t                             lSize;
-    Status                             lRetval;
+    Server::Command::Zones::ToneResponse  lToneResponse;
+    const uint8_t *                       lBuffer;
+    size_t                                lSize;
+    Status                                lRetval;
 
 
     lRetval = lToneResponse.Init(aZoneIdentifier, aBass, aTreble);
@@ -2050,10 +2051,10 @@ ZonesController :: HandleToneResponse(const IdentifierType &aZoneIdentifier, con
 Status
 ZonesController :: HandleVolumeResponse(const IdentifierType &aZoneIdentifier, const VolumeModel::LevelType &aVolume, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    Command::Zones::VolumeResponse  lVolumeResponse;
-    const uint8_t *                 lBuffer;
-    size_t                          lSize;
-    Status                          lRetval;
+    Server::Command::Zones::VolumeResponse  lVolumeResponse;
+    const uint8_t *                         lBuffer;
+    size_t                                  lSize;
+    Status                                  lRetval;
 
 
     lRetval = lVolumeResponse.Init(aZoneIdentifier, aVolume);
@@ -2072,10 +2073,10 @@ ZonesController :: HandleVolumeResponse(const IdentifierType &aZoneIdentifier, c
 Status
 ZonesController :: HandleVolumeFixedResponse(const IdentifierType &aZoneIdentifier, const VolumeModel::FixedType &aVolumeFixed, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    Command::Zones::VolumeFixedResponse  lVolumeFixedResponse;
-    const uint8_t *                      lBuffer;
-    size_t                               lSize;
-    Status                               lRetval;
+    Server::Command::Zones::VolumeFixedResponse  lVolumeFixedResponse;
+    const uint8_t *                              lBuffer;
+    size_t                                       lSize;
+    Status                                       lRetval;
 
 
     lRetval = lVolumeFixedResponse.Init(aZoneIdentifier, aVolumeFixed);
@@ -2093,7 +2094,7 @@ ZonesController :: HandleVolumeFixedResponse(const IdentifierType &aZoneIdentifi
 
 // MARK: Configuration Management Methods
 
-void ZonesController :: QueryCurrentConfiguration(ConnectionBasis &aConnection, ConnectionBuffer::MutableCountedPointer &aBuffer) const
+void ZonesController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     IdentifierType  lZoneIdentifier;
     Status          lStatus;
@@ -2523,7 +2524,7 @@ ZonesController :: ElementLoadFromBackupConfiguration(CFDictionaryRef aZonesDict
 
     // Attempt to form the zone identifier key.
 
-    lZoneIdentifierKey = Utilities::Configuration::CreateCFString(aZoneIdentifier);
+    lZoneIdentifierKey = Server::Utilities::Configuration::CreateCFString(aZoneIdentifier);
     nlREQUIRE_ACTION(lZoneIdentifierKey != nullptr, done, lRetval = -ENOMEM);
 
     // Attempt to retrieve the zone dictionary.
@@ -2834,20 +2835,20 @@ ZonesController :: ZoneVolumeSaveToBackupConfiguration(CFMutableDictionaryRef aZ
 Status
 ZonesController :: ElementSaveToBackupConfiguration(CFMutableDictionaryRef aZonesDictionary, const IdentifierType &aZoneIdentifier) const
 {
-    CFStringRef                   lZoneIdentifierKey = nullptr;
-    CFMutableDictionaryRef        lZoneDictionary = nullptr;
-    const ZoneModel *             lZoneModel;
-    const char *                  lName;
-    Command::Zones::NameResponse  lNameResponse;
-    BalanceModel::BalanceType     lBalance;
-    SourceModel::IdentifierType   lSourceIdentifier;
-    Status                        lRetval = kStatus_Success;
+    CFStringRef                           lZoneIdentifierKey = nullptr;
+    CFMutableDictionaryRef                lZoneDictionary = nullptr;
+    const ZoneModel *                     lZoneModel;
+    const char *                          lName;
+    Server::Command::Zones::NameResponse  lNameResponse;
+    BalanceModel::BalanceType             lBalance;
+    SourceModel::IdentifierType           lSourceIdentifier;
+    Status                                lRetval = kStatus_Success;
 
 
     lRetval = mZones.GetZone(aZoneIdentifier, lZoneModel);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lZoneIdentifierKey = Utilities::Configuration::CreateCFString(aZoneIdentifier);
+    lZoneIdentifierKey = Server::Utilities::Configuration::CreateCFString(aZoneIdentifier);
     nlREQUIRE_ACTION(lZoneIdentifierKey != nullptr, done, lRetval = -ENOMEM);
 
     lZoneDictionary = CFDictionaryCreateMutable(kCFAllocatorDefault,
@@ -2906,7 +2907,7 @@ void ZonesController :: SaveToBackupConfiguration(CFMutableDictionaryRef aBackup
 
 // MARK: Command Request Completion Handlers
 
-void ZonesController :: AdjustBalanceRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+void ZonesController :: AdjustBalanceRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
     IdentifierType                           lZoneIdentifier;
     BalanceModel::ChannelType                lChannel;
@@ -2916,7 +2917,7 @@ void ZonesController :: AdjustBalanceRequestReceivedHandler(ConnectionBasis &aCo
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Zones::AdjustBalanceRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::AdjustBalanceRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/3: Zone Identifier
     //
@@ -2959,7 +2960,7 @@ void ZonesController :: AdjustBalanceRequestReceivedHandler(ConnectionBasis &aCo
     return;
 }
 
-void ZonesController :: DecreaseBassRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void ZonesController :: DecreaseBassRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     static const ToneModel::LevelType        kAdjustment = -1;
     IdentifierType                           lZoneIdentifier;
@@ -2968,7 +2969,7 @@ void ZonesController :: DecreaseBassRequestReceivedHandler(ConnectionBasis &aCon
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Zones::DecreaseBassRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::DecreaseBassRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/3: Zone Identifier
     //
@@ -2987,7 +2988,7 @@ void ZonesController :: DecreaseBassRequestReceivedHandler(ConnectionBasis &aCon
     return;
 }
 
-void ZonesController :: IncreaseBassRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void ZonesController :: IncreaseBassRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     static const ToneModel::LevelType        kAdjustment = 1;
     IdentifierType                           lZoneIdentifier;
@@ -2996,7 +2997,7 @@ void ZonesController :: IncreaseBassRequestReceivedHandler(ConnectionBasis &aCon
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Zones::DecreaseBassRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::DecreaseBassRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/3: Zone Identifier
     //
@@ -3015,7 +3016,7 @@ void ZonesController :: IncreaseBassRequestReceivedHandler(ConnectionBasis &aCon
     return;
 }
 
-void ZonesController :: DecreaseTrebleRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void ZonesController :: DecreaseTrebleRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     static const ToneModel::LevelType        kAdjustment = -1;
     IdentifierType                           lZoneIdentifier;
@@ -3024,7 +3025,7 @@ void ZonesController :: DecreaseTrebleRequestReceivedHandler(ConnectionBasis &aC
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Zones::DecreaseBassRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::DecreaseBassRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/3: Zone Identifier
     //
@@ -3043,7 +3044,7 @@ void ZonesController :: DecreaseTrebleRequestReceivedHandler(ConnectionBasis &aC
     return;
 }
 
-void ZonesController :: IncreaseTrebleRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void ZonesController :: IncreaseTrebleRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     static const ToneModel::LevelType        kAdjustment = 1;
     IdentifierType                           lZoneIdentifier;
@@ -3052,7 +3053,7 @@ void ZonesController :: IncreaseTrebleRequestReceivedHandler(ConnectionBasis &aC
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Zones::DecreaseBassRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::DecreaseBassRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/3: Zone Identifier
     //
@@ -3071,7 +3072,7 @@ void ZonesController :: IncreaseTrebleRequestReceivedHandler(ConnectionBasis &aC
     return;
 }
 
-void ZonesController :: DecreaseEqualizerBandRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void ZonesController :: DecreaseEqualizerBandRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     static const EqualizerBandModel::LevelType  kAdjustment = -1;
     IdentifierType                              lZoneIdentifier;
@@ -3082,7 +3083,7 @@ void ZonesController :: DecreaseEqualizerBandRequestReceivedHandler(ConnectionBa
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Zones::DecreaseEqualizerBandRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::DecreaseEqualizerBandRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/4: Zone Identifier
     //
@@ -3111,7 +3112,7 @@ void ZonesController :: DecreaseEqualizerBandRequestReceivedHandler(ConnectionBa
     return;
 }
 
-void ZonesController :: IncreaseEqualizerBandRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void ZonesController :: IncreaseEqualizerBandRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     static const EqualizerBandModel::LevelType  kAdjustment = 1;
     IdentifierType                              lZoneIdentifier;
@@ -3122,7 +3123,7 @@ void ZonesController :: IncreaseEqualizerBandRequestReceivedHandler(ConnectionBa
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Zones::IncreaseEqualizerBandRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::IncreaseEqualizerBandRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/4: Zone Identifier
     //
@@ -3151,10 +3152,10 @@ void ZonesController :: IncreaseEqualizerBandRequestReceivedHandler(ConnectionBa
     return;
 }
 
-void ZonesController :: DecreaseVolumeRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+void ZonesController :: DecreaseVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
     static const VolumeModel::MuteType       kMuted = true;
-    static const VolumeModel::LevelType     kAdjustment = -1;
+    static const VolumeModel::LevelType      kAdjustment = -1;
     IdentifierType                           lZoneIdentifier;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
@@ -3162,7 +3163,7 @@ void ZonesController :: DecreaseVolumeRequestReceivedHandler(ConnectionBasis &aC
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Zones::DecreaseVolumeRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::DecreaseVolumeRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/3: Zone Identifier
     //
@@ -3208,10 +3209,10 @@ void ZonesController :: DecreaseVolumeRequestReceivedHandler(ConnectionBasis &aC
     return;
 }
 
-void ZonesController :: IncreaseVolumeRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+void ZonesController :: IncreaseVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
     static const VolumeModel::MuteType       kMuted = true;
-    static const VolumeModel::LevelType     kAdjustment = 1;
+    static const VolumeModel::LevelType      kAdjustment = 1;
     IdentifierType                           lZoneIdentifier;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
@@ -3219,7 +3220,7 @@ void ZonesController :: IncreaseVolumeRequestReceivedHandler(ConnectionBasis &aC
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Zones::IncreaseVolumeRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::IncreaseVolumeRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/3: Zone Identifier
     //
@@ -3265,7 +3266,7 @@ void ZonesController :: IncreaseVolumeRequestReceivedHandler(ConnectionBasis &aC
     return;
 }
 
-void ZonesController :: MuteRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+void ZonesController :: MuteRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
     const char *                             lMutep;
     IdentifierType                           lZoneIdentifier;
@@ -3276,7 +3277,7 @@ void ZonesController :: MuteRequestReceivedHandler(ConnectionBasis &aConnection,
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Zones::MuteRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::MuteRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/3: Muted/Unmuted
 
@@ -3317,11 +3318,11 @@ void ZonesController :: MuteRequestReceivedHandler(ConnectionBasis &aConnection,
     return;
 }
 
-void ZonesController :: QueryRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+void ZonesController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
     static const bool                        kIsConfiguration = true;
     IdentifierType                           lZoneIdentifier;
-    Command::Zones::QueryResponse            lResponse;
+    Server::Command::Zones::QueryResponse    lResponse;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
     const uint8_t *                          lBuffer;
@@ -3330,7 +3331,7 @@ void ZonesController :: QueryRequestReceivedHandler(ConnectionBasis &aConnection
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Zones::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/2: Zone Identifier
     //
@@ -3381,7 +3382,7 @@ void ZonesController :: QueryRequestReceivedHandler(ConnectionBasis &aConnection
     return;
 }
 
-void ZonesController :: QueryMuteRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+void ZonesController :: QueryMuteRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
     IdentifierType                           lZoneIdentifier;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
@@ -3390,7 +3391,7 @@ void ZonesController :: QueryMuteRequestReceivedHandler(ConnectionBasis &aConnec
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Zones::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/2: Zone Identifier
     //
@@ -3428,7 +3429,7 @@ void ZonesController :: QueryMuteRequestReceivedHandler(ConnectionBasis &aConnec
     return;
 }
 
-void ZonesController :: QuerySourceRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+void ZonesController :: QuerySourceRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
     IdentifierType                           lZoneIdentifier;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
@@ -3437,7 +3438,7 @@ void ZonesController :: QuerySourceRequestReceivedHandler(ConnectionBasis &aConn
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Zones::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/2: Zone Identifier
     //
@@ -3475,7 +3476,7 @@ void ZonesController :: QuerySourceRequestReceivedHandler(ConnectionBasis &aConn
     return;
 }
 
-void ZonesController :: QueryVolumeRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+void ZonesController :: QueryVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
     IdentifierType                           lZoneIdentifier;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
@@ -3484,7 +3485,7 @@ void ZonesController :: QueryVolumeRequestReceivedHandler(ConnectionBasis &aConn
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Zones::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/2: Zone Identifier
     //
@@ -3522,7 +3523,7 @@ void ZonesController :: QueryVolumeRequestReceivedHandler(ConnectionBasis &aConn
     return;
 }
 
-void ZonesController :: SetBalanceRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+void ZonesController :: SetBalanceRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
     IdentifierType                           lZoneIdentifier;
     BalanceModel::ChannelType                lChannel;
@@ -3533,7 +3534,7 @@ void ZonesController :: SetBalanceRequestReceivedHandler(ConnectionBasis &aConne
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Zones::SetBalanceRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::SetBalanceRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/4: Zone Identifier
     //
@@ -3595,7 +3596,7 @@ void ZonesController :: SetBalanceRequestReceivedHandler(ConnectionBasis &aConne
     return;
 }
 
-void ZonesController :: SetEqualizerBandRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void ZonesController :: SetEqualizerBandRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     IdentifierType                           lZoneIdentifier;
     EqualizerBandModel::IdentifierType       lEqualizerBandIdentifier;
@@ -3606,7 +3607,7 @@ void ZonesController :: SetEqualizerBandRequestReceivedHandler(ConnectionBasis &
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Zones::SetEqualizerBandRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::SetEqualizerBandRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/4: Zone Identifier
     //
@@ -3672,7 +3673,7 @@ void ZonesController :: SetEqualizerBandRequestReceivedHandler(ConnectionBasis &
     return;
 }
 
-void ZonesController :: SetEqualizerPresetRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void ZonesController :: SetEqualizerPresetRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     IdentifierType                           lZoneIdentifier;
     EqualizerPresetModel::IdentifierType     lEqualizerPresetIdentifier;
@@ -3683,7 +3684,7 @@ void ZonesController :: SetEqualizerPresetRequestReceivedHandler(ConnectionBasis
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Zones::SetEqualizerPresetRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::SetEqualizerPresetRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/3: Zone Identifier
     //
@@ -3752,7 +3753,7 @@ void ZonesController :: SetEqualizerPresetRequestReceivedHandler(ConnectionBasis
     return;
 }
 
-void ZonesController :: SetHighpassCrossoverRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void ZonesController :: SetHighpassCrossoverRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     IdentifierType                           lZoneIdentifier;
     CrossoverModel::FrequencyType            lHighpassFrequency;
@@ -3763,7 +3764,7 @@ void ZonesController :: SetHighpassCrossoverRequestReceivedHandler(ConnectionBas
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Zones::SetHighpassCrossoverRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::SetHighpassCrossoverRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/3: Zone Identifier
     //
@@ -3830,7 +3831,7 @@ void ZonesController :: SetHighpassCrossoverRequestReceivedHandler(ConnectionBas
     return;
 }
 
-void ZonesController :: SetLowpassCrossoverRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void ZonesController :: SetLowpassCrossoverRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     IdentifierType                           lZoneIdentifier;
     CrossoverModel::FrequencyType            lLowpassFrequency;
@@ -3841,7 +3842,7 @@ void ZonesController :: SetLowpassCrossoverRequestReceivedHandler(ConnectionBasi
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Zones::SetLowpassCrossoverRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::SetLowpassCrossoverRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/3: Zone Identifier
     //
@@ -3908,13 +3909,13 @@ void ZonesController :: SetLowpassCrossoverRequestReceivedHandler(ConnectionBasi
     return;
 }
 
-void ZonesController :: SetNameRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+void ZonesController :: SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
     IdentifierType                           lZoneIdentifier;
     const char *                             lName;
     size_t                                   lNameSize;
     ZoneModel *                              lZoneModel;
-    Command::Zones::NameResponse             lNameResponse;
+    Server::Command::Zones::NameResponse     lNameResponse;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
     const uint8_t *                          lBuffer;
@@ -3923,7 +3924,7 @@ void ZonesController :: SetNameRequestReceivedHandler(ConnectionBasis &aConnecti
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Zones::SetNameRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::SetNameRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/3: Zone Identifier
     //
@@ -3990,7 +3991,7 @@ void ZonesController :: SetNameRequestReceivedHandler(ConnectionBasis &aConnecti
     return;
 }
 
-void ZonesController :: SetSoundModeRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+void ZonesController :: SetSoundModeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
     IdentifierType                           lZoneIdentifier;
     SoundModel::SoundMode                    lSoundMode;
@@ -4000,7 +4001,7 @@ void ZonesController :: SetSoundModeRequestReceivedHandler(ConnectionBasis &aCon
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Zones::SetSoundModeRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::SetSoundModeRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/3: Zone Identifier
     //
@@ -4046,11 +4047,11 @@ void ZonesController :: SetSoundModeRequestReceivedHandler(ConnectionBasis &aCon
     return;
 }
 
-void ZonesController :: SetSourceRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+void ZonesController :: SetSourceRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
     IdentifierType                           lZoneIdentifier;
     SourceModel::IdentifierType              lSourceIdentifier;
-    Command::Zones::SourceResponse           lSourceResponse;
+    Server::Command::Zones::SourceResponse   lSourceResponse;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
     const uint8_t *                          lBuffer;
@@ -4059,7 +4060,7 @@ void ZonesController :: SetSourceRequestReceivedHandler(ConnectionBasis &aConnec
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Zones::SetSourceRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::SetSourceRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/3: Zone Identifier
     //
@@ -4116,20 +4117,20 @@ void ZonesController :: SetSourceRequestReceivedHandler(ConnectionBasis &aConnec
     return;
 }
 
-void ZonesController :: SetSourceAllRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+void ZonesController :: SetSourceAllRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    IdentifierType                           lZoneIdentifier;
-    SourceModel::IdentifierType              lSourceIdentifier;
-    Command::Zones::SourceAllResponse        lSourceAllResponse;
-    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
-    Status                                   lStatus;
-    const uint8_t *                          lBuffer;
-    size_t                                   lSize;
+    IdentifierType                             lZoneIdentifier;
+    SourceModel::IdentifierType                lSourceIdentifier;
+    Server::Command::Zones::SourceAllResponse  lSourceAllResponse;
+    ConnectionBuffer::MutableCountedPointer    lResponseBuffer;
+    Status                                     lStatus;
+    const uint8_t *                            lBuffer;
+    size_t                                     lSize;
 
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Zones::SetSourceAllRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::SetSourceAllRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/2: Source Identifier
     //
@@ -4179,7 +4180,7 @@ void ZonesController :: SetSourceAllRequestReceivedHandler(ConnectionBasis &aCon
     return;
 }
 
-void ZonesController :: SetToneRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void ZonesController :: SetToneRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     IdentifierType                           lZoneIdentifier;
     ToneModel::LevelType                     lBass;
@@ -4191,7 +4192,7 @@ void ZonesController :: SetToneRequestReceivedHandler(ConnectionBasis &aConnecti
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Zones::SetToneRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::SetToneRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/4: Zone Identifier
     //
@@ -4268,18 +4269,18 @@ void ZonesController :: SetToneRequestReceivedHandler(ConnectionBasis &aConnecti
     return;
 }
 
-void ZonesController :: SetVolumeRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+void ZonesController :: SetVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
     static const VolumeModel::MuteType       kMuted = true;
     IdentifierType                           lZoneIdentifier;
-    VolumeModel::LevelType                  lVolume;
+    VolumeModel::LevelType                   lVolume;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
 
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Zones::SetVolumeRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::SetVolumeRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/3: Zone Identifier
     //
@@ -4335,21 +4336,21 @@ void ZonesController :: SetVolumeRequestReceivedHandler(ConnectionBasis &aConnec
     return;
 }
 
-void ZonesController :: SetVolumeAllRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+void ZonesController :: SetVolumeAllRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    static const VolumeModel::MuteType       kMuted = true;
-    IdentifierType                           lZoneIdentifier;
-    VolumeModel::LevelType                  lVolume;
-    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
-    Command::Zones::VolumeAllResponse        lVolumeAllResponse;
-    const uint8_t *                          lBuffer;
-    size_t                                   lSize;
-    Status                                   lStatus;
+    static const VolumeModel::MuteType        kMuted = true;
+    IdentifierType                            lZoneIdentifier;
+    VolumeModel::LevelType                    lVolume;
+    ConnectionBuffer::MutableCountedPointer   lResponseBuffer;
+    Server::Command::Zones::VolumeAllResponse lVolumeAllResponse;
+    const uint8_t *                           lBuffer;
+    size_t                                    lSize;
+    Status                                    lStatus;
 
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Zones::SetVolumeAllRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::SetVolumeAllRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 1/2: Volume Level
     //
@@ -4407,7 +4408,7 @@ void ZonesController :: SetVolumeAllRequestReceivedHandler(ConnectionBasis &aCon
     return;
 }
 
-void ZonesController :: SetVolumeFixedRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+void ZonesController :: SetVolumeFixedRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
     IdentifierType                           lZoneIdentifier;
     VolumeModel::FixedType                   lLocked;
@@ -4418,7 +4419,7 @@ void ZonesController :: SetVolumeFixedRequestReceivedHandler(ConnectionBasis &aC
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Zones::SetVolumeFixedRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::SetVolumeFixedRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/3: Zone Identifier
     //
@@ -4475,7 +4476,7 @@ void ZonesController :: SetVolumeFixedRequestReceivedHandler(ConnectionBasis &aC
     return;
 }
 
-void ZonesController :: ToggleMuteRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+void ZonesController :: ToggleMuteRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
     IdentifierType                           lZoneIdentifier;
     VolumeModel::MuteType                    lMute;
@@ -4485,7 +4486,7 @@ void ZonesController :: ToggleMuteRequestReceivedHandler(ConnectionBasis &aConne
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Zones::ToggleMuteRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::ToggleMuteRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/2: Zone Identifier
     //
@@ -4526,7 +4527,7 @@ void ZonesController :: ToggleMuteRequestReceivedHandler(ConnectionBasis &aConne
 
 // MARK: Command Request Handler Trampolines
 
-void ZonesController :: AdjustBalanceRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+void ZonesController :: AdjustBalanceRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
 {
     ZonesController *lController = static_cast<ZonesController *>(aContext);
 
@@ -4536,7 +4537,7 @@ void ZonesController :: AdjustBalanceRequestReceivedHandler(ConnectionBasis &aCo
     }
 }
 
-void ZonesController :: DecreaseBassRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void ZonesController :: DecreaseBassRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     ZonesController *lController = static_cast<ZonesController *>(aContext);
 
@@ -4546,7 +4547,7 @@ void ZonesController :: DecreaseBassRequestReceivedHandler(ConnectionBasis &aCon
     }
 }
 
-void ZonesController :: IncreaseBassRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void ZonesController :: IncreaseBassRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     ZonesController *lController = static_cast<ZonesController *>(aContext);
 
@@ -4556,7 +4557,7 @@ void ZonesController :: IncreaseBassRequestReceivedHandler(ConnectionBasis &aCon
     }
 }
 
-void ZonesController :: DecreaseTrebleRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void ZonesController :: DecreaseTrebleRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     ZonesController *lController = static_cast<ZonesController *>(aContext);
 
@@ -4566,7 +4567,7 @@ void ZonesController :: DecreaseTrebleRequestReceivedHandler(ConnectionBasis &aC
     }
 }
 
-void ZonesController :: IncreaseTrebleRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void ZonesController :: IncreaseTrebleRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     ZonesController *lController = static_cast<ZonesController *>(aContext);
 
@@ -4576,7 +4577,7 @@ void ZonesController :: IncreaseTrebleRequestReceivedHandler(ConnectionBasis &aC
     }
 }
 
-void ZonesController :: DecreaseEqualizerBandRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void ZonesController :: DecreaseEqualizerBandRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     ZonesController *lController = static_cast<ZonesController *>(aContext);
 
@@ -4586,7 +4587,7 @@ void ZonesController :: DecreaseEqualizerBandRequestReceivedHandler(ConnectionBa
     }
 }
 
-void ZonesController :: IncreaseEqualizerBandRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void ZonesController :: IncreaseEqualizerBandRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     ZonesController *lController = static_cast<ZonesController *>(aContext);
 
@@ -4596,7 +4597,7 @@ void ZonesController :: IncreaseEqualizerBandRequestReceivedHandler(ConnectionBa
     }
 }
 
-void ZonesController :: DecreaseVolumeRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+void ZonesController :: DecreaseVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
 {
     ZonesController *lController = static_cast<ZonesController *>(aContext);
 
@@ -4606,7 +4607,7 @@ void ZonesController :: DecreaseVolumeRequestReceivedHandler(ConnectionBasis &aC
     }
 }
 
-void ZonesController :: IncreaseVolumeRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+void ZonesController :: IncreaseVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
 {
     ZonesController *lController = static_cast<ZonesController *>(aContext);
 
@@ -4616,7 +4617,7 @@ void ZonesController :: IncreaseVolumeRequestReceivedHandler(ConnectionBasis &aC
     }
 }
 
-void ZonesController :: MuteRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+void ZonesController :: MuteRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
 {
     ZonesController *lController = static_cast<ZonesController *>(aContext);
 
@@ -4626,7 +4627,7 @@ void ZonesController :: MuteRequestReceivedHandler(ConnectionBasis &aConnection,
     }
 }
 
-void ZonesController :: QueryRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+void ZonesController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
 {
     ZonesController *lController = static_cast<ZonesController *>(aContext);
 
@@ -4636,7 +4637,7 @@ void ZonesController :: QueryRequestReceivedHandler(ConnectionBasis &aConnection
     }
 }
 
-void ZonesController :: QueryMuteRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+void ZonesController :: QueryMuteRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
 {
     ZonesController *lController = static_cast<ZonesController *>(aContext);
 
@@ -4646,7 +4647,7 @@ void ZonesController :: QueryMuteRequestReceivedHandler(ConnectionBasis &aConnec
     }
 }
 
-void ZonesController :: QuerySourceRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+void ZonesController :: QuerySourceRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
 {
     ZonesController *lController = static_cast<ZonesController *>(aContext);
 
@@ -4656,7 +4657,7 @@ void ZonesController :: QuerySourceRequestReceivedHandler(ConnectionBasis &aConn
     }
 }
 
-void ZonesController :: QueryVolumeRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+void ZonesController :: QueryVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
 {
     ZonesController *lController = static_cast<ZonesController *>(aContext);
 
@@ -4666,7 +4667,7 @@ void ZonesController :: QueryVolumeRequestReceivedHandler(ConnectionBasis &aConn
     }
 }
 
-void ZonesController :: SetBalanceRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+void ZonesController :: SetBalanceRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
 {
     ZonesController *lController = static_cast<ZonesController *>(aContext);
 
@@ -4676,7 +4677,7 @@ void ZonesController :: SetBalanceRequestReceivedHandler(ConnectionBasis &aConne
     }
 }
 
-void ZonesController :: SetEqualizerBandRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void ZonesController :: SetEqualizerBandRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     ZonesController *lController = static_cast<ZonesController *>(aContext);
 
@@ -4686,7 +4687,7 @@ void ZonesController :: SetEqualizerBandRequestReceivedHandler(ConnectionBasis &
     }
 }
 
-void ZonesController :: SetEqualizerPresetRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void ZonesController :: SetEqualizerPresetRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     ZonesController *lController = static_cast<ZonesController *>(aContext);
 
@@ -4696,7 +4697,7 @@ void ZonesController :: SetEqualizerPresetRequestReceivedHandler(ConnectionBasis
     }
 }
 
-void ZonesController :: SetHighpassCrossoverRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void ZonesController :: SetHighpassCrossoverRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     ZonesController *lController = static_cast<ZonesController *>(aContext);
 
@@ -4706,7 +4707,7 @@ void ZonesController :: SetHighpassCrossoverRequestReceivedHandler(ConnectionBas
     }
 }
 
-void ZonesController :: SetLowpassCrossoverRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void ZonesController :: SetLowpassCrossoverRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     ZonesController *lController = static_cast<ZonesController *>(aContext);
 
@@ -4716,7 +4717,7 @@ void ZonesController :: SetLowpassCrossoverRequestReceivedHandler(ConnectionBasi
     }
 }
 
-void ZonesController :: SetNameRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+void ZonesController :: SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
 {
     ZonesController *lController = static_cast<ZonesController *>(aContext);
 
@@ -4726,7 +4727,7 @@ void ZonesController :: SetNameRequestReceivedHandler(ConnectionBasis &aConnecti
     }
 }
 
-void ZonesController :: SetSoundModeRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+void ZonesController :: SetSoundModeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
 {
     ZonesController *lController = static_cast<ZonesController *>(aContext);
 
@@ -4736,7 +4737,7 @@ void ZonesController :: SetSoundModeRequestReceivedHandler(ConnectionBasis &aCon
     }
 }
 
-void ZonesController :: SetSourceRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+void ZonesController :: SetSourceRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
 {
     ZonesController *lController = static_cast<ZonesController *>(aContext);
 
@@ -4746,7 +4747,7 @@ void ZonesController :: SetSourceRequestReceivedHandler(ConnectionBasis &aConnec
     }
 }
 
-void ZonesController :: SetSourceAllRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+void ZonesController :: SetSourceAllRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
 {
     ZonesController *lController = static_cast<ZonesController *>(aContext);
 
@@ -4756,7 +4757,7 @@ void ZonesController :: SetSourceAllRequestReceivedHandler(ConnectionBasis &aCon
     }
 }
 
-void ZonesController :: SetToneRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void ZonesController :: SetToneRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     ZonesController *lController = static_cast<ZonesController *>(aContext);
 
@@ -4766,7 +4767,7 @@ void ZonesController :: SetToneRequestReceivedHandler(ConnectionBasis &aConnecti
     }
 }
 
-void ZonesController :: SetVolumeRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+void ZonesController :: SetVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
 {
     ZonesController *lController = static_cast<ZonesController *>(aContext);
 
@@ -4776,7 +4777,7 @@ void ZonesController :: SetVolumeRequestReceivedHandler(ConnectionBasis &aConnec
     }
 }
 
-void ZonesController :: SetVolumeAllRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+void ZonesController :: SetVolumeAllRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
 {
     ZonesController *lController = static_cast<ZonesController *>(aContext);
 
@@ -4786,7 +4787,7 @@ void ZonesController :: SetVolumeAllRequestReceivedHandler(ConnectionBasis &aCon
     }
 }
 
-void ZonesController :: SetVolumeFixedRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+void ZonesController :: SetVolumeFixedRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
 {
     ZonesController *lController = static_cast<ZonesController *>(aContext);
 
@@ -4796,7 +4797,7 @@ void ZonesController :: SetVolumeFixedRequestReceivedHandler(ConnectionBasis &aC
     }
 }
 
-void ZonesController :: ToggleMuteRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+void ZonesController :: ToggleMuteRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
 {
     ZonesController *lController = static_cast<ZonesController *>(aContext);
 
@@ -4806,6 +4807,6 @@ void ZonesController :: ToggleMuteRequestReceivedHandler(ConnectionBasis &aConne
     }
 }
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX

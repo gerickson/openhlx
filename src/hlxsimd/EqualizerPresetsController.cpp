@@ -49,22 +49,23 @@
 
 using namespace HLX::Common;
 using namespace HLX::Model;
+using namespace HLX::Server;
 using namespace Nuovations;
 
 
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
 
 // Request data
 
-Command::EqualizerPresets::DecreaseBandRequest  EqualizerPresetsController::kDecreaseBandRequest;
-Command::EqualizerPresets::IncreaseBandRequest  EqualizerPresetsController::kIncreaseBandRequest;
-Command::EqualizerPresets::QueryRequest         EqualizerPresetsController::kQueryRequest;
-Command::EqualizerPresets::SetBandRequest       EqualizerPresetsController::kSetBandRequest;
-Command::EqualizerPresets::SetNameRequest       EqualizerPresetsController::kSetNameRequest;
+Server::Command::EqualizerPresets::DecreaseBandRequest  EqualizerPresetsController::kDecreaseBandRequest;
+Server::Command::EqualizerPresets::IncreaseBandRequest  EqualizerPresetsController::kIncreaseBandRequest;
+Server::Command::EqualizerPresets::QueryRequest         EqualizerPresetsController::kQueryRequest;
+Server::Command::EqualizerPresets::SetBandRequest       EqualizerPresetsController::kSetBandRequest;
+Server::Command::EqualizerPresets::SetNameRequest       EqualizerPresetsController::kSetNameRequest;
 
 static const EqualizerBandModel::LevelType      kEqualizerBandDefault = EqualizerBandModel::kLevelFlat;
 
@@ -241,8 +242,8 @@ static CFStringRef      kEqualizerLevelsPresetSchemaKey = CFSTR("Equalizer Level
 
 EqualizerPresetsController :: EqualizerPresetsController(void) :
     Simulator::ControllerBasis(),
-    ContainerControllerBasis(),
-    EqualizerPresetsControllerBasis(),
+    Server::ContainerControllerBasis(),
+    Common::EqualizerPresetsControllerBasis(),
     mEqualizerPresets()
 {
     return;
@@ -314,7 +315,7 @@ Status EqualizerPresetsController :: DoRequestHandlers(const bool &aRegister)
     return (lRetval);
 }
 
-Status EqualizerPresetsController :: Init(CommandManager &aCommandManager, const Timeout &aTimeout)
+Status EqualizerPresetsController :: Init(Server::CommandManager &aCommandManager, const Timeout &aTimeout)
 {
     DeclareScopedFunctionTracer(lTracer);
     const bool  lRegister = true;
@@ -366,16 +367,16 @@ Status EqualizerPresetsController :: GetEqualizerBand(const IdentifierType &aEqu
 
 Status EqualizerPresetsController :: HandleQueryReceived(const IdentifierType &aEqualizerPresetIdentifier, ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
-    const EqualizerPresetModel *             lEqualizerPresetModel;
-    const char *                             lName;
-    Command::EqualizerPresets::NameResponse  lNameResponse;
-    const uint8_t *                          lBuffer;
-    size_t                                   lSize;
-    EqualizerBandModel::IdentifierType       lEqualizerBandIdentifier;
-    const EqualizerBandModel *               lEqualizerBandModel;
-    EqualizerBandModel::LevelType            lLevel;
-    Command::EqualizerPresets::BandResponse  lBandResponse;
-    Status                                   lRetval;
+    const EqualizerPresetModel *                     lEqualizerPresetModel;
+    const char *                                     lName;
+    Server::Command::EqualizerPresets::NameResponse  lNameResponse;
+    const uint8_t *                                  lBuffer;
+    size_t                                           lSize;
+    EqualizerBandModel::IdentifierType               lEqualizerBandIdentifier;
+    const EqualizerBandModel *                       lEqualizerBandModel;
+    EqualizerBandModel::LevelType                    lLevel;
+    Server::Command::EqualizerPresets::BandResponse  lBandResponse;
+    Status                                           lRetval;
 
 
     lRetval = mEqualizerPresets.GetEqualizerPreset(aEqualizerPresetIdentifier, lEqualizerPresetModel);
@@ -416,7 +417,7 @@ Status EqualizerPresetsController :: HandleQueryReceived(const IdentifierType &a
 }
 
 Status
-EqualizerPresetsController :: HandleAdjustBandReceived(ConnectionBasis &aConnection,
+EqualizerPresetsController :: HandleAdjustBandReceived(Server::ConnectionBasis &aConnection,
                                                        const IdentifierType &aEqualizerPresetIdentifier,
                                                        const Model::EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier,
                                                        const Model::EqualizerBandModel::LevelType &aBandAdjustment)
@@ -523,10 +524,10 @@ Status EqualizerPresetsController :: HandleSetBandReceived(const IdentifierType 
 
 Status EqualizerPresetsController :: HandleBandResponse(const IdentifierType &aEqualizerPresetIdentifier, const EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier, const EqualizerBandModel::LevelType &aBandLevel, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    Command::EqualizerPresets::BandResponse    lBandResponse;
-    const uint8_t *                            lBuffer;
-    size_t                                     lSize;
-    Status                                     lRetval;
+    Server::Command::EqualizerPresets::BandResponse  lBandResponse;
+    const uint8_t *                                  lBuffer;
+    size_t                                           lSize;
+    Status                                           lRetval;
 
     lRetval = lBandResponse.Init(aEqualizerPresetIdentifier, aEqualizerBandIdentifier, aBandLevel);
     nlREQUIRE_SUCCESS(lRetval, done);
@@ -543,7 +544,7 @@ Status EqualizerPresetsController :: HandleBandResponse(const IdentifierType &aE
 
 // MARK: Configuration Management Methods
 
-void EqualizerPresetsController :: QueryCurrentConfiguration(ConnectionBasis &aConnection, ConnectionBuffer::MutableCountedPointer &aBuffer) const
+void EqualizerPresetsController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     EqualizerPresetModel::IdentifierType     lEqualizerPresetIdentifier;
     Status                                   lStatus;
@@ -657,7 +658,7 @@ Status EqualizerPresetsController :: ElementLoadFromBackupConfiguration(CFDictio
 
     // Attempt to form the source identifier key.
 
-    lEqualizerPresetIdentifierKey = Utilities::Configuration::CreateCFString(aEqualizerPresetIdentifier);
+    lEqualizerPresetIdentifierKey = Server::Utilities::Configuration::CreateCFString(aEqualizerPresetIdentifier);
     nlREQUIRE_ACTION(lEqualizerPresetIdentifierKey != nullptr, done, lRetval = -ENOMEM);
 
     // Attempt to retrieve the source dictionary.
@@ -759,7 +760,7 @@ Status EqualizerPresetsController :: ElementSaveToBackupConfiguration(CFMutableD
     lRetval = mEqualizerPresets.GetEqualizerPreset(aEqualizerPresetIdentifier, lEqualizerPresetModel);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lEqualizerPresetIdentifierKey = Utilities::Configuration::CreateCFString(aEqualizerPresetIdentifier);
+    lEqualizerPresetIdentifierKey = Server::Utilities::Configuration::CreateCFString(aEqualizerPresetIdentifier);
     nlREQUIRE_ACTION(lEqualizerPresetIdentifierKey != nullptr, done, lRetval = -ENOMEM);
 
     lEqualizerPresetDictionary = CFDictionaryCreateMutable(kCFAllocatorDefault,
@@ -802,7 +803,7 @@ void EqualizerPresetsController :: SaveToBackupConfiguration(CFMutableDictionary
 
 // MARK: Command Completion Handlers
 
-void EqualizerPresetsController :: DecreaseBandRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+void EqualizerPresetsController :: DecreaseBandRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
     static const EqualizerBandModel::LevelType  kAdjustment = -1;
     IdentifierType                              lEqualizerPresetIdentifier;
@@ -813,7 +814,7 @@ void EqualizerPresetsController :: DecreaseBandRequestReceivedHandler(Connection
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::EqualizerPresets::DecreaseBandRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::EqualizerPresets::DecreaseBandRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/4: Equalizer Preset Identifier
     //
@@ -842,7 +843,7 @@ void EqualizerPresetsController :: DecreaseBandRequestReceivedHandler(Connection
     return;
 }
 
-void EqualizerPresetsController :: IncreaseBandRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+void EqualizerPresetsController :: IncreaseBandRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
     static const EqualizerBandModel::LevelType  kAdjustment = 1;
     IdentifierType                              lEqualizerPresetIdentifier;
@@ -853,7 +854,7 @@ void EqualizerPresetsController :: IncreaseBandRequestReceivedHandler(Connection
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::EqualizerPresets::IncreaseBandRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::EqualizerPresets::IncreaseBandRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/4: Equalizer Preset Identifier
     //
@@ -882,19 +883,19 @@ void EqualizerPresetsController :: IncreaseBandRequestReceivedHandler(Connection
     return;
 }
 
-void EqualizerPresetsController :: QueryRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+void EqualizerPresetsController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    IdentifierType                            lEqualizerPresetIdentifier;
-    Command::EqualizerPresets::QueryResponse  lResponse;
-    ConnectionBuffer::MutableCountedPointer   lResponseBuffer;
-    Status                                    lStatus;
-    const uint8_t *                           lBuffer;
-    size_t                                    lSize;
+    IdentifierType                                    lEqualizerPresetIdentifier;
+    Server::Command::EqualizerPresets::QueryResponse  lResponse;
+    ConnectionBuffer::MutableCountedPointer           lResponseBuffer;
+    Status                                            lStatus;
+    const uint8_t *                                   lBuffer;
+    size_t                                            lSize;
 
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::EqualizerPresets::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::EqualizerPresets::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/2: Equalizer Preset Identifier
     //
@@ -943,7 +944,7 @@ void EqualizerPresetsController :: QueryRequestReceivedHandler(ConnectionBasis &
     return;
 }
 
-void EqualizerPresetsController :: SetBandRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+void EqualizerPresetsController :: SetBandRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
     IdentifierType                           lEqualizerPresetIdentifier;
     EqualizerBandModel::IdentifierType       lEqualizerBandIdentifier;
@@ -954,7 +955,7 @@ void EqualizerPresetsController :: SetBandRequestReceivedHandler(ConnectionBasis
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::EqualizerPresets::SetBandRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::EqualizerPresets::SetBandRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/4: Equalizer Preset Identifier
     //
@@ -1010,22 +1011,22 @@ void EqualizerPresetsController :: SetBandRequestReceivedHandler(ConnectionBasis
     return;
 }
 
-void EqualizerPresetsController :: SetNameRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+void EqualizerPresetsController :: SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    IdentifierType                           lEqualizerPresetIdentifier;
-    const char *                             lName;
-    size_t                                   lNameSize;
-    EqualizerPresetModel *                   lEqualizerPresetModel;
-    Command::EqualizerPresets::NameResponse  lNameResponse;
-    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
-    Status                                   lStatus;
-    const uint8_t *                          lBuffer;
-    size_t                                   lSize;
+    IdentifierType                                   lEqualizerPresetIdentifier;
+    const char *                                     lName;
+    size_t                                           lNameSize;
+    EqualizerPresetModel *                           lEqualizerPresetModel;
+    Server::Command::EqualizerPresets::NameResponse  lNameResponse;
+    ConnectionBuffer::MutableCountedPointer          lResponseBuffer;
+    Status                                           lStatus;
+    const uint8_t *                                  lBuffer;
+    size_t                                           lSize;
 
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::EqualizerPresets::SetNameRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::EqualizerPresets::SetNameRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/3: Equalizer Preset Identifier
     //
@@ -1094,7 +1095,7 @@ void EqualizerPresetsController :: SetNameRequestReceivedHandler(ConnectionBasis
 
 // MARK: Command Request Handler Trampolines
 
-void EqualizerPresetsController :: DecreaseBandRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+void EqualizerPresetsController :: DecreaseBandRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
 {
     EqualizerPresetsController *lController = static_cast<EqualizerPresetsController *>(aContext);
 
@@ -1104,7 +1105,7 @@ void EqualizerPresetsController :: DecreaseBandRequestReceivedHandler(Connection
     }
 }
 
-void EqualizerPresetsController :: IncreaseBandRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+void EqualizerPresetsController :: IncreaseBandRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
 {
     EqualizerPresetsController *lController = static_cast<EqualizerPresetsController *>(aContext);
 
@@ -1114,7 +1115,7 @@ void EqualizerPresetsController :: IncreaseBandRequestReceivedHandler(Connection
     }
 }
 
-void EqualizerPresetsController :: QueryRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+void EqualizerPresetsController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
 {
     EqualizerPresetsController *lController = static_cast<EqualizerPresetsController *>(aContext);
 
@@ -1124,7 +1125,7 @@ void EqualizerPresetsController :: QueryRequestReceivedHandler(ConnectionBasis &
     }
 }
 
-void EqualizerPresetsController :: SetBandRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+void EqualizerPresetsController :: SetBandRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
 {
     EqualizerPresetsController *lController = static_cast<EqualizerPresetsController *>(aContext);
 
@@ -1134,7 +1135,7 @@ void EqualizerPresetsController :: SetBandRequestReceivedHandler(ConnectionBasis
     }
 }
 
-void EqualizerPresetsController :: SetNameRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+void EqualizerPresetsController :: SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
 {
     EqualizerPresetsController *lController = static_cast<EqualizerPresetsController *>(aContext);
 
@@ -1144,6 +1145,6 @@ void EqualizerPresetsController :: SetNameRequestReceivedHandler(ConnectionBasis
     }
 }
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX

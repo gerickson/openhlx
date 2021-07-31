@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXSERVERSOURCESCONTROLLER_HPP
-#define HLXSERVERSOURCESCONTROLLER_HPP
+#ifndef OPENHLXSIMULATORSOURCESCONTROLLER_HPP
+#define OPENHLXSIMULATORSOURCESCONTROLLER_HPP
 
 #include <OpenHLX/Common/SourcesControllerBasis.hpp>
 #include <OpenHLX/Model/SourceModel.hpp>
@@ -38,7 +38,7 @@
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
 
 /**
@@ -52,25 +52,25 @@ namespace Server
  */
 class SourcesController :
     public Simulator::ControllerBasis,
-    public ContainerControllerBasis,
+    public Server::ContainerControllerBasis,
     public Common::SourcesControllerBasis
 {
 public:
     SourcesController(void);
     virtual ~SourcesController(void);
 
-    Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
+    Common::Status Init(Server::CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
 
     // Configuration Management Methods
 
     Common::Status LoadFromBackupConfiguration(CFDictionaryRef aBackupDictionary) final;
-    void QueryCurrentConfiguration(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const final;
+    void QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const final;
     void ResetToDefaultConfiguration(void) final;
     void SaveToBackupConfiguration(CFMutableDictionaryRef aBackupDictionary) final;
 
     // Command Request Handler Trampolines
 
-    static void SetNameRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
     Common::Status RequestInit(void);
@@ -82,17 +82,17 @@ private:
 
     // Command Completion Handlers
 
-    void SetNameRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 
 private:
     Model::SourcesModel                      mSources;
 
 private:
-    static Command::Sources::SetNameRequest  kSetNameRequest;
+    static Server::Command::Sources::SetNameRequest  kSetNameRequest;
 };
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX
 
-#endif // HLXSERVERSOURCESCONTROLLER_HPP
+#endif // OPENHLXSIMULATORSOURCESCONTROLLER_HPP

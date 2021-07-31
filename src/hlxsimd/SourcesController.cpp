@@ -45,18 +45,19 @@
 
 using namespace HLX::Common;
 using namespace HLX::Model;
+using namespace HLX::Server;
 using namespace Nuovations;
 
 
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
 
 // Request data
 
-Command::Sources::SetNameRequest      SourcesController::kSetNameRequest;
+Server::Command::Sources::SetNameRequest      SourcesController::kSetNameRequest;
 
 
 /**
@@ -129,7 +130,7 @@ Status SourcesController :: DoRequestHandlers(const bool &aRegister)
     return (lRetval);
 }
 
-Status SourcesController :: Init(CommandManager &aCommandManager, const Timeout &aTimeout)
+Status SourcesController :: Init(Server::CommandManager &aCommandManager, const Timeout &aTimeout)
 {
     DeclareScopedFunctionTracer(lTracer);
     const bool  lRegister = true;
@@ -157,12 +158,12 @@ Status SourcesController :: Init(CommandManager &aCommandManager, const Timeout 
 
 Status SourcesController :: HandleQueryReceived(const IdentifierType &aSourceIdentifier, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
-    const SourceModel *               lSourceModel;
-    const char *                      lName;
-    Command::Sources::NameResponse    lResponse;
-    const uint8_t *                   lBuffer;
-    size_t                            lSize;
-    Status                            lRetval;
+    const SourceModel *                     lSourceModel;
+    const char *                            lName;
+    Server::Command::Sources::NameResponse  lResponse;
+    const uint8_t *                         lBuffer;
+    size_t                                  lSize;
+    Status                                  lRetval;
 
 
     lRetval = mSources.GetSource(aSourceIdentifier, lSourceModel);
@@ -186,7 +187,7 @@ Status SourcesController :: HandleQueryReceived(const IdentifierType &aSourceIde
 
 // MARK: Configuration Management Methods
 
-void SourcesController :: QueryCurrentConfiguration(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+void SourcesController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     IdentifierType  lSourceIdentifier;
     Status          lStatus;
@@ -239,7 +240,7 @@ Status SourcesController :: ElementLoadFromBackupConfiguration(CFDictionaryRef a
 
     // Attempt to form the source identifier key.
 
-    lSourceIdentifierKey = Utilities::Configuration::CreateCFString(aSourceIdentifier);
+    lSourceIdentifierKey = Server::Utilities::Configuration::CreateCFString(aSourceIdentifier);
     nlREQUIRE_ACTION(lSourceIdentifierKey != nullptr, done, lRetval = -ENOMEM);
 
     // Attempt to retrieve the source dictionary.
@@ -294,7 +295,7 @@ Status SourcesController :: ElementSaveToBackupConfiguration(CFMutableDictionary
     lRetval = mSources.GetSource(aSourceIdentifier, lSourceModel);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lSourceIdentifierKey = Utilities::Configuration::CreateCFString(aSourceIdentifier);
+    lSourceIdentifierKey = Server::Utilities::Configuration::CreateCFString(aSourceIdentifier);
     nlREQUIRE_ACTION(lSourceIdentifierKey != nullptr, done, lRetval = -ENOMEM);
 
     lSourceDictionary = CFDictionaryCreateMutable(kCFAllocatorDefault,
@@ -331,13 +332,13 @@ void SourcesController :: SaveToBackupConfiguration(CFMutableDictionaryRef aBack
 
 // MARK: Command Completion Handlers
 
-void SourcesController :: SetNameRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void SourcesController :: SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     IdentifierType                           lSourceIdentifier;
     const char *                             lName;
     size_t                                   lNameSize;
     SourceModel *                            lSourceModel;
-    Command::Sources::NameResponse           lNameResponse;
+    Server::Command::Sources::NameResponse   lNameResponse;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
     const uint8_t *                          lBuffer;
@@ -346,7 +347,7 @@ void SourcesController :: SetNameRequestReceivedHandler(ConnectionBasis &aConnec
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Sources::SetNameRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Sources::SetNameRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/3: Source Identifier
     //
@@ -415,7 +416,7 @@ void SourcesController :: SetNameRequestReceivedHandler(ConnectionBasis &aConnec
 
 // MARK: Command Request Handler Trampolines
 
-void SourcesController :: SetNameRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void SourcesController :: SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     SourcesController *lController = static_cast<SourcesController *>(aContext);
 
@@ -425,6 +426,6 @@ void SourcesController :: SetNameRequestReceivedHandler(ConnectionBasis &aConnec
     }
 }
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX

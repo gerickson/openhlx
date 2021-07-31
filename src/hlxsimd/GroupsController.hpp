@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXSERVERGROUPSCONTROLLER_HPP
-#define HLXSERVERGROUPSCONTROLLER_HPP
+#ifndef OPENHLXSIMULATORGROUPSCONTROLLER_HPP
+#define OPENHLXSIMULATORGROUPSCONTROLLER_HPP
 
 #include <OpenHLX/Common/GroupsControllerBasis.hpp>
 #include <OpenHLX/Model/GroupModel.hpp>
@@ -38,7 +38,7 @@
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
 
 class GroupsControllerDelegate;
@@ -54,14 +54,14 @@ class GroupsControllerDelegate;
  */
 class GroupsController :
     public Simulator::ControllerBasis,
-    public ContainerControllerBasis,
+    public Server::ContainerControllerBasis,
     public Common::GroupsControllerBasis
 {
 public:
     GroupsController(void);
     virtual ~GroupsController(void);
 
-    Common::Status Init(CommandManager &aCommandManager) final;
+    Common::Status Init(Server::CommandManager &aCommandManager) final;
 
     // Delegate Management
 
@@ -71,23 +71,23 @@ public:
     // Configuration Management Methods
 
     Common::Status LoadFromBackupConfiguration(CFDictionaryRef aBackupDictionary) final;
-    void QueryCurrentConfiguration(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const final;
+    void QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const final;
     void ResetToDefaultConfiguration(void) final;
     void SaveToBackupConfiguration(CFMutableDictionaryRef aBackupDictionary) final;
 
     // Command Request Handler Trampolines
 
-    static void AddZoneRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void ClearZonesRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void DecreaseVolumeRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void IncreaseVolumeRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void MuteRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void QueryRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void RemoveZoneRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SetNameRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SetSourceRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SetVolumeRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void ToggleMuteRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void AddZoneRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void ClearZonesRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void DecreaseVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void IncreaseVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void MuteRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void RemoveZoneRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void SetSourceRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void SetVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void ToggleMuteRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
     Common::Status RequestInit(void);
@@ -112,17 +112,17 @@ private:
 
     // Command Completion Handlers
 
-    void AddZoneRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void ClearZonesRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void DecreaseVolumeRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void IncreaseVolumeRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void MuteRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void QueryRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void RemoveZoneRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void SetNameRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void SetSourceRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void SetVolumeRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void ToggleMuteRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void AddZoneRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void ClearZonesRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void DecreaseVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void IncreaseVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void MuteRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void RemoveZoneRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void SetSourceRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void SetVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void ToggleMuteRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 
     // Delegate Fanout Methods
 
@@ -137,21 +137,21 @@ private:
     GroupsControllerDelegate *                     mDelegate;
 
 private:
-    static Command::Groups::AddZoneRequest         kAddZoneRequest;
-    static Command::Groups::ClearZonesRequest      kClearZonesRequest;
-    static Command::Groups::DecreaseVolumeRequest  kDecreaseVolumeRequest;
-    static Command::Groups::IncreaseVolumeRequest  kIncreaseVolumeRequest;
-    static Command::Groups::MuteRequest            kMuteRequest;
-    static Command::Groups::QueryRequest           kQueryRequest;
-    static Command::Groups::RemoveZoneRequest      kRemoveZoneRequest;
-    static Command::Groups::SetNameRequest         kSetNameRequest;
-    static Command::Groups::SetSourceRequest       kSetSourceRequest;
-    static Command::Groups::SetVolumeRequest       kSetVolumeRequest;
-    static Command::Groups::ToggleMuteRequest      kToggleMuteRequest;
+    static Server::Command::Groups::AddZoneRequest         kAddZoneRequest;
+    static Server::Command::Groups::ClearZonesRequest      kClearZonesRequest;
+    static Server::Command::Groups::DecreaseVolumeRequest  kDecreaseVolumeRequest;
+    static Server::Command::Groups::IncreaseVolumeRequest  kIncreaseVolumeRequest;
+    static Server::Command::Groups::MuteRequest            kMuteRequest;
+    static Server::Command::Groups::QueryRequest           kQueryRequest;
+    static Server::Command::Groups::RemoveZoneRequest      kRemoveZoneRequest;
+    static Server::Command::Groups::SetNameRequest         kSetNameRequest;
+    static Server::Command::Groups::SetSourceRequest       kSetSourceRequest;
+    static Server::Command::Groups::SetVolumeRequest       kSetVolumeRequest;
+    static Server::Command::Groups::ToggleMuteRequest      kToggleMuteRequest;
 };
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX
 
-#endif // HLXSERVERGROUPSCONTROLLER_HPP
+#endif // OPENHLXSIMULATORGROUPSCONTROLLER_HPP

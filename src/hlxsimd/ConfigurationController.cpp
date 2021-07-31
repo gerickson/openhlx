@@ -37,25 +37,27 @@
 #include <LogUtilities/LogUtilities.hpp>
 
 #include <OpenHLX/Utilities/Assert.hpp>
-#include <CommandManager.hpp>
-#include <ConfigurationControllerDelegate.hpp>
+#include <OpenHLX/Server/CommandManager.hpp>
+
+#include "ConfigurationControllerDelegate.hpp"
 
 
 using namespace HLX::Common;
+using namespace HLX::Server;
 using namespace Nuovations;
 
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
 
 // Request data
 
-Command::Configuration::LoadFromBackupRequest   ConfigurationController::kLoadFromBackupRequest;
-Command::Configuration::QueryCurrentRequest     ConfigurationController::kQueryCurrentRequest;
-Command::Configuration::ResetToDefaultsRequest  ConfigurationController::kResetToDefaultsRequest;
-Command::Configuration::SaveToBackupRequest     ConfigurationController::kSaveToBackupRequest;
+Server::Command::Configuration::LoadFromBackupRequest   ConfigurationController::kLoadFromBackupRequest;
+Server::Command::Configuration::QueryCurrentRequest     ConfigurationController::kQueryCurrentRequest;
+Server::Command::Configuration::ResetToDefaultsRequest  ConfigurationController::kResetToDefaultsRequest;
+Server::Command::Configuration::SaveToBackupRequest     ConfigurationController::kSaveToBackupRequest;
 
 ConfigurationController :: ConfigurationController(void) :
     Simulator::ControllerBasis(),
@@ -235,20 +237,20 @@ Status ConfigurationController :: SaveToBackup(void)
 
 // MARK: Command Completion Handlers
 
-void ConfigurationController :: LoadFromBackupRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void ConfigurationController :: LoadFromBackupRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     DeclareScopedFunctionTracer(lTracer);
-    Command::Configuration::LoadFromBackupResponse  lResponse;
-    ConnectionBuffer::MutableCountedPointer         lResponseBuffer;
-    const uint8_t *                                 lBuffer;
-    size_t                                          lSize;
-    Status                                          lStatus;
+    Server::Command::Configuration::LoadFromBackupResponse  lResponse;
+    ConnectionBuffer::MutableCountedPointer                 lResponseBuffer;
+    const uint8_t *                                         lBuffer;
+    size_t                                                  lSize;
+    Status                                                  lStatus;
 
 
     (void)aBuffer;
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Configuration::LoadFromBackupRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Configuration::LoadFromBackupRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     lStatus = LoadFromBackup();
     nlREQUIRE_SUCCESS(lStatus, done);
@@ -286,19 +288,19 @@ void ConfigurationController :: LoadFromBackupRequestReceivedHandler(ConnectionB
     return;
 }
 
-void ConfigurationController :: QueryCurrentRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void ConfigurationController :: QueryCurrentRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    Command::Configuration::QueryCurrentResponse  lResponse;
-    ConnectionBuffer::MutableCountedPointer       lResponseBuffer;
-    Status                                        lStatus;
-    const uint8_t *                               lBuffer;
-    size_t                                        lSize;
+    Server::Command::Configuration::QueryCurrentResponse  lResponse;
+    ConnectionBuffer::MutableCountedPointer               lResponseBuffer;
+    Status                                                lStatus;
+    const uint8_t *                                       lBuffer;
+    size_t                                                lSize;
 
 
     (void)aBuffer;
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Configuration::QueryCurrentRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Configuration::QueryCurrentRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // First, allocate and initialize the response buffer.
 
@@ -341,19 +343,19 @@ void ConfigurationController :: QueryCurrentRequestReceivedHandler(ConnectionBas
     return;
 }
 
-void ConfigurationController :: ResetToDefaultsRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void ConfigurationController :: ResetToDefaultsRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    Command::Configuration::ResetToDefaultsResponse  lResponse;
-    ConnectionBuffer::MutableCountedPointer          lResponseBuffer;
-    const uint8_t *                                  lBuffer;
-    size_t                                           lSize;
-    Status                                           lStatus;
+    Server::Command::Configuration::ResetToDefaultsResponse  lResponse;
+    ConnectionBuffer::MutableCountedPointer                  lResponseBuffer;
+    const uint8_t *                                          lBuffer;
+    size_t                                                   lSize;
+    Status                                                   lStatus;
 
 
     (void)aBuffer;
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Configuration::ResetToDefaultsRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Configuration::ResetToDefaultsRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Invoke the delegate for fanout such that other participants can
     // reset their settings or state to their default values.
@@ -393,20 +395,20 @@ void ConfigurationController :: ResetToDefaultsRequestReceivedHandler(Connection
     return;
 }
 
-void ConfigurationController :: SaveToBackupRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void ConfigurationController :: SaveToBackupRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    Command::Configuration::SavingToBackupResponse  lSavingToBackupNotification;
-    Command::Configuration::SaveToBackupResponse    lSaveToBackupResponse;
-    ConnectionBuffer::MutableCountedPointer         lResponseBuffer;
-    const uint8_t *                                 lBuffer;
-    size_t                                          lSize;
-    Status                                          lStatus;
+    Server::Command::Configuration::SavingToBackupResponse  lSavingToBackupNotification;
+    Server::Command::Configuration::SaveToBackupResponse    lSaveToBackupResponse;
+    ConnectionBuffer::MutableCountedPointer                 lResponseBuffer;
+    const uint8_t *                                         lBuffer;
+    size_t                                                  lSize;
+    Status                                                  lStatus;
 
 
     (void)aBuffer;
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Configuration::SaveToBackupRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Configuration::SaveToBackupRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // There is a two-phase response for the save to back up command
     // request. First, the saving to backup "will save" notification
@@ -506,7 +508,7 @@ Status ConfigurationController :: OnLoadFromBackupConfigurationStorage(CFDiction
     return (lRetval);
 }
 
-void ConfigurationController :: OnQueryCurrentConfiguration(ConnectionBasis &aConnection, ConnectionBuffer::MutableCountedPointer &aBuffer)
+void ConfigurationController :: OnQueryCurrentConfiguration(Server::ConnectionBasis &aConnection, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     if (mDelegate != nullptr)
     {
@@ -544,7 +546,7 @@ Status ConfigurationController :: OnSaveToBackupConfigurationStorage(CFDictionar
 
 // MARK: Command Request Handler Trampolines
 
-void ConfigurationController :: LoadFromBackupRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void ConfigurationController :: LoadFromBackupRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     ConfigurationController *lController = static_cast<ConfigurationController *>(aContext);
 
@@ -554,7 +556,7 @@ void ConfigurationController :: LoadFromBackupRequestReceivedHandler(ConnectionB
     }
 }
 
-void ConfigurationController :: QueryCurrentRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void ConfigurationController :: QueryCurrentRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     ConfigurationController *lController = static_cast<ConfigurationController *>(aContext);
 
@@ -564,7 +566,7 @@ void ConfigurationController :: QueryCurrentRequestReceivedHandler(ConnectionBas
     }
 }
 
-void ConfigurationController :: ResetToDefaultsRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void ConfigurationController :: ResetToDefaultsRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     ConfigurationController *lController = static_cast<ConfigurationController *>(aContext);
 
@@ -574,7 +576,7 @@ void ConfigurationController :: ResetToDefaultsRequestReceivedHandler(Connection
     }
 }
 
-void ConfigurationController :: SaveToBackupRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void ConfigurationController :: SaveToBackupRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     ConfigurationController *lController = static_cast<ConfigurationController *>(aContext);
 
@@ -584,6 +586,6 @@ void ConfigurationController :: SaveToBackupRequestReceivedHandler(ConnectionBas
     }
 }
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX

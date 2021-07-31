@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXSERVERCONFIGURATIONCONTROLLER_HPP
-#define HLXSERVERCONFIGURATIONCONTROLLER_HPP
+#ifndef OPENHLXSIMULATORCONFIGURATIONCONTROLLER_HPP
+#define OPENHLXSIMULATORCONFIGURATIONCONTROLLER_HPP
 
 #include <CoreFoundation/CFDictionary.h>
 
@@ -36,7 +36,7 @@
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
 
 class ConfigurationControllerDelegate;
@@ -57,7 +57,7 @@ public:
     ConfigurationController(void);
     ~ConfigurationController(void);
 
-    Common::Status Init(CommandManager &aCommandManager) final;
+    Common::Status Init(Server::CommandManager &aCommandManager) final;
 
     // Delegate Management
 
@@ -72,10 +72,10 @@ public:
 
     // Command Request Handler Trampolines
 
-    static void LoadFromBackupRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void QueryCurrentRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void ResetToDefaultsRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SaveToBackupRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void LoadFromBackupRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void QueryCurrentRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void ResetToDefaultsRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void SaveToBackupRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
     Common::Status RequestInit(void);
@@ -83,16 +83,16 @@ private:
 
     // Command Completion Handlers
 
-    void LoadFromBackupRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void QueryCurrentRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void ResetToDefaultsRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void SaveToBackupRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void LoadFromBackupRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void QueryCurrentRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void ResetToDefaultsRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void SaveToBackupRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 
     // Delegate Fanout Methods
 
     Common::Status OnLoadFromBackupConfiguration(CFDictionaryRef aBackupDictionary);
     Common::Status OnLoadFromBackupConfigurationStorage(CFDictionaryRef &aBackupDictionary);
-    void OnQueryCurrentConfiguration(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    void OnQueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
     void OnResetToDefaultConfiguration(void);
     void OnSaveToBackupConfiguration(CFMutableDictionaryRef aBackupDictionary);
     Common::Status OnSaveToBackupConfigurationStorage(CFDictionaryRef aBackupDictionary);
@@ -101,14 +101,14 @@ private:
     ConfigurationControllerDelegate *                      mDelegate;
 
 private:
-    static Command::Configuration::LoadFromBackupRequest   kLoadFromBackupRequest;
-    static Command::Configuration::QueryCurrentRequest     kQueryCurrentRequest;
-    static Command::Configuration::ResetToDefaultsRequest  kResetToDefaultsRequest;
-    static Command::Configuration::SaveToBackupRequest     kSaveToBackupRequest;
+    static Server::Command::Configuration::LoadFromBackupRequest   kLoadFromBackupRequest;
+    static Server::Command::Configuration::QueryCurrentRequest     kQueryCurrentRequest;
+    static Server::Command::Configuration::ResetToDefaultsRequest  kResetToDefaultsRequest;
+    static Server::Command::Configuration::SaveToBackupRequest     kSaveToBackupRequest;
 };
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX
 
-#endif // HLXSERVERCONFIGURATIONCONTROLLER_HPP
+#endif // OPENHLXSIMULATORCONFIGURATIONCONTROLLER_HPP

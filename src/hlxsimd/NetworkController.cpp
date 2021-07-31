@@ -41,18 +41,19 @@
 
 using namespace HLX::Common;
 using namespace HLX::Model;
+using namespace HLX::Server;
 using namespace Nuovations;
 
 
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
 
 // Request data
 
-Command::Network::QueryRequest  NetworkController::kQueryRequest;
+Server::Command::Network::QueryRequest  NetworkController::kQueryRequest;
 
 // The query network response contains both state and
 // configuration settings.
@@ -134,7 +135,7 @@ Status NetworkController :: DoRequestHandlers(const bool &aRegister)
     return (lRetval);
 }
 
-Status NetworkController :: Init(CommandManager &aCommandManager, const Timeout &aTimeout)
+Status NetworkController :: Init(Server::CommandManager &aCommandManager, const Timeout &aTimeout)
 {
     DeclareScopedFunctionTracer(lTracer);
     const bool  lRegister = true;
@@ -179,7 +180,7 @@ void NetworkController :: QueryHandler(const char *aInputBuffer, Common::Connect
 
 // MARK: Configuration Management Methods
 
-void NetworkController :: QueryCurrentConfiguration(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+void NetworkController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     (void)aConnection;
 
@@ -193,9 +194,9 @@ void NetworkController :: ResetToDefaultConfiguration(void)
 
 // MARK: Command Completion Handlers
 
-void NetworkController :: QueryRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void NetworkController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    Command::Network::QueryResponse          lResponse;
+    Server::Command::Network::QueryResponse  lResponse;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
     const uint8_t *                          lBuffer;
@@ -205,7 +206,7 @@ void NetworkController :: QueryRequestReceivedHandler(ConnectionBasis &aConnecti
     (void)aBuffer;
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Network::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Network::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     lResponseBuffer.reset(new ConnectionBuffer);
     nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
@@ -245,7 +246,7 @@ void NetworkController :: QueryRequestReceivedHandler(ConnectionBasis &aConnecti
 
 // MARK: Command Request Handler Trampolines
 
-void NetworkController :: QueryRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void NetworkController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     NetworkController *lController = static_cast<NetworkController *>(aContext);
 
@@ -255,6 +256,6 @@ void NetworkController :: QueryRequestReceivedHandler(ConnectionBasis &aConnecti
     }
 }
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX

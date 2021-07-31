@@ -23,19 +23,21 @@
  *
  */
 
-#ifndef HLXSERVERGROUPSCONTROLLERDELEGATE_HPP
-#define HLXSERVERGROUPSCONTROLLERDELEGATE_HPP
+#ifndef OPENHLXSIMULATORGROUPSCONTROLLERDELEGATE_HPP
+#define OPENHLXSIMULATORGROUPSCONTROLLERDELEGATE_HPP
 
-#include <ControllerBasisDelegate.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Model/GroupModel.hpp>
 #include <OpenHLX/Model/SourceModel.hpp>
 #include <OpenHLX/Model/VolumeModel.hpp>
 
+#include "ControllerBasisDelegate.hpp"
+
+
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
 
 class GroupsController;
@@ -70,8 +72,8 @@ public:
     virtual Common::Status ShouldToggleMute(GroupsController &aController, const Model::GroupModel::IdentifierType &aGroupIdentifier, const Model::GroupModel &aGroupModel) = 0;
 };
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX
 
-#endif // HLXSERVERGROUPSCONTROLLERDELEGATE_HPP
+#endif // OPENHLXSIMULATORGROUPSCONTROLLERDELEGATE_HPP

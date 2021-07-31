@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXSERVERNETWORKCONTROLLER_HPP
-#define HLXSERVERNETWORKCONTROLLER_HPP
+#ifndef OPENHLXSIMULATORNETWORKCONTROLLER_HPP
+#define OPENHLXSIMULATORNETWORKCONTROLLER_HPP
 
 #include <OpenHLX/Model/NetworkModel.hpp>
 #include <OpenHLX/Server/NetworkControllerCommands.hpp>
@@ -36,7 +36,7 @@
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
 
 /**
@@ -55,16 +55,16 @@ public:
     NetworkController(void);
     ~NetworkController(void);
 
-    Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
+    Common::Status Init(Server::CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
 
     // Configuration Management Methods
 
-    void QueryCurrentConfiguration(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const final;
+    void QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const final;
     void ResetToDefaultConfiguration(void) final;
 
     // Command Request Handler Trampolines
 
-    static void QueryRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
     Common::Status RequestInit(void);
@@ -74,17 +74,17 @@ private:
 
     // Command Completion Handlers
 
-    void QueryRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 
 private:
     Model::NetworkModel                   mNetworkModel;
 
 private:
-    static Command::Network::QueryRequest  kQueryRequest;
+    static Server::Command::Network::QueryRequest  kQueryRequest;
 };
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX
 
-#endif // HLXSERVERNETWORKCONTROLLER_HPP
+#endif // OPENHLXSIMULATORNETWORKCONTROLLER_HPP

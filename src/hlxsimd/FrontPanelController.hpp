@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXSERVERFRONTPANELCONTROLLER_HPP
-#define HLXSERVERFRONTPANELCONTROLLER_HPP
+#ifndef OPENHLXSIMULATORFRONTPANELCONTROLLER_HPP
+#define OPENHLXSIMULATORFRONTPANELCONTROLLER_HPP
 
 #include <OpenHLX/Model/FrontPanelModel.hpp>
 #include <OpenHLX/Server/FrontPanelControllerCommands.hpp>
@@ -35,7 +35,7 @@
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
 
 /**
@@ -43,7 +43,7 @@ namespace Server
  *    An object for managing the server-side observation and mutation
  *    of a HLX physical front panel.
  *
- *  @ingroup server
+ *  @ingroup simulator
  *  @ingroup front-panel
  *
  */
@@ -54,20 +54,20 @@ public:
     FrontPanelController(void);
     ~FrontPanelController(void);
 
-    Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
+    Common::Status Init(Server::CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
 
     // Configuration Management Methods
 
     Common::Status LoadFromBackupConfiguration(CFDictionaryRef aBackupDictionary) final;
-    void QueryCurrentConfiguration(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const final;
+    void QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const final;
     void ResetToDefaultConfiguration(void) final;
     void SaveToBackupConfiguration(CFMutableDictionaryRef aBackupDictionary) final;
 
     // Command Request Handler Trampolines
 
-    static void QueryRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SetBrightnessRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SetLockedRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void SetBrightnessRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void SetLockedRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
     Common::Status RequestInit(void);
@@ -80,21 +80,21 @@ private:
 
     // Command Completion Handlers
 
-    void QueryRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void SetBrightnessRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void SetLockedRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void SetBrightnessRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void SetLockedRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 
 private:
     Model::FrontPanelModel                            mFrontPanelModel;
 
 private:
-    static Command::FrontPanel::QueryRequest          kQueryRequest;
-    static Command::FrontPanel::SetBrightnessRequest  kSetBrightnessRequest;
-    static Command::FrontPanel::SetLockedRequest      kSetLockedRequest;
+    static Server::Command::FrontPanel::QueryRequest          kQueryRequest;
+    static Server::Command::FrontPanel::SetBrightnessRequest  kSetBrightnessRequest;
+    static Server::Command::FrontPanel::SetLockedRequest      kSetLockedRequest;
 };
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX
 
-#endif // HLXSERVERFRONTPANELCONTROLLER_HPP
+#endif // OPENHLXSIMULATORFRONTPANELCONTROLLER_HPP

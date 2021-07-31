@@ -44,19 +44,20 @@
 
 using namespace HLX::Common;
 using namespace HLX::Model;
+using namespace HLX::Server;
 using namespace Nuovations;
 
 
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
 
 // Request data
 
-Command::Infrared::QueryRequest        InfraredController::kQueryRequest;
-Command::Infrared::SetDisabledRequest  InfraredController::kSetDisabledRequest;
+Server::Command::Infrared::QueryRequest        InfraredController::kQueryRequest;
+Server::Command::Infrared::SetDisabledRequest  InfraredController::kSetDisabledRequest;
 
 /**
  *  @brief
@@ -130,7 +131,7 @@ Status InfraredController :: DoRequestHandlers(const bool &aRegister)
     return (lRetval);
 }
 
-Status InfraredController :: Init(CommandManager &aCommandManager, const Timeout &aTimeout)
+Status InfraredController :: Init(Server::CommandManager &aCommandManager, const Timeout &aTimeout)
 {
     DeclareScopedFunctionTracer(lTracer);
     const bool  lRegister = true;
@@ -174,10 +175,10 @@ void InfraredController :: QueryHandler(Common::ConnectionBuffer::MutableCounted
 
 Status InfraredController :: HandleDisabledResponse(const InfraredModel::DisabledType &aDisabled, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    Command::Infrared::DisabledResponse      lDisabledResponse;
-    const uint8_t *                          lBuffer;
-    size_t                                   lSize;
-    Status                                   lStatus;
+    Server::Command::Infrared::DisabledResponse  lDisabledResponse;
+    const uint8_t *                              lBuffer;
+    size_t                                       lSize;
+    Status                                       lStatus;
 
 
     lStatus = lDisabledResponse.Init(aDisabled);
@@ -195,7 +196,7 @@ Status InfraredController :: HandleDisabledResponse(const InfraredModel::Disable
 
 // MARK: Configuration Management Methods
 
-void InfraredController :: QueryCurrentConfiguration(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+void InfraredController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     (void)aConnection;
 
@@ -285,7 +286,7 @@ void InfraredController :: SaveToBackupConfiguration(CFMutableDictionaryRef aBac
 
 // MARK: Command Completion Handlers
 
-void InfraredController :: QueryRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void InfraredController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
@@ -294,7 +295,7 @@ void InfraredController :: QueryRequestReceivedHandler(ConnectionBasis &aConnect
     (void)aBuffer;
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Infrared::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Infrared::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     lResponseBuffer.reset(new ConnectionBuffer);
     nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
@@ -319,17 +320,17 @@ void InfraredController :: QueryRequestReceivedHandler(ConnectionBasis &aConnect
     return;
 }
 
-void InfraredController :: SetDisabledRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void InfraredController :: SetDisabledRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    InfraredModel::DisabledType              lDisabled;
-    Command::Infrared::DisabledResponse      lResponse;
-    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
-    Status                                   lStatus;
+    InfraredModel::DisabledType                  lDisabled;
+    Server::Command::Infrared::DisabledResponse  lResponse;
+    ConnectionBuffer::MutableCountedPointer      lResponseBuffer;
+    Status                                       lStatus;
 
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Infrared::SetDisabledRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Infrared::SetDisabledRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/2: Disabled
 
@@ -372,7 +373,7 @@ void InfraredController :: SetDisabledRequestReceivedHandler(ConnectionBasis &aC
 
 // MARK: Command Request Handler Trampolines
 
-void InfraredController :: QueryRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void InfraredController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     InfraredController *lController = static_cast<InfraredController *>(aContext);
 
@@ -382,7 +383,7 @@ void InfraredController :: QueryRequestReceivedHandler(ConnectionBasis &aConnect
     }
 }
 
-void InfraredController :: SetDisabledRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void InfraredController :: SetDisabledRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     InfraredController *lController = static_cast<InfraredController *>(aContext);
 
@@ -392,6 +393,6 @@ void InfraredController :: SetDisabledRequestReceivedHandler(ConnectionBasis &aC
     }
 }
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX
