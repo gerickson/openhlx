@@ -104,7 +104,7 @@ static const CrossoverModel::FrequencyType         kHighpassFrequencyDefault = 1
 static const SourceModel::IdentifierType           kSourceDefault            = IdentifierModel::kIdentifierMin;
 static const VolumeModel::MuteType                 kMuteDefault              = true;
 static const VolumeModel::FixedType                kVolumeFixedDefault       = false;
-static const VolumeModel::LevelType               kVolumeDefault            = VolumeModel::kLevelMin;
+static const VolumeModel::LevelType                kVolumeDefault            = VolumeModel::kLevelMin;
 
 /**
  *  @brief
@@ -887,8 +887,8 @@ Status
 ZonesController :: Init(CommandManager &aCommandManager, const Timeout &aTimeout)
 {
     DeclareScopedFunctionTracer(lTracer);
-    const bool  lRegister = true;
-    Status      lRetval = kStatus_Success;
+    constexpr bool  kRegister = true;
+    Status          lRetval = kStatus_Success;
 
 
     lRetval = RequestInit();
@@ -903,7 +903,7 @@ ZonesController :: Init(CommandManager &aCommandManager, const Timeout &aTimeout
     // This MUST come AFTER the base class initialization due to a
     // dependency on the command manager instance.
 
-    lRetval = DoRequestHandlers(lRegister);
+    lRetval = DoRequestHandlers(kRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
  done:
@@ -2904,7 +2904,7 @@ void ZonesController :: SaveToBackupConfiguration(CFMutableDictionaryRef aBackup
                                                         kZonesSchemaKey);
 }
 
-// MARK: Command Completion Handlers
+// MARK: Command Request Completion Handlers
 
 void ZonesController :: AdjustBalanceRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
