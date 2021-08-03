@@ -27,6 +27,8 @@
 #define HLXCOMMONDFAVORITESCONTROLLERBASIS_HPP
 
 #include <OpenHLX/Model/FavoriteModel.hpp>
+#include <OpenHLX/Model/FavoritesModel.hpp>
+
 
 namespace HLX
 {
@@ -61,6 +63,9 @@ public:
 
 protected:
     virtual ~FavoritesControllerBasis(void) = default;
+
+protected:
+    Model::FavoritesModel        mFavorites;
 
 protected:
     static const IdentifierType  kFavoritesMax;

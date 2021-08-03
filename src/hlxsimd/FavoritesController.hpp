@@ -88,9 +88,6 @@ private:
     void SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 
 private:
-    Model::FavoritesModel                      mFavorites;
-
-private:
     static Server::Command::Favorites::QueryRequest    kQueryRequest;
     static Server::Command::Favorites::SetNameRequest  kSetNameRequest;
 };

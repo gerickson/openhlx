@@ -94,8 +94,7 @@ static CFStringRef      kNameSchemaKey = CFSTR("Name");
 FavoritesController :: FavoritesController(void) :
     Simulator::ControllerBasis(),
     Server::ContainerControllerBasis(),
-    Common::FavoritesControllerBasis(),
-    mFavorites()
+    Common::FavoritesControllerBasis()
 {
     return;
 }

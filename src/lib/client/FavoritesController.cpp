@@ -67,8 +67,7 @@ Command::Favorites::QueryResponse     FavoritesController::kQueryResponse;
 FavoritesController :: FavoritesController(void) :
     ControllerBasis(),
     FavoritesControllerBasis(),
-    mFavoritesDidRefreshCount(0),
-    mFavorites()
+    mFavoritesDidRefreshCount(0)
 {
     return;
 }

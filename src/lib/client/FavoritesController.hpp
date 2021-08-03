@@ -105,7 +105,6 @@ private:
 
 private:
     size_t                                        mFavoritesDidRefreshCount;
-    Model::FavoritesModel                         mFavorites;
 
 private:
     static Command::Favorites::NameResponse       kNameResponse;
