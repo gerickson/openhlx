@@ -75,7 +75,7 @@
  *
  */
 
-#include "HLXController.hpp"
+#include "HLXClientController.hpp"
 
 #include <vector>
 

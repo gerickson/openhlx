@@ -24,8 +24,8 @@
  *
  */
 
-#ifndef HLXCLIENTCONTROLLER_HPP
-#define HLXCLIENTCONTROLLER_HPP
+#ifndef OPENHLXCLIENTCONTROLLER_HPP
+#define OPENHLXCLIENTCONTROLLER_HPP
 
 #include <vector>
 
@@ -42,7 +42,7 @@
 #include <OpenHLX/Client/FrontPanelController.hpp>
 #include <OpenHLX/Client/GroupsController.hpp>
 #include <OpenHLX/Client/GroupsStateChangeNotifications.hpp>
-#include <OpenHLX/Client/HLXControllerDelegate.hpp>
+#include <OpenHLX/Client/HLXClientControllerDelegate.hpp>
 #include <OpenHLX/Client/InfraredController.hpp>
 #include <OpenHLX/Client/NetworkController.hpp>
 #include <OpenHLX/Client/SourcesController.hpp>
