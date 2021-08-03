@@ -31,6 +31,7 @@
 
 
 using namespace HLX::Common;
+using namespace HLX::Utilities;
 using namespace Nuovations;
 
 
@@ -970,9 +971,11 @@ Controller :: ControllerIsRefreshing(Client::ControllerBasis &aController, const
 
     if (lControllerIterator != mControllers.end())
     {
-        static const uint8_t kPercentCompletePerController = ((1 * 100) / mControllers.size());
-        const uint8_t        lControllersPercentComplete   = static_cast<const uint8_t>(((mControllersDidRefreshCount * 100) / mControllers.size()));
-        const uint8_t        lPercentComplete              = (lControllersPercentComplete + ((kPercentCompletePerController * aPercentComplete) / 100));
+        static const Percentage kPercentCompletePerController = CalculatePercentage(1,
+                                                                                    static_cast<uint8_t>(mControllers.size()));
+        const Percentage        lControllersPercentComplete   = CalculatePercentage(static_cast<uint8_t>(mControllersDidRefreshCount),
+                                                                                    static_cast<uint8_t>(mControllers.size()));
+        const Percentage        lPercentComplete              = (lControllersPercentComplete + ((kPercentCompletePerController * aPercentComplete) / 100));
 
         if (mDelegate != nullptr)
         {
@@ -1007,7 +1010,8 @@ Controller :: ControllerDidRefresh(Client::ControllerBasis &aController)
 
         if (mDelegate != nullptr)
         {
-            const uint8_t lPercentComplete = static_cast<const uint8_t>(((mControllersDidRefreshCount * 100) / mControllers.size()));
+            const Percentage lPercentComplete = CalculatePercentage(static_cast<uint8_t>(mControllersDidRefreshCount),
+                                                                    static_cast<uint8_t>(mControllers.size()));
 
             mDelegate->ControllerIsRefreshing(*this, lPercentComplete);
         }

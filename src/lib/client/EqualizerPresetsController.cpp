@@ -724,7 +724,8 @@ EqualizerPresetsController :: QueryCompleteHandler(Command::ExchangeBasis::Mutab
 
     if (WasRefreshRequested())
     {
-        const uint8_t lPercentComplete = static_cast<const uint8_t>(((mEqualizerPresetsDidRefreshCount * 100) / kEqualizerPresetsMax));
+        const Percentage lPercentComplete = CalculatePercentage(static_cast<uint8_t>(mEqualizerPresetsDidRefreshCount),
+                                                                static_cast<uint8_t>(kEqualizerPresetsMax));
 
         OnIsRefreshing(lPercentComplete);
 

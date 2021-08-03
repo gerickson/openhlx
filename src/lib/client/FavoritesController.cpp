@@ -517,7 +517,8 @@ FavoritesController :: QueryCompleteHandler(Command::ExchangeBasis::MutableCount
 
     if (WasRefreshRequested())
     {
-        const uint8_t lPercentComplete = static_cast<const uint8_t>(((mFavoritesDidRefreshCount * 100) / kFavoritesMax));
+        const Percentage lPercentComplete = CalculatePercentage(static_cast<uint8_t>(mFavoritesDidRefreshCount),
+                                                                static_cast<uint8_t>(kFavoritesMax));
 
         OnIsRefreshing(lPercentComplete);
 

@@ -598,6 +598,7 @@ done:
 void
 ZonesController :: QueryCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const RegularExpression::Matches &aMatches)
 {
+    DeclareScopedFunctionTracer(lTracer);
     const Client::Command::ResponseBasis * lResponse = aExchange->GetResponse();
     const size_t                   lExpectedMatchCount = lResponse->GetRegularExpression().GetExpectedMatchCount();
     const uint8_t *                lBuffer = lResponse->GetBuffer()->GetHead();
@@ -616,7 +617,8 @@ ZonesController :: QueryCompleteHandler(Client::Command::ExchangeBasis::MutableC
 
     if (WasRefreshRequested())
     {
-        const uint8_t lPercentComplete = static_cast<const uint8_t>(((mZonesDidRefreshCount * 100) / kZonesMax));
+        const Percentage lPercentComplete = CalculatePercentage(static_cast<uint8_t>(mZonesDidRefreshCount),
+                                                                static_cast<uint8_t>(kZonesMax));
 
         OnIsRefreshing(lPercentComplete);
 
@@ -709,6 +711,7 @@ ZonesController :: CommandErrorHandler(Client::Command::ExchangeBasis::MutableCo
 void
 ZonesController :: QueryCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const RegularExpression::Matches &aMatches, void *aContext)
 {
+    DeclareScopedFunctionTracer(lTracer);
     ZonesController *lController = static_cast<ZonesController *>(aContext);
 
     if (lController != nullptr)
