@@ -100,6 +100,9 @@ Controller :: Init(const RunLoopParameters &aRunLoopParameters)
     lRetval = InitServer(aRunLoopParameters);
     nlREQUIRE_SUCCESS(lRetval, done);
 
+    lRetval = InitControllers(aRunLoopParameters);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
     mRunLoopParameters = aRunLoopParameters;
 
 done:
@@ -109,6 +112,7 @@ done:
 Status
 Controller :: InitClient(const RunLoopParameters &aRunLoopParameters)
 {
+    DeclareScopedFunctionTracer(lTracer);
     Status  lRetval;
 
 
@@ -125,6 +129,7 @@ Controller :: InitClient(const RunLoopParameters &aRunLoopParameters)
 Status
 Controller :: InitClientConnectionManager(const RunLoopParameters &aRunLoopParameters)
 {
+    DeclareScopedFunctionTracer(lTracer);
     Status  lRetval;
 
 
@@ -141,6 +146,7 @@ Controller :: InitClientConnectionManager(const RunLoopParameters &aRunLoopParam
 Status
 Controller :: InitClientCommandManager(const RunLoopParameters &aRunLoopParameters)
 {
+    DeclareScopedFunctionTracer(lTracer);
     Status  lRetval;
 
 
@@ -157,8 +163,8 @@ Controller :: InitClientCommandManager(const RunLoopParameters &aRunLoopParamete
 Status
 Controller :: InitServer(const RunLoopParameters &aRunLoopParameters)
 {
+    DeclareScopedFunctionTracer(lTracer);
     Status  lRetval;
-
 
 
     lRetval = InitServerConnectionManager(aRunLoopParameters);
@@ -174,6 +180,7 @@ Controller :: InitServer(const RunLoopParameters &aRunLoopParameters)
 Status
 Controller :: InitServerConnectionManager(const RunLoopParameters &aRunLoopParameters)
 {
+    DeclareScopedFunctionTracer(lTracer);
     Status  lRetval;
 
 
@@ -190,6 +197,7 @@ Controller :: InitServerConnectionManager(const RunLoopParameters &aRunLoopParam
 Status
 Controller :: InitServerCommandManager(const RunLoopParameters &aRunLoopParameters)
 {
+    DeclareScopedFunctionTracer(lTracer);
     Status  lRetval;
 
 
@@ -232,7 +240,8 @@ Controller :: InitControllers(const RunLoopParameters &aRunLoopParameters)
 
     while (lCurrent != lEnd)
     {
-        lRetval = lCurrent->second.mController->Init(mClientCommandManager);
+        lRetval = lCurrent->second.mController->Init(mClientCommandManager,
+                                                     mServerCommandManager);
         nlREQUIRE_SUCCESS(lRetval, done);
 
         // Unconditionally set the delegate (including the
@@ -252,6 +261,7 @@ Controller :: InitControllers(const RunLoopParameters &aRunLoopParameters)
 void
 Controller :: AddController(ControllerBasis &aController)
 {
+    DeclareScopedFunctionTracer(lTracer);
     const ControllerState lControllerState = { &aController };
 
 
@@ -463,6 +473,7 @@ done:
 Status
 Controller :: Refresh(void)
 {
+    DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 

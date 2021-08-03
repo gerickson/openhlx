@@ -35,6 +35,7 @@
 #include <OpenHLX/Model/VolumeModel.hpp>
 #include <OpenHLX/Model/ZoneModel.hpp>
 #include <OpenHLX/Model/ZonesModel.hpp>
+#include <OpenHLX/Server/ControllerBasis.hpp>
 #include <OpenHLX/Server/ZonesControllerCommands.hpp>
 
 #include "ControllerBasis.hpp"
@@ -62,14 +63,15 @@ namespace Proxy
  *
  */
 class ZonesController :
-    public ControllerBasis,
+    public Server::ControllerBasis,
+    public Proxy::ControllerBasis,
     public Common::ZonesControllerBasis
 {
 public:
     ZonesController(void);
     virtual ~ZonesController(void);
 
-    Common::Status Init(Client::CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
+    Common::Status Init(Client::CommandManager &aCommandManager, Server::CommandManager &aServerCommandManager, const Common::Timeout &aTimeout) final;
 
     Common::Status Refresh(const Common::Timeout &aTimeout) /* final */;
 

@@ -28,6 +28,7 @@
 #include <OpenHLX/Client/CommandManager.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
+#include <OpenHLX/Server/CommandManager.hpp>
 
 
 namespace HLX
@@ -46,8 +47,8 @@ namespace Proxy
 class ControllerBasis
 {
 public:
-    virtual Common::Status Init(Client::CommandManager &aCommandManager);
-    virtual Common::Status Init(Client::CommandManager &aCommandManager, const Common::Timeout &aTimeout);
+    virtual Common::Status Init(Client::CommandManager &aClientCommandManager, Server::CommandManager &aServerCommandManager);
+    virtual Common::Status Init(Client::CommandManager &aClientCommandManager, Server::CommandManager &aServerCommandManager, const Common::Timeout &aTimeout);
 
 protected:
     ControllerBasis(void);

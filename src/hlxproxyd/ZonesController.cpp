@@ -64,7 +64,8 @@ Server::Command::Zones::SetVolumeRequest           ZonesController::kSetVolumeRe
  *
  */
 ZonesController :: ZonesController(void) :
-    ControllerBasis(),
+    Server::ControllerBasis(),
+    Proxy::ControllerBasis(),
     Common::ZonesControllerBasis(),
     mZonesDidRefreshCount(0),
     mZones()
@@ -166,9 +167,34 @@ ZonesController :: DoNotificationHandlers(const bool &aRegister)
 Status
 ZonesController :: DoRequestHandlers(const bool &aRegister)
 {
-    Status lRetval = kStatus_Success;
+    static const RequestHandlerBasis  lRequestHandlers[] = {
+        {
+            kDecreaseVolumeRequest,
+            ZonesController::DecreaseVolumeRequestReceivedHandler
+        },
 
+        {
+            kIncreaseVolumeRequest,
+            ZonesController::IncreaseVolumeRequestReceivedHandler
+        },
 
+        {
+            kQueryRequest,
+            ZonesController::QueryRequestReceivedHandler
+        },
+
+        {
+            kSetVolumeRequest,
+            ZonesController::SetVolumeRequestReceivedHandler
+        },
+    };
+    static const size_t               lRequestHandlerCount = sizeof (lRequestHandlers) / sizeof (lRequestHandlers[0]);
+    Status                            lRetval = kStatus_Success;
+
+    lRetval = Server::ControllerBasis::DoRequestHandlers(&lRequestHandlers[0], &lRequestHandlers[lRequestHandlerCount], aRegister);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
     return (lRetval);
 }
 
@@ -196,7 +222,7 @@ ZonesController :: DoRequestHandlers(const bool &aRegister)
  *
  */
 Status
-ZonesController :: Init(Client::CommandManager &aCommandManager, const Timeout &aTimeout)
+ZonesController :: Init(Client::CommandManager &aClientCommandManager, Server::CommandManager &aServerCommandManager, const Timeout &aTimeout)
 {
     DeclareScopedFunctionTracer(lTracer);
     constexpr bool  kRegister = true;
@@ -212,7 +238,10 @@ ZonesController :: Init(Client::CommandManager &aCommandManager, const Timeout &
     lRetval = mZones.Init(kZonesMax);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = ControllerBasis::Init(aCommandManager, aTimeout);
+    lRetval = Server::ControllerBasis::Init(aServerCommandManager, aTimeout);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = Proxy::ControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // These MUST come AFTER the base class initialization due to a
@@ -848,11 +877,13 @@ void ZonesController :: DecreaseVolumeRequestReceivedHandler(Server::ConnectionB
  done:
     if (lStatus >= kStatus_Success)
     {
-        ;
+        lStatus = SendResponse(aConnection, lResponseBuffer);
+        nlVERIFY_SUCCESS(lStatus);
     }
     else
     {
-        ;
+        lStatus = SendErrorResponse(aConnection);
+        nlVERIFY_SUCCESS(lStatus);
     }
 
     return;
@@ -903,11 +934,13 @@ void ZonesController :: IncreaseVolumeRequestReceivedHandler(Server::ConnectionB
  done:
     if (lStatus >= kStatus_Success)
     {
-        ;
+        lStatus = SendResponse(aConnection, lResponseBuffer);
+        nlVERIFY_SUCCESS(lStatus);
     }
     else
     {
-        ;
+        lStatus = SendErrorResponse(aConnection);
+        nlVERIFY_SUCCESS(lStatus);
     }
 
     return;
@@ -965,11 +998,13 @@ void ZonesController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aCo
  done:
     if (lStatus >= kStatus_Success)
     {
-        ;
+        lStatus = SendResponse(aConnection, lResponseBuffer);
+        nlVERIFY_SUCCESS(lStatus);
     }
     else
     {
-        ;
+        lStatus = SendErrorResponse(aConnection);
+        nlVERIFY_SUCCESS(lStatus);
     }
 
     return;
@@ -1030,11 +1065,13 @@ void ZonesController :: SetVolumeRequestReceivedHandler(Server::ConnectionBasis 
  done:
     if (lStatus >= kStatus_Success)
     {
-        ;
+        lStatus = SendResponse(aConnection, lResponseBuffer);
+        nlVERIFY_SUCCESS(lStatus);
     }
     else
     {
-        ;
+        lStatus = SendErrorResponse(aConnection);
+        nlVERIFY_SUCCESS(lStatus);
     }
 
     return;
@@ -1130,14 +1167,14 @@ ZonesController :: SetMute(const IdentifierType &aZoneIdentifier, const Model::V
 Status
 ZonesController :: HandleQueryReceived(const bool &aIsConfiguration, const IdentifierType &aZoneIdentifier, ConnectionBuffer::MutableCountedPointer &aOutputBuffer) const
 {
-    const ZoneModel *                  lZoneModel;
-    const char *                       lName;
-    Server::Command::Zones::NameResponse       lNameResponse;
-    BalanceModel::BalanceType          lBalance;
-    Server::Command::Zones::BalanceResponse    lBalanceResponse;
-    const uint8_t *                    lBuffer;
-    size_t                             lSize;
-    Status                             lRetval;
+    const ZoneModel *                        lZoneModel;
+    const char *                             lName;
+    Server::Command::Zones::NameResponse     lNameResponse;
+    BalanceModel::BalanceType                lBalance;
+    Server::Command::Zones::BalanceResponse  lBalanceResponse;
+    const uint8_t *                          lBuffer;
+    size_t                                   lSize;
+    Status                                   lRetval;
 
 
     lRetval = mZones.GetZone(aZoneIdentifier, lZoneModel);
@@ -1296,9 +1333,9 @@ Status
 ZonesController :: HandleMuteResponse(const IdentifierType &aZoneIdentifier, const VolumeModel::MuteType &aMute, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     Server::Command::Zones::MuteResponse  lMuteResponse;
-    const uint8_t *               lBuffer;
-    size_t                        lSize;
-    Status                        lRetval;
+    const uint8_t *                       lBuffer;
+    size_t                                lSize;
+    Status                                lRetval;
 
     lRetval = lMuteResponse.Init(aZoneIdentifier, aMute);
     nlREQUIRE_SUCCESS(lRetval, done);
@@ -1317,9 +1354,9 @@ Status
 ZonesController :: HandleVolumeResponse(const IdentifierType &aZoneIdentifier, const VolumeModel::LevelType &aVolume, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     Server::Command::Zones::VolumeResponse  lVolumeResponse;
-    const uint8_t *                 lBuffer;
-    size_t                          lSize;
-    Status                          lRetval;
+    const uint8_t *                         lBuffer;
+    size_t                                  lSize;
+    Status                                  lRetval;
 
 
     lRetval = lVolumeResponse.Init(aZoneIdentifier, aVolume);

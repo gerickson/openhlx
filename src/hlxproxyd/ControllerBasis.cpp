@@ -48,23 +48,25 @@ ControllerBasis :: ~ControllerBasis(void)
 }
 
 Status
-ControllerBasis :: Init(Client::CommandManager &aCommandManager)
+ControllerBasis :: Init(Client::CommandManager &aClientCommandManager, Server::CommandManager &aServerCommandManager)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 
-    lRetval = Init(aCommandManager, kTimeoutDefault);
+    lRetval = Init(aClientCommandManager, aServerCommandManager, kTimeoutDefault);
 
     return (lRetval);
 }
 
 Status
-ControllerBasis :: Init(Client::CommandManager &aCommandManager, const Common::Timeout &aTimeout)
+ControllerBasis :: Init(Client::CommandManager &aClientCommandManager, Server::CommandManager &aServerCommandManager, const Common::Timeout &aTimeout)
 {
+    DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
-    (void)aCommandManager;
+    (void)aClientCommandManager;
+    (void)aServerCommandManager;
     (void)aTimeout;
 
     return (lRetval);
