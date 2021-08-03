@@ -64,6 +64,7 @@ Server::Command::Zones::SetVolumeRequest           ZonesController::kSetVolumeRe
  *
  */
 ZonesController :: ZonesController(void) :
+    Client::ControllerBasis(),
     Server::ControllerBasis(),
     Proxy::ControllerBasis(),
     Common::ZonesControllerBasis(),
@@ -158,9 +159,21 @@ ZonesController :: RequestInit(void)
 Status
 ZonesController :: DoNotificationHandlers(const bool &aRegister)
 {
-    Status lRetval = kStatus_Success;
+    static const NotificationHandlerBasis  lNotificationHandlers[] = {
+        {
+            kVolumeResponse,
+            ZonesController::VolumeNotificationReceivedHandler
+        }
+    };
+    static constexpr size_t  lNotificationHandlerCount = ElementsOf(lNotificationHandlers);
+    Status                   lRetval = kStatus_Success;
 
+    lRetval = Client::ControllerBasis::DoNotificationHandlers(&lNotificationHandlers[0],
+                                                              &lNotificationHandlers[lNotificationHandlerCount],
+                                                              aRegister);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
+done:
     return (lRetval);
 }
 
@@ -188,13 +201,15 @@ ZonesController :: DoRequestHandlers(const bool &aRegister)
             ZonesController::SetVolumeRequestReceivedHandler
         },
     };
-    static const size_t               lRequestHandlerCount = sizeof (lRequestHandlers) / sizeof (lRequestHandlers[0]);
-    Status                            lRetval = kStatus_Success;
+    static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
+    Status                   lRetval = kStatus_Success;
 
-    lRetval = Server::ControllerBasis::DoRequestHandlers(&lRequestHandlers[0], &lRequestHandlers[lRequestHandlerCount], aRegister);
+    lRetval = Server::ControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
+                                                         &lRequestHandlers[lRequestHandlerCount],
+                                                         aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
@@ -236,6 +251,9 @@ ZonesController :: Init(Client::CommandManager &aClientCommandManager, Server::C
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mZones.Init(kZonesMax);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = Client::ControllerBasis::Init(aClientCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = Server::ControllerBasis::Init(aServerCommandManager, aTimeout);
