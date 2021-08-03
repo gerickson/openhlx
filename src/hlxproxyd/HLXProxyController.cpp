@@ -474,8 +474,8 @@ Status
 Controller :: Refresh(void)
 {
     DeclareScopedFunctionTracer(lTracer);
-    Status lRetval = kStatus_Success;
-
+    Status                 lRetval = kStatus_Success;
+    Controllers::iterator  lCurrent, lEnd;
 
     if (mDelegate != nullptr)
     {
@@ -485,6 +485,19 @@ Controller :: Refresh(void)
     // Reset the overall refresh count.
 
     mControllersDidRefreshCount = 0;
+
+    // Begin refreshing each controller.
+
+    lCurrent = mControllers.begin();
+    lEnd     = mControllers.end();
+
+    while (lCurrent != lEnd)
+    {
+        lRetval = static_cast<Client::ControllerBasis *>(lCurrent->second.mController)->Refresh();
+        nlREQUIRE_SUCCESS(lRetval, done);
+
+        lCurrent++;
+    }
 
  done:
     return (lRetval);
@@ -505,7 +518,7 @@ Controller :: Refresh(void)
 bool
 Controller :: IsRefreshing(void) const
 {
-    return (false);
+    return (mControllersDidRefreshCount != mControllers.size());
 }
 
 /**
@@ -950,7 +963,22 @@ Controller :: ConnectionManagerError(Common::ConnectionManagerBasis &aConnection
 void
 Controller :: ControllerIsRefreshing(Client::ControllerBasis &aController, const uint8_t &aPercentComplete)
 {
-    return;
+    Proxy::ControllerBasis *    lController = static_cast<Proxy::ControllerBasis *>(&aController);
+    Controllers::const_iterator lControllerIterator;
+
+    lControllerIterator = mControllers.find(lController);
+
+    if (lControllerIterator != mControllers.end())
+    {
+        static const uint8_t kPercentCompletePerController = ((1 * 100) / mControllers.size());
+        const uint8_t        lControllersPercentComplete   = static_cast<const uint8_t>(((mControllersDidRefreshCount * 100) / mControllers.size()));
+        const uint8_t        lPercentComplete              = (lControllersPercentComplete + ((kPercentCompletePerController * aPercentComplete) / 100));
+
+        if (mDelegate != nullptr)
+        {
+            mDelegate->ControllerIsRefreshing(*this, lPercentComplete);
+        }
+    }
 }
 
 /**
@@ -968,6 +996,31 @@ Controller :: ControllerIsRefreshing(Client::ControllerBasis &aController, const
 void
 Controller :: ControllerDidRefresh(Client::ControllerBasis &aController)
 {
+    Proxy::ControllerBasis *    lController = static_cast<Proxy::ControllerBasis *>(&aController);
+    Controllers::const_iterator lControllerIterator;
+
+    lControllerIterator = mControllers.find(lController);
+
+    if (lControllerIterator != mControllers.end())
+    {
+        mControllersDidRefreshCount++;
+
+        if (mDelegate != nullptr)
+        {
+            const uint8_t lPercentComplete = static_cast<const uint8_t>(((mControllersDidRefreshCount * 100) / mControllers.size()));
+
+            mDelegate->ControllerIsRefreshing(*this, lPercentComplete);
+        }
+
+        if (mControllersDidRefreshCount == mControllers.size())
+        {
+            if (mDelegate != nullptr)
+            {
+                mDelegate->ControllerDidRefresh(*this);
+            }
+        }
+    }
+
     return;
 }
 
