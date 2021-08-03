@@ -64,8 +64,6 @@ Server::Command::Zones::SetVolumeRequest           ZonesController::kSetVolumeRe
  *
  */
 ZonesController :: ZonesController(void) :
-    Client::ControllerBasis(),
-    Server::ControllerBasis(),
     Proxy::ControllerBasis(),
     Common::ZonesControllerBasis(),
     mZonesDidRefreshCount(0),
@@ -253,12 +251,6 @@ ZonesController :: Init(Client::CommandManager &aClientCommandManager, Server::C
     lRetval = mZones.Init(kZonesMax);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = Client::ControllerBasis::Init(aClientCommandManager, aTimeout);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = Server::ControllerBasis::Init(aServerCommandManager, aTimeout);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
     lRetval = Proxy::ControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
@@ -297,6 +289,7 @@ done:
 Status
 ZonesController :: Refresh(const Timeout &aTimeout)
 {
+    DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 

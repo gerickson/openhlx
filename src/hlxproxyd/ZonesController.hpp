@@ -28,7 +28,6 @@
 #include <stddef.h>
 
 #include <OpenHLX/Client/CommandManager.hpp>
-#include <OpenHLX/Client/ControllerBasis.hpp>
 #include <OpenHLX/Client/ZonesControllerCommands.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
@@ -36,7 +35,6 @@
 #include <OpenHLX/Model/VolumeModel.hpp>
 #include <OpenHLX/Model/ZoneModel.hpp>
 #include <OpenHLX/Model/ZonesModel.hpp>
-#include <OpenHLX/Server/ControllerBasis.hpp>
 #include <OpenHLX/Server/ZonesControllerCommands.hpp>
 
 #include "ControllerBasis.hpp"
@@ -64,8 +62,6 @@ namespace Proxy
  *
  */
 class ZonesController :
-    public Client::ControllerBasis,
-    public Server::ControllerBasis,
     public Proxy::ControllerBasis,
     public Common::ZonesControllerBasis
 {
@@ -161,12 +157,6 @@ private:
 
     static Common::Status HandleMuteResponse(const IdentifierType &aZoneIdentifier, const Model::VolumeModel::MuteType &aMute, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
     static Common::Status HandleVolumeResponse(const IdentifierType &aZoneIdentifier, const Model::VolumeModel::LevelType &aVolume, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
-
-private:
-    // Explicitly hide base class initializers
-
-    using Client::ControllerBasis::Init;
-    using Server::ControllerBasis::Init;
 
 private:
     size_t                                            mZonesDidRefreshCount;

@@ -26,6 +26,8 @@
 
 #include <LogUtilities/LogUtilities.hpp>
 
+#include <OpenHLX/Utilities/Assert.hpp>
+
 
 using namespace HLX::Common;
 using namespace Nuovations;
@@ -37,7 +39,9 @@ namespace HLX
 namespace Proxy
 {
 
-ControllerBasis :: ControllerBasis(void)
+ControllerBasis :: ControllerBasis(void) :
+    Client::ControllerBasis(),
+    Server::ControllerBasis()
 {
     return;
 }
@@ -65,10 +69,13 @@ ControllerBasis :: Init(Client::CommandManager &aClientCommandManager, Server::C
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
-    (void)aClientCommandManager;
-    (void)aServerCommandManager;
-    (void)aTimeout;
+    lRetval = Client::ControllerBasis::Init(aClientCommandManager, aTimeout);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
+    lRetval = Server::ControllerBasis::Init(aServerCommandManager, aTimeout);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
     return (lRetval);
 }
 

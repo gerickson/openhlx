@@ -26,9 +26,11 @@
 #define OPENHLXPROXYCONTROLLERBASIS_HPP
 
 #include <OpenHLX/Client/CommandManager.hpp>
+#include <OpenHLX/Client/ControllerBasis.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
 #include <OpenHLX/Server/CommandManager.hpp>
+#include <OpenHLX/Server/ControllerBasis.hpp>
 
 
 namespace HLX
@@ -44,16 +46,24 @@ namespace Proxy
  *  @ingroup proxy
  *
  */
-class ControllerBasis
+class ControllerBasis :
+    public Client::ControllerBasis,
+    public Server::ControllerBasis
 {
 public:
+    virtual ~ControllerBasis(void);
+
     virtual Common::Status Init(Client::CommandManager &aClientCommandManager, Server::CommandManager &aServerCommandManager);
     virtual Common::Status Init(Client::CommandManager &aClientCommandManager, Server::CommandManager &aServerCommandManager, const Common::Timeout &aTimeout);
 
 protected:
     ControllerBasis(void);
-    ~ControllerBasis(void);
 
+private:
+    // Explicitly hide base class initializers
+
+    using Client::ControllerBasis::Init;
+    using Server::ControllerBasis::Init;
 };
 
 }; // namespace Proxy
