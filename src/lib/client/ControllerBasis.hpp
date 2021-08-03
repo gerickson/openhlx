@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXCLIENTCONTROLLERBASIS_HPP
-#define HLXCLIENTCONTROLLERBASIS_HPP
+#ifndef OPENHLXCLIENTCONTROLLERBASIS_HPP
+#define OPENHLXCLIENTCONTROLLERBASIS_HPP
 
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
@@ -54,8 +54,11 @@ class ControllerBasis :
     public CommandManagerDelegate
 {
 public:
+    virtual ~ControllerBasis(void);
+
     virtual Common::Status Init(CommandManager &aCommandManager);
     virtual Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout);
+
     virtual Common::Status Refresh(void);
 
     /**
@@ -83,7 +86,6 @@ public:
 
 protected:
     ControllerBasis(void);
-    ~ControllerBasis(void);
 
     /**
      *  @brief
@@ -142,4 +144,4 @@ private:
 
 }; // namespace HLX
 
-#endif // HLXCLIENTCONTROLLERBASIS_HPP
+#endif // OPENHLXCLIENTCONTROLLERBASIS_HPP
