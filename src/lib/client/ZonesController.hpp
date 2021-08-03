@@ -155,7 +155,7 @@ public:
 
 private:
     Common::Status ResponseInit(void);
-    Common::Status DoNotificationHandlers(bool aRegister);
+    Common::Status DoNotificationHandlers(const bool &aRegister);
 
     Common::Status SetTone(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const Model::ToneModel::LevelType &aBass, const Model::ToneModel::LevelType &aTreble);
 

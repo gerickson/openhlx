@@ -193,7 +193,7 @@ done:
  *
  */
 Status
-ZonesController :: DoNotificationHandlers(bool aRegister)
+ZonesController :: DoNotificationHandlers(const bool &aRegister)
 {
     static const NotificationHandlerBasis  lNotificationHandlers[] = {
         {
@@ -269,9 +269,9 @@ ZonesController :: DoNotificationHandlers(bool aRegister)
     static constexpr size_t                lNotificationHandlerCount = ElementsOf(lNotificationHandlers);
     Status                                 lRetval = kStatus_Success;
 
-    lRetval = ControllerBasis::DoNotificationHandlers(&lNotificationHandlers[0],
-                                                      &lNotificationHandlers[lNotificationHandlerCount],
-                                                      aRegister);
+    lRetval = Client::ControllerBasis::DoNotificationHandlers(&lNotificationHandlers[0],
+                                                              &lNotificationHandlers[lNotificationHandlerCount],
+                                                              aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
