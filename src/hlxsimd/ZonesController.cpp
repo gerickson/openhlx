@@ -726,7 +726,7 @@ ZonesController :: RequestInit(void)
     lRetval = kToggleMuteRequest.Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
