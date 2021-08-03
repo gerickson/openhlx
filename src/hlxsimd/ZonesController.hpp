@@ -225,9 +225,6 @@ private:
     void ToggleMuteRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 
 private:
-    Model::ZonesModel                                    mZones;
-
-private:
     static Server::Command::Zones::AdjustBalanceRequest          kAdjustBalanceRequest;
     static Server::Command::Zones::DecreaseBassRequest           kDecreaseBassRequest;
     static Server::Command::Zones::IncreaseBassRequest           kIncreaseBassRequest;

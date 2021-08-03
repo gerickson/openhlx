@@ -160,7 +160,6 @@ private:
 
 private:
     size_t                                            mZonesDidRefreshCount;
-    Model::ZonesModel                                 mZones;
 
 private:
     // Server-facing Client Command Response Data

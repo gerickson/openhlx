@@ -83,8 +83,7 @@ Command::Zones::VolumeFixedResponse        ZonesController::kVolumeFixedResponse
 ZonesController :: ZonesController(void) :
     ControllerBasis(),
     Common::ZonesControllerBasis(),
-    mZonesDidRefreshCount(0),
-    mZones()
+    mZonesDidRefreshCount(0)
 {
     return;
 }

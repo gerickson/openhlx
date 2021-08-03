@@ -66,8 +66,7 @@ Server::Command::Zones::SetVolumeRequest           ZonesController::kSetVolumeRe
 ZonesController :: ZonesController(void) :
     Proxy::ControllerBasis(),
     Common::ZonesControllerBasis(),
-    mZonesDidRefreshCount(0),
-    mZones()
+    mZonesDidRefreshCount(0)
 {
     return;
 }

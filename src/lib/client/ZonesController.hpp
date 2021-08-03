@@ -206,7 +206,6 @@ private:
 
 private:
     size_t                                            mZonesDidRefreshCount;
-    Model::ZonesModel                                 mZones;
 
 private:
     static Command::Zones::BalanceResponse            kBalanceResponse;

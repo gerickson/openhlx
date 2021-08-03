@@ -23,10 +23,12 @@
  *
  */
 
-#ifndef HLXCOMMONZONESCONTROLLERBASIS_HPP
-#define HLXCOMMONZONESCONTROLLERBASIS_HPP
+#ifndef OPENHLXCOMMONZONESCONTROLLERBASIS_HPP
+#define OPENHLXCOMMONZONESCONTROLLERBASIS_HPP
 
 #include <OpenHLX/Model/ZoneModel.hpp>
+#include <OpenHLX/Model/ZonesModel.hpp>
+
 
 namespace HLX
 {
@@ -63,6 +65,9 @@ protected:
     ZonesControllerBasis(void) = default;
 
 protected:
+    Model::ZonesModel            mZones;
+
+protected:
     static const IdentifierType  kZonesMax;
 };
 
@@ -70,4 +75,4 @@ protected:
 
 }; // namespace HLX
 
-#endif // HLXCOMMONZONESCONTROLLERBASIS_HPP
+#endif // OPENHLXCOMMONZONESCONTROLLERBASIS_HPP
