@@ -27,6 +27,8 @@
 #define HLXCOMMONEQUALIZERPRESETSCONTROLLERBASIS_HPP
 
 #include <OpenHLX/Model/EqualizerPresetModel.hpp>
+#include <OpenHLX/Model/EqualizerPresetsModel.hpp>
+
 
 namespace HLX
 {
@@ -62,6 +64,9 @@ public:
 
 protected:
     EqualizerPresetsControllerBasis(void) = default;
+
+protected:
+    Model::EqualizerPresetsModel mEqualizerPresets;
 
 protected:
     static const IdentifierType  kEqualizerPresetsMax;

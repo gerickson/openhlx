@@ -69,8 +69,7 @@ Command::EqualizerPresets::QueryResponse          EqualizerPresetsController::kQ
 EqualizerPresetsController :: EqualizerPresetsController(void) :
     ControllerBasis(),
     EqualizerPresetsControllerBasis(),
-    mEqualizerPresetsDidRefreshCount(0),
-    mEqualizerPresets()
+    mEqualizerPresetsDidRefreshCount(0)
 {
     return;
 }

@@ -243,8 +243,7 @@ static CFStringRef      kEqualizerLevelsPresetSchemaKey = CFSTR("Equalizer Level
 EqualizerPresetsController :: EqualizerPresetsController(void) :
     Simulator::ControllerBasis(),
     Server::ContainerControllerBasis(),
-    Common::EqualizerPresetsControllerBasis(),
-    mEqualizerPresets()
+    Common::EqualizerPresetsControllerBasis()
 {
     return;
 }

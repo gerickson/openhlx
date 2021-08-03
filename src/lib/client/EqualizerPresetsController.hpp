@@ -114,7 +114,6 @@ private:
 
 private:
     size_t                                                   mEqualizerPresetsDidRefreshCount;
-    Model::EqualizerPresetsModel                             mEqualizerPresets;
 
 private:
     static Command::EqualizerPresets::EqualizerBandResponse  kEqualizerBandResponse;

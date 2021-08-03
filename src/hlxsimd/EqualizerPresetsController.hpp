@@ -108,9 +108,6 @@ private:
     void SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 
 private:
-    Model::EqualizerPresetsModel                           mEqualizerPresets;
-
-private:
     static Server::Command::EqualizerPresets::DecreaseBandRequest  kDecreaseBandRequest;
     static Server::Command::EqualizerPresets::IncreaseBandRequest  kIncreaseBandRequest;
     static Server::Command::EqualizerPresets::QueryRequest         kQueryRequest;
