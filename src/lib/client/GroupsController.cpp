@@ -103,8 +103,7 @@ Command::Groups::ZoneResponse            GroupsController::kZoneResponse;
 GroupsController :: GroupsController(void) :
     ControllerBasis(),
     GroupsControllerBasis(),
-    mGroupsDidRefreshCount(0),
-    mGroups()
+    mGroupsDidRefreshCount(0)
 {
     return;
 }

@@ -146,7 +146,6 @@ GroupsController :: GroupsController(void) :
     Simulator::ControllerBasis(),
     ContainerControllerBasis(),
     GroupsControllerBasis(),
-    mGroups(),
     mDelegate(nullptr)
 {
     return;

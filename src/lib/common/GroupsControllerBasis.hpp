@@ -27,6 +27,8 @@
 #define HLXCOMMONGROUPSCONTROLLERBASIS_HPP
 
 #include <OpenHLX/Model/GroupModel.hpp>
+#include <OpenHLX/Model/GroupsModel.hpp>
+
 
 namespace HLX
 {
@@ -61,6 +63,9 @@ public:
 
 protected:
     GroupsControllerBasis(void) = default;
+
+protected:
+    Model::GroupsModel           mGroups;
 
 protected:
     static const IdentifierType  kGroupsMax;

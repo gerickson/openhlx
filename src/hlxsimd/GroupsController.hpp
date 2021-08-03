@@ -133,7 +133,6 @@ private:
     Common::Status OnToggleMute(const IdentifierType &aGroupIdentifier, const Model::GroupModel &aGroupModel);
 
 private:
-    Model::GroupsModel                             mGroups;
     GroupsControllerDelegate *                     mDelegate;
 
 private:

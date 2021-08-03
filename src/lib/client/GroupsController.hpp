@@ -166,7 +166,6 @@ private:
 
 private:
     size_t                                          mGroupsDidRefreshCount;
-    Model::GroupsModel                              mGroups;
 
 private:
     static Command::Groups::SetMuteResponse         kSetMuteResponse;
