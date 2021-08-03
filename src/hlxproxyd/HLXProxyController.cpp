@@ -54,8 +54,7 @@ Controller :: Controller(void) :
     mZonesController(),
     mControllers(),
     mControllersDidRefreshCount(0),
-    mDelegate(nullptr),
-    mDelegateContext(nullptr)
+    mDelegate(nullptr)
 {
     DeclareScopedFunctionTracer(lTracer);
 }
@@ -550,18 +549,17 @@ Controller :: GetDelegate(void) const
  *
  */
 Status
-Controller :: SetDelegate(ControllerDelegate *aDelegate, void *aContext)
+Controller :: SetDelegate(ControllerDelegate *aDelegate)
 {
     Status lRetval = kStatus_Success;
 
-    if ((aDelegate == mDelegate) && (aContext == mDelegateContext))
+    if (aDelegate == mDelegate)
     {
         lRetval = kStatus_ValueAlreadySet;
         goto done;
     }
 
     mDelegate        = aDelegate;
-    mDelegateContext = aContext;
 
  done:
     return (lRetval);

@@ -78,7 +78,6 @@ Controller :: Controller(void) :
     mZonesController(),
     mControllers(),
     mDelegate(nullptr),
-    mDelegateContext(nullptr),
     mConfigurationAutoSaveTimer(nullptr),
     mConfigurationIsDirty(false)
 {
@@ -381,18 +380,17 @@ Controller :: GetDelegate(void) const
 }
 
 Status
-Controller :: SetDelegate(ControllerDelegate *aDelegate, void *aContext)
+Controller :: SetDelegate(ControllerDelegate *aDelegate)
 {
     Status lRetval = kStatus_Success;
 
-    if ((aDelegate == mDelegate) && (aContext == mDelegateContext))
+    if (aDelegate == mDelegate)
     {
         lRetval = kStatus_ValueAlreadySet;
         goto done;
     }
 
     mDelegate        = aDelegate;
-    mDelegateContext = aContext;
 
  done:
     return (lRetval);

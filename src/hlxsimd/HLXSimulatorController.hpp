@@ -81,7 +81,7 @@ public:
 
     ControllerDelegate *GetDelegate(void) const;
 
-    Common::Status SetDelegate(ControllerDelegate *aDelegate, void *aContext);
+    Common::Status SetDelegate(ControllerDelegate *aDelegate);
 
     Common::Status Listen(void);
     Common::Status Listen(const Common::ConnectionManagerBasis::Versions &aVersions);
@@ -257,7 +257,6 @@ private:
     ZonesController                 mZonesController;
     Controllers                     mControllers;
     ControllerDelegate *            mDelegate;
-    void *                          mDelegateContext;
     CFRunLoopTimerRef               mConfigurationAutoSaveTimer;
     bool                            mConfigurationIsDirty;
 };

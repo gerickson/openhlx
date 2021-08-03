@@ -256,7 +256,7 @@ Status HLXProxy :: Init(void)
     lRetval = mHLXProxyController.Init(mRunLoopParameters);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mHLXProxyController.SetDelegate(this, nullptr);
+    lRetval = mHLXProxyController.SetDelegate(this);
     nlREQUIRE_SUCCESS(lRetval, done);
 
  done:

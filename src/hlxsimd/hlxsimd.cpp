@@ -268,7 +268,7 @@ Status HLXSimulator :: Init(void)
     lRetval = mHLXSimulatorController.Init(mRunLoopParameters, sConfigurationFile);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mHLXSimulatorController.SetDelegate(this, nullptr);
+    lRetval = mHLXSimulatorController.SetDelegate(this);
     nlREQUIRE_SUCCESS(lRetval, done);
 
  done:

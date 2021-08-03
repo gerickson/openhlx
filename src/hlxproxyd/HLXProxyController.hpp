@@ -73,7 +73,7 @@ public:
 
     ControllerDelegate *GetDelegate(void) const;
 
-    Common::Status SetDelegate(ControllerDelegate *aDelegate, void *aContext);
+    Common::Status SetDelegate(ControllerDelegate *aDelegate);
 
     Common::Status Connect(const char *aMaybeURL);
     Common::Status Connect(const char *aMaybeURL, const Common::Timeout &aTimeout);
@@ -175,7 +175,6 @@ private:
     Controllers                     mControllers;
     size_t                          mControllersDidRefreshCount;
     ControllerDelegate *            mDelegate;
-    void *                          mDelegateContext;
 };
 
 }; // namespace Proxy
