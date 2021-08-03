@@ -297,6 +297,17 @@ ZonesController :: Refresh(const Timeout &aTimeout)
 
     mZonesDidRefreshCount = 0;
 
+    // Notify the base controller that we have begun a refresh
+    // operation.
+
+    SetRefreshRequested(true);
+
+    // Issue a query zone request for each zone.
+
+    lRetval = Query();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
     return (lRetval);
 }
 
@@ -317,6 +328,7 @@ ZonesController :: Refresh(const Timeout &aTimeout)
 Status
 ZonesController :: Query(void)
 {
+    DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 
@@ -351,6 +363,7 @@ done:
 Status
 ZonesController :: Query(const IdentifierType &aZoneIdentifier)
 {
+    DeclareScopedFunctionTracer(lTracer);
     Client::Command::ExchangeBasis::MutableCountedPointer  lCommand;
     Status                                                  lRetval = kStatus_Success;
 
@@ -362,6 +375,12 @@ ZonesController :: Query(const IdentifierType &aZoneIdentifier)
     nlREQUIRE_ACTION(lCommand, done, lRetval = -ENOMEM);
 
     lRetval = std::static_pointer_cast<Client::Command::Zones::Query>(lCommand)->Init(aZoneIdentifier);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = SendCommand(lCommand,
+                          ZonesController::QueryCompleteHandler,
+                          ZonesController::CommandErrorHandler,
+                          this);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -594,6 +613,18 @@ ZonesController :: QueryCompleteHandler(Client::Command::ExchangeBasis::MutableC
     nlREQUIRE_SUCCESS(lStatus, done);
 
     mZonesDidRefreshCount++;
+
+    if (WasRefreshRequested())
+    {
+        const uint8_t lPercentComplete = static_cast<const uint8_t>(((mZonesDidRefreshCount * 100) / kZonesMax));
+
+        OnIsRefreshing(lPercentComplete);
+
+        if (lPercentComplete == 100)
+        {
+            OnDidRefresh();
+        }
+    }
 
 done:
     return;
