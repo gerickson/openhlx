@@ -56,6 +56,7 @@ libopenhlx_server_a_include_HEADERS                         = \
     CommandResponseBasis.hpp                                  \
     CommandSourceResponseBases.hpp                            \
     CommandVolumeResponseBases.hpp                            \
+    ConfigurationControllerBasis.hpp                          \
     ConfigurationControllerCommands.hpp                       \
     ConnectionBasis.hpp                                       \
     ConnectionBasisDelegate.hpp                               \
@@ -64,18 +65,26 @@ libopenhlx_server_a_include_HEADERS                         = \
     ConnectionManagerDelegate.hpp                             \
     ConnectionTelnet.hpp                                      \
     ControllerBasis.hpp                                       \
+    EqualizerPresetsControllerBasis.hpp                       \
     EqualizerPresetsControllerCommands.hpp                    \
+    FavoritesControllerBasis.hpp                              \
     FavoritesControllerCommands.hpp                           \
+    FrontPanelControllerBasis.hpp                             \
     FrontPanelControllerCommands.hpp                          \
+    GroupsControllerBasis.hpp                                 \
     GroupsControllerCommands.hpp                              \
+    InfraredControllerBasis.hpp                               \
     InfraredControllerCommands.hpp                            \
     ListenerBasis.hpp                                         \
-    ListenerBasisDelegate.hpp                                 \
     ListenerBasisAcceptDelegate.hpp                           \
+    ListenerBasisDelegate.hpp                                 \
     ListenerFactory.hpp                                       \
     ListenerTelnet.hpp                                        \
+    NetworkControllerBasis.hpp                                \
     NetworkControllerCommands.hpp                             \
+    SourcesControllerBasis.hpp                                \
     SourcesControllerCommands.hpp                             \
+    ZonesControllerBasis.hpp                                  \
     ZonesControllerCommands.hpp                               \
     $(NULL)
 
@@ -99,23 +108,32 @@ libopenhlx_server_a_SOURCES                                 = \
     CommandResponseBasis.cpp                                  \
     CommandSourceResponseBases.cpp                            \
     CommandVolumeResponseBases.cpp                            \
+    ConfigurationControllerBasis.cpp                          \
     ConfigurationControllerCommands.cpp                       \
     ConnectionBasis.cpp                                       \
     ConnectionFactory.cpp                                     \
     ConnectionManager.cpp                                     \
     ConnectionTelnet.cpp                                      \
     ControllerBasis.cpp                                       \
+    EqualizerPresetsControllerBasis.cpp                       \
     EqualizerPresetsControllerCommands.cpp                    \
+    FavoritesControllerBasis.cpp                              \
     FavoritesControllerCommands.cpp                           \
+    FrontPanelControllerBasis.cpp                             \
     FrontPanelControllerCommands.cpp                          \
+    GroupsControllerBasis.cpp                                 \
     GroupsControllerCommands.cpp                              \
+    InfraredControllerBasis.cpp                               \
     InfraredControllerCommands.cpp                            \
     ListenerBasis.cpp                                         \
     ListenerBasisDelegate.cpp                                 \
     ListenerFactory.cpp                                       \
     ListenerTelnet.cpp                                        \
+    NetworkControllerBasis.cpp                                \
     NetworkControllerCommands.cpp                             \
+    SourcesControllerBasis.cpp                                \
     SourcesControllerCommands.cpp                             \
+    ZonesControllerBasis.cpp                                  \
     ZonesControllerCommands.cpp                               \
     $(NULL)
 
