@@ -132,14 +132,14 @@ public:
 
     void ConnectionManagerError(Common::ConnectionManagerBasis &aConnectionManager, const Common::Error &aError) final;
 
-    // Server-facing Client Controller Delegate Methods
+    // Server-facing Client Controller Basis Delegate Methods
 
     void ControllerIsRefreshing(Client::ControllerBasis &aController, const uint8_t &aPercentComplete) final;
     void ControllerDidRefresh(Client::ControllerBasis &aController) final;
     void ControllerError(Client::ControllerBasis &aController, const Common::Error &aError) final;
     void ControllerStateDidChange(Client::ControllerBasis &aController, const Client::StateChange::NotificationBasis &aStateChangeNotification) final;
 
-    // Client-facing Server Controller Delegate Methods
+    // Client-facing Server Controller Basis Delegate Methods
 
 private:
     Common::Status InitClient(const Common::RunLoopParameters &aRunLoopParameters);

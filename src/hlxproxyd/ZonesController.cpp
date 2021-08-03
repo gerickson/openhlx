@@ -328,7 +328,6 @@ done:
 Status
 ZonesController :: Query(void)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 
@@ -363,7 +362,6 @@ done:
 Status
 ZonesController :: Query(const IdentifierType &aZoneIdentifier)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Client::Command::ExchangeBasis::MutableCountedPointer  lCommand;
     Status                                                  lRetval = kStatus_Success;
 
@@ -598,7 +596,6 @@ done:
 void
 ZonesController :: QueryCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const RegularExpression::Matches &aMatches)
 {
-    DeclareScopedFunctionTracer(lTracer);
     const Client::Command::ResponseBasis * lResponse = aExchange->GetResponse();
     const size_t                   lExpectedMatchCount = lResponse->GetRegularExpression().GetExpectedMatchCount();
     const uint8_t *                lBuffer = lResponse->GetBuffer()->GetHead();
@@ -711,7 +708,6 @@ ZonesController :: CommandErrorHandler(Client::Command::ExchangeBasis::MutableCo
 void
 ZonesController :: QueryCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const RegularExpression::Matches &aMatches, void *aContext)
 {
-    DeclareScopedFunctionTracer(lTracer);
     ZonesController *lController = static_cast<ZonesController *>(aContext);
 
     if (lController != nullptr)

@@ -244,12 +244,8 @@ Controller :: InitControllers(const RunLoopParameters &aRunLoopParameters)
                                                      mServerCommandManager);
         nlREQUIRE_SUCCESS(lRetval, done);
 
-        // Unconditionally set the delegate (including the
-        // configuration and groups controllers since here, we are
-        // handling their upcast class).
-
-        //lRetval = lCurrent->second.mController->SetDelegate(this);
-        //nlREQUIRE_SUCCESS(lRetval, done);
+        lRetval = static_cast<Client::ControllerBasis *>(lCurrent->second.mController)->SetDelegate(this);
+        nlREQUIRE_SUCCESS(lRetval, done);
 
         lCurrent++;
     }
