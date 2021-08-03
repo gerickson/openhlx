@@ -275,6 +275,10 @@ HLXProxy :: Start(const char *aConnectMaybeURL,
     lRetval = mHLXProxyController.Connect(aConnectMaybeURL, GetVersions(aUseIPv4, aUseIPv6));
     nlREQUIRE_SUCCESS(lRetval, done);
 
+    // XXX - At some point, Listen should be move to and triggered by
+    //       the first successful ControllerDidRefresh event /
+    //       callback.
+
     lRetval = mHLXProxyController.Listen(GetVersions(aUseIPv6, aUseIPv4));
     nlREQUIRE_SUCCESS(lRetval, done);
 
