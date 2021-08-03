@@ -23,9 +23,10 @@
  *
  */
 
-#ifndef HLXUTILITIES_HPP
-#define HLXUTILITIES_HPP
+#ifndef OPENHLXUTILITIES_HPP
+#define OPENHLXUTILITIES_HPP
 
 #include <OpenHLX/Utilities/Parse.hpp>
+#include <OpenHLX/Utilities/Percentage.hpp>
 
-#endif // HLXUTILITIES_HPP
+#endif // OPENHLXUTILITIES_HPP
