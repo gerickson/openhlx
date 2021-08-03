@@ -99,9 +99,6 @@ private:
     void NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 
 private:
-    Model::SourcesModel                      mSources;
-
-private:
     static Command::Sources::NameResponse    kNameResponse;
 };
 

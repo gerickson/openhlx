@@ -90,8 +90,7 @@ static CFStringRef      kNameSchemaKey = CFSTR("Name");
 SourcesController :: SourcesController(void) :
     Simulator::ControllerBasis(),
     ContainerControllerBasis(),
-    Common::SourcesControllerBasis(),
-    mSources()
+    Common::SourcesControllerBasis()
 {
     return;
 }

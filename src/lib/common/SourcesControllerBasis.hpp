@@ -27,6 +27,8 @@
 #define HLXCOMMONSOURCESCONTROLLERBASIS_HPP
 
 #include <OpenHLX/Model/SourceModel.hpp>
+#include <OpenHLX/Model/SourcesModel.hpp>
+
 
 namespace HLX
 {
@@ -61,6 +63,9 @@ public:
 
 protected:
     SourcesControllerBasis(void) = default;
+
+protected:
+    Model::SourcesModel          mSources;
 
 protected:
     static const IdentifierType  kSourcesMax;

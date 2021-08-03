@@ -65,8 +65,7 @@ Command::Sources::NameResponse      SourcesController::kNameResponse;
  */
 SourcesController :: SourcesController(void) :
     ControllerBasis(),
-    SourcesControllerBasis(),
-    mSources()
+    SourcesControllerBasis()
 {
     return;
 }
