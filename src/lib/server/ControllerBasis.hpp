@@ -48,17 +48,13 @@ namespace Server
 class ControllerBasis
 {
 public:
+    virtual ~ControllerBasis(void);
+
     virtual Common::Status Init(CommandManager &aCommandManager);
     virtual Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout);
 
-    Common::Status SendResponse(ConnectionBasis &aConnection, Common::ConnectionBuffer::ImmutableCountedPointer aBuffer) const;
-
-    Common::Status SendErrorResponse(ConnectionBasis &aConnection) const;
-    Common::Status SendErrorResponse(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
-
 protected:
     ControllerBasis(void);
-    virtual ~ControllerBasis(void);
 
     /**
      *  @brief
@@ -75,6 +71,11 @@ protected:
     };
 
     Common::Status DoRequestHandlers(const RequestHandlerBasis *aFirst, const RequestHandlerBasis *aLast, const bool &aRegister);
+
+    Common::Status SendResponse(ConnectionBasis &aConnection, Common::ConnectionBuffer::ImmutableCountedPointer aBuffer) const;
+
+    Common::Status SendErrorResponse(ConnectionBasis &aConnection) const;
+    Common::Status SendErrorResponse(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
 
 private:
     CommandManager *           mCommandManager;
