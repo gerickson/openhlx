@@ -429,7 +429,7 @@ Controller :: Connect(const char *aMaybeURL,
     lRetval = mConnectionManager.Connect(aMaybeURL, aVersions, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
