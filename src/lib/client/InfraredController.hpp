@@ -27,9 +27,11 @@
 #ifndef HLXCLIENTINFRAREDCONTROLLER_HPP
 #define HLXCLIENTINFRAREDCONTROLLER_HPP
 
-#include <ControllerBasis.hpp>
-#include <InfraredControllerCommands.hpp>
+#include <OpenHLX/Client/ControllerBasis.hpp>
+#include <OpenHLX/Client/InfraredControllerBasis.hpp>
+#include <OpenHLX/Client/InfraredControllerCommands.hpp>
 #include <OpenHLX/Model/InfraredModel.hpp>
+
 
 namespace HLX
 {
@@ -48,11 +50,12 @@ namespace Client
  *
  */
 class InfraredController :
-    public ControllerBasis
+    public Client::ControllerBasis,
+    public Client::InfraredControllerBasis
 {
 public:
     InfraredController(void);
-    ~InfraredController(void);
+    virtual ~InfraredController(void);
 
     Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
 
@@ -78,7 +81,6 @@ public:
     static void DisabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
-    Common::Status ResponseInit(void);
     Common::Status DoNotificationHandlers(bool aRegister);
 
     // Command Completion Handlers
@@ -95,10 +97,6 @@ private:
 
 private:
     Model::InfraredModel                            mInfraredModel;
-
-private:
-    static Command::Infrared::DisabledResponse      kDisabledResponse;
-    static Command::Infrared::QueryResponse         kQueryResponse;
 };
 
 }; // namespace Client

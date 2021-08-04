@@ -26,8 +26,9 @@
 #ifndef HLXCLIENTFRONTPANELCONTROLLER_HPP
 #define HLXCLIENTFRONTPANELCONTROLLER_HPP
 
-#include <ControllerBasis.hpp>
-#include <FrontPanelControllerCommands.hpp>
+#include <OpenHLX/Client/ControllerBasis.hpp>
+#include <OpenHLX/Client/FrontPanelControllerBasis.hpp>
+#include <OpenHLX/Client/FrontPanelControllerCommands.hpp>
 #include <OpenHLX/Model/FrontPanelModel.hpp>
 
 namespace HLX
@@ -46,11 +47,12 @@ namespace Client
  *
  */
 class FrontPanelController :
-    public ControllerBasis
+    public Client::ControllerBasis,
+    public Client::FrontPanelControllerBasis
 {
 public:
     FrontPanelController(void);
-    ~FrontPanelController(void);
+    virtual ~FrontPanelController(void);
 
     Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
 
@@ -79,7 +81,6 @@ public:
     static void LockedNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
-    Common::Status ResponseInit(void);
     Common::Status DoNotificationHandlers(bool aRegister);
 
     // Command Completion Handlers
@@ -97,11 +98,6 @@ private:
 
 private:
     Model::FrontPanelModel                            mFrontPanelModel;
-
-private:
-    static Command::FrontPanel::BrightnessResponse    kBrightnessResponse;
-    static Command::FrontPanel::LockedResponse        kLockedResponse;
-    static Command::FrontPanel::QueryResponse         kQueryResponse;
 };
 
 }; // namespace Client

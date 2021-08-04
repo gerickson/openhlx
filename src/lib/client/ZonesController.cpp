@@ -57,32 +57,15 @@ namespace HLX
 namespace Client
 {
 
-// Notification response data
-
-Command::Zones::BalanceResponse            ZonesController::kBalanceResponse;
-Command::Zones::EqualizerBandResponse      ZonesController::kEqualizerBandResponse;
-Command::Zones::EqualizerPresetResponse    ZonesController::kEqualizerPresetResponse;
-Command::Zones::HighpassCrossoverResponse  ZonesController::kHighpassCrossoverResponse;
-Command::Zones::LowpassCrossoverResponse   ZonesController::kLowpassCrossoverResponse;
-Command::Zones::MuteResponse               ZonesController::kMuteResponse;
-Command::Zones::NameResponse               ZonesController::kNameResponse;
-Command::Zones::QueryResponse              ZonesController::kQueryResponse;
-Command::Zones::SoundModeResponse          ZonesController::kSoundModeResponse;
-Command::Zones::SourceResponse             ZonesController::kSourceResponse;
-Command::Zones::SourceAllResponse          ZonesController::kSourceAllResponse;
-Command::Zones::ToneResponse               ZonesController::kToneResponse;
-Command::Zones::VolumeResponse             ZonesController::kVolumeResponse;
-Command::Zones::VolumeAllResponse          ZonesController::kVolumeAllResponse;
-Command::Zones::VolumeFixedResponse        ZonesController::kVolumeFixedResponse;
-
 /**
  *  @brief
  *    This is the class default constructor.
  *
  */
 ZonesController :: ZonesController(void) :
-    ControllerBasis(),
+    Client::ControllerBasis(),
     Common::ZonesControllerBasis(),
+    Client::ZonesControllerBasis(),
     mZonesDidRefreshCount(0)
 {
     return;
@@ -96,77 +79,6 @@ ZonesController :: ZonesController(void) :
 ZonesController :: ~ZonesController(void)
 {
     return;
-}
-
-/**
- *  @brief
- *    Initialize client command response regular expression patterns.
- *
- *  This initializes solicited and unsolicited client command
- *  responses that this controller would like to register to handle.
- *
- *  @retval  kStatus_Success              If successful.
- *  @retval  -EINVAL                      If an internal parameter was
- *                                        invalid.
- *  @retval  -ENOMEM                      If memory could not be allocated.
- *  @retval  kError_InitializationFailed  If initialization otherwise failed.
- *
- */
-Status
-ZonesController :: ResponseInit(void)
-{
-    Status lRetval = kStatus_Success;
-
-
-    // Initialize static notification response data.
-
-    lRetval = kBalanceResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kEqualizerBandResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kEqualizerPresetResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kHighpassCrossoverResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kLowpassCrossoverResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kMuteResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kNameResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kQueryResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSoundModeResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSourceResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSourceAllResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kToneResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kVolumeResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kVolumeAllResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kVolumeFixedResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-done:
-    return (lRetval);
 }
 
 /**
@@ -308,7 +220,7 @@ ZonesController :: Init(CommandManager &aCommandManager, const Timeout &aTimeout
     Status          lRetval = kStatus_Success;
 
 
-    lRetval = ResponseInit();
+    lRetval = Client::ZonesControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mZones.Init(kZonesMax);

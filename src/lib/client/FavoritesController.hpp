@@ -30,6 +30,7 @@
 #include <stdint.h>
 
 #include <OpenHLX/Client/ControllerBasis.hpp>
+#include <OpenHLX/Client/FavoritesControllerBasis.hpp>
 #include <OpenHLX/Client/FavoritesControllerCommands.hpp>
 #include <OpenHLX/Common/FavoritesControllerBasis.hpp>
 #include <OpenHLX/Model/FavoriteModel.hpp>
@@ -52,8 +53,9 @@ namespace Client
  *
  */
 class FavoritesController :
-    public ControllerBasis,
-    public Common::FavoritesControllerBasis
+    public Client::ControllerBasis,
+    public Common::FavoritesControllerBasis,
+    public Client::FavoritesControllerBasis
 {
 public:
     FavoritesController(void);
@@ -90,8 +92,7 @@ public:
     static void NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
-    Common::Status ResponseInit(void);
-    Common::Status DoNotificationHandlers(bool aRegister);
+    Common::Status DoNotificationHandlers(const bool &aRegister);
 
     // Command Completion Handlers
 
@@ -105,10 +106,6 @@ private:
 
 private:
     size_t                                        mFavoritesDidRefreshCount;
-
-private:
-    static Command::Favorites::NameResponse       kNameResponse;
-    static Command::Favorites::QueryResponse      kQueryResponse;
 };
 
 }; // namespace Client

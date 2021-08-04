@@ -26,8 +26,9 @@
 #ifndef HLXCLIENTCONFIGURATIONCONTROLLER_HPP
 #define HLXCLIENTCONFIGURATIONCONTROLLER_HPP
 
-#include <ControllerBasis.hpp>
-#include <ConfigurationControllerCommands.hpp>
+#include <OpenHLX/Client/ControllerBasis.hpp>
+#include <OpenHLX/Client/ConfigurationControllerBasis.hpp>
+#include <OpenHLX/Client/ConfigurationControllerCommands.hpp>
 
 
 namespace HLX
@@ -46,11 +47,12 @@ namespace Client
  *
  */
 class ConfigurationController :
-    public ControllerBasis
+    public Client::ControllerBasis,
+    public Client::ConfigurationControllerBasis
 {
 public:
     ConfigurationController(void);
-    ~ConfigurationController(void);
+    virtual ~ConfigurationController(void);
 
     Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
 
@@ -80,7 +82,6 @@ public:
     static void SavingToBackupNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
-    Common::Status ResponseInit(void);
     Common::Status DoNotificationHandlers(bool aRegister);
 
     // Command Completion Handlers
@@ -95,10 +96,6 @@ private:
 
     void SaveToBackupNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
     void SavingToBackupNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-
-private:
-    static Command::Configuration::SaveToBackupResponse      kSaveToBackupResponse;
-    static Command::Configuration::SavingToBackupResponse    kSavingToBackupResponse;
 };
 
 }; // namespace Client

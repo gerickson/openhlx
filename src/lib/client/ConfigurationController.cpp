@@ -52,18 +52,14 @@ namespace HLX
 namespace Client
 {
 
-// Notification response data
-
-Command::Configuration::SaveToBackupResponse     ConfigurationController::kSaveToBackupResponse;
-Command::Configuration::SavingToBackupResponse   ConfigurationController::kSavingToBackupResponse;
-
 /**
  *  @brief
  *    This is the class default constructor.
  *
  */
 ConfigurationController :: ConfigurationController(void) :
-    ControllerBasis()
+    ControllerBasis(),
+    Client::ConfigurationControllerBasis()
 {
     return;
 }
@@ -76,38 +72,6 @@ ConfigurationController :: ConfigurationController(void) :
 ConfigurationController :: ~ConfigurationController(void)
 {
     return;
-}
-
-/**
- *  @brief
- *    Initialize client command response regular expression patterns.
- *
- *  This initializes solicited and unsolicited client command
- *  responses that this controller would like to register to handle.
- *
- *  @retval  kStatus_Success              If successful.
- *  @retval  -EINVAL                      If an internal parameter was
- *                                        invalid.
- *  @retval  -ENOMEM                      If memory could not be allocated.
- *  @retval  kError_InitializationFailed  If initialization otherwise failed.
- *
- */
-Status
-ConfigurationController :: ResponseInit(void)
-{
-    Status lRetval = kStatus_Success;
-
-
-    // Initialize static notification response data.
-
-    lRetval = kSaveToBackupResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSavingToBackupResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
 }
 
 /**
@@ -189,7 +153,7 @@ ConfigurationController :: Init(CommandManager &aCommandManager, const Timeout &
     Status      lRetval = kStatus_Success;
 
 
-    lRetval = ResponseInit();
+    lRetval = Client::ConfigurationControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = ControllerBasis::Init(aCommandManager, aTimeout);

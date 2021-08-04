@@ -26,8 +26,10 @@
 #ifndef HLXCLIENTNETWORKCONTROLLER_HPP
 #define HLXCLIENTNETWORKCONTROLLER_HPP
 
-#include <ControllerBasis.hpp>
-#include <NetworkControllerCommands.hpp>
+#include <OpenHLX/Client/ControllerBasis.hpp>
+#include <OpenHLX/Client/NetworkControllerBasis.hpp>
+#include <OpenHLX/Client/NetworkControllerCommands.hpp>
+
 
 namespace HLX
 {
@@ -45,11 +47,12 @@ namespace Client
  *
  */
 class NetworkController :
-    public ControllerBasis
+    public Client::ControllerBasis,
+    public Client::NetworkControllerBasis
 {
 public:
     NetworkController(void);
-    ~NetworkController(void);
+    virtual ~NetworkController(void);
 
     Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
 
@@ -66,16 +69,11 @@ public:
     static void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError, void *aContext);
 
 private:
-    Common::Status ResponseInit(void);
-
     // Command Completion Handlers
 
     void QueryCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
 
     void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError);
-
-private:
-    static Command::Network::QueryResponse          kQueryResponse;
 };
 
 }; // namespace Client

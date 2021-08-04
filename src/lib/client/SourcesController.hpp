@@ -30,6 +30,7 @@
 #include <stdint.h>
 
 #include <OpenHLX/Client/ControllerBasis.hpp>
+#include <OpenHLX/Client/SourcesControllerBasis.hpp>
 #include <OpenHLX/Client/SourcesControllerCommands.hpp>
 #include <OpenHLX/Common/SourcesControllerBasis.hpp>
 #include <OpenHLX/Model/SourceModel.hpp>
@@ -52,8 +53,9 @@ namespace Client
  *
  */
 class SourcesController :
-    public ControllerBasis,
-    public Common::SourcesControllerBasis
+    public Client::ControllerBasis,
+    public Common::SourcesControllerBasis,
+    public Client::SourcesControllerBasis
 {
 public:
     SourcesController(void);
@@ -86,7 +88,6 @@ public:
     static void NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
-    Common::Status ResponseInit(void);
     Common::Status DoNotificationHandlers(bool aRegister);
 
     // Command Completion Handlers
@@ -97,9 +98,6 @@ private:
     // Notification Handlers
 
     void NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-
-private:
-    static Command::Sources::NameResponse    kNameResponse;
 };
 
 }; // namespace Client

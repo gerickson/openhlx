@@ -86,23 +86,15 @@ namespace HLX
 namespace Client
 {
 
-// Notification response data
-
-Command::Groups::SetMuteResponse         GroupsController::kSetMuteResponse;
-Command::Groups::NameResponse            GroupsController::kNameResponse;
-Command::Groups::QueryResponse           GroupsController::kQueryResponse;
-Command::Groups::SourceResponse          GroupsController::kSourceResponse;
-Command::Groups::SetVolumeResponse       GroupsController::kSetVolumeResponse;
-Command::Groups::ZoneResponse            GroupsController::kZoneResponse;
-
 /**
  *  @brief
  *    This is the class default constructor.
  *
  */
 GroupsController :: GroupsController(void) :
-    ControllerBasis(),
-    GroupsControllerBasis(),
+    Client::ControllerBasis(),
+    Common::GroupsControllerBasis(),
+    Client::GroupsControllerBasis(),
     mGroupsDidRefreshCount(0)
 {
     return;
@@ -116,50 +108,6 @@ GroupsController :: GroupsController(void) :
 GroupsController :: ~GroupsController(void)
 {
     return;
-}
-
-/**
- *  @brief
- *    Initialize client command response regular expression patterns.
- *
- *  This initializes solicited and unsolicited client command
- *  responses that this controller would like to register to handle.
- *
- *  @retval  kStatus_Success              If successful.
- *  @retval  -EINVAL                      If an internal parameter was
- *                                        invalid.
- *  @retval  -ENOMEM                      If memory could not be allocated.
- *  @retval  kError_InitializationFailed  If initialization otherwise failed.
- *
- */
-Status
-GroupsController :: ResponseInit(void)
-{
-    Status lRetval = kStatus_Success;
-
-
-    // Initialize static notification response data.
-
-    lRetval = kSetMuteResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kNameResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kQueryResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSourceResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSetVolumeResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kZoneResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
 }
 
 /**
@@ -256,7 +204,7 @@ GroupsController :: Init(CommandManager &aCommandManager, const Timeout &aTimeou
     Status      lRetval = kStatus_Success;
 
 
-    lRetval = ResponseInit();
+    lRetval = Client::GroupsControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mGroups.Init(kGroupsMax);

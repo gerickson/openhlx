@@ -30,6 +30,7 @@
 #include <stdint.h>
 
 #include <OpenHLX/Client/ControllerBasis.hpp>
+#include <OpenHLX/Client/ZonesControllerBasis.hpp>
 #include <OpenHLX/Client/ZonesControllerCommands.hpp>
 #include <OpenHLX/Common/ZonesControllerBasis.hpp>
 #include <OpenHLX/Model/BalanceModel.hpp>
@@ -57,8 +58,9 @@ namespace Client
  *
  */
 class ZonesController :
-    public ControllerBasis,
-    public Common::ZonesControllerBasis
+    public Client::ControllerBasis,
+    public Common::ZonesControllerBasis,
+    public Client::ZonesControllerBasis
 {
 public:
     ZonesController(void);
@@ -154,7 +156,6 @@ public:
     static void VolumeFixedNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
-    Common::Status ResponseInit(void);
     Common::Status DoNotificationHandlers(const bool &aRegister);
 
     Common::Status SetTone(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const Model::ToneModel::LevelType &aBass, const Model::ToneModel::LevelType &aTreble);
@@ -206,23 +207,6 @@ private:
 
 private:
     size_t                                            mZonesDidRefreshCount;
-
-private:
-    static Command::Zones::BalanceResponse            kBalanceResponse;
-    static Command::Zones::EqualizerBandResponse      kEqualizerBandResponse;
-    static Command::Zones::EqualizerPresetResponse    kEqualizerPresetResponse;
-    static Command::Zones::HighpassCrossoverResponse  kHighpassCrossoverResponse;
-    static Command::Zones::LowpassCrossoverResponse   kLowpassCrossoverResponse;
-    static Command::Zones::MuteResponse               kMuteResponse;
-    static Command::Zones::NameResponse               kNameResponse;
-    static Command::Zones::QueryResponse              kQueryResponse;
-    static Command::Zones::SoundModeResponse          kSoundModeResponse;
-    static Command::Zones::SourceResponse             kSourceResponse;
-    static Command::Zones::SourceAllResponse          kSourceAllResponse;
-    static Command::Zones::ToneResponse               kToneResponse;
-    static Command::Zones::VolumeResponse             kVolumeResponse;
-    static Command::Zones::VolumeAllResponse          kVolumeAllResponse;
-    static Command::Zones::VolumeFixedResponse        kVolumeFixedResponse;
 };
 
 }; // namespace Client

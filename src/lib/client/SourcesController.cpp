@@ -54,18 +54,15 @@ namespace HLX
 namespace Client
 {
 
-// Notification response data
-
-Command::Sources::NameResponse      SourcesController::kNameResponse;
-
 /**
  *  @brief
  *    This is the class default constructor.
  *
  */
 SourcesController :: SourcesController(void) :
-    ControllerBasis(),
-    SourcesControllerBasis()
+    Client::ControllerBasis(),
+    Common::SourcesControllerBasis(),
+    Client::SourcesControllerBasis()
 {
     return;
 }
@@ -78,35 +75,6 @@ SourcesController :: SourcesController(void) :
 SourcesController :: ~SourcesController(void)
 {
     return;
-}
-
-/**
- *  @brief
- *    Initialize client command response regular expression patterns.
- *
- *  This initializes solicited and unsolicited client command
- *  responses that this controller would like to register to handle.
- *
- *  @retval  kStatus_Success              If successful.
- *  @retval  -EINVAL                      If an internal parameter was
- *                                        invalid.
- *  @retval  -ENOMEM                      If memory could not be allocated.
- *  @retval  kError_InitializationFailed  If initialization otherwise failed.
- *
- */
-Status
-SourcesController :: ResponseInit(void)
-{
-    Status lRetval = kStatus_Success;
-
-
-    // Initialize static notification response data.
-
-    lRetval = kNameResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
 }
 
 /**
@@ -183,7 +151,7 @@ SourcesController :: Init(CommandManager &aCommandManager, const Timeout &aTimeo
     Status      lRetval = kStatus_Success;
 
 
-    lRetval = ResponseInit();
+    lRetval = Client::SourcesControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mSources.Init(kSourcesMax);

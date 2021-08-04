@@ -54,19 +54,15 @@ namespace HLX
 namespace Client
 {
 
-// Notification response data
-
-Command::Favorites::NameResponse      FavoritesController::kNameResponse;
-Command::Favorites::QueryResponse     FavoritesController::kQueryResponse;
-
 /**
  *  @brief
  *    This is the class default constructor.
  *
  */
 FavoritesController :: FavoritesController(void) :
-    ControllerBasis(),
-    FavoritesControllerBasis(),
+    Client::ControllerBasis(),
+    Common::FavoritesControllerBasis(),
+    Client::FavoritesControllerBasis(),
     mFavoritesDidRefreshCount(0)
 {
     return;
@@ -80,38 +76,6 @@ FavoritesController :: FavoritesController(void) :
 FavoritesController :: ~FavoritesController(void)
 {
     return;
-}
-
-/**
- *  @brief
- *    Initialize client command response regular expression patterns.
- *
- *  This initializes solicited and unsolicited client command
- *  responses that this controller would like to register to handle.
- *
- *  @retval  kStatus_Success              If successful.
- *  @retval  -EINVAL                      If an internal parameter was
- *                                        invalid.
- *  @retval  -ENOMEM                      If memory could not be allocated.
- *  @retval  kError_InitializationFailed  If initialization otherwise failed.
- *
- */
-Status
-FavoritesController :: ResponseInit(void)
-{
-    Status lRetval = kStatus_Success;
-
-
-    // Initialize static notification response data.
-
-    lRetval = kNameResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kQueryResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
 }
 
 /**
@@ -137,7 +101,7 @@ FavoritesController :: ResponseInit(void)
  *
  */
 Status
-FavoritesController :: DoNotificationHandlers(bool aRegister)
+FavoritesController :: DoNotificationHandlers(const bool &aRegister)
 {
     static const NotificationHandlerBasis  lNotificationHandlers[] = {
         {
@@ -153,7 +117,7 @@ FavoritesController :: DoNotificationHandlers(bool aRegister)
                                                       aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
@@ -188,7 +152,7 @@ FavoritesController :: Init(CommandManager &aCommandManager, const Timeout &aTim
     Status      lRetval = kStatus_Success;
 
 
-    lRetval = ResponseInit();
+    lRetval = Client::FavoritesControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mFavorites.Init(kFavoritesMax);

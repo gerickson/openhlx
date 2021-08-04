@@ -30,6 +30,7 @@
 #include <stdint.h>
 
 #include <OpenHLX/Client/ControllerBasis.hpp>
+#include <OpenHLX/Client/GroupsControllerBasis.hpp>
 #include <OpenHLX/Client/GroupsControllerCommands.hpp>
 #include <OpenHLX/Common/GroupsControllerBasis.hpp>
 #include <OpenHLX/Model/GroupModel.hpp>
@@ -55,12 +56,13 @@ namespace Client
  *
  */
 class GroupsController :
-    public ControllerBasis,
-    public Common::GroupsControllerBasis
+    public Client::ControllerBasis,
+    public Common::GroupsControllerBasis,
+    public Client::GroupsControllerBasis
 {
 public:
     GroupsController(void);
-    ~GroupsController(void);
+    virtual ~GroupsController(void);
 
     Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
 
@@ -118,7 +120,6 @@ public:
     static void ZoneNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
-    Common::Status ResponseInit(void);
     Common::Status DoNotificationHandlers(bool aRegister);
 
     // Command Completion Handlers
@@ -166,14 +167,6 @@ private:
 
 private:
     size_t                                          mGroupsDidRefreshCount;
-
-private:
-    static Command::Groups::SetMuteResponse         kSetMuteResponse;
-    static Command::Groups::NameResponse            kNameResponse;
-    static Command::Groups::QueryResponse           kQueryResponse;
-    static Command::Groups::SourceResponse          kSourceResponse;
-    static Command::Groups::SetVolumeResponse       kSetVolumeResponse;
-    static Command::Groups::ZoneResponse            kZoneResponse;
 };
 
 }; // namespace Client

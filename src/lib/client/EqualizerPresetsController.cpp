@@ -55,20 +55,15 @@ namespace HLX
 namespace Client
 {
 
-// Notification response data
-
-Command::EqualizerPresets::EqualizerBandResponse  EqualizerPresetsController::kEqualizerBandResponse;
-Command::EqualizerPresets::NameResponse           EqualizerPresetsController::kNameResponse;
-Command::EqualizerPresets::QueryResponse          EqualizerPresetsController::kQueryResponse;
-
 /**
  *  @brief
  *    This is the class default constructor.
  *
  */
 EqualizerPresetsController :: EqualizerPresetsController(void) :
-    ControllerBasis(),
-    EqualizerPresetsControllerBasis(),
+    Client::ControllerBasis(),
+    Common::EqualizerPresetsControllerBasis(),
+    Client::EqualizerPresetsControllerBasis(),
     mEqualizerPresetsDidRefreshCount(0)
 {
     return;
@@ -82,41 +77,6 @@ EqualizerPresetsController :: EqualizerPresetsController(void) :
 EqualizerPresetsController :: ~EqualizerPresetsController(void)
 {
     return;
-}
-
-/**
- *  @brief
- *    Initialize client command response regular expression patterns.
- *
- *  This initializes solicited and unsolicited client command
- *  responses that this controller would like to register to handle.
- *
- *  @retval  kStatus_Success              If successful.
- *  @retval  -EINVAL                      If an internal parameter was
- *                                        invalid.
- *  @retval  -ENOMEM                      If memory could not be allocated.
- *  @retval  kError_InitializationFailed  If initialization otherwise failed.
- *
- */
-Status
-EqualizerPresetsController :: ResponseInit(void)
-{
-    Status lRetval = kStatus_Success;
-
-
-    // Initialize static notification response data.
-
-    lRetval = kEqualizerBandResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kNameResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kQueryResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
 }
 
 /**
@@ -198,7 +158,7 @@ EqualizerPresetsController :: Init(CommandManager &aCommandManager, const Timeou
     Status      lRetval = kStatus_Success;
 
 
-    lRetval = ResponseInit();
+    lRetval = Client::EqualizerPresetsControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mEqualizerPresets.Init(kEqualizerPresetsMax);

@@ -54,18 +54,14 @@ namespace HLX
 namespace Client
 {
 
-// Notification response data
-
-Command::Infrared::DisabledResponse      InfraredController::kDisabledResponse;
-Command::Infrared::QueryResponse         InfraredController::kQueryResponse;
-
 /**
  *  @brief
  *    This is the class default constructor.
  *
  */
 InfraredController :: InfraredController(void) :
-    ControllerBasis(),
+    Client::ControllerBasis(),
+    Client::InfraredControllerBasis(),
     mInfraredModel()
 {
     return;
@@ -79,38 +75,6 @@ InfraredController :: InfraredController(void) :
 InfraredController :: ~InfraredController(void)
 {
     return;
-}
-
-/**
- *  @brief
- *    Initialize client command response regular expression patterns.
- *
- *  This initializes solicited and unsolicited client command
- *  responses that this controller would like to register to handle.
- *
- *  @retval  kStatus_Success              If successful.
- *  @retval  -EINVAL                      If an internal parameter was
- *                                        invalid.
- *  @retval  -ENOMEM                      If memory could not be allocated.
- *  @retval  kError_InitializationFailed  If initialization otherwise failed.
- *
- */
-Status
-InfraredController :: ResponseInit(void)
-{
-    Status lRetval = kStatus_Success;
-
-
-    // Initialize static notification response data.
-
-    lRetval = kDisabledResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kQueryResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
 }
 
 /**
@@ -187,7 +151,7 @@ InfraredController :: Init(CommandManager &aCommandManager, const Timeout &aTime
     Status      lRetval = kStatus_Success;
 
 
-    lRetval = ResponseInit();
+    lRetval = Client::InfraredControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mInfraredModel.Init();

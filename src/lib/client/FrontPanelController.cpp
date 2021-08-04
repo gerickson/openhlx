@@ -53,19 +53,14 @@ namespace HLX
 namespace Client
 {
 
-// Notification response data
-
-Command::FrontPanel::BrightnessResponse  FrontPanelController::kBrightnessResponse;
-Command::FrontPanel::LockedResponse      FrontPanelController::kLockedResponse;
-Command::FrontPanel::QueryResponse       FrontPanelController::kQueryResponse;
-
 /**
  *  @brief
  *    This is the class default constructor.
  *
  */
 FrontPanelController :: FrontPanelController(void) :
-    ControllerBasis(),
+    Client::ControllerBasis(),
+    Client::FrontPanelControllerBasis(),
     mFrontPanelModel()
 {
     return;
@@ -79,41 +74,6 @@ FrontPanelController :: FrontPanelController(void) :
 FrontPanelController :: ~FrontPanelController(void)
 {
     return;
-}
-
-/**
- *  @brief
- *    Initialize client command response regular expression patterns.
- *
- *  This initializes solicited and unsolicited client command
- *  responses that this controller would like to register to handle.
- *
- *  @retval  kStatus_Success              If successful.
- *  @retval  -EINVAL                      If an internal parameter was
- *                                        invalid.
- *  @retval  -ENOMEM                      If memory could not be allocated.
- *  @retval  kError_InitializationFailed  If initialization otherwise failed.
- *
- */
-Status
-FrontPanelController :: ResponseInit(void)
-{
-    Status lRetval = kStatus_Success;
-
-
-    // Initialize static notification response data.
-
-    lRetval = kBrightnessResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kLockedResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kQueryResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
 }
 
 /**
@@ -195,7 +155,7 @@ FrontPanelController :: Init(CommandManager &aCommandManager, const Timeout &aTi
     Status      lRetval = kStatus_Success;
 
 
-    lRetval = ResponseInit();
+    lRetval = Client::FrontPanelControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mFrontPanelModel.Init();

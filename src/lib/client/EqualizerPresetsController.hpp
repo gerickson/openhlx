@@ -31,6 +31,7 @@
 #include <stdint.h>
 
 #include <OpenHLX/Client/ControllerBasis.hpp>
+#include <OpenHLX/Client/EqualizerPresetsControllerBasis.hpp>
 #include <OpenHLX/Client/EqualizerPresetsControllerCommands.hpp>
 #include <OpenHLX/Common/EqualizerPresetsControllerBasis.hpp>
 #include <OpenHLX/Model/EqualizerPresetModel.hpp>
@@ -53,8 +54,9 @@ namespace Client
  *
  */
 class EqualizerPresetsController :
-    public ControllerBasis,
-    public Common::EqualizerPresetsControllerBasis
+    public Client::ControllerBasis,
+    public Common::EqualizerPresetsControllerBasis,
+    public Client::EqualizerPresetsControllerBasis
 {
 public:
     EqualizerPresetsController(void);
@@ -97,7 +99,6 @@ public:
     static void NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
-    Common::Status ResponseInit(void);
     Common::Status DoNotificationHandlers(bool aRegister);
 
     // Command Completion Handlers
@@ -114,11 +115,6 @@ private:
 
 private:
     size_t                                                   mEqualizerPresetsDidRefreshCount;
-
-private:
-    static Command::EqualizerPresets::EqualizerBandResponse  kEqualizerBandResponse;
-    static Command::EqualizerPresets::NameResponse           kNameResponse;
-    static Command::EqualizerPresets::QueryResponse          kQueryResponse;
 };
 
 }; // namespace Client
