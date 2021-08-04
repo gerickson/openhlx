@@ -88,10 +88,13 @@ libopenhlx_common_a_include_HEADERS                         = \
     EqualizerPresetsControllerBasis.hpp                       \
     Errors.hpp                                                \
     FavoritesControllerBasis.hpp                              \
+    FrontPanelControllerBasis.hpp                             \
     GroupsControllerBasis.hpp                                 \
     HostURL.hpp                                               \
     HostURLAddress.hpp                                        \
+    InfraredControllerBasis.hpp                               \
     IPAddress.hpp                                             \
+    NetworkControllerBasis.hpp                                \
     OutputStringStream.hpp                                    \
     RegularExpression.hpp                                     \
     RunLoopParameters.hpp                                     \
