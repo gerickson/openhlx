@@ -42,15 +42,15 @@ namespace Client
 
 // Notification response data
 
-Command::Favorites::NameResponse      FavoritesController::kNameResponse;
-Command::Favorites::QueryResponse     FavoritesController::kQueryResponse;
+Command::Favorites::NameResponse      FavoritesControllerBasis::kNameResponse;
+Command::Favorites::QueryResponse     FavoritesControllerBasis::kQueryResponse;
 
 /**
  *  @brief
  *    This is the class default constructor.
  *
  */
-FavoritesController :: FavoritesController(void)
+FavoritesControllerBasis :: FavoritesControllerBasis(void)
 {
     return;
 }
@@ -60,13 +60,13 @@ FavoritesController :: FavoritesController(void)
  *    This is the class destructor.
  *
  */
-FavoritesController :: ~FavoritesController(void)
+FavoritesControllerBasis :: ~FavoritesControllerBasis(void)
 {
     return;
 }
 
 Status
-FavoritesController :: Init(void)
+FavoritesControllerBasis :: Init(void)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
@@ -94,7 +94,7 @@ done:
  *
  */
 Status
-FavoritesController :: ResponseInit(void)
+FavoritesControllerBasis :: ResponseInit(void)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;

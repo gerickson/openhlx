@@ -42,13 +42,13 @@ namespace Client
  *  @ingroup favorite
  *
  */
-class FavoritesController
+class FavoritesControllerBasis
 {
 public:
-    virtual ~FavoritesController(void);
+    virtual ~FavoritesControllerBasis(void);
 
 protected:
-    FavoritesController(void);
+    FavoritesControllerBasis(void);
 
     Common::Status Init(void);
 
