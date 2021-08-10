@@ -97,8 +97,8 @@ struct NetworkModelDefaults
 };
 
 NetworkController :: NetworkController(void) :
-    Simulator::ControllerBasis(),
-    mNetworkModel()
+    Common::NetworkControllerBasis(),
+    Simulator::ControllerBasis()
 {
     return;
 }

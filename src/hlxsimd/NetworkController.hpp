@@ -26,7 +26,7 @@
 #ifndef OPENHLXSIMULATORNETWORKCONTROLLER_HPP
 #define OPENHLXSIMULATORNETWORKCONTROLLER_HPP
 
-#include <OpenHLX/Model/NetworkModel.hpp>
+#include <OpenHLX/Common/NetworkControllerBasis.hpp>
 #include <OpenHLX/Server/NetworkControllerCommands.hpp>
 
 #include "ContainerControllerBasis.hpp"
@@ -49,11 +49,12 @@ namespace Simulator
  *
  */
 class NetworkController :
+    public Common::NetworkControllerBasis,
     public Simulator::ControllerBasis
 {
 public:
     NetworkController(void);
-    ~NetworkController(void);
+    virtual ~NetworkController(void);
 
     Common::Status Init(Server::CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
 
@@ -75,9 +76,6 @@ private:
     // Command Completion Handlers
 
     void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-
-private:
-    Model::NetworkModel                   mNetworkModel;
 
 private:
     static Server::Command::Network::QueryRequest  kQueryRequest;
