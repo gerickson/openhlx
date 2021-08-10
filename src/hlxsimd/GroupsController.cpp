@@ -99,20 +99,6 @@ typedef std::vector<ZoneModel::IdentifierType>   ZoneIdentifiers;
 
 };
 
-// Request data
-
-Server::Command::Groups::AddZoneRequest         GroupsController::kAddZoneRequest;
-Server::Command::Groups::ClearZonesRequest      GroupsController::kClearZonesRequest;
-Server::Command::Groups::DecreaseVolumeRequest  GroupsController::kDecreaseVolumeRequest;
-Server::Command::Groups::IncreaseVolumeRequest  GroupsController::kIncreaseVolumeRequest;
-Server::Command::Groups::MuteRequest            GroupsController::kMuteRequest;
-Server::Command::Groups::QueryRequest           GroupsController::kQueryRequest;
-Server::Command::Groups::RemoveZoneRequest      GroupsController::kRemoveZoneRequest;
-Server::Command::Groups::SetNameRequest         GroupsController::kSetNameRequest;
-Server::Command::Groups::SetSourceRequest       GroupsController::kSetSourceRequest;
-Server::Command::Groups::SetVolumeRequest       GroupsController::kSetVolumeRequest;
-Server::Command::Groups::ToggleMuteRequest      GroupsController::kToggleMuteRequest;
-
 /**
  *  @brief
  *    A object for representing default data for a HLX group data
@@ -147,7 +133,8 @@ static CFStringRef      kZonesSchemaKey  = CFSTR("Zones");
 GroupsController :: GroupsController(void) :
     Simulator::ControllerBasis(),
     ContainerControllerBasis(),
-    GroupsControllerBasis(),
+    Common::GroupsControllerBasis(),
+    Server::GroupsControllerBasis(),
     mDelegate(nullptr)
 {
     return;
@@ -156,47 +143,6 @@ GroupsController :: GroupsController(void) :
 GroupsController :: ~GroupsController(void)
 {
     return;
-}
-
-Status GroupsController :: RequestInit(void)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = kAddZoneRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kClearZonesRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kDecreaseVolumeRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kIncreaseVolumeRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kMuteRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kQueryRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kRemoveZoneRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSetNameRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSetSourceRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSetVolumeRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kToggleMuteRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
 }
 
 Status GroupsController :: DoRequestHandlers(const bool &aRegister)
@@ -257,8 +203,8 @@ Status GroupsController :: DoRequestHandlers(const bool &aRegister)
             GroupsController::ToggleMuteRequestReceivedHandler
         }
     };
-    static const size_t               lRequestHandlerCount = ElementsOf(lRequestHandlers);
-    Status                            lRetval = kStatus_Success;
+    static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
+    Status                   lRetval = kStatus_Success;
 
     lRetval = Server::ControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
                                                          &lRequestHandlers[lRequestHandlerCount],
@@ -266,7 +212,7 @@ Status GroupsController :: DoRequestHandlers(const bool &aRegister)
                                                          aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
@@ -277,7 +223,7 @@ Status GroupsController :: Init(CommandManager &aCommandManager)
     Status      lRetval = kStatus_Success;
 
 
-    lRetval = RequestInit();
+    lRetval = Server::GroupsControllerBasis::RequestInit();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mGroups.Init(kGroupsMax);

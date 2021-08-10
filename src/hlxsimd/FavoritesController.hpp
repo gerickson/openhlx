@@ -29,6 +29,7 @@
 #include <OpenHLX/Common/FavoritesControllerBasis.hpp>
 #include <OpenHLX/Model/FavoriteModel.hpp>
 #include <OpenHLX/Model/FavoritesModel.hpp>
+#include <OpenHLX/Server/FavoritesControllerBasis.hpp>
 #include <OpenHLX/Server/FavoritesControllerCommands.hpp>
 
 #include "ContainerControllerBasis.hpp"
@@ -53,7 +54,8 @@ namespace Simulator
 class FavoritesController :
     public Simulator::ControllerBasis,
     public Server::ContainerControllerBasis,
-    public Common::FavoritesControllerBasis
+    public Common::FavoritesControllerBasis,
+    public Server::FavoritesControllerBasis
 {
 public:
     FavoritesController(void);
@@ -74,7 +76,6 @@ public:
     static void SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
-    Common::Status RequestInit(void);
     Common::Status DoRequestHandlers(const bool &aRegister);
 
     Common::Status ElementLoadFromBackupConfiguration(CFDictionaryRef aFavoritesDictionary, const IdentifierType &aFavoriteIdentifier) final;
@@ -87,9 +88,6 @@ private:
     void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
     void SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 
-private:
-    static Server::Command::Favorites::QueryRequest    kQueryRequest;
-    static Server::Command::Favorites::SetNameRequest  kSetNameRequest;
 };
 
 }; // namespace Simulator

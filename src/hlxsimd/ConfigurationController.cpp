@@ -55,15 +55,9 @@ namespace HLX
 namespace Simulator
 {
 
-// Request data
-
-Server::Command::Configuration::LoadFromBackupRequest   ConfigurationController::kLoadFromBackupRequest;
-Server::Command::Configuration::QueryCurrentRequest     ConfigurationController::kQueryCurrentRequest;
-Server::Command::Configuration::ResetToDefaultsRequest  ConfigurationController::kResetToDefaultsRequest;
-Server::Command::Configuration::SaveToBackupRequest     ConfigurationController::kSaveToBackupRequest;
-
 ConfigurationController :: ConfigurationController(void) :
     Simulator::ControllerBasis(),
+    Server::ConfigurationControllerBasis(),
     mDelegate(nullptr)
 {
     return;
@@ -72,26 +66,6 @@ ConfigurationController :: ConfigurationController(void) :
 ConfigurationController :: ~ConfigurationController(void)
 {
     return;
-}
-
-Status ConfigurationController :: RequestInit(void)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = kLoadFromBackupRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kQueryCurrentRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kResetToDefaultsRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSaveToBackupRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
 }
 
 Status ConfigurationController :: DoRequestHandlers(const bool &aRegister)
@@ -117,8 +91,8 @@ Status ConfigurationController :: DoRequestHandlers(const bool &aRegister)
             ConfigurationController::SaveToBackupRequestReceivedHandler
         }
     };
-    static const size_t               lRequestHandlerCount = ElementsOf(lRequestHandlers);
-    Status                            lRetval = kStatus_Success;
+    static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
+    Status                   lRetval = kStatus_Success;
 
     lRetval = Server::ControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
                                                          &lRequestHandlers[lRequestHandlerCount],
@@ -126,7 +100,7 @@ Status ConfigurationController :: DoRequestHandlers(const bool &aRegister)
                                                          aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
@@ -137,7 +111,7 @@ Status ConfigurationController :: Init(CommandManager &aCommandManager)
     Status      lRetval = kStatus_Success;
 
 
-    lRetval = RequestInit();
+    lRetval = Server::ConfigurationControllerBasis::RequestInit();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = ControllerBasis::Init(aCommandManager);

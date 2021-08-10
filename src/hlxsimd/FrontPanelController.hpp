@@ -27,6 +27,7 @@
 #define OPENHLXSIMULATORFRONTPANELCONTROLLER_HPP
 
 #include <OpenHLX/Common/FrontPanelControllerBasis.hpp>
+#include <OpenHLX/Server/FrontPanelControllerBasis.hpp>
 #include <OpenHLX/Server/FrontPanelControllerCommands.hpp>
 
 #include "ControllerBasis.hpp"
@@ -49,6 +50,7 @@ namespace Simulator
  */
 class FrontPanelController :
     public Common::FrontPanelControllerBasis,
+    public Server::FrontPanelControllerBasis,
     public Simulator::ControllerBasis
 {
 public:
@@ -71,7 +73,6 @@ public:
     static void SetLockedRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
-    Common::Status RequestInit(void);
     Common::Status DoRequestHandlers(const bool &aRegister);
 
     void QueryHandler(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
@@ -85,10 +86,6 @@ private:
     void SetBrightnessRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
     void SetLockedRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 
-private:
-    static Server::Command::FrontPanel::QueryRequest          kQueryRequest;
-    static Server::Command::FrontPanel::SetBrightnessRequest  kSetBrightnessRequest;
-    static Server::Command::FrontPanel::SetLockedRequest      kSetLockedRequest;
 };
 
 }; // namespace Simulator

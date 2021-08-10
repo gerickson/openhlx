@@ -27,6 +27,7 @@
 #define OPENHLXSIMULATORNETWORKCONTROLLER_HPP
 
 #include <OpenHLX/Common/NetworkControllerBasis.hpp>
+#include <OpenHLX/Server/NetworkControllerBasis.hpp>
 #include <OpenHLX/Server/NetworkControllerCommands.hpp>
 
 #include "ContainerControllerBasis.hpp"
@@ -50,6 +51,7 @@ namespace Simulator
  */
 class NetworkController :
     public Common::NetworkControllerBasis,
+    public Server::NetworkControllerBasis,
     public Simulator::ControllerBasis
 {
 public:
@@ -68,7 +70,6 @@ public:
     static void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
-    Common::Status RequestInit(void);
     Common::Status DoRequestHandlers(const bool &aRegister);
 
     static void QueryHandler(const char *aInputBuffer, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer);
@@ -77,8 +78,6 @@ private:
 
     void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 
-private:
-    static Server::Command::Network::QueryRequest  kQueryRequest;
 };
 
 }; // namespace Simulator

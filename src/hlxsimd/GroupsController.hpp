@@ -29,6 +29,7 @@
 #include <OpenHLX/Common/GroupsControllerBasis.hpp>
 #include <OpenHLX/Model/GroupModel.hpp>
 #include <OpenHLX/Model/GroupsModel.hpp>
+#include <OpenHLX/Server/GroupsControllerBasis.hpp>
 #include <OpenHLX/Server/GroupsControllerCommands.hpp>
 
 #include "ContainerControllerBasis.hpp"
@@ -55,7 +56,8 @@ class GroupsControllerDelegate;
 class GroupsController :
     public Simulator::ControllerBasis,
     public Server::ContainerControllerBasis,
-    public Common::GroupsControllerBasis
+    public Common::GroupsControllerBasis,
+    public Server::GroupsControllerBasis
 {
 public:
     GroupsController(void);
@@ -90,7 +92,6 @@ public:
     static void ToggleMuteRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
-    Common::Status RequestInit(void);
     Common::Status DoRequestHandlers(const bool &aRegister);
 
     Common::Status GroupZonesLoadFromBackupConfiguration(CFDictionaryRef aGroupDictionary, Model::GroupModel &aGroupModel);
@@ -135,18 +136,6 @@ private:
 private:
     GroupsControllerDelegate *                     mDelegate;
 
-private:
-    static Server::Command::Groups::AddZoneRequest         kAddZoneRequest;
-    static Server::Command::Groups::ClearZonesRequest      kClearZonesRequest;
-    static Server::Command::Groups::DecreaseVolumeRequest  kDecreaseVolumeRequest;
-    static Server::Command::Groups::IncreaseVolumeRequest  kIncreaseVolumeRequest;
-    static Server::Command::Groups::MuteRequest            kMuteRequest;
-    static Server::Command::Groups::QueryRequest           kQueryRequest;
-    static Server::Command::Groups::RemoveZoneRequest      kRemoveZoneRequest;
-    static Server::Command::Groups::SetNameRequest         kSetNameRequest;
-    static Server::Command::Groups::SetSourceRequest       kSetSourceRequest;
-    static Server::Command::Groups::SetVolumeRequest       kSetVolumeRequest;
-    static Server::Command::Groups::ToggleMuteRequest      kToggleMuteRequest;
 };
 
 }; // namespace Simulator

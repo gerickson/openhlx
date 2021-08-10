@@ -61,14 +61,6 @@ namespace HLX
 namespace Simulator
 {
 
-// Request data
-
-Server::Command::EqualizerPresets::DecreaseBandRequest  EqualizerPresetsController::kDecreaseBandRequest;
-Server::Command::EqualizerPresets::IncreaseBandRequest  EqualizerPresetsController::kIncreaseBandRequest;
-Server::Command::EqualizerPresets::QueryRequest         EqualizerPresetsController::kQueryRequest;
-Server::Command::EqualizerPresets::SetBandRequest       EqualizerPresetsController::kSetBandRequest;
-Server::Command::EqualizerPresets::SetNameRequest       EqualizerPresetsController::kSetNameRequest;
-
 static const EqualizerBandModel::LevelType      kEqualizerBandDefault = EqualizerBandModel::kLevelFlat;
 
 /**
@@ -245,7 +237,8 @@ static CFStringRef      kEqualizerLevelsPresetSchemaKey = CFSTR("Equalizer Level
 EqualizerPresetsController :: EqualizerPresetsController(void) :
     Simulator::ControllerBasis(),
     Server::ContainerControllerBasis(),
-    Common::EqualizerPresetsControllerBasis()
+    Common::EqualizerPresetsControllerBasis(),
+    Server::EqualizerPresetsControllerBasis()
 {
     return;
 }
@@ -253,29 +246,6 @@ EqualizerPresetsController :: EqualizerPresetsController(void) :
 EqualizerPresetsController :: ~EqualizerPresetsController(void)
 {
     return;
-}
-
-Status EqualizerPresetsController :: RequestInit(void)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = kDecreaseBandRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kIncreaseBandRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kQueryRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSetBandRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSetNameRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
 }
 
 Status EqualizerPresetsController :: DoRequestHandlers(const bool &aRegister)
@@ -306,8 +276,8 @@ Status EqualizerPresetsController :: DoRequestHandlers(const bool &aRegister)
             EqualizerPresetsController::SetNameRequestReceivedHandler
         }
     };
-    static const size_t               lRequestHandlerCount = ElementsOf(lRequestHandlers);
-    Status                            lRetval = kStatus_Success;
+    static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
+    Status                   lRetval = kStatus_Success;
 
     lRetval = Server::ControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
                                                          &lRequestHandlers[lRequestHandlerCount],
@@ -315,7 +285,7 @@ Status EqualizerPresetsController :: DoRequestHandlers(const bool &aRegister)
                                                          aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
@@ -326,7 +296,7 @@ Status EqualizerPresetsController :: Init(Server::CommandManager &aCommandManage
     Status      lRetval = kStatus_Success;
 
 
-    lRetval = RequestInit();
+    lRetval = Server::EqualizerPresetsControllerBasis::RequestInit();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mEqualizerPresets.Init(kEqualizerPresetsMax);

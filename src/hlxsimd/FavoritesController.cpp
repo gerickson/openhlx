@@ -59,11 +59,6 @@ namespace HLX
 namespace Simulator
 {
 
-// Request data
-
-Server::Command::Favorites::QueryRequest    FavoritesController::kQueryRequest;
-Server::Command::Favorites::SetNameRequest  FavoritesController::kSetNameRequest;
-
 /**
  *  @brief
  *    A object for representing default data for a HLX favorite data
@@ -96,7 +91,8 @@ static CFStringRef      kNameSchemaKey = CFSTR("Name");
 FavoritesController :: FavoritesController(void) :
     Simulator::ControllerBasis(),
     Server::ContainerControllerBasis(),
-    Common::FavoritesControllerBasis()
+    Common::FavoritesControllerBasis(),
+    Server::FavoritesControllerBasis()
 {
     return;
 }
@@ -104,20 +100,6 @@ FavoritesController :: FavoritesController(void) :
 FavoritesController :: ~FavoritesController(void)
 {
     return;
-}
-
-Status FavoritesController :: RequestInit(void)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = kQueryRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSetNameRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
 }
 
 Status FavoritesController :: DoRequestHandlers(const bool &aRegister)
@@ -133,8 +115,8 @@ Status FavoritesController :: DoRequestHandlers(const bool &aRegister)
             FavoritesController::SetNameRequestReceivedHandler
         }
     };
-    static const size_t               lRequestHandlerCount = ElementsOf(lRequestHandlers);
-    Status                            lRetval = kStatus_Success;
+    static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
+    Status                   lRetval = kStatus_Success;
 
     lRetval = Server::ControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
                                                          &lRequestHandlers[lRequestHandlerCount],
@@ -142,7 +124,7 @@ Status FavoritesController :: DoRequestHandlers(const bool &aRegister)
                                                          aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
@@ -153,7 +135,7 @@ Status FavoritesController :: Init(Server::CommandManager &aCommandManager, cons
     Status      lRetval = kStatus_Success;
 
 
-    lRetval = RequestInit();
+    lRetval = Server::FavoritesControllerBasis::RequestInit();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mFavorites.Init(kFavoritesMax);

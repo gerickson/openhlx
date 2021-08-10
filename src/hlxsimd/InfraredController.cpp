@@ -55,11 +55,6 @@ namespace HLX
 namespace Simulator
 {
 
-// Request data
-
-Server::Command::Infrared::QueryRequest        InfraredController::kQueryRequest;
-Server::Command::Infrared::SetDisabledRequest  InfraredController::kSetDisabledRequest;
-
 /**
  *  @brief
  *    A object for representing default data for a HLX infrared remote
@@ -85,6 +80,7 @@ static CFStringRef           kDisabledSchemaKey = CFSTR("Disabled");
 
 InfraredController :: InfraredController(void) :
     Common::InfraredControllerBasis(),
+    Server::InfraredControllerBasis(),
     Simulator::ControllerBasis()
 {
     return;
@@ -93,20 +89,6 @@ InfraredController :: InfraredController(void) :
 InfraredController :: ~InfraredController(void)
 {
     return;
-}
-
-Status InfraredController :: RequestInit(void)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = kQueryRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSetDisabledRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
 }
 
 Status InfraredController :: DoRequestHandlers(const bool &aRegister)
@@ -122,8 +104,8 @@ Status InfraredController :: DoRequestHandlers(const bool &aRegister)
             InfraredController::SetDisabledRequestReceivedHandler
         }
     };
-    static const size_t               lRequestHandlerCount = ElementsOf(lRequestHandlers);
-    Status                            lRetval = kStatus_Success;
+    static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
+    Status                   lRetval = kStatus_Success;
 
     lRetval = Server::ControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
                                                          &lRequestHandlers[lRequestHandlerCount],
@@ -131,7 +113,7 @@ Status InfraredController :: DoRequestHandlers(const bool &aRegister)
                                                          aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
@@ -142,7 +124,7 @@ Status InfraredController :: Init(Server::CommandManager &aCommandManager, const
     Status      lRetval = kStatus_Success;
 
 
-    lRetval = RequestInit();
+    lRetval = Server::InfraredControllerBasis::RequestInit();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mInfraredModel.Init();

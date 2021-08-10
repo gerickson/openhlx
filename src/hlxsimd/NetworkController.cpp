@@ -53,10 +53,6 @@ namespace HLX
 namespace Simulator
 {
 
-// Request data
-
-Server::Command::Network::QueryRequest  NetworkController::kQueryRequest;
-
 // The query network response contains both state and
 // configuration settings.
 
@@ -108,17 +104,6 @@ NetworkController :: ~NetworkController(void)
     return;
 }
 
-Status NetworkController :: RequestInit(void)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = kQueryRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
 Status NetworkController :: DoRequestHandlers(const bool &aRegister)
 {
     static const RequestHandlerBasis  lRequestHandlers[] = {
@@ -127,8 +112,8 @@ Status NetworkController :: DoRequestHandlers(const bool &aRegister)
             NetworkController::QueryRequestReceivedHandler
         }
     };
-    static const size_t               lRequestHandlerCount = ElementsOf(lRequestHandlers);
-    Status                            lRetval = kStatus_Success;
+    static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
+    Status                   lRetval = kStatus_Success;
 
     lRetval = Server::ControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
                                                          &lRequestHandlers[lRequestHandlerCount],
@@ -136,7 +121,7 @@ Status NetworkController :: DoRequestHandlers(const bool &aRegister)
                                                          aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
@@ -147,7 +132,7 @@ Status NetworkController :: Init(Server::CommandManager &aCommandManager, const 
     Status      lRetval = kStatus_Success;
 
 
-    lRetval = RequestInit();
+    lRetval = Server::NetworkControllerBasis::RequestInit();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mNetworkModel.Init();

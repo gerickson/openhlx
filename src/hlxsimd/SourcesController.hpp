@@ -29,6 +29,7 @@
 #include <OpenHLX/Common/SourcesControllerBasis.hpp>
 #include <OpenHLX/Model/SourceModel.hpp>
 #include <OpenHLX/Model/SourcesModel.hpp>
+#include <OpenHLX/Server/SourcesControllerBasis.hpp>
 #include <OpenHLX/Server/SourcesControllerCommands.hpp>
 
 #include "ContainerControllerBasis.hpp"
@@ -53,7 +54,8 @@ namespace Simulator
 class SourcesController :
     public Simulator::ControllerBasis,
     public Server::ContainerControllerBasis,
-    public Common::SourcesControllerBasis
+    public Common::SourcesControllerBasis,
+    public Server::SourcesControllerBasis
 {
 public:
     SourcesController(void);
@@ -73,7 +75,6 @@ public:
     static void SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
-    Common::Status RequestInit(void);
     Common::Status DoRequestHandlers(const bool &aRegister);
 
     Common::Status ElementLoadFromBackupConfiguration(CFDictionaryRef aSourcesDictionary, const IdentifierType &aSourceIdentifier) final;
@@ -83,9 +84,6 @@ private:
     // Command Completion Handlers
 
     void SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-
-private:
-    static Server::Command::Sources::SetNameRequest  kSetNameRequest;
 };
 
 }; // namespace Simulator

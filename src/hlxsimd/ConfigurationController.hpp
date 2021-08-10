@@ -28,6 +28,7 @@
 
 #include <CoreFoundation/CFDictionary.h>
 
+#include <OpenHLX/Server/ConfigurationControllerBasis.hpp>
 #include <OpenHLX/Server/ConfigurationControllerCommands.hpp>
 
 #include "ControllerBasis.hpp"
@@ -51,11 +52,12 @@ class ConfigurationControllerDelegate;
  *
  */
 class ConfigurationController :
-    public Simulator::ControllerBasis
+    public Simulator::ControllerBasis,
+    public Server::ConfigurationControllerBasis
 {
 public:
     ConfigurationController(void);
-    ~ConfigurationController(void);
+    virtual ~ConfigurationController(void);
 
     Common::Status Init(Server::CommandManager &aCommandManager) final;
 
@@ -78,7 +80,6 @@ public:
     static void SaveToBackupRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
-    Common::Status RequestInit(void);
     Common::Status DoRequestHandlers(const bool &aRegister);
 
     // Command Completion Handlers
@@ -99,12 +100,6 @@ private:
 
 private:
     ConfigurationControllerDelegate *                      mDelegate;
-
-private:
-    static Server::Command::Configuration::LoadFromBackupRequest   kLoadFromBackupRequest;
-    static Server::Command::Configuration::QueryCurrentRequest     kQueryCurrentRequest;
-    static Server::Command::Configuration::ResetToDefaultsRequest  kResetToDefaultsRequest;
-    static Server::Command::Configuration::SaveToBackupRequest     kSaveToBackupRequest;
 };
 
 }; // namespace Simulator

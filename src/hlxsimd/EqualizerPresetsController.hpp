@@ -33,6 +33,7 @@
 #include <OpenHLX/Common/EqualizerPresetsControllerBasis.hpp>
 #include <OpenHLX/Model/EqualizerPresetModel.hpp>
 #include <OpenHLX/Model/EqualizerPresetsModel.hpp>
+#include <OpenHLX/Server/EqualizerPresetsControllerBasis.hpp>
 #include <OpenHLX/Server/EqualizerPresetsControllerCommands.hpp>
 
 #include "ContainerControllerBasis.hpp"
@@ -57,7 +58,8 @@ namespace Simulator
 class EqualizerPresetsController :
     public Simulator::ControllerBasis,
     public Server::ContainerControllerBasis,
-    public Common::EqualizerPresetsControllerBasis
+    public Common::EqualizerPresetsControllerBasis,
+    public Server::EqualizerPresetsControllerBasis
 {
 public:
     EqualizerPresetsController(void);
@@ -81,7 +83,6 @@ public:
     static void SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
-    Common::Status RequestInit(void);
     Common::Status DoRequestHandlers(const bool &aRegister);
 
     Common::Status EqualizerPresetEqualizerLoadFromBackupConfiguration(CFDictionaryRef aEqualizerPresetDictionary, Model::EqualizerPresetModel &aEqualizerPresetModel);
@@ -107,12 +108,6 @@ private:
     void SetBandRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
     void SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 
-private:
-    static Server::Command::EqualizerPresets::DecreaseBandRequest  kDecreaseBandRequest;
-    static Server::Command::EqualizerPresets::IncreaseBandRequest  kIncreaseBandRequest;
-    static Server::Command::EqualizerPresets::QueryRequest         kQueryRequest;
-    static Server::Command::EqualizerPresets::SetBandRequest       kSetBandRequest;
-    static Server::Command::EqualizerPresets::SetNameRequest       kSetNameRequest;
 };
 
 }; // namespace Simulator

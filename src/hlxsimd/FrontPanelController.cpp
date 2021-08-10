@@ -53,12 +53,6 @@ namespace HLX
 namespace Simulator
 {
 
-// Request data
-
-Server::Command::FrontPanel::QueryRequest          FrontPanelController::kQueryRequest;
-Server::Command::FrontPanel::SetBrightnessRequest  FrontPanelController::kSetBrightnessRequest;
-Server::Command::FrontPanel::SetLockedRequest      FrontPanelController::kSetLockedRequest;
-
 /**
  *  @brief
  *    A object for representing default data for a HLX physical front
@@ -88,6 +82,7 @@ static CFStringRef               kLockedSchemaKey = CFSTR("Locked");
 
 FrontPanelController :: FrontPanelController(void) :
     Common::FrontPanelControllerBasis(),
+    Server::FrontPanelControllerBasis(),
     Simulator::ControllerBasis()
 {
     return;
@@ -96,23 +91,6 @@ FrontPanelController :: FrontPanelController(void) :
 FrontPanelController :: ~FrontPanelController(void)
 {
     return;
-}
-
-Status FrontPanelController :: RequestInit(void)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = kQueryRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSetBrightnessRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSetLockedRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
 }
 
 Status FrontPanelController :: DoRequestHandlers(const bool &aRegister)
@@ -133,8 +111,8 @@ Status FrontPanelController :: DoRequestHandlers(const bool &aRegister)
             FrontPanelController::SetLockedRequestReceivedHandler
         }
     };
-    static const size_t               lRequestHandlerCount = ElementsOf(lRequestHandlers);
-    Status                            lRetval = kStatus_Success;
+    static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
+    Status                   lRetval = kStatus_Success;
 
     lRetval = Server::ControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
                                                          &lRequestHandlers[lRequestHandlerCount],
@@ -142,7 +120,7 @@ Status FrontPanelController :: DoRequestHandlers(const bool &aRegister)
                                                          aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
@@ -153,7 +131,7 @@ Status FrontPanelController :: Init(Server::CommandManager &aCommandManager, con
     Status      lRetval = kStatus_Success;
 
 
-    lRetval = RequestInit();
+    lRetval = Server::FrontPanelControllerBasis::RequestInit();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mFrontPanelModel.Init();

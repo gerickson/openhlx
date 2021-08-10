@@ -58,11 +58,6 @@ namespace HLX
 namespace Simulator
 {
 
-// Request data
-
-Server::Command::Sources::SetNameRequest      SourcesController::kSetNameRequest;
-
-
 /**
  *  @brief
  *    A object for representing default data for a HLX source data
@@ -93,7 +88,8 @@ static CFStringRef      kNameSchemaKey = CFSTR("Name");
 SourcesController :: SourcesController(void) :
     Simulator::ControllerBasis(),
     ContainerControllerBasis(),
-    Common::SourcesControllerBasis()
+    Common::SourcesControllerBasis(),
+    Server::SourcesControllerBasis()
 {
     return;
 }
@@ -101,17 +97,6 @@ SourcesController :: SourcesController(void) :
 SourcesController :: ~SourcesController(void)
 {
     return;
-}
-
-Status SourcesController :: RequestInit(void)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = kSetNameRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
 }
 
 Status SourcesController :: DoRequestHandlers(const bool &aRegister)
@@ -122,8 +107,8 @@ Status SourcesController :: DoRequestHandlers(const bool &aRegister)
             SourcesController::SetNameRequestReceivedHandler
         }
     };
-    static const size_t               lRequestHandlerCount = ElementsOf(lRequestHandlers);
-    Status                            lRetval = kStatus_Success;
+    static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
+    Status                   lRetval = kStatus_Success;
 
     lRetval = Server::ControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
                                                          &lRequestHandlers[lRequestHandlerCount],
@@ -131,7 +116,7 @@ Status SourcesController :: DoRequestHandlers(const bool &aRegister)
                                                          aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
@@ -142,7 +127,7 @@ Status SourcesController :: Init(Server::CommandManager &aCommandManager, const 
     Status      lRetval = kStatus_Success;
 
 
-    lRetval = RequestInit();
+    lRetval = Server::SourcesControllerBasis::RequestInit();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mSources.Init(kSourcesMax);

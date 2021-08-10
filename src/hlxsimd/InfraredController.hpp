@@ -28,6 +28,7 @@
 #define OPENHLXSIMULATORINFRAREDCONTROLLER_HPP
 
 #include <OpenHLX/Common/InfraredControllerBasis.hpp>
+#include <OpenHLX/Server/InfraredControllerBasis.hpp>
 #include <OpenHLX/Server/InfraredControllerCommands.hpp>
 
 #include "ControllerBasis.hpp"
@@ -51,6 +52,7 @@ namespace Simulator
  */
 class InfraredController :
     public Common::InfraredControllerBasis,
+    public Server::InfraredControllerBasis,
     public Simulator::ControllerBasis
 {
 public:
@@ -72,7 +74,6 @@ public:
     static void SetDisabledRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
-    Common::Status RequestInit(void);
     Common::Status DoRequestHandlers(const bool &aRegister);
 
     void QueryHandler(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
@@ -84,9 +85,6 @@ private:
     void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
     void SetDisabledRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 
-private:
-    static Server::Command::Infrared::QueryRequest          kQueryRequest;
-    static Server::Command::Infrared::SetDisabledRequest    kSetDisabledRequest;
 };
 
 }; // namespace Simulator
