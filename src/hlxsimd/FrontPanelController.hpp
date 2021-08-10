@@ -26,7 +26,7 @@
 #ifndef OPENHLXSIMULATORFRONTPANELCONTROLLER_HPP
 #define OPENHLXSIMULATORFRONTPANELCONTROLLER_HPP
 
-#include <OpenHLX/Model/FrontPanelModel.hpp>
+#include <OpenHLX/Common/FrontPanelControllerBasis.hpp>
 #include <OpenHLX/Server/FrontPanelControllerCommands.hpp>
 
 #include "ControllerBasis.hpp"
@@ -48,6 +48,7 @@ namespace Simulator
  *
  */
 class FrontPanelController :
+    public Common::FrontPanelControllerBasis,
     public Simulator::ControllerBasis
 {
 public:
@@ -83,9 +84,6 @@ private:
     void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
     void SetBrightnessRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
     void SetLockedRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-
-private:
-    Model::FrontPanelModel                            mFrontPanelModel;
 
 private:
     static Server::Command::FrontPanel::QueryRequest          kQueryRequest;

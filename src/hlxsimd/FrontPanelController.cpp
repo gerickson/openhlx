@@ -87,8 +87,8 @@ static CFStringRef               kBrightnessSchemaKey = CFSTR("Brightness");
 static CFStringRef               kLockedSchemaKey = CFSTR("Locked");
 
 FrontPanelController :: FrontPanelController(void) :
-    Simulator::ControllerBasis(),
-    mFrontPanelModel()
+    Common::FrontPanelControllerBasis(),
+    Simulator::ControllerBasis()
 {
     return;
 }
