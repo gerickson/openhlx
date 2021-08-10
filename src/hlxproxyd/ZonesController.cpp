@@ -137,6 +137,11 @@ ZonesController :: DoRequestHandlers(const bool &aRegister)
         },
 
         {
+            kQueryVolumeRequest,
+            ZonesController::QueryVolumeRequestReceivedHandler
+        },
+
+        {
             kSetVolumeRequest,
             ZonesController::SetVolumeRequestReceivedHandler
         },
@@ -994,6 +999,53 @@ void ZonesController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aCo
     return;
 }
 
+void ZonesController :: QueryVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    IdentifierType                           lZoneIdentifier;
+    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
+    Status                                   lStatus;
+
+
+    (void)aSize;
+
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+
+    // Match 2/2: Zone Identifier
+    //
+    // The validity of the zone identifier will be range checked at
+    // HandleQueryVolumeReceived below.
+
+    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
+                                                Common::Utilities::Distance(aMatches.at(1)),
+                                                lZoneIdentifier);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lResponseBuffer.reset(new ConnectionBuffer);
+    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
+
+    lStatus = lResponseBuffer->Init();
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // First, put the solicited notifications portion.
+
+    lStatus = HandleQueryVolumeReceived(lZoneIdentifier, lResponseBuffer);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    if (lStatus >= kStatus_Success)
+    {
+        lStatus = SendResponse(aConnection, lResponseBuffer);
+        nlVERIFY_SUCCESS(lStatus);
+    }
+    else
+    {
+        lStatus = SendErrorResponse(aConnection);
+        nlVERIFY_SUCCESS(lStatus);
+    }
+
+    return;
+}
+
 void ZonesController :: SetVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
     static const VolumeModel::MuteType       kMuted = true;
@@ -1385,6 +1437,16 @@ void ZonesController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aCo
     if (lController != nullptr)
     {
         lController->QueryRequestReceivedHandler(aConnection, aBuffer, aSize, aMatches);
+    }
+}
+
+void ZonesController :: QueryVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->QueryVolumeRequestReceivedHandler(aConnection, aBuffer, aSize, aMatches);
     }
 }
 
