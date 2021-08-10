@@ -28,6 +28,7 @@
 #include <stddef.h>
 
 #include <OpenHLX/Client/CommandManager.hpp>
+#include <OpenHLX/Client/ZonesControllerBasis.hpp>
 #include <OpenHLX/Client/ZonesControllerCommands.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
@@ -65,6 +66,7 @@ namespace Proxy
 class ZonesController :
     public Proxy::ControllerBasis,
     public Common::ZonesControllerBasis,
+    public Client::ZonesControllerBasis,
     public Server::ZonesControllerBasis
 {
 public:
@@ -112,7 +114,6 @@ public:
     static void SetVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
-    Common::Status ResponseInit(void);
     Common::Status DoNotificationHandlers(const bool &aRegister);
     Common::Status DoRequestHandlers(const bool &aRegister);
 
@@ -161,11 +162,6 @@ private:
 
 private:
     size_t                                            mZonesDidRefreshCount;
-
-private:
-    // Server-facing Client Command Response Data
-
-    static Client::Command::Zones::VolumeResponse                kVolumeResponse;
 };
 
 }; // namespace Proxy

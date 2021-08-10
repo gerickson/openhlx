@@ -48,10 +48,6 @@ namespace HLX
 namespace Proxy
 {
 
-// MARK: Server-facing client command response notification data
-
-Client::Command::Zones::VolumeResponse             ZonesController::kVolumeResponse;
-
 /**
  *  @brief
  *    This is the class default constructor.
@@ -60,6 +56,7 @@ Client::Command::Zones::VolumeResponse             ZonesController::kVolumeRespo
 ZonesController :: ZonesController(void) :
     Proxy::ControllerBasis(),
     Common::ZonesControllerBasis(),
+    Client::ZonesControllerBasis(),
     Server::ZonesControllerBasis(),
     mZonesDidRefreshCount(0)
 {
@@ -74,35 +71,6 @@ ZonesController :: ZonesController(void) :
 ZonesController :: ~ZonesController(void)
 {
     return;
-}
-
-/**
- *  @brief
- *    Initialize client command response regular expression patterns.
- *
- *  This initializes solicited and unsolicited client command
- *  responses that this controller would like to register to handle.
- *
- *  @retval  kStatus_Success              If successful.
- *  @retval  -EINVAL                      If an internal parameter was
- *                                        invalid.
- *  @retval  -ENOMEM                      If memory could not be allocated.
- *  @retval  kError_InitializationFailed  If initialization otherwise failed.
- *
- */
-Status
-ZonesController :: ResponseInit(void)
-{
-    Status lRetval = kStatus_Success;
-
-
-    // Initialize static notification response data.
-
-    lRetval = kVolumeResponse.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-done:
-    return (lRetval);
 }
 
 /**
@@ -217,7 +185,7 @@ ZonesController :: Init(Client::CommandManager &aClientCommandManager, Server::C
     Status          lRetval = kStatus_Success;
 
 
-    lRetval = ResponseInit();
+    lRetval = Client::ZonesControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = Server::ZonesControllerBasis::Init();
