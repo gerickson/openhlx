@@ -513,6 +513,11 @@ void HLXProxy :: ControllerDidDisconnect(Controller &aController, CFURLRef aURLR
     // Only call stop if we have non-error status; otherwise a
     // DidNot... or Error delegation already called it.
 
+    // XXX - We may need to know whether this connection was on the
+    // server-facing client side versus the client-facing server side
+    // of the proxy since only the former should trigger a stop (if at
+    // all rather than a retry) and not the latter.
+
     if (aError != kStatus_Success)
     {
         Stop(aError);
