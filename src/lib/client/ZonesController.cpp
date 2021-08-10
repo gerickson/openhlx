@@ -182,6 +182,7 @@ ZonesController :: DoNotificationHandlers(const bool &aRegister)
 
     lRetval = Client::ControllerBasis::DoNotificationHandlers(&lNotificationHandlers[0],
                                                               &lNotificationHandlers[lNotificationHandlerCount],
+                                                              this,
                                                               aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 

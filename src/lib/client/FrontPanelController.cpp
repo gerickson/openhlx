@@ -115,9 +115,10 @@ FrontPanelController :: DoNotificationHandlers(const bool &aRegister)
     static constexpr size_t                lNotificationHandlerCount = ElementsOf(lNotificationHandlers);
     Status                                 lRetval = kStatus_Success;
 
-    lRetval = ControllerBasis::DoNotificationHandlers(&lNotificationHandlers[0],
-                                                      &lNotificationHandlers[lNotificationHandlerCount],
-                                                      aRegister);
+    lRetval = Client::ControllerBasis::DoNotificationHandlers(&lNotificationHandlers[0],
+                                                              &lNotificationHandlers[lNotificationHandlerCount],
+                                                              this,
+                                                              aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
  done:

@@ -161,6 +161,7 @@ ControllerBasis :: Init(CommandManager &aCommandManager, const Timeout &aTimeout
 Status
 ControllerBasis :: DoNotificationHandlers(const NotificationHandlerBasis *aFirstNotificationHandler,
                                           const NotificationHandlerBasis *aLastNotificationHandler,
+                                          void *aContext,
                                           const bool &aRegister)
 {
     Status lRetval = kStatus_Success;
@@ -168,17 +169,18 @@ ControllerBasis :: DoNotificationHandlers(const NotificationHandlerBasis *aFirst
     nlREQUIRE_ACTION(mCommandManager != nullptr,      done, lRetval = kError_NotInitialized);
     nlREQUIRE_ACTION(aFirstNotificationHandler != nullptr, done, lRetval = -EINVAL);
     nlREQUIRE_ACTION(aLastNotificationHandler  != nullptr, done, lRetval = -EINVAL);
+    nlREQUIRE_ACTION(aContext != nullptr, done, lRetval = -EINVAL);
 
     while (aFirstNotificationHandler != aLastNotificationHandler)
     {
         if (aRegister)
         {
-            lRetval = mCommandManager->RegisterNotificationHandler(aFirstNotificationHandler->mResponse, this, aFirstNotificationHandler->mOnNotificationReceivedHandler);
+            lRetval = mCommandManager->RegisterNotificationHandler(aFirstNotificationHandler->mResponse, aContext, aFirstNotificationHandler->mOnNotificationReceivedHandler);
             nlREQUIRE_SUCCESS(lRetval, done);
         }
         else
         {
-            lRetval = mCommandManager->UnregisterNotificationHandler(aFirstNotificationHandler->mResponse, this);
+            lRetval = mCommandManager->UnregisterNotificationHandler(aFirstNotificationHandler->mResponse, aContext);
             nlREQUIRE_SUCCESS(lRetval, done);
         }
 
