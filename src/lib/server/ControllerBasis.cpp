@@ -80,24 +80,25 @@ ControllerBasis :: Init(CommandManager &aCommandManager, const Timeout &aTimeout
 }
 
 Status
-ControllerBasis :: DoRequestHandlers(const RequestHandlerBasis *aFirstRequestHandler, const RequestHandlerBasis *aLastRequestHandler, const bool &aRegister)
+ControllerBasis :: DoRequestHandlers(const RequestHandlerBasis *aFirstRequestHandler, const RequestHandlerBasis *aLastRequestHandler, void *aContext, const bool &aRegister)
 {
     Status lRetval = kStatus_Success;
 
     nlREQUIRE_ACTION(mCommandManager != nullptr,      done, lRetval = kError_NotInitialized);
     nlREQUIRE_ACTION(aFirstRequestHandler != nullptr, done, lRetval = -EINVAL);
     nlREQUIRE_ACTION(aLastRequestHandler  != nullptr, done, lRetval = -EINVAL);
+    nlREQUIRE_ACTION(aContext != nullptr, done, lRetval = -EINVAL);
 
     while (aFirstRequestHandler != aLastRequestHandler)
     {
         if (aRegister)
         {
-            lRetval = mCommandManager->RegisterRequestHandler(aFirstRequestHandler->mRequest, this, aFirstRequestHandler->mOnRequestReceivedHandler);
+            lRetval = mCommandManager->RegisterRequestHandler(aFirstRequestHandler->mRequest, aContext, aFirstRequestHandler->mOnRequestReceivedHandler);
             nlREQUIRE_SUCCESS(lRetval, done);
         }
         else
         {
-            lRetval = mCommandManager->UnregisterRequestHandler(aFirstRequestHandler->mRequest, this);
+            lRetval = mCommandManager->UnregisterRequestHandler(aFirstRequestHandler->mRequest, aContext);
             nlREQUIRE_SUCCESS(lRetval, done);
         }
 

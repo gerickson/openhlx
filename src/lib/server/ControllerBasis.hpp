@@ -70,7 +70,7 @@ protected:
         CommandManager::OnRequestReceivedFunc  mOnRequestReceivedHandler;
     };
 
-    Common::Status DoRequestHandlers(const RequestHandlerBasis *aFirst, const RequestHandlerBasis *aLast, const bool &aRegister);
+    Common::Status DoRequestHandlers(const RequestHandlerBasis *aFirst, const RequestHandlerBasis *aLast, void *aContext, const bool &aRegister);
 
     Common::Status SendResponse(ConnectionBasis &aConnection, Common::ConnectionBuffer::ImmutableCountedPointer aBuffer) const;
 

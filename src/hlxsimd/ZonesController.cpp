@@ -878,7 +878,10 @@ ZonesController :: DoRequestHandlers(const bool &aRegister)
     static const size_t               lRequestHandlerCount = ElementsOf(lRequestHandlers);
     Status                            lRetval = kStatus_Success;
 
-    lRetval = Server::ControllerBasis::DoRequestHandlers(&lRequestHandlers[0], &lRequestHandlers[lRequestHandlerCount], aRegister);
+    lRetval = Server::ControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
+                                                         &lRequestHandlers[lRequestHandlerCount],
+                                                         this,
+                                                         aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
  done:
