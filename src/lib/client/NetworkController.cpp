@@ -54,6 +54,7 @@ namespace Client
  *
  */
 NetworkController :: NetworkController(void) :
+    Common::NetworkControllerBasis(),
     Client::ControllerBasis(),
     Client::NetworkControllerBasis()
 {
@@ -102,6 +103,9 @@ NetworkController :: Init(CommandManager &aCommandManager,
 
 
     lRetval = Client::NetworkControllerBasis::Init();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = mNetworkModel.Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = ControllerBasis::Init(aCommandManager, aTimeout);

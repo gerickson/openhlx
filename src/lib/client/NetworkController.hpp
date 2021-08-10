@@ -26,6 +26,7 @@
 #ifndef HLXCLIENTNETWORKCONTROLLER_HPP
 #define HLXCLIENTNETWORKCONTROLLER_HPP
 
+#include <OpenHLX/Common/NetworkControllerBasis.hpp>
 #include <OpenHLX/Client/ControllerBasis.hpp>
 #include <OpenHLX/Client/NetworkControllerBasis.hpp>
 #include <OpenHLX/Client/NetworkControllerCommands.hpp>
@@ -47,6 +48,7 @@ namespace Client
  *
  */
 class NetworkController :
+    public Common::NetworkControllerBasis,
     public Client::ControllerBasis,
     public Client::NetworkControllerBasis
 {
