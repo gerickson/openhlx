@@ -156,10 +156,10 @@ FrontPanelController :: Init(CommandManager &aCommandManager, const Timeout &aTi
     Status      lRetval = kStatus_Success;
 
 
-    lRetval = Client::FrontPanelControllerBasis::Init();
+    lRetval = Common::FrontPanelControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mFrontPanelModel.Init();
+    lRetval = Client::FrontPanelControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = ControllerBasis::Init(aCommandManager, aTimeout);

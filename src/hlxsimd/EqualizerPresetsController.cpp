@@ -296,10 +296,10 @@ Status EqualizerPresetsController :: Init(Server::CommandManager &aCommandManage
     Status      lRetval = kStatus_Success;
 
 
-    lRetval = Server::EqualizerPresetsControllerBasis::Init();
+    lRetval = Common::EqualizerPresetsControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mEqualizerPresets.Init(kEqualizerPresetsMax);
+    lRetval = Server::EqualizerPresetsControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = ControllerBasis::Init(aCommandManager, aTimeout);

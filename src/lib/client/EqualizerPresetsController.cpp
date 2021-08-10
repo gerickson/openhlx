@@ -159,10 +159,10 @@ EqualizerPresetsController :: Init(CommandManager &aCommandManager, const Timeou
     Status      lRetval = kStatus_Success;
 
 
-    lRetval = Client::EqualizerPresetsControllerBasis::Init();
+    lRetval = Common::EqualizerPresetsControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mEqualizerPresets.Init(kEqualizerPresetsMax);
+    lRetval = Client::EqualizerPresetsControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = ControllerBasis::Init(aCommandManager, aTimeout);

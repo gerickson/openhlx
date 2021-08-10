@@ -135,10 +135,10 @@ Status FavoritesController :: Init(Server::CommandManager &aCommandManager, cons
     Status      lRetval = kStatus_Success;
 
 
-    lRetval = Server::FavoritesControllerBasis::Init();
+    lRetval = Common::FavoritesControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mFavorites.Init(kFavoritesMax);
+    lRetval = Server::FavoritesControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = ControllerBasis::Init(aCommandManager, aTimeout);

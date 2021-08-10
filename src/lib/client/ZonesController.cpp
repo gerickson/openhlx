@@ -221,10 +221,10 @@ ZonesController :: Init(CommandManager &aCommandManager, const Timeout &aTimeout
     Status          lRetval = kStatus_Success;
 
 
-    lRetval = Client::ZonesControllerBasis::Init();
+    lRetval = Common::ZonesControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mZones.Init(kZonesMax);
+    lRetval = Client::ZonesControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = ControllerBasis::Init(aCommandManager, aTimeout);

@@ -778,10 +778,10 @@ ZonesController :: Init(Server::CommandManager &aCommandManager, const Timeout &
     Status          lRetval = kStatus_Success;
 
 
-    lRetval = Server::ZonesControllerBasis::Init();
+    lRetval = Common::ZonesControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mZones.Init(kZonesMax);
+    lRetval = Server::ZonesControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = ControllerBasis::Init(aCommandManager, aTimeout);

@@ -152,10 +152,10 @@ SourcesController :: Init(CommandManager &aCommandManager, const Timeout &aTimeo
     Status      lRetval = kStatus_Success;
 
 
-    lRetval = Client::SourcesControllerBasis::Init();
+    lRetval = Common::SourcesControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mSources.Init(kSourcesMax);
+    lRetval = Client::SourcesControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = ControllerBasis::Init(aCommandManager, aTimeout);

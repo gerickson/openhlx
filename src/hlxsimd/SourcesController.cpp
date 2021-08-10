@@ -127,10 +127,10 @@ Status SourcesController :: Init(Server::CommandManager &aCommandManager, const 
     Status      lRetval = kStatus_Success;
 
 
-    lRetval = Server::SourcesControllerBasis::Init();
+    lRetval = Common::SourcesControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mSources.Init(kSourcesMax);
+    lRetval = Server::SourcesControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = ControllerBasis::Init(aCommandManager, aTimeout);

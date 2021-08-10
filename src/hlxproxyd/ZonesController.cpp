@@ -185,13 +185,13 @@ ZonesController :: Init(Client::CommandManager &aClientCommandManager, Server::C
     Status          lRetval = kStatus_Success;
 
 
+    lRetval = Common::ZonesControllerBasis::Init();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
     lRetval = Client::ZonesControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = Server::ZonesControllerBasis::Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = mZones.Init(kZonesMax);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = Proxy::ControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);

@@ -131,10 +131,10 @@ Status FrontPanelController :: Init(Server::CommandManager &aCommandManager, con
     Status      lRetval = kStatus_Success;
 
 
-    lRetval = Server::FrontPanelControllerBasis::Init();
+    lRetval = Common::FrontPanelControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mFrontPanelModel.Init();
+    lRetval = Server::FrontPanelControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = ControllerBasis::Init(aCommandManager, aTimeout);

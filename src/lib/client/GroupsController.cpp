@@ -205,10 +205,10 @@ GroupsController :: Init(CommandManager &aCommandManager, const Timeout &aTimeou
     Status      lRetval = kStatus_Success;
 
 
-    lRetval = Client::GroupsControllerBasis::Init();
+    lRetval = Common::GroupsControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mGroups.Init(kGroupsMax);
+    lRetval = Client::GroupsControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = ControllerBasis::Init(aCommandManager, aTimeout);

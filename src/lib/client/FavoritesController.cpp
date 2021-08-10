@@ -153,10 +153,10 @@ FavoritesController :: Init(CommandManager &aCommandManager, const Timeout &aTim
     Status      lRetval = kStatus_Success;
 
 
-    lRetval = Client::FavoritesControllerBasis::Init();
+    lRetval = Common::FavoritesControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mFavorites.Init(kFavoritesMax);
+    lRetval = Client::FavoritesControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = ControllerBasis::Init(aCommandManager, aTimeout);

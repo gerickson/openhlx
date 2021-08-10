@@ -152,10 +152,10 @@ InfraredController :: Init(CommandManager &aCommandManager, const Timeout &aTime
     Status      lRetval = kStatus_Success;
 
 
-    lRetval = Client::InfraredControllerBasis::Init();
+    lRetval = Common::InfraredControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mInfraredModel.Init();
+    lRetval = Client::InfraredControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = ControllerBasis::Init(aCommandManager, aTimeout);
