@@ -133,7 +133,7 @@ GroupsController :: ~GroupsController(void)
  *
  */
 Status
-GroupsController :: DoNotificationHandlers(bool aRegister)
+GroupsController :: DoNotificationHandlers(const bool &aRegister)
 {
     static const NotificationHandlerBasis  lNotificationHandlers[] = {
         {

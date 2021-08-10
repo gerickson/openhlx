@@ -102,7 +102,7 @@ EqualizerPresetsController :: ~EqualizerPresetsController(void)
  *
  */
 Status
-EqualizerPresetsController :: DoNotificationHandlers(bool aRegister)
+EqualizerPresetsController :: DoNotificationHandlers(const bool &aRegister)
 {
     static const NotificationHandlerBasis  lNotificationHandlers[] = {
         {

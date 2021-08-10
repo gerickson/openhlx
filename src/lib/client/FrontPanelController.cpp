@@ -99,7 +99,7 @@ FrontPanelController :: ~FrontPanelController(void)
  *
  */
 Status
-FrontPanelController :: DoNotificationHandlers(bool aRegister)
+FrontPanelController :: DoNotificationHandlers(const bool &aRegister)
 {
     static const NotificationHandlerBasis  lNotificationHandlers[] = {
         {

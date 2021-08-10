@@ -82,7 +82,7 @@ public:
     static void SavingToBackupNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
-    Common::Status DoNotificationHandlers(bool aRegister);
+    Common::Status DoNotificationHandlers(const bool &aRegister);
 
     // Command Completion Handlers
 

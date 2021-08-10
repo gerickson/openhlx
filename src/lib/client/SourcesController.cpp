@@ -100,7 +100,7 @@ SourcesController :: ~SourcesController(void)
  *
  */
 Status
-SourcesController :: DoNotificationHandlers(bool aRegister)
+SourcesController :: DoNotificationHandlers(const bool &aRegister)
 {
     static const NotificationHandlerBasis  lNotificationHandlers[] = {
         {

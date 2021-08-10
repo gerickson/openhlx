@@ -97,7 +97,7 @@ ConfigurationController :: ~ConfigurationController(void)
  *
  */
 Status
-ConfigurationController :: DoNotificationHandlers(bool aRegister)
+ConfigurationController :: DoNotificationHandlers(const bool &aRegister)
 {
     static const NotificationHandlerBasis  lNotificationHandlers[] = {
         {

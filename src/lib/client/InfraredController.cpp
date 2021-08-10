@@ -100,7 +100,7 @@ InfraredController :: ~InfraredController(void)
  *
  */
 Status
-InfraredController :: DoNotificationHandlers(bool aRegister)
+InfraredController :: DoNotificationHandlers(const bool &aRegister)
 {
     static const NotificationHandlerBasis  lNotificationHandlers[] = {
         {
