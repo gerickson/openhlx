@@ -84,8 +84,8 @@ static CFStringRef           kInfraredSchemaKey = CFSTR("Infrared");
 static CFStringRef           kDisabledSchemaKey = CFSTR("Disabled");
 
 InfraredController :: InfraredController(void) :
-    Simulator::ControllerBasis(),
-    mInfraredModel()
+    Common::InfraredControllerBasis(),
+    Simulator::ControllerBasis()
 {
     return;
 }

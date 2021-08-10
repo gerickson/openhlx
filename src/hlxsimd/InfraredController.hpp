@@ -27,7 +27,7 @@
 #ifndef OPENHLXSIMULATORINFRAREDCONTROLLER_HPP
 #define OPENHLXSIMULATORINFRAREDCONTROLLER_HPP
 
-#include <OpenHLX/Model/InfraredModel.hpp>
+#include <OpenHLX/Common/InfraredControllerBasis.hpp>
 #include <OpenHLX/Server/InfraredControllerCommands.hpp>
 
 #include "ControllerBasis.hpp"
@@ -50,6 +50,7 @@ namespace Simulator
  *
  */
 class InfraredController :
+    public Common::InfraredControllerBasis,
     public Simulator::ControllerBasis
 {
 public:
@@ -82,9 +83,6 @@ private:
 
     void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
     void SetDisabledRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-
-private:
-    Model::InfraredModel                            mInfraredModel;
 
 private:
     static Server::Command::Infrared::QueryRequest          kQueryRequest;
