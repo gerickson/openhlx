@@ -111,7 +111,7 @@ Status ConfigurationController :: Init(CommandManager &aCommandManager)
     Status      lRetval = kStatus_Success;
 
 
-    lRetval = Server::ConfigurationControllerBasis::RequestInit();
+    lRetval = Server::ConfigurationControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = ControllerBasis::Init(aCommandManager);

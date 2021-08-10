@@ -132,7 +132,7 @@ Status NetworkController :: Init(Server::CommandManager &aCommandManager, const 
     Status      lRetval = kStatus_Success;
 
 
-    lRetval = Server::NetworkControllerBasis::RequestInit();
+    lRetval = Server::NetworkControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mNetworkModel.Init();

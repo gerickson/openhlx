@@ -220,7 +220,7 @@ ZonesController :: Init(Client::CommandManager &aClientCommandManager, Server::C
     lRetval = ResponseInit();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = Server::ZonesControllerBasis::RequestInit();
+    lRetval = Server::ZonesControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mZones.Init(kZonesMax);

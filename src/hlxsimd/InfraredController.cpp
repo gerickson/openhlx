@@ -124,7 +124,7 @@ Status InfraredController :: Init(Server::CommandManager &aCommandManager, const
     Status      lRetval = kStatus_Success;
 
 
-    lRetval = Server::InfraredControllerBasis::RequestInit();
+    lRetval = Server::InfraredControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mInfraredModel.Init();

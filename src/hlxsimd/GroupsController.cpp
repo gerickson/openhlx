@@ -223,7 +223,7 @@ Status GroupsController :: Init(CommandManager &aCommandManager)
     Status      lRetval = kStatus_Success;
 
 
-    lRetval = Server::GroupsControllerBasis::RequestInit();
+    lRetval = Server::GroupsControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mGroups.Init(kGroupsMax);
