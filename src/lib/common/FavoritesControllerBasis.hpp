@@ -54,7 +54,7 @@ public:
     typedef Model::FavoriteModel::IdentifierType IdentifierType;
 
 public:
-    FavoritesControllerBasis(void) = default;
+    virtual ~FavoritesControllerBasis(void) = default;
 
     // Observer Methods
 
@@ -62,7 +62,9 @@ public:
     static Common::Status ValidateIdentifier(const IdentifierType &aFavoriteIdentifier);
 
 protected:
-    virtual ~FavoritesControllerBasis(void) = default;
+    FavoritesControllerBasis(void) = default;
+
+    Common::Status Init(void);
 
 protected:
     Model::FavoritesModel        mFavorites;

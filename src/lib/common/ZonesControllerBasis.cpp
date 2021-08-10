@@ -99,6 +99,18 @@ ZonesControllerBasis :: ValidateIdentifier(const IdentifierType &aZoneIdentifier
     return (lRetval);
 }
 
+Status
+ZonesControllerBasis :: Init(void)
+{
+    Status lRetval = kStatus_Success;
+
+    lRetval = mZones.Init(kZonesMax);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
 }; // namespace Common
 
 }; // namespace HLX

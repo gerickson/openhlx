@@ -64,6 +64,8 @@ public:
 protected:
     ZonesControllerBasis(void) = default;
 
+    Common::Status Init(void);
+
 protected:
     Model::ZonesModel            mZones;
 

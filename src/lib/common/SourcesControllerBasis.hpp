@@ -64,6 +64,8 @@ public:
 protected:
     SourcesControllerBasis(void) = default;
 
+    Common::Status Init(void);
+
 protected:
     Model::SourcesModel          mSources;
 

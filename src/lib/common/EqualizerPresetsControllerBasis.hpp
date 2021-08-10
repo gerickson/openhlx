@@ -65,6 +65,8 @@ public:
 protected:
     EqualizerPresetsControllerBasis(void) = default;
 
+    Common::Status Init(void);
+
 protected:
     Model::EqualizerPresetsModel mEqualizerPresets;
 

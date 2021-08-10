@@ -64,6 +64,8 @@ public:
 protected:
     GroupsControllerBasis(void) = default;
 
+    Common::Status Init(void);
+
 protected:
     Model::GroupsModel           mGroups;
 

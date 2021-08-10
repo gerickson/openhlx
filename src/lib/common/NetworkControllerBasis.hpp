@@ -51,6 +51,8 @@ public:
 protected:
     NetworkControllerBasis(void) = default;
 
+    Common::Status Init(void);
+
 protected:
     Model::NetworkModel  mNetworkModel;
 };

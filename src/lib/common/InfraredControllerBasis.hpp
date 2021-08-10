@@ -52,6 +52,8 @@ public:
 protected:
     InfraredControllerBasis(void) = default;
 
+    Common::Status Init(void);
+
 protected:
     Model::InfraredModel  mInfraredModel;
 };

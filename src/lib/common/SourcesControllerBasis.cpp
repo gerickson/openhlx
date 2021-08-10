@@ -98,6 +98,18 @@ SourcesControllerBasis :: ValidateIdentifier(const IdentifierType &aSourceIdenti
     return (lRetval);
 }
 
+Status
+SourcesControllerBasis :: Init(void)
+{
+    Status lRetval = kStatus_Success;
+
+    lRetval = mSources.Init(kSourcesMax);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
 }; // namespace Common
 
 }; // namespace HLX

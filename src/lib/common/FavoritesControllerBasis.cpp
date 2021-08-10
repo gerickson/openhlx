@@ -99,6 +99,18 @@ FavoritesControllerBasis :: ValidateIdentifier(const IdentifierType &aFavoriteId
     return (lRetval);
 }
 
+Status
+FavoritesControllerBasis :: Init(void)
+{
+    Status lRetval = kStatus_Success;
+
+    lRetval = mFavorites.Init(kFavoritesMax);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
 }; // namespace Common
 
 }; // namespace HLX

@@ -99,6 +99,18 @@ GroupsControllerBasis :: ValidateIdentifier(const IdentifierType &aGroupIdentifi
     return (lRetval);
 }
 
+Status
+GroupsControllerBasis :: Init(void)
+{
+    Status lRetval = kStatus_Success;
+
+    lRetval = mGroups.Init(kGroupsMax);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
 }; // namespace Common
 
 }; // namespace HLX

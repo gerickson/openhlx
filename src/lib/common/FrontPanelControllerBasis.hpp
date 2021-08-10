@@ -52,6 +52,8 @@ public:
 protected:
     FrontPanelControllerBasis(void) = default;
 
+    Common::Status Init(void);
+
 protected:
     Model::FrontPanelModel  mFrontPanelModel;
 };

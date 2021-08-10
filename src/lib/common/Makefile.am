@@ -145,10 +145,13 @@ libopenhlx_common_a_SOURCES                                 = \
     ConnectionManagerBasis.cpp                                \
     EqualizerPresetsControllerBasis.cpp                       \
     FavoritesControllerBasis.cpp                              \
+    FrontPanelControllerBasis.cpp                             \
     GroupsControllerBasis.cpp                                 \
     HostURL.cpp                                               \
     HostURLAddress.cpp                                        \
+    InfraredControllerBasis.cpp                               \
     IPAddress.cpp                                             \
+    NetworkControllerBasis.cpp                                \
     OutputStringStream.cpp                                    \
     RegularExpression.cpp                                     \
     RunLoopParameters.cpp                                     \

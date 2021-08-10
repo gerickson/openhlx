@@ -101,6 +101,18 @@ EqualizerPresetsControllerBasis :: ValidateIdentifier(const IdentifierType &aEqu
     return (lRetval);
 }
 
+Status
+EqualizerPresetsControllerBasis :: Init(void)
+{
+    Status lRetval = kStatus_Success;
+
+    lRetval = mEqualizerPresets.Init(kEqualizerPresetsMax);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
 }; // namespace Common
 
 }; // namespace HLX
