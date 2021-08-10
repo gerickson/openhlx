@@ -26,6 +26,7 @@
 #ifndef HLXCLIENTFRONTPANELCONTROLLER_HPP
 #define HLXCLIENTFRONTPANELCONTROLLER_HPP
 
+#include <OpenHLX/Common/FrontPanelControllerBasis.hpp>
 #include <OpenHLX/Client/ControllerBasis.hpp>
 #include <OpenHLX/Client/FrontPanelControllerBasis.hpp>
 #include <OpenHLX/Client/FrontPanelControllerCommands.hpp>
@@ -47,6 +48,7 @@ namespace Client
  *
  */
 class FrontPanelController :
+    public Common::FrontPanelControllerBasis,
     public Client::ControllerBasis,
     public Client::FrontPanelControllerBasis
 {
@@ -95,9 +97,6 @@ private:
 
     void BrightnessNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
     void LockedNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-
-private:
-    Model::FrontPanelModel                            mFrontPanelModel;
 };
 
 }; // namespace Client

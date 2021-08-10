@@ -59,9 +59,9 @@ namespace Client
  *
  */
 FrontPanelController :: FrontPanelController(void) :
+    Common::FrontPanelControllerBasis(),
     Client::ControllerBasis(),
-    Client::FrontPanelControllerBasis(),
-    mFrontPanelModel()
+    Client::FrontPanelControllerBasis()
 {
     return;
 }
