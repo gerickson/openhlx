@@ -25,7 +25,7 @@
 #ifndef OPENHLXSERVEREQUALIZERPRESETSCONTROLLERBASIS_HPP
 #define OPENHLXSERVEREQUALIZERPRESETSCONTROLLERBASIS_HPP
 
-#include <OpenHLX/Server/EqualizerpresetsControllerCommands.hpp>
+#include <OpenHLX/Server/EqualizerPresetsControllerCommands.hpp>
 
 
 namespace HLX
