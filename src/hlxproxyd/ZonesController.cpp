@@ -52,13 +52,6 @@ namespace Proxy
 
 Client::Command::Zones::VolumeResponse             ZonesController::kVolumeResponse;
 
-// MARK: Client-facing server command request data
-
-Server::Command::Zones::DecreaseVolumeRequest      ZonesController::kDecreaseVolumeRequest;
-Server::Command::Zones::IncreaseVolumeRequest      ZonesController::kIncreaseVolumeRequest;
-Server::Command::Zones::QueryRequest               ZonesController::kQueryRequest;
-Server::Command::Zones::SetVolumeRequest           ZonesController::kSetVolumeRequest;
-
 /**
  *  @brief
  *    This is the class default constructor.
