@@ -35,6 +35,7 @@
 #include <OpenHLX/Model/VolumeModel.hpp>
 #include <OpenHLX/Model/ZoneModel.hpp>
 #include <OpenHLX/Model/ZonesModel.hpp>
+#include <OpenHLX/Server/ZonesControllerBasis.hpp>
 #include <OpenHLX/Server/ZonesControllerCommands.hpp>
 
 #include "ControllerBasis.hpp"
@@ -63,7 +64,8 @@ namespace Proxy
  */
 class ZonesController :
     public Proxy::ControllerBasis,
-    public Common::ZonesControllerBasis
+    public Common::ZonesControllerBasis,
+    public Server::ZonesControllerBasis
 {
 public:
     ZonesController(void);
@@ -111,7 +113,6 @@ public:
 
 private:
     Common::Status ResponseInit(void);
-    Common::Status RequestInit(void);
     Common::Status DoNotificationHandlers(const bool &aRegister);
     Common::Status DoRequestHandlers(const bool &aRegister);
 
@@ -165,14 +166,6 @@ private:
     // Server-facing Client Command Response Data
 
     static Client::Command::Zones::VolumeResponse                kVolumeResponse;
-
-private:
-    // Client-facing Server Command Request Data
-
-    static Server::Command::Zones::DecreaseVolumeRequest         kDecreaseVolumeRequest;
-    static Server::Command::Zones::IncreaseVolumeRequest         kIncreaseVolumeRequest;
-    static Server::Command::Zones::QueryRequest                  kQueryRequest;
-    static Server::Command::Zones::SetVolumeRequest              kSetVolumeRequest;
 };
 
 }; // namespace Proxy

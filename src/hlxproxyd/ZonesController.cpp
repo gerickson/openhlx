@@ -66,6 +66,7 @@ Server::Command::Zones::SetVolumeRequest           ZonesController::kSetVolumeRe
 ZonesController :: ZonesController(void) :
     Proxy::ControllerBasis(),
     Common::ZonesControllerBasis(),
+    Server::ZonesControllerBasis(),
     mZonesDidRefreshCount(0)
 {
     return;
@@ -107,27 +108,6 @@ ZonesController :: ResponseInit(void)
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
-    return (lRetval);
-}
-
-Status
-ZonesController :: RequestInit(void)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = kDecreaseVolumeRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kIncreaseVolumeRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kQueryRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSetVolumeRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
     return (lRetval);
 }
 
@@ -246,7 +226,7 @@ ZonesController :: Init(Client::CommandManager &aClientCommandManager, Server::C
     lRetval = ResponseInit();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = RequestInit();
+    lRetval = Server::ZonesControllerBasis::RequestInit();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mZones.Init(kZonesMax);
