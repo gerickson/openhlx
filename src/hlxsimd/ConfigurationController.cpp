@@ -36,15 +36,18 @@
 #include <CFUtilities/CFUtilities.h>
 #include <LogUtilities/LogUtilities.hpp>
 
-#include <OpenHLX/Utilities/Assert.hpp>
 #include <OpenHLX/Server/CommandManager.hpp>
+#include <OpenHLX/Utilities/Assert.hpp>
+#include <OpenHLX/Utilities/ElementsOf.hpp>
 
 #include "ConfigurationControllerDelegate.hpp"
 
 
 using namespace HLX::Common;
 using namespace HLX::Server;
+using namespace HLX::Utilities;
 using namespace Nuovations;
+
 
 namespace HLX
 {
@@ -114,7 +117,7 @@ Status ConfigurationController :: DoRequestHandlers(const bool &aRegister)
             ConfigurationController::SaveToBackupRequestReceivedHandler
         }
     };
-    static const size_t               lRequestHandlerCount = sizeof (lRequestHandlers) / sizeof (lRequestHandlers[0]);
+    static const size_t               lRequestHandlerCount = ElementsOf(lRequestHandlers);
     Status                            lRetval = kStatus_Success;
 
     lRetval = ControllerBasis::DoRequestHandlers(&lRequestHandlers[0], &lRequestHandlers[lRequestHandlerCount], aRegister);

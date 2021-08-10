@@ -35,13 +35,15 @@
 
 #include <LogUtilities/LogUtilities.hpp>
 
+#include <OpenHLX/Server/CommandManager.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
-#include <CommandManager.hpp>
+#include <OpenHLX/Utilities/ElementsOf.hpp>
 
 
 using namespace HLX::Common;
 using namespace HLX::Model;
 using namespace HLX::Server;
+using namespace HLX::Utilities;
 using namespace Nuovations;
 
 
@@ -125,7 +127,7 @@ Status NetworkController :: DoRequestHandlers(const bool &aRegister)
             NetworkController::QueryRequestReceivedHandler
         }
     };
-    static const size_t               lRequestHandlerCount = sizeof (lRequestHandlers) / sizeof (lRequestHandlers[0]);
+    static const size_t               lRequestHandlerCount = ElementsOf(lRequestHandlers);
     Status                            lRetval = kStatus_Success;
 
     lRetval = ControllerBasis::DoRequestHandlers(&lRequestHandlers[0], &lRequestHandlers[lRequestHandlerCount], aRegister);

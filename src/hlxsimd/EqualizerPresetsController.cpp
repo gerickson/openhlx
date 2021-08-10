@@ -38,10 +38,11 @@
 #include <LogUtilities/LogUtilities.hpp>
 
 #include <OpenHLX/Model/IdentifierModel.hpp>
+#include <OpenHLX/Server/CommandManager.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
+#include <OpenHLX/Utilities/ElementsOf.hpp>
 #include <OpenHLX/Utilities/Utilities.hpp>
 
-#include <CommandManager.hpp>
 #include <EqualizerBandModelDefaults.hpp>
 #include <NameModelDefaults.hpp>
 #include <Utilities.hpp>
@@ -50,6 +51,7 @@
 using namespace HLX::Common;
 using namespace HLX::Model;
 using namespace HLX::Server;
+using namespace HLX::Utilities;
 using namespace Nuovations;
 
 
@@ -304,7 +306,7 @@ Status EqualizerPresetsController :: DoRequestHandlers(const bool &aRegister)
             EqualizerPresetsController::SetNameRequestReceivedHandler
         }
     };
-    static const size_t               lRequestHandlerCount = sizeof (lRequestHandlers) / sizeof (lRequestHandlers[0]);
+    static const size_t               lRequestHandlerCount = ElementsOf(lRequestHandlers);
     Status                            lRetval = kStatus_Success;
 
     lRetval = ControllerBasis::DoRequestHandlers(&lRequestHandlers[0], &lRequestHandlers[lRequestHandlerCount], aRegister);

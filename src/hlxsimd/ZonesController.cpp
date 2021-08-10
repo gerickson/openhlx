@@ -40,10 +40,11 @@
 #include <OpenHLX/Model/IdentifierModel.hpp>
 #include <OpenHLX/Model/SoundModel.hpp>
 #include <OpenHLX/Model/ToneModel.hpp>
+#include <OpenHLX/Server/CommandManager.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
+#include <OpenHLX/Utilities/ElementsOf.hpp>
 #include <OpenHLX/Utilities/Utilities.hpp>
 
-#include <CommandManager.hpp>
 #include <EqualizerBandModelDefaults.hpp>
 #include <EqualizerPresetsController.hpp>
 #include <NameModelDefaults.hpp>
@@ -54,6 +55,7 @@
 using namespace HLX::Common;
 using namespace HLX::Model;
 using namespace HLX::Server;
+using namespace HLX::Utilities;
 using namespace Nuovations;
 
 
@@ -873,7 +875,7 @@ ZonesController :: DoRequestHandlers(const bool &aRegister)
             ZonesController::ToggleMuteRequestReceivedHandler
         }
     };
-    static const size_t               lRequestHandlerCount = sizeof (lRequestHandlers) / sizeof (lRequestHandlers[0]);
+    static const size_t               lRequestHandlerCount = ElementsOf(lRequestHandlers);
     Status                            lRetval = kStatus_Success;
 
     lRetval = Server::ControllerBasis::DoRequestHandlers(&lRequestHandlers[0], &lRequestHandlers[lRequestHandlerCount], aRegister);
