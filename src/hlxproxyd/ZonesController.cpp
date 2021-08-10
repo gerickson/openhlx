@@ -37,6 +37,7 @@
 
 using namespace HLX::Common;
 using namespace HLX::Model;
+using namespace HLX::Server;
 using namespace HLX::Utilities;
 using namespace Nuovations;
 
