@@ -27,6 +27,7 @@
 #ifndef HLXCLIENTINFRAREDCONTROLLER_HPP
 #define HLXCLIENTINFRAREDCONTROLLER_HPP
 
+#include <OpenHLX/Common/InfraredControllerBasis.hpp>
 #include <OpenHLX/Client/ControllerBasis.hpp>
 #include <OpenHLX/Client/InfraredControllerBasis.hpp>
 #include <OpenHLX/Client/InfraredControllerCommands.hpp>
@@ -50,6 +51,7 @@ namespace Client
  *
  */
 class InfraredController :
+    public Common::InfraredControllerBasis,
     public Client::ControllerBasis,
     public Client::InfraredControllerBasis
 {
@@ -94,9 +96,6 @@ private:
 
     void BrightnessNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
     void DisabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-
-private:
-    Model::InfraredModel                            mInfraredModel;
 };
 
 }; // namespace Client

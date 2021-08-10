@@ -60,9 +60,9 @@ namespace Client
  *
  */
 InfraredController :: InfraredController(void) :
+    Common::InfraredControllerBasis(),
     Client::ControllerBasis(),
-    Client::InfraredControllerBasis(),
-    mInfraredModel()
+    Client::InfraredControllerBasis()
 {
     return;
 }
