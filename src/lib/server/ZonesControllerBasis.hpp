@@ -52,10 +52,10 @@ protected:
 
     Common::Status Init(void);
 
-private:
+protected:
     Common::Status RequestInit(void);
 
-private:
+protected:
     static Server::Command::Zones::AdjustBalanceRequest          kAdjustBalanceRequest;
     static Server::Command::Zones::DecreaseBassRequest           kDecreaseBassRequest;
     static Server::Command::Zones::IncreaseBassRequest           kIncreaseBassRequest;
