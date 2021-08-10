@@ -65,37 +65,6 @@ namespace HLX
 namespace Simulator
 {
 
-// Request data
-
-Server::Command::Zones::AdjustBalanceRequest          ZonesController::kAdjustBalanceRequest;
-Server::Command::Zones::DecreaseBassRequest           ZonesController::kDecreaseBassRequest;
-Server::Command::Zones::IncreaseBassRequest           ZonesController::kIncreaseBassRequest;
-Server::Command::Zones::DecreaseTrebleRequest         ZonesController::kDecreaseTrebleRequest;
-Server::Command::Zones::IncreaseTrebleRequest         ZonesController::kIncreaseTrebleRequest;
-Server::Command::Zones::DecreaseEqualizerBandRequest  ZonesController::kDecreaseEqualizerBandRequest;
-Server::Command::Zones::IncreaseEqualizerBandRequest  ZonesController::kIncreaseEqualizerBandRequest;
-Server::Command::Zones::DecreaseVolumeRequest         ZonesController::kDecreaseVolumeRequest;
-Server::Command::Zones::IncreaseVolumeRequest         ZonesController::kIncreaseVolumeRequest;
-Server::Command::Zones::MuteRequest                   ZonesController::kMuteRequest;
-Server::Command::Zones::QueryRequest                  ZonesController::kQueryRequest;
-Server::Command::Zones::QueryMuteRequest              ZonesController::kQueryMuteRequest;
-Server::Command::Zones::QuerySourceRequest            ZonesController::kQuerySourceRequest;
-Server::Command::Zones::QueryVolumeRequest            ZonesController::kQueryVolumeRequest;
-Server::Command::Zones::SetBalanceRequest             ZonesController::kSetBalanceRequest;
-Server::Command::Zones::SetEqualizerBandRequest       ZonesController::kSetEqualizerBandRequest;
-Server::Command::Zones::SetEqualizerPresetRequest     ZonesController::kSetEqualizerPresetRequest;
-Server::Command::Zones::SetHighpassCrossoverRequest   ZonesController::kSetHighpassCrossoverRequest;
-Server::Command::Zones::SetLowpassCrossoverRequest    ZonesController::kSetLowpassCrossoverRequest;
-Server::Command::Zones::SetNameRequest                ZonesController::kSetNameRequest;
-Server::Command::Zones::SetSoundModeRequest           ZonesController::kSetSoundModeRequest;
-Server::Command::Zones::SetSourceRequest              ZonesController::kSetSourceRequest;
-Server::Command::Zones::SetSourceAllRequest           ZonesController::kSetSourceAllRequest;
-Server::Command::Zones::SetToneRequest                ZonesController::kSetToneRequest;
-Server::Command::Zones::SetVolumeRequest              ZonesController::kSetVolumeRequest;
-Server::Command::Zones::SetVolumeAllRequest           ZonesController::kSetVolumeAllRequest;
-Server::Command::Zones::SetVolumeFixedRequest         ZonesController::kSetVolumeFixedRequest;
-Server::Command::Zones::ToggleMuteRequest             ZonesController::kToggleMuteRequest;
-
 static const BalanceModel::BalanceType             kBalanceDefault           = BalanceModel::kBalanceCenter;
 static const SoundModel::SoundMode                 kSoundModeDefault         = SoundModel::kSoundModeDisabled;
 static const EqualizerBandModel::LevelType         kEqualizerBandDefault     = EqualizerBandModel::kLevelFlat;
@@ -628,107 +597,20 @@ static CFStringRef kZonesSchemaKey                 = CFSTR("Zones");
 ZonesController :: ZonesController(void) :
     Simulator::ControllerBasis(),
     ContainerControllerBasis(),
-    Common::ZonesControllerBasis()
+    Common::ZonesControllerBasis(),
+    Server::ZonesControllerBasis()
 {
     return;
 }
 
+/**
+ *  @brief
+ *    This is the class destructor.
+ *
+ */
 ZonesController :: ~ZonesController(void)
 {
     return;
-}
-
-Status
-ZonesController :: RequestInit(void)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = kAdjustBalanceRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kDecreaseBassRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kIncreaseBassRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kDecreaseTrebleRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kIncreaseTrebleRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kDecreaseEqualizerBandRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kIncreaseEqualizerBandRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kDecreaseVolumeRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kIncreaseVolumeRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kMuteRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kQueryRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kQueryMuteRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kQuerySourceRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kQueryVolumeRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSetBalanceRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSetEqualizerBandRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSetEqualizerPresetRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSetHighpassCrossoverRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSetLowpassCrossoverRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSetNameRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSetSoundModeRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSetSourceRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSetSourceAllRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSetToneRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSetVolumeRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSetVolumeAllRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSetVolumeFixedRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kToggleMuteRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-done:
-    return (lRetval);
 }
 
 Status
@@ -875,8 +757,8 @@ ZonesController :: DoRequestHandlers(const bool &aRegister)
             ZonesController::ToggleMuteRequestReceivedHandler
         }
     };
-    static const size_t               lRequestHandlerCount = ElementsOf(lRequestHandlers);
-    Status                            lRetval = kStatus_Success;
+    static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
+    Status                   lRetval = kStatus_Success;
 
     lRetval = Server::ControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
                                                          &lRequestHandlers[lRequestHandlerCount],
@@ -884,7 +766,7 @@ ZonesController :: DoRequestHandlers(const bool &aRegister)
                                                          aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
@@ -896,7 +778,7 @@ ZonesController :: Init(Server::CommandManager &aCommandManager, const Timeout &
     Status          lRetval = kStatus_Success;
 
 
-    lRetval = RequestInit();
+    lRetval = Server::ZonesControllerBasis::RequestInit();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mZones.Init(kZonesMax);
