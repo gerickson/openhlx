@@ -52,10 +52,10 @@ protected:
 
     Common::Status Init(void);
 
-private:
+protected:
     Common::Status RequestInit(void);
 
-private:
+protected:
     static Server::Command::FrontPanel::QueryRequest          kQueryRequest;
     static Server::Command::FrontPanel::SetBrightnessRequest  kSetBrightnessRequest;
     static Server::Command::FrontPanel::SetLockedRequest      kSetLockedRequest;

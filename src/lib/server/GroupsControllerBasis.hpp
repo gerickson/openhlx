@@ -52,10 +52,10 @@ protected:
 
     Common::Status Init(void);
 
-private:
+protected:
     Common::Status RequestInit(void);
 
-private:
+protected:
     static Server::Command::Groups::AddZoneRequest         kAddZoneRequest;
     static Server::Command::Groups::ClearZonesRequest      kClearZonesRequest;
     static Server::Command::Groups::DecreaseVolumeRequest  kDecreaseVolumeRequest;

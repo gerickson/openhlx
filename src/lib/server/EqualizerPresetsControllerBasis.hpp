@@ -52,10 +52,10 @@ protected:
 
     Common::Status Init(void);
 
-private:
+protected:
     Common::Status RequestInit(void);
 
-private:
+protected:
     static Server::Command::EqualizerPresets::DecreaseBandRequest  kDecreaseBandRequest;
     static Server::Command::EqualizerPresets::IncreaseBandRequest  kIncreaseBandRequest;
     static Server::Command::EqualizerPresets::QueryRequest         kQueryRequest;

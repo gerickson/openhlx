@@ -52,10 +52,10 @@ protected:
 
     Common::Status Init(void);
 
-private:
+protected:
     Common::Status RequestInit(void);
 
-private:
+protected:
     static Server::Command::Configuration::LoadFromBackupRequest   kLoadFromBackupRequest;
     static Server::Command::Configuration::QueryCurrentRequest     kQueryCurrentRequest;
     static Server::Command::Configuration::ResetToDefaultsRequest  kResetToDefaultsRequest;
