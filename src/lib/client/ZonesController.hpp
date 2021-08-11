@@ -204,9 +204,6 @@ private:
     void HandleMuteChange(const IdentifierType &aZoneIdentifier, const Model::VolumeModel::MuteType &aMute);
     void HandleSourceChange(const IdentifierType &aZoneIdentifier, const Model::SourceModel::IdentifierType &aSourceIdentifier);
     void HandleVolumeChange(const IdentifierType &aZoneIdentifier, const Model::VolumeModel::LevelType &aVolume);
-
-private:
-    size_t                                            mZonesDidRefreshCount;
 };
 
 }; // namespace Client

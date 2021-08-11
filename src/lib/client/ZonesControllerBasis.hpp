@@ -56,6 +56,9 @@ private:
     Common::Status ResponseInit(void);
 
 protected:
+    size_t                                            mZonesDidRefreshCount;
+
+protected:
     static Command::Zones::BalanceResponse            kBalanceResponse;
     static Command::Zones::EqualizerBandResponse      kEqualizerBandResponse;
     static Command::Zones::EqualizerPresetResponse    kEqualizerPresetResponse;

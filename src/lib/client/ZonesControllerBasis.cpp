@@ -63,7 +63,8 @@ Command::Zones::VolumeFixedResponse        ZonesControllerBasis::kVolumeFixedRes
  *    This is the class default constructor.
  *
  */
-ZonesControllerBasis :: ZonesControllerBasis(void)
+ZonesControllerBasis :: ZonesControllerBasis(void) :
+    mZonesDidRefreshCount(0)
 {
     return;
 }

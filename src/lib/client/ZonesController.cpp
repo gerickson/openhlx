@@ -65,8 +65,7 @@ namespace Client
 ZonesController :: ZonesController(void) :
     Client::ControllerBasis(),
     Common::ZonesControllerBasis(),
-    Client::ZonesControllerBasis(),
-    mZonesDidRefreshCount(0)
+    Client::ZonesControllerBasis()
 {
     return;
 }

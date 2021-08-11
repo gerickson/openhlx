@@ -57,8 +57,7 @@ ZonesController :: ZonesController(void) :
     Proxy::ControllerBasis(),
     Common::ZonesControllerBasis(),
     Client::ZonesControllerBasis(),
-    Server::ZonesControllerBasis(),
-    mZonesDidRefreshCount(0)
+    Server::ZonesControllerBasis()
 {
     return;
 }
