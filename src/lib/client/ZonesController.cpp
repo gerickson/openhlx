@@ -4153,6 +4153,35 @@ done:
 }
 
 void
+ZonesController :: HandleSourceChange(const IdentifierType &aZoneIdentifier, const SourceModel::IdentifierType &aSourceIdentifier)
+{
+    ZoneModel *                            lZoneModel;
+    Status                                 lStatus;
+    StateChange::ZonesSourceNotification   lStateChangeNotification;
+
+
+    lStatus = mZones.GetZone(aZoneIdentifier, lZoneModel);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // If the source is unchanged, SetSource will return
+    // kStatus_ValueAlreadySet and there will be no need to send a
+    // state change notification. If we receive kStatus_Success, it is
+    // the first time set or a change and state change notification
+    // needs to be sent.
+
+    lStatus = lZoneModel->SetSource(aSourceIdentifier);
+    nlEXPECT_SUCCESS(lStatus, done);
+
+    lStatus = lStateChangeNotification.Init(aZoneIdentifier, aSourceIdentifier);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    OnStateDidChange(lStateChangeNotification);
+
+done:
+    return;
+}
+
+void
 ZonesController :: HandleVolumeChange(const IdentifierType &aZoneIdentifier, const VolumeModel::LevelType &aVolume)
 {
     ZoneModel *                            lZoneModel;
@@ -4181,34 +4210,6 @@ done:
     return;
 }
 
-void
-ZonesController :: HandleSourceChange(const IdentifierType &aZoneIdentifier, const SourceModel::IdentifierType &aSourceIdentifier)
-{
-    ZoneModel *                            lZoneModel;
-    Status                                 lStatus;
-    StateChange::ZonesSourceNotification   lStateChangeNotification;
-
-
-    lStatus = mZones.GetZone(aZoneIdentifier, lZoneModel);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    // If the source is unchanged, SetSource will return
-    // kStatus_ValueAlreadySet and there will be no need to send a
-    // state change notification. If we receive kStatus_Success, it is
-    // the first time set or a change and state change notification
-    // needs to be sent.
-
-    lStatus = lZoneModel->SetSource(aSourceIdentifier);
-    nlEXPECT_SUCCESS(lStatus, done);
-
-    lStatus = lStateChangeNotification.Init(aZoneIdentifier, aSourceIdentifier);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    OnStateDidChange(lStateChangeNotification);
-
-done:
-    return;
-}
 
 }; // namespace Client
 
