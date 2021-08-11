@@ -71,6 +71,8 @@ protected:
 
     static Common::Status Init(BufferBasis &aBuffer, const char *aObject);
     static Common::Status Init(BufferBasis &aBuffer, const char *aObject, const IdentifierType &aIdentifier);
+    static Common::Status Init(BufferBasis &aBuffer, const char *aObject, const char *aProperty, const IdentifierType &aIdentifier);
+    static Common::Status Init(BufferBasis &aBuffer, const char *aObject, const char &aProperty, const IdentifierType &aIdentifier);
 };
 
 }; // namespace Command

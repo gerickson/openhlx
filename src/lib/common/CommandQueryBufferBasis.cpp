@@ -123,6 +123,33 @@ QueryBufferBasis :: Init(BufferBasis &aBuffer,
     return (aBuffer.Init(lBuffer.c_str(), lBuffer.size()));
 }
 
+Status
+QueryBufferBasis :: Init(BufferBasis &aBuffer, const char *aObject, const char *aProperty, const IdentifierType &aIdentifier)
+{
+    OutputStringStream  lIdentifierStream;
+    std::string         lBuffer;
+
+
+    lIdentifierStream << aIdentifier;
+
+    // Compose the buffer.
+
+    lBuffer = kQueryOperation;
+    lBuffer += aProperty;
+    lBuffer += aObject;
+    lBuffer += lIdentifierStream.str();
+
+    return (aBuffer.Init(lBuffer.c_str(), lBuffer.size()));
+}
+
+Status
+QueryBufferBasis :: Init(BufferBasis &aBuffer, const char *aObject, const char &aProperty, const IdentifierType &aIdentifier)
+{
+    const char lProperty[2] = { aProperty, '\0' };
+
+    return (Init(aBuffer, aObject, lProperty, aIdentifier));
+}
+
 }; // namespace Command
 
 }; // namespace Common
