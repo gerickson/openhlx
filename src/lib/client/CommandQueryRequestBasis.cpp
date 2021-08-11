@@ -96,6 +96,18 @@ QueryRequestBasis :: Init(const char *aObject,
     return (QueryBufferBasis::Init(*this, aObject, aIdentifier));
 }
 
+Status
+QueryPropertyRequestBasis :: Init(const char *aObject, const char &aProperty, const Model::IdentifierModel::IdentifierType &aIdentifier)
+{
+    return (QueryBufferBasis::Init(*this, aObject, aProperty, aIdentifier));
+}
+
+Status
+QueryPropertyRequestBasis :: Init(const char *aObject, const char *aProperty, const Model::IdentifierModel::IdentifierType &aIdentifier)
+{
+    return (QueryBufferBasis::Init(*this, aObject, aProperty, aIdentifier));
+}
+
 }; // namespace Command
 
 }; // namespace Client

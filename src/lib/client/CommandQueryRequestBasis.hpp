@@ -75,6 +75,24 @@ private:
     using RequestBasis::Init;
 };
 
+class QueryPropertyRequestBasis :
+    virtual public Client::Command::RequestBasis,
+    public Common::Command::QueryBufferBasis
+{
+protected:
+    QueryPropertyRequestBasis(void) = default;
+    virtual ~QueryPropertyRequestBasis(void) = default;
+
+    Common::Status Init(const char *aObject, const char &aProperty, const Model::IdentifierModel::IdentifierType &aIdentifier);
+    Common::Status Init(const char *aObject, const char *aProperty, const Model::IdentifierModel::IdentifierType &aIdentifier);
+
+private:
+    // Explicitly hide base class initializers
+
+    using RequestBasis::Init;
+};
+
+
 }; // namespace Command
 
 }; // namespace Client
