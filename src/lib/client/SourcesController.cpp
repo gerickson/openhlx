@@ -204,14 +204,12 @@ SourcesController :: Refresh(const Timeout &aTimeout)
 
     SetRefreshRequested(true);
 
-    // Unlike other collection controllers (that is, favorites, groups, etc.)
-    // the peer server source controller supports no "query source [QIn]" command.
-    // Source state can only be obtained via the configuration controller.
+    // Unlike other collection controllers (that is, favorites,
+    // groups, etc.)  the peer server source controller supports no
+    // "query source [QIn]" command.  Source state can only be
+    // obtained via the configuration controller.
 
-    if (WasRefreshRequested())
-    {
-        OnDidRefresh();
-    }
+    MaybeUpdateRefreshIfRefreshWasRequested();
 
     return (lRetval);
 }

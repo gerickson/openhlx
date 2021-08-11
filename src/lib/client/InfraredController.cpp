@@ -324,10 +324,7 @@ InfraredController :: QueryCompleteHandler(Command::ExchangeBasis::MutableCounte
      */
     DisabledNotificationReceivedHandler(lBuffer, lBufferSize, aMatches);
 
-    if (WasRefreshRequested())
-    {
-        OnDidRefresh();
-    }
+    MaybeUpdateRefreshIfRefreshWasRequested();
 
     return;
 }

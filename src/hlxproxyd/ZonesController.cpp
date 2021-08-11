@@ -647,18 +647,8 @@ ZonesController :: QueryCompleteHandler(Client::Command::ExchangeBasis::MutableC
 
     mZonesDidRefreshCount++;
 
-    if (WasRefreshRequested())
-    {
-        const Percentage lPercentComplete = CalculatePercentage(static_cast<uint8_t>(mZonesDidRefreshCount),
-                                                                static_cast<uint8_t>(kZonesMax));
-
-        OnIsRefreshing(lPercentComplete);
-
-        if (lPercentComplete == 100)
-        {
-            OnDidRefresh();
-        }
-    }
+    MaybeUpdateRefreshIfRefreshWasRequested(static_cast<uint8_t>(mZonesDidRefreshCount),
+                                            static_cast<uint8_t>(kZonesMax));
 
 done:
     return;

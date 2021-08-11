@@ -385,10 +385,7 @@ ConfigurationController :: QueryCompleteHandler(Command::ExchangeBasis::MutableC
 
     nlREQUIRE(aMatches.size() == lExpectedMatchCount, done);
 
-    if (WasRefreshRequested())
-    {
-        OnDidRefresh();
-    }
+    MaybeUpdateRefreshIfRefreshWasRequested();
 
  done:
     return;

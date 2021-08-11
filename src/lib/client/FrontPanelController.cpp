@@ -370,10 +370,7 @@ FrontPanelController :: QueryCompleteHandler(Command::ExchangeBasis::MutableCoun
      */
     LockedNotificationReceivedHandler(lBuffer, lBufferSize, aMatches);
 
-    if (WasRefreshRequested())
-    {
-        OnDidRefresh();
-    }
+    MaybeUpdateRefreshIfRefreshWasRequested();
 
     return;
 }

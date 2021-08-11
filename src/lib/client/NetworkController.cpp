@@ -216,10 +216,7 @@ NetworkController :: QueryCompleteHandler(Command::ExchangeBasis::MutableCounted
 
     nlREQUIRE(aMatches.size() == lExpectedMatchCount, done);
 
-    if (WasRefreshRequested())
-    {
-        OnDidRefresh();
-    }
+    MaybeUpdateRefreshIfRefreshWasRequested();
 
  done:
     return;
