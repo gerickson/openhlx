@@ -343,6 +343,84 @@ done:
     return (lRetval);
 }
 
+Status
+ZonesController :: QueryMute(const IdentifierType &aZoneIdentifier)
+{
+    Client::Command::ExchangeBasis::MutableCountedPointer lCommand;
+    Status                                                lRetval = kStatus_Success;
+
+
+    lRetval = ValidateIdentifier(aZoneIdentifier);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lCommand.reset(new Client::Command::Zones::QueryMute());
+    nlREQUIRE_ACTION(lCommand, done, lRetval = -ENOMEM);
+
+    lRetval = std::static_pointer_cast<Client::Command::Zones::QueryMute>(lCommand)->Init(aZoneIdentifier);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = SendCommand(lCommand,
+                          ZonesController::SetMuteCompleteHandler,
+                          ZonesController::CommandErrorHandler,
+                          this);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
+Status
+ZonesController :: QuerySource(const IdentifierType &aZoneIdentifier)
+{
+    Client::Command::ExchangeBasis::MutableCountedPointer lCommand;
+    Status                                                lRetval = kStatus_Success;
+
+
+    lRetval = ValidateIdentifier(aZoneIdentifier);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lCommand.reset(new Client::Command::Zones::QuerySource());
+    nlREQUIRE_ACTION(lCommand, done, lRetval = -ENOMEM);
+
+    lRetval = std::static_pointer_cast<Client::Command::Zones::QuerySource>(lCommand)->Init(aZoneIdentifier);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = SendCommand(lCommand,
+                          ZonesController::SetSourceCompleteHandler,
+                          ZonesController::CommandErrorHandler,
+                          this);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
+Status
+ZonesController :: QueryVolume(const IdentifierType &aZoneIdentifier)
+{
+    Client::Command::ExchangeBasis::MutableCountedPointer lCommand;
+    Status                                                lRetval = kStatus_Success;
+
+
+    lRetval = ValidateIdentifier(aZoneIdentifier);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lCommand.reset(new Client::Command::Zones::QueryVolume());
+    nlREQUIRE_ACTION(lCommand, done, lRetval = -ENOMEM);
+
+    lRetval = std::static_pointer_cast<Client::Command::Zones::QueryVolume>(lCommand)->Init(aZoneIdentifier);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = SendCommand(lCommand,
+                          ZonesController::SetVolumeCompleteHandler,
+                          ZonesController::CommandErrorHandler,
+                          this);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
 /**
  *  @brief
  *    Get the maximum number of supported HLX zones.

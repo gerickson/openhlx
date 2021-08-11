@@ -81,6 +81,9 @@ public:
 
     Common::Status Query(void);
     Common::Status Query(const IdentifierType &aZoneIdentifier);
+    Common::Status QueryMute(const IdentifierType &aZoneIdentifier);
+    Common::Status QuerySource(const IdentifierType &aZoneIdentifier);
+    Common::Status QueryVolume(const IdentifierType &aZoneIdentifier);
 
     Common::Status GetZonesMax(size_t &aZones) const;
 
