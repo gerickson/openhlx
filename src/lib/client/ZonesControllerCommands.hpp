@@ -136,6 +136,84 @@ private:
 
 /**
  *  @brief
+ *    An object for a HLX client zone data model volume mute property
+ *    query command request buffer.
+ *
+ *  @ingroup client
+ *  @ingroup command
+ *  @ingroup zone
+ *
+ */
+class QueryMuteRequest :
+    virtual public Client::Command::RequestBasis,
+    public Client::Command::QueryPropertyRequestBasis
+{
+public:
+    QueryMuteRequest(void) = default;
+    virtual ~QueryMuteRequest(void) = default;
+
+    Common::Status Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier);
+
+private:
+    // Explicitly hide base class initializers
+
+    using RequestBasis::Init;
+};
+
+/**
+ *  @brief
+ *    An object for a HLX client zone data model source input property
+ *    query command request buffer.
+ *
+ *  @ingroup client
+ *  @ingroup command
+ *  @ingroup zone
+ *
+ */
+class QuerySourceRequest :
+    virtual public Client::Command::RequestBasis,
+    public Client::Command::QueryPropertyRequestBasis
+{
+public:
+    QuerySourceRequest(void) = default;
+    virtual ~QuerySourceRequest(void) = default;
+
+    Common::Status Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier);
+
+private:
+    // Explicitly hide base class initializers
+
+    using RequestBasis::Init;
+};
+
+/**
+ *  @brief
+ *    An object for a HLX client zone data model volume level property
+ *    query command request buffer.
+ *
+ *  @ingroup client
+ *  @ingroup command
+ *  @ingroup zone
+ *
+ */
+class QueryVolumeRequest :
+    virtual public Client::Command::RequestBasis,
+    public Client::Command::QueryPropertyRequestBasis
+{
+public:
+    QueryVolumeRequest(void) = default;
+    virtual ~QueryVolumeRequest(void) = default;
+
+    Common::Status Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier);
+
+private:
+    // Explicitly hide base class initializers
+
+    using RequestBasis::Init;
+};
+
+/**
+ *  @brief
  *    An object for a HLX client zone volume mute data model property
  *    mutation command response regular expression.
  *
@@ -162,6 +240,30 @@ private:
 
 /**
  *  @brief
+ *    An object for a HLX client zone data model volume mute property
+ *    query command request / response pair.
+ *
+ *  @ingroup client
+ *  @ingroup command
+ *  @ingroup zone
+ *
+ */
+class QueryMute :
+    public ExchangeBasis
+{
+public:
+    QueryMute(void) = default;
+    virtual ~QueryMute(void) = default;
+
+    Common::Status Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier);
+
+private:
+    QueryMuteRequest  mRequest;
+    MuteResponse      mResponse;
+};
+
+/**
+ *  @brief
  *    An object for a HLX client zone source data model property
  *    mutation command response regular expression.
  *
@@ -184,6 +286,31 @@ private:
     // Explicitly hide base class initializers
 
     using ResponseBasis::Init;
+};
+
+
+/**
+ *  @brief
+ *    An object for a HLX client zone data model source input property
+ *    query command request / response pair.
+ *
+ *  @ingroup client
+ *  @ingroup command
+ *  @ingroup zone
+ *
+ */
+class QuerySource :
+    public ExchangeBasis
+{
+public:
+    QuerySource(void) = default;
+    virtual ~QuerySource(void) = default;
+
+    Common::Status Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier);
+
+private:
+    QuerySourceRequest  mRequest;
+    SourceResponse      mResponse;
 };
 
 /**
@@ -237,6 +364,30 @@ private:
     // Explicitly hide base class initializers
 
     using ResponseBasis::Init;
+};
+
+/**
+ *  @brief
+ *    An object for a HLX client zone data model volume level property
+ *    query command request / response pair.
+ *
+ *  @ingroup client
+ *  @ingroup command
+ *  @ingroup zone
+ *
+ */
+class QueryVolume :
+    public ExchangeBasis
+{
+public:
+    QueryVolume(void) = default;
+    virtual ~QueryVolume(void) = default;
+
+    Common::Status Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier);
+
+private:
+    QueryVolumeRequest  mRequest;
+    VolumeResponse      mResponse;
 };
 
 /**

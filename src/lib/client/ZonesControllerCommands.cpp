@@ -50,7 +50,11 @@ namespace Command
 namespace Zones
 {
 
-static const char * const  kZoneObject = "O";
+static const char * const  kZoneObject     = "O";
+
+static const char * const  kMuteProperty   = "VM";
+static const char          kSourceProperty = 'C';
+static const char          kVolumeProperty = 'V';
 
 // MARK: Observer Requests, Responses, and Commands
 
@@ -106,6 +110,78 @@ QueryResponse :: Init(void)
  */
 Status
 Query :: Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
+{
+    Status lRetval = kStatus_Success;
+
+    lRetval = mRequest.Init(aZoneIdentifier);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = mResponse.Init();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = ExchangeBasis::Init(mRequest, mResponse);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+QueryMuteRequest :: Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
+{
+    return (QueryPropertyRequestBasis::Init(kZoneObject, kMuteProperty, aZoneIdentifier));
+}
+
+Status
+QueryMute :: Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
+{
+    Status lRetval = kStatus_Success;
+
+    lRetval = mRequest.Init(aZoneIdentifier);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = mResponse.Init();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = ExchangeBasis::Init(mRequest, mResponse);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+QuerySourceRequest :: Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
+{
+    return (QueryPropertyRequestBasis::Init(kZoneObject, kSourceProperty, aZoneIdentifier));
+}
+
+Status
+QuerySource :: Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
+{
+    Status lRetval = kStatus_Success;
+
+    lRetval = mRequest.Init(aZoneIdentifier);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = mResponse.Init();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = ExchangeBasis::Init(mRequest, mResponse);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+QueryVolumeRequest :: Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
+{
+    return (QueryPropertyRequestBasis::Init(kZoneObject, kVolumeProperty, aZoneIdentifier));
+}
+
+Status
+QueryVolume :: Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
 {
     Status lRetval = kStatus_Success;
 
