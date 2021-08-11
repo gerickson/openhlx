@@ -124,14 +124,23 @@ protected:
     Common::Status SendCommand(Command::ExchangeBasis::MutableCountedPointer &aExchange, CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler, CommandManager::OnCommandErrorFunc aOnCommandErrorHandler, void *aContext);
     Common::Status SendCommand(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Timeout &aTimeout, CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler, CommandManager::OnCommandErrorFunc aOnCommandErrorHandler, void *aContext);
 
+    // Refresh State Observation and Mutation Methods
+
     bool IsRefreshing(void) const;
     bool WasRefreshRequested(void) const;
     void SetRefreshRequested(const bool &aRefreshRequested);
+
+    // Controller Delegation Action Methods
 
     void OnCommandError(const uint8_t *aCommandBuffer, const size_t &aCommandSize, const char *aCommandDescription, const Common::Error &aError);
     void OnIsRefreshing(const uint8_t &aPercentComplete);
     void OnDidRefresh(void);
     void OnStateDidChange(const StateChange::NotificationBasis &aStateChangeNotification);
+
+    // Refresh State and Delegation Convenience Methods
+
+    void MaybeUpdateRefreshIfRefreshWasRequested(const uint8_t &aNumerator, const uint8_t &aDenominator);
+    void MaybeUpdateRefreshIfRefreshWasRequested(void);
 
 private:
     ControllerBasisDelegate *  mDelegate;

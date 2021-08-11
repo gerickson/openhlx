@@ -31,6 +31,7 @@
 
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
+#include <OpenHLX/Utilities/Percentage.hpp>
 
 #include "CommandManager.hpp"
 #include "ConnectionManager.hpp"
@@ -38,6 +39,7 @@
 
 
 using namespace HLX::Common;
+using namespace HLX::Utilities;
 using namespace Nuovations;
 
 
@@ -537,6 +539,33 @@ ControllerBasis :: OnStateDidChange(const StateChange::NotificationBasis &aState
     if (mDelegate != nullptr)
     {
         mDelegate->ControllerStateDidChange(*this, aStateChangeNotification);
+    }
+}
+
+// MARK: Refresh State and Delegation Convenience Methods
+
+void
+ControllerBasis :: MaybeUpdateRefreshIfRefreshWasRequested(const uint8_t &aNumerator, const uint8_t &aDenominator)
+{
+    if (WasRefreshRequested())
+    {
+        const Percentage lPercentComplete = CalculatePercentage(aNumerator, aDenominator);
+
+        OnIsRefreshing(lPercentComplete);
+
+        if (lPercentComplete == 100)
+        {
+            OnDidRefresh();
+        }
+    }
+}
+
+void
+ControllerBasis :: MaybeUpdateRefreshIfRefreshWasRequested(void)
+{
+    if (WasRefreshRequested())
+    {
+        OnDidRefresh();
     }
 }
 
