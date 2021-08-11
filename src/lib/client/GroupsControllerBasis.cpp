@@ -54,7 +54,8 @@ Command::Groups::ZoneResponse            GroupsControllerBasis::kZoneResponse;
  *    This is the class default constructor.
  *
  */
-GroupsControllerBasis :: GroupsControllerBasis(void)
+GroupsControllerBasis :: GroupsControllerBasis(void) :
+    mGroupsDidRefreshCount(0)
 {
     return;
 }

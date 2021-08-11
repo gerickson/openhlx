@@ -63,8 +63,7 @@ namespace Client
 EqualizerPresetsController :: EqualizerPresetsController(void) :
     Client::ControllerBasis(),
     Common::EqualizerPresetsControllerBasis(),
-    Client::EqualizerPresetsControllerBasis(),
-    mEqualizerPresetsDidRefreshCount(0)
+    Client::EqualizerPresetsControllerBasis()
 {
     return;
 }

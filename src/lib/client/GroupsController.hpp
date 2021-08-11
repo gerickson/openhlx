@@ -164,9 +164,6 @@ private:
     void HandleVolumeChange(const IdentifierType &aGroupIdentifier, Model::GroupModel &aGroupModel, const Model::VolumeModel::LevelType &aVolume);
     void HandleSourceChange(const IdentifierType &aGroupIdentifier, Model::GroupModel &aGroupModel, const Model::SourceModel::IdentifierType &aSourceIdentifier);
     void HandleSourcesChange(const IdentifierType &aGroupIdentifier, Model::GroupModel &aGroupModel, const Model::GroupModel::Sources &aSourceIdentifierCollection);
-
-private:
-    size_t                                          mGroupsDidRefreshCount;
 };
 
 }; // namespace Client

@@ -112,9 +112,6 @@ private:
 
     void EqualizerBandNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
     void NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-
-private:
-    size_t                                                   mEqualizerPresetsDidRefreshCount;
 };
 
 }; // namespace Client

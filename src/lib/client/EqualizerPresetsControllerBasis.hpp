@@ -25,6 +25,8 @@
 #ifndef OPENHLXCLIENTEQUALIZERPRESETSCONTROLLERBASIS_HPP
 #define OPENHLXCLIENTEQUALIZERPRESETSCONTROLLERBASIS_HPP
 
+#include <stddef.h>
+
 #include <OpenHLX/Client/EqualizerPresetsControllerCommands.hpp>
 
 
@@ -54,6 +56,9 @@ protected:
 
 private:
     Common::Status ResponseInit(void);
+
+protected:
+    size_t                                                   mEqualizerPresetsDidRefreshCount;
 
 protected:
     static Command::EqualizerPresets::EqualizerBandResponse  kEqualizerBandResponse;

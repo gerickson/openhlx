@@ -25,6 +25,8 @@
 #ifndef OPENHLXCLIENTGROUPSCONTROLLERBASIS_HPP
 #define OPENHLXCLIENTGROUPSCONTROLLERBASIS_HPP
 
+#include <stddef.h>
+
 #include <OpenHLX/Client/GroupsControllerCommands.hpp>
 
 
@@ -54,6 +56,9 @@ protected:
 
 private:
     Common::Status ResponseInit(void);
+
+protected:
+    size_t                                          mGroupsDidRefreshCount;
 
 protected:
     static Command::Groups::SetMuteResponse         kSetMuteResponse;

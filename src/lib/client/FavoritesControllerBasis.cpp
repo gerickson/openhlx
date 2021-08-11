@@ -50,7 +50,8 @@ Command::Favorites::QueryResponse     FavoritesControllerBasis::kQueryResponse;
  *    This is the class default constructor.
  *
  */
-FavoritesControllerBasis :: FavoritesControllerBasis(void)
+FavoritesControllerBasis :: FavoritesControllerBasis(void) :
+    mFavoritesDidRefreshCount(0)
 {
     return;
 }

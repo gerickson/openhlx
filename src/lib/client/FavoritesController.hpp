@@ -103,9 +103,6 @@ private:
     // Notification Handlers
 
     void NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-
-private:
-    size_t                                        mFavoritesDidRefreshCount;
 };
 
 }; // namespace Client

@@ -51,7 +51,8 @@ Command::EqualizerPresets::QueryResponse          EqualizerPresetsControllerBasi
  *    This is the class default constructor.
  *
  */
-EqualizerPresetsControllerBasis :: EqualizerPresetsControllerBasis(void)
+EqualizerPresetsControllerBasis :: EqualizerPresetsControllerBasis(void) :
+    mEqualizerPresetsDidRefreshCount(0)
 {
     return;
 }

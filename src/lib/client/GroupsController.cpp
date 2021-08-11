@@ -94,8 +94,7 @@ namespace Client
 GroupsController :: GroupsController(void) :
     Client::ControllerBasis(),
     Common::GroupsControllerBasis(),
-    Client::GroupsControllerBasis(),
-    mGroupsDidRefreshCount(0)
+    Client::GroupsControllerBasis()
 {
     return;
 }

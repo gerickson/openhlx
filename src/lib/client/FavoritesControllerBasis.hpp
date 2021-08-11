@@ -25,6 +25,8 @@
 #ifndef OPENHLXCLIENTFAVORITESCONTROLLERBASIS_HPP
 #define OPENHLXCLIENTFAVORITESCONTROLLERBASIS_HPP
 
+#include <stddef.h>
+
 #include <OpenHLX/Client/FavoritesControllerCommands.hpp>
 
 
@@ -54,6 +56,9 @@ protected:
 
 private:
     Common::Status ResponseInit(void);
+
+protected:
+    size_t                                   mFavoritesDidRefreshCount;
 
 protected:
     static Command::Favorites::NameResponse  kNameResponse;

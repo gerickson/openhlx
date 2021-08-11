@@ -62,8 +62,7 @@ namespace Client
 FavoritesController :: FavoritesController(void) :
     Client::ControllerBasis(),
     Common::FavoritesControllerBasis(),
-    Client::FavoritesControllerBasis(),
-    mFavoritesDidRefreshCount(0)
+    Client::FavoritesControllerBasis()
 {
     return;
 }
