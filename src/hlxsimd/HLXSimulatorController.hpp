@@ -39,7 +39,7 @@
 #include <OpenHLX/Server/ConnectionManager.hpp>
 #include <OpenHLX/Server/ConnectionManagerDelegate.hpp>
 
-#include <ConfigurationController.hpp>
+#include "ConfigurationController.hpp"
 #include <ConfigurationControllerDelegate.hpp>
 #include <EqualizerPresetsController.hpp>
 #include <FavoritesController.hpp>
@@ -50,7 +50,7 @@
 #include <InfraredController.hpp>
 #include <NetworkController.hpp>
 #include <SourcesController.hpp>
-#include <ZonesController.hpp>
+#include "ZonesController.hpp"
 
 
 namespace HLX
