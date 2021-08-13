@@ -80,6 +80,7 @@ libopenhlx_common_a_include_HEADERS                         = \
     CommandToneBufferBasis.hpp                                \
     CommandVolumeBufferBases.hpp                              \
     CommandZonesRegularExpressionBases.hpp                    \
+    ConfigurationControllerBasis.hpp                          \
     ConnectionBasis.hpp                                       \
     ConnectionBuffer.hpp                                      \
     ConnectionManagerApplicationDataDelegate.hpp              \
@@ -140,6 +141,7 @@ libopenhlx_common_a_SOURCES                                 = \
     CommandToneBufferBasis.cpp                                \
     CommandVolumeBufferBases.cpp                              \
     CommandZonesRegularExpressionBases.cpp                    \
+    ConfigurationControllerBasis.cpp                          \
     ConnectionBasis.cpp                                       \
     ConnectionBuffer.cpp                                      \
     ConnectionManagerBasis.cpp                                \
