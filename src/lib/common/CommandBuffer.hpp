@@ -50,17 +50,18 @@ namespace Command
  */
 class Buffer
 {
-protected:
-    Buffer(void) = default;
+public:
     virtual ~Buffer(void) = default;
 
     Common::Status Init(const char *inBuffer);
     Common::Status Init(const char *inBuffer, const size_t &inSize);
     Common::Status Init(const char *inStart, const char *inEnd);
 
-public:
     const uint8_t *GetBuffer(void) const;
     size_t GetSize(void) const;
+
+protected:
+    Buffer(void) = default;
 
 private:
     void AppendBuffer(const char *inStart, const char *inEnd);
