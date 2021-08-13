@@ -57,7 +57,7 @@ class RequestBasis :
     public Common::Command::BufferBasis,
     public Common::Command::RoleDelimitedBuffer
 {
-protected:
+public:
     RequestBasis(void) = default;
     virtual ~RequestBasis(void) = default;
 

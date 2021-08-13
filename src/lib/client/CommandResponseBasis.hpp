@@ -53,7 +53,7 @@ class ResponseBasis :
     public Common::Command::RegularExpressionBasis,
     public Common::Command::RoleDelimitedRegularExpression
 {
-protected:
+public:
     ResponseBasis(void) = default;
     virtual ~ResponseBasis(void) = default;
 
