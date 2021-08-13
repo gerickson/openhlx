@@ -55,6 +55,11 @@ namespace HLX
 namespace Simulator
 {
 
+/**
+ *  @brief
+ *    This is the class default constructor.
+ *
+ */
 ConfigurationController :: ConfigurationController(void) :
     Simulator::ControllerBasis(),
     Server::ConfigurationControllerBasis(),
@@ -63,6 +68,11 @@ ConfigurationController :: ConfigurationController(void) :
     return;
 }
 
+/**
+ *  @brief
+ *    This is the class destructor.
+ *
+ */
 ConfigurationController :: ~ConfigurationController(void)
 {
     return;
@@ -107,8 +117,8 @@ done:
 Status ConfigurationController :: Init(CommandManager &aCommandManager)
 {
     DeclareScopedFunctionTracer(lTracer);
-    const bool  lRegister = true;
-    Status      lRetval = kStatus_Success;
+    constexpr bool  kRegister = true;
+    Status          lRetval = kStatus_Success;
 
 
     lRetval = Server::ConfigurationControllerBasis::Init();
@@ -120,7 +130,7 @@ Status ConfigurationController :: Init(CommandManager &aCommandManager)
     // This MUST come AFTER the base class initialization due to a
     // dependency on the command manager instance.
 
-    lRetval = DoRequestHandlers(lRegister);
+    lRetval = DoRequestHandlers(kRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
  done:
