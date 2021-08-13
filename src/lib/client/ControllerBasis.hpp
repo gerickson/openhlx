@@ -119,10 +119,20 @@ protected:
         CommandManager::OnNotificationReceivedFunc  mOnNotificationReceivedHandler;
     };
 
-    Common::Status DoNotificationHandlers(const NotificationHandlerBasis *aFirstNotificationHandler, const NotificationHandlerBasis *aLastNotificationHandler, void *aContext, const bool &aRegister);
+    Common::Status DoNotificationHandlers(const NotificationHandlerBasis *aFirstNotificationHandler,
+                                          const NotificationHandlerBasis *aLastNotificationHandler,
+                                          void *aContext,
+                                          const bool &aRegister);
 
-    Common::Status SendCommand(Command::ExchangeBasis::MutableCountedPointer &aExchange, CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler, CommandManager::OnCommandErrorFunc aOnCommandErrorHandler, void *aContext);
-    Common::Status SendCommand(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Timeout &aTimeout, CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler, CommandManager::OnCommandErrorFunc aOnCommandErrorHandler, void *aContext);
+    Common::Status SendCommand(Command::ExchangeBasis::MutableCountedPointer &aExchange,
+                               CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
+                               CommandManager::OnCommandErrorFunc aOnCommandErrorHandler,
+                               void *aContext);
+    Common::Status SendCommand(Command::ExchangeBasis::MutableCountedPointer &aExchange,
+                               const Common::Timeout &aTimeout,
+                               CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
+                               CommandManager::OnCommandErrorFunc aOnCommandErrorHandler,
+                               void *aContext);
 
     // Refresh State Observation and Mutation Methods
 
