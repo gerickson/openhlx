@@ -28,8 +28,6 @@
 
 #include <CoreFoundation/CFDictionary.h>
 
-#include "ControllerBasisDelegate.hpp"
-
 
 namespace HLX
 {
