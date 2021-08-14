@@ -176,8 +176,8 @@ ZonesController :: DoNotificationHandlers(const bool &aRegister)
             ZonesController::VolumeFixedNotificationReceivedHandler
         }
     };
-    static constexpr size_t                lNotificationHandlerCount = ElementsOf(lNotificationHandlers);
-    Status                                 lRetval = kStatus_Success;
+    static constexpr size_t  lNotificationHandlerCount = ElementsOf(lNotificationHandlers);
+    Status                   lRetval = kStatus_Success;
 
     lRetval = Client::ControllerBasis::DoNotificationHandlers(&lNotificationHandlers[0],
                                                               &lNotificationHandlers[lNotificationHandlerCount],
@@ -3469,7 +3469,7 @@ void
 ZonesController :: VolumeNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
     IdentifierType                         lZoneIdentifier;
-    VolumeModel::LevelType                lVolume;
+    VolumeModel::LevelType                 lVolume;
     Status                                 lStatus;
 
 
