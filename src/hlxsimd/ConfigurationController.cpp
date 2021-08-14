@@ -137,12 +137,16 @@ Status ConfigurationController :: Init(CommandManager &aCommandManager)
     return (lRetval);
 }
 
-ConfigurationControllerDelegate * ConfigurationController :: GetDelegate(void) const
+// MARK: Delegate Management
+
+ConfigurationControllerDelegate *
+ConfigurationController :: GetDelegate(void) const
 {
     return (mDelegate);
 }
 
-Status ConfigurationController :: SetDelegate(ConfigurationControllerDelegate *aDelegate)
+Status
+ConfigurationController :: SetDelegate(ConfigurationControllerDelegate *aDelegate)
 {
     Status lRetval = kStatus_Success;
 
