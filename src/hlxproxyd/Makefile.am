@@ -25,10 +25,18 @@ include $(abs_top_nlbuild_autotools_dir)/automake/pre.am
 
 noinst_HEADERS                                                             = \
     ConfigurationController.hpp                                              \
+    ConfigurationControllerDelegate.hpp                                      \
     ControllerBasis.hpp                                                      \
+    EqualizerPresetsController.hpp                                           \
+    FavoritesController.hpp                                                  \
+    FrontPanelController.hpp                                                 \
+    GroupsController.hpp                                                     \
     HLXProxyController.hpp                                                   \
     HLXProxyControllerDelegate.hpp                                           \
+    InfraredController.hpp                                                   \
+    NetworkController.hpp                                                    \
     ProxyCommand.hpp                                                         \
+    SourcesController.hpp                                                    \
     ZonesController.hpp                                                      \
     $(NULL)
 
@@ -64,8 +72,15 @@ hlxproxyd_LDFLAGS                                                          = \
 hlxproxyd_SOURCES                                                          = \
     ConfigurationController.cpp                                              \
     ControllerBasis.cpp                                                      \
+    EqualizerPresetsController.cpp                                           \
+    FavoritesController.cpp                                                  \
+    FrontPanelController.cpp                                                 \
+    GroupsController.cpp                                                     \
     HLXProxyController.cpp                                                   \
+    InfraredController.cpp                                                   \
+    NetworkController.cpp                                                    \
     ProxyCommand.cpp                                                         \
+    SourcesController.cpp                                                    \
     ZonesController.cpp                                                      \
     hlxproxyd.cpp                                                            \
     $(NULL)
