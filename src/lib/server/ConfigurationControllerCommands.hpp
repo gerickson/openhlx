@@ -26,10 +26,11 @@
 #ifndef HLXSERVERCONFIGURATIONCONTROLLERCOMMANDS_HPP
 #define HLXSERVERCONFIGURATIONCONTROLLERCOMMANDS_HPP
 
-#include <CommandConfigurationRegularExpressionBases.hpp>
-#include <CommandQueryResponseBasis.hpp>
-#include <CommandRequestBasis.hpp>
+#include <OpenHLX/Common/CommandConfigurationRegularExpressionBases.hpp>
 #include <OpenHLX/Common/Errors.hpp>
+
+#include "CommandQueryResponseBasis.hpp"
+#include "CommandRequestBasis.hpp"
 
 
 namespace HLX
