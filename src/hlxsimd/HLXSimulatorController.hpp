@@ -40,16 +40,16 @@
 #include <OpenHLX/Server/ConnectionManagerDelegate.hpp>
 
 #include "ConfigurationController.hpp"
-#include <ConfigurationControllerDelegate.hpp>
-#include <EqualizerPresetsController.hpp>
-#include <FavoritesController.hpp>
-#include <FrontPanelController.hpp>
-#include <GroupsController.hpp>
-#include <GroupsControllerDelegate.hpp>
-#include <HLXSimulatorControllerDelegate.hpp>
-#include <InfraredController.hpp>
-#include <NetworkController.hpp>
-#include <SourcesController.hpp>
+#include "ConfigurationControllerDelegate.hpp"
+#include "EqualizerPresetsController.hpp"
+#include "FavoritesController.hpp"
+#include "FrontPanelController.hpp"
+#include "GroupsController.hpp"
+#include "GroupsControllerDelegate.hpp"
+#include "HLXSimulatorControllerDelegate.hpp"
+#include "InfraredController.hpp"
+#include "NetworkController.hpp"
+#include "SourcesController.hpp"
 #include "ZonesController.hpp"
 
 
