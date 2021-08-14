@@ -268,6 +268,36 @@ done:
     return (lRetval);
 }
 
+// MARK: Configuration Management Methods
+
+Status
+ZonesController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    DeclareScopedFunctionTracer(lTracer);
+    IdentifierType  lZoneIdentifier;
+    Status          lRetval = kStatus_Success;
+
+
+    (void)aConnection;
+
+    // For each zone, query the configuration, passing the Boolean
+    // indicating this is a general configuration query not a
+    // zone-specific one.
+
+    for (lZoneIdentifier = IdentifierModel::kIdentifierMin; lZoneIdentifier <= kZonesMax; lZoneIdentifier++)
+    {
+        static constexpr bool kIsConfiguration = true;
+
+        lRetval = HandleQueryReceived(kIsConfiguration, lZoneIdentifier, aBuffer);
+        Log::Debug().Write("%s: %d: lRetval %d\n",
+                           __func__, __LINE__, lRetval);
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
+
+done:
+    return (lRetval);
+}
+
 // MARK: Server-facing Client Observer Methods
 
 /**
@@ -1050,7 +1080,7 @@ void
 ZonesController :: VolumeNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
     IdentifierType                         lZoneIdentifier;
-    VolumeModel::LevelType                lVolume;
+    VolumeModel::LevelType                 lVolume;
     Status                                 lStatus;
 
 
@@ -1305,7 +1335,7 @@ void ZonesController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aCo
 {
     static const bool                        kIsConfiguration = true;
     IdentifierType                           lZoneIdentifier;
-    Server::Command::Zones::QueryResponse            lResponse;
+    Server::Command::Zones::QueryResponse    lResponse;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
     const uint8_t *                          lBuffer;
