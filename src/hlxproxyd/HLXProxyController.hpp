@@ -42,6 +42,7 @@
 #include <OpenHLX/Server/ConnectionManagerDelegate.hpp>
 
 #include "ConfigurationController.hpp"
+#include "ConfigurationControllerDelegate.hpp"
 #include "HLXProxyControllerDelegate.hpp"
 #include "ZonesController.hpp"
 
@@ -64,7 +65,8 @@ class Controller :
     public Server::ConnectionManagerDelegate,
     public Client::CommandManagerDelegate,
     public Server::CommandManagerDelegate,
-    public Client::ControllerBasisDelegate
+    public Client::ControllerBasisDelegate,
+    public ConfigurationControllerDelegate
 {
 public:
     Controller(void);
@@ -141,6 +143,10 @@ public:
     void ControllerStateDidChange(Client::ControllerBasis &aController, const Client::StateChange::NotificationBasis &aStateChangeNotification) final;
 
     // Client-facing Server Controller Basis Delegate Methods
+
+    // Client-facing Server Configuration Controller Delegate Methods
+
+    Common::Status QueryCurrentConfiguration(ConfigurationController &aController, Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) final;
 
 private:
     Common::Status InitClient(const Common::RunLoopParameters &aRunLoopParameters);

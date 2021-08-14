@@ -47,6 +47,7 @@ Controller :: Controller(void) :
     Client::CommandManagerDelegate(),
     Server::CommandManagerDelegate(),
     Client::ControllerBasisDelegate(),
+    ConfigurationControllerDelegate(),
     mClientConnectionManager(),
     mClientCommandManager(),
     mServerConnectionManager(),
@@ -234,6 +235,12 @@ Controller :: InitControllers(const RunLoopParameters &aRunLoopParameters)
     AddController(mConfigurationController);
     AddController(mZonesController);
 
+    // Explicitly set this parent controller to be the delegate for
+    // fanout of any configuration controller delegations.
+
+    lRetval = mConfigurationController.SetDelegate(this);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
     // Intialize the controllers (skipping the configuration
     // controller as we just handled that).
 
@@ -245,6 +252,10 @@ Controller :: InitControllers(const RunLoopParameters &aRunLoopParameters)
         lRetval = lCurrent->second.mController->Init(mClientCommandManager,
                                                      mServerCommandManager);
         nlREQUIRE_SUCCESS(lRetval, done);
+
+        // Unconditionally set the delegate (including the
+        // configuration controller since here, we are
+        // handling its upcast class).
 
         lRetval = static_cast<Client::ControllerBasis *>(lCurrent->second.mController)->SetDelegate(this);
         nlREQUIRE_SUCCESS(lRetval, done);
@@ -1071,6 +1082,34 @@ void
 Controller :: ControllerError(Client::ControllerBasis &aController, const Common::Error &aError)
 {
     return;
+}
+
+// MARK: Client-facing Server Configuration Controller Delegate Methods
+
+Status
+Controller :: QueryCurrentConfiguration(ConfigurationController &aController, Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    Controllers::iterator lCurrent;
+    Controllers::iterator lLast;
+    Status                lRetval = kStatus_Success;
+
+
+    if (&aController == &mConfigurationController)
+    {
+        lCurrent = mControllers.begin();
+        lLast    = mControllers.end();
+
+        while (lCurrent != lLast)
+        {
+            lRetval = lCurrent->second.mController->QueryCurrentConfiguration(aConnection, aBuffer);
+            nlREQUIRE_SUCCESS(lRetval, done);
+
+            lCurrent++;
+        }
+    }
+
+done:
+    return (lRetval);
 }
 
 }; // namespace Proxy
