@@ -51,6 +51,7 @@ Controller :: Controller(void) :
     mClientCommandManager(),
     mServerConnectionManager(),
     mServerCommandManager(),
+    mConfigurationController(),
     mZonesController(),
     mControllers(),
     mControllersDidRefreshCount(0),
@@ -230,6 +231,7 @@ Controller :: InitControllers(const RunLoopParameters &aRunLoopParameters)
     //
     // 2) this is the priority we want to run operations like refresh.
 
+    AddController(mConfigurationController);
     AddController(mZonesController);
 
     // Intialize the controllers (skipping the configuration

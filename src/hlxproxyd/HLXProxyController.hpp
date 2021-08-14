@@ -41,6 +41,7 @@
 #include <OpenHLX/Server/ConnectionManager.hpp>
 #include <OpenHLX/Server/ConnectionManagerDelegate.hpp>
 
+#include "ConfigurationController.hpp"
 #include "HLXProxyControllerDelegate.hpp"
 #include "ZonesController.hpp"
 
@@ -171,6 +172,7 @@ private:
     Client::CommandManager          mClientCommandManager;
     Server::ConnectionManager       mServerConnectionManager;
     Server::CommandManager          mServerCommandManager;
+    ConfigurationController         mConfigurationController;
     ZonesController                 mZonesController;
     Controllers                     mControllers;
     size_t                          mControllersDidRefreshCount;
