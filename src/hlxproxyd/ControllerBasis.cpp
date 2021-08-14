@@ -79,6 +79,20 @@ done:
     return (lRetval);
 }
 
+// MARK: Configuration Management Methods
+
+Status
+ControllerBasis :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    DeclareScopedFunctionTracer(lTracer);
+    Status lRetval = kStatus_Success;
+
+    (void)aConnection;
+    (void)aBuffer;
+
+    return (lRetval);
+}
+
 }; // namespace Proxy
 
 }; // namespace HLX

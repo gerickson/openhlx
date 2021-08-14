@@ -56,6 +56,11 @@ public:
     virtual Common::Status Init(Client::CommandManager &aClientCommandManager, Server::CommandManager &aServerCommandManager);
     virtual Common::Status Init(Client::CommandManager &aClientCommandManager, Server::CommandManager &aServerCommandManager, const Common::Timeout &aTimeout);
 
+    // Configuration Management Methods
+
+    virtual Common::Status QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+
+
 protected:
     ControllerBasis(void);
 
