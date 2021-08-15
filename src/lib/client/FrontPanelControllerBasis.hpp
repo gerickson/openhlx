@@ -25,7 +25,7 @@
 #ifndef OPENHLXCLIENTFRONTPANELCONTROLLERBASIS_HPP
 #define OPENHLXCLIENTFRONTPANELCONTROLLERBASIS_HPP
 
-#include <FrontPanelControllerCommands.hpp>
+#include <OpenHLX/Client/FrontPanelControllerCommands.hpp>
 
 
 namespace HLX

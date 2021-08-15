@@ -25,7 +25,7 @@
 #ifndef OPENHLXCLIENTNETWORKCONTROLLERBASIS_HPP
 #define OPENHLXCLIENTNETWORKCONTROLLERBASIS_HPP
 
-#include <NetworkControllerCommands.hpp>
+#include <OpenHLX/Client/NetworkControllerCommands.hpp>
 
 
 namespace HLX
