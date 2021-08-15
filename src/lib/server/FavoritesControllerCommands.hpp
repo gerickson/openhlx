@@ -26,12 +26,13 @@
 #ifndef HLXSERVERFAVORITESCONTROLLERCOMMANDS_HPP
 #define HLXSERVERFAVORITESCONTROLLERCOMMANDS_HPP
 
-#include <CommandFavoritesRegularExpressionBases.hpp>
-#include <CommandNameSetResponseBasis.hpp>
-#include <CommandQueryResponseBasis.hpp>
-#include <CommandRequestBasis.hpp>
+#include <OpenHLX/Common/CommandFavoritesRegularExpressionBases.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Model/FavoriteModel.hpp>
+
+#include "CommandNameSetResponseBasis.hpp"
+#include "CommandQueryResponseBasis.hpp"
+#include "CommandRequestBasis.hpp"
 
 
 namespace HLX

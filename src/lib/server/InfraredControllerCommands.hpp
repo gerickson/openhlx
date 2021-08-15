@@ -26,12 +26,13 @@
 #ifndef HLXSERVERINFRAREDCONTROLLERCOMMANDS_HPP
 #define HLXSERVERINFRAREDCONTROLLERCOMMANDS_HPP
 
-#include <CommandInfraredBufferBases.hpp>
-#include <CommandInfraredRegularExpressionBases.hpp>
-#include <CommandRequestBasis.hpp>
-#include <CommandResponseBasis.hpp>
+#include <OpenHLX/Common/CommandInfraredBufferBases.hpp>
+#include <OpenHLX/Common/CommandInfraredRegularExpressionBases.hpp>
 #include <OpenHLX/Common/Errors.hpp>
-#include <OpenHLX/Model/InfraredModel.hpp>
+
+#include "CommandQueryResponseBasis.hpp"
+#include "CommandRequestBasis.hpp"
+#include "CommandResponseBasis.hpp"
 
 
 namespace HLX

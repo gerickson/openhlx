@@ -26,12 +26,13 @@
 #ifndef HLXSERVERFRONTPANELCONTROLLERCOMMANDS_HPP
 #define HLXSERVERFRONTPANELCONTROLLERCOMMANDS_HPP
 
-#include <CommandFrontPanelBufferBases.hpp>
-#include <CommandFrontPanelRegularExpressionBases.hpp>
-#include <CommandRequestBasis.hpp>
-#include <CommandResponseBasis.hpp>
+#include <OpenHLX/Common/CommandFrontPanelBufferBases.hpp>
+#include <OpenHLX/Common/CommandFrontPanelRegularExpressionBases.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Model/FrontPanelModel.hpp>
+
+#include "CommandRequestBasis.hpp"
+#include "CommandResponseBasis.hpp"
 
 
 namespace HLX

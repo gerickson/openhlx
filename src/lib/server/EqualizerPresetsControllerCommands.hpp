@@ -26,13 +26,14 @@
 #ifndef HLXSERVEREQUALIZERPRESETSCONTROLLERCOMMANDS_HPP
 #define HLXSERVEREQUALIZERPRESETSCONTROLLERCOMMANDS_HPP
 
-#include <CommandEqualizerBandResponseBasis.hpp>
-#include <CommandEqualizerPresetsRegularExpressionBases.hpp>
-#include <CommandNameSetResponseBasis.hpp>
-#include <CommandQueryResponseBasis.hpp>
-#include <CommandRequestBasis.hpp>
-#include <OpenHLX/Model/EqualizerPresetModel.hpp>
+#include <OpenHLX/Common/CommandEqualizerPresetsRegularExpressionBases.hpp>
 #include <OpenHLX/Common/Errors.hpp>
+#include <OpenHLX/Model/EqualizerPresetModel.hpp>
+
+#include "CommandEqualizerBandResponseBasis.hpp"
+#include "CommandNameSetResponseBasis.hpp"
+#include "CommandQueryResponseBasis.hpp"
+#include "CommandRequestBasis.hpp"
 
 
 namespace HLX

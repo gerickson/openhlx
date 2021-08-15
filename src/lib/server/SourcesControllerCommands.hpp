@@ -26,11 +26,11 @@
 #ifndef HLXSERVERSOURCESCONTROLLERCOMMANDS_HPP
 #define HLXSERVERSOURCESCONTROLLERCOMMANDS_HPP
 
-#include <CommandNameSetResponseBasis.hpp>
-#include <CommandRequestBasis.hpp>
-#include <CommandSourcesRegularExpressionBases.hpp>
+#include <OpenHLX/Common/CommandSourcesRegularExpressionBases.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Model/SourceModel.hpp>
+#include <OpenHLX/Server/CommandNameSetResponseBasis.hpp>
+#include <OpenHLX/Server/CommandRequestBasis.hpp>
 
 
 namespace HLX

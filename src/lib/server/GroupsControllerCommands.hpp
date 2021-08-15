@@ -26,17 +26,18 @@
 #ifndef HLXSERVERGROUPSCONTROLLERCOMMANDS_HPP
 #define HLXSERVERGROUPSCONTROLLERCOMMANDS_HPP
 
-#include <CommandGroupsRegularExpressionBases.hpp>
-#include <CommandNameSetResponseBasis.hpp>
-#include <CommandQueryResponseBasis.hpp>
-#include <CommandRequestBasis.hpp>
-#include <CommandSourceResponseBases.hpp>
-#include <CommandVolumeResponseBases.hpp>
+#include <OpenHLX/Common/CommandGroupsRegularExpressionBases.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Model/GroupModel.hpp>
 #include <OpenHLX/Model/SourceModel.hpp>
 #include <OpenHLX/Model/VolumeModel.hpp>
 #include <OpenHLX/Model/ZoneModel.hpp>
+
+#include "CommandNameSetResponseBasis.hpp"
+#include "CommandQueryResponseBasis.hpp"
+#include "CommandRequestBasis.hpp"
+#include "CommandSourceResponseBases.hpp"
+#include "CommandVolumeResponseBases.hpp"
 
 
 namespace HLX
