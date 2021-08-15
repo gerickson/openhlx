@@ -72,9 +72,19 @@ public:
 
     Common::Status Refresh(const Common::Timeout &aTimeout) final;
 
+    // Configuration Management Methods
+
+    Common::Status QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) final;
+
     // Observer Methods
 
+    Common::Status Query(void);
+    Common::Status Query(const IdentifierType &aGroupIdentifier);
+
     // Server-facing Client Command Completion Handler Trampolines
+
+
+    static void CommandErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError, void *aContext);
 
     // Server-facing Client Notification Handler Trampolines
 
@@ -92,9 +102,18 @@ private:
 
     // Server-facing Client Command Completion Handlers
 
+    void QueryCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
+    void SetNameCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
+    void CommandErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError);
+
     // Server-facing Client Notification Handlers
 
+    void NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+
     // Client-facing Server Command Completion Handlers
+    void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+
 };
 
 }; // namespace Proxy
