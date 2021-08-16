@@ -75,8 +75,6 @@ public:
     Common::Status Query(void);
     Common::Status Query(const IdentifierType &aZoneIdentifier);
 
-    Common::Status GetZonesMax(size_t &aZones) const;
-
     Common::Status GetZone(const IdentifierType &aIdentifier, const Model::ZoneModel *&aModel) const;
 
     Common::Status LookupIdentifier(const char *aName, IdentifierType &aZoneIdentifier) const;

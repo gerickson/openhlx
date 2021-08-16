@@ -358,25 +358,6 @@ done:
 
 /**
  *  @brief
- *    Get the maximum number of supported HLX zones.
- *
- *  @param[out]  aZones  The maximum number of HLX zones on success.
- *
- *  @retval  kStatus_Success  Unconditionally.
- *
- */
-Status
-ZonesController :: GetZonesMax(size_t &aZones) const
-{
-    Status  lRetval = kStatus_Success;
-
-    aZones = kZonesMax;
-
-    return (lRetval);
-}
-
-/**
- *  @brief
  *    Get the zone model associated with specified zone
  *    identifier.
  *
