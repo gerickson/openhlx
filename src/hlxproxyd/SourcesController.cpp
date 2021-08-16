@@ -192,8 +192,8 @@ done:
  *  This attempts to refresh or obtain an up-to-date view of the
  *  server peer state with the specified timeout.
  *
- *  Presently, this controller does so by executing a "query
- *  source [QCn]" command with the peer server.
+ *  The peer server sources controller supports no such commands, so
+ *  this is effectively a non-operation.
  *
  *  @param[in]  aTimeout  The timeout to use for the refresh operation
  *                        with the peer server.
@@ -219,7 +219,13 @@ SourcesController :: Refresh(const Timeout &aTimeout)
 
     SetRefreshRequested(true);
 
-done:
+    // Unlike other collection controllers (that is, favorites,
+    // groups, etc.)  the peer server source controller supports no
+    // "query source [QIn]" command.  Source state can only be
+    // obtained via the configuration controller.
+
+    MaybeUpdateRefreshIfRefreshWasRequested();
+
     return (lRetval);
 }
 
