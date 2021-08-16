@@ -78,11 +78,19 @@ public:
 
     // Observer Methods
 
+    Common::Status Query(void);
+
     // Server-facing Client Command Completion Handler Trampolines
+
+    static void QueryCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
+
+    static void CommandErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError, void *aContext);
 
     // Server-facing Client Notification Handler Trampolines
 
     // Client-facing Server Command Request Handler Trampolines
+
+    static void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
     // Proxy Handlers
@@ -96,9 +104,23 @@ private:
 
     // Server-facing Client Command Completion Handlers
 
+    void QueryCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
+
+    void CommandErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError);
+
     // Server-facing Client Notification Handlers
 
     // Client-facing Server Command Completion Handlers
+
+    void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+
+private:
+    // Server-facing Client Implementation
+
+private:
+    // Client-facing Server Implementation
+
+    static void QueryHandler(const char *aInputBuffer, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer);
 };
 
 }; // namespace Proxy
