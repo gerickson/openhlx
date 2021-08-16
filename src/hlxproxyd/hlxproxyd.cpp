@@ -71,9 +71,11 @@ using namespace std;
 #define OPT_CONNECT                  'c'
 #define OPT_DEBUG                    'd'
 #define OPT_HELP                     'h'
+#define OPT_INITIAL_REFRESH          (OPT_BASE + 1)
 #define OPT_IPV4_ONLY                '4'
 #define OPT_IPV6_ONLY                '6'
 #define OPT_LISTEN                   'l'
+#define OPT_NO_INITIAL_REFRESH       (OPT_BASE + 2)
 #define OPT_QUIET                    'q'
 #define OPT_SYSLOG                   's'
 #define OPT_VERBOSE                  'v'
@@ -82,12 +84,13 @@ using namespace std;
 // Type Declarations
 
 enum OptFlags {
-    kOptNone            = 0x00000000,
-    kOptIPv4Only        = 0x00000001,
-    kOptIPv6Only        = 0x00000002,
-    kOptPriority        = 0x00000004,
-    kOptQuiet           = 0x00000008,
-    kOptSyslog          = 0x00000010
+    kOptNone             = 0x00000000,
+    kOptIPv4Only         = 0x00000001,
+    kOptIPv6Only         = 0x00000002,
+    kOptPriority         = 0x00000004,
+    kOptQuiet            = 0x00000008,
+    kOptSyslog           = 0x00000010,
+    kOptNoInitialRefresh = 0x00000020
 };
 
 class HLXProxy;
@@ -112,9 +115,11 @@ static const struct option  sOptions[] = {
     { "connect",                 required_argument,  nullptr,   OPT_CONNECT                 },
     { "debug",                   optional_argument,  nullptr,   OPT_DEBUG                   },
     { "help",                    no_argument,        nullptr,   OPT_HELP                    },
+    { "initial-refresh",         no_argument,        nullptr,   OPT_INITIAL_REFRESH         },
     { "ipv4-only",               no_argument,        nullptr,   OPT_IPV4_ONLY               },
     { "ipv6-only",               no_argument,        nullptr,   OPT_IPV6_ONLY               },
     { "listen",                  required_argument,  nullptr,   OPT_LISTEN                  },
+    { "no-initial-refresh",      no_argument,        nullptr,   OPT_NO_INITIAL_REFRESH      },
     { "quiet",                   no_argument,        nullptr,   OPT_QUIET                   },
     { "verbose",                 optional_argument,  nullptr,   OPT_VERBOSE                 },
     { "version",                 no_argument,        nullptr,   OPT_VERSION                 },
@@ -472,8 +477,11 @@ void HLXProxy :: ControllerDidConnect(Controller &aController, CFURLRef aURLRef)
     // of the proxy since only the former should trigger a refresh,
     // not the latter.
 
-    lStatus = mHLXProxyController.Refresh();
-    nlREQUIRE_SUCCESS(lStatus, done);
+    if ((sOptFlags & kOptNoInitialRefresh) != kOptNoInitialRefresh)
+    {
+        lStatus = mHLXProxyController.Refresh();
+        nlREQUIRE_SUCCESS(lStatus, done);
+    }
 
  done:
     return;
@@ -791,6 +799,18 @@ DecodeOptions(const char *inProgram,
             PrintUsage(inProgram, EXIT_SUCCESS);
             break;
 
+        case OPT_INITIAL_REFRESH:
+            if (sOptFlags & kOptNoInitialRefresh)
+            {
+                Log::Error().Write("The '--initial-refresh' and '--no-initial-refresh' options are mutually-exclusive. Please choose one or the other.\n");
+                error++;
+            }
+            else
+            {
+                sOptFlags &= static_cast<uint32_t>(~kOptNoInitialRefresh);
+            }
+            break;
+
         case OPT_IPV4_ONLY:
             if (sOptFlags & kOptIPv6Only)
             {
@@ -817,6 +837,10 @@ DecodeOptions(const char *inProgram,
 
         case OPT_LISTEN:
             sListenMaybeURL = optarg;
+            break;
+
+        case OPT_NO_INITIAL_REFRESH:
+            sOptFlags |= kOptNoInitialRefresh;
             break;
 
         case OPT_QUIET:
