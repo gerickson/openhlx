@@ -2058,9 +2058,24 @@ void GroupsController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aC
     if (lStatus >= kStatus_Success)
     {
         lStatus = SendResponse(aConnection, lResponseBuffer);
-        nlVERIFY_SUCCESS(lStatus);
+        nlREQUIRE_SUCCESS(lStatus, exit);
     }
-    else
+    else if (lStatus == kError_NotInitialized)
+    {
+        lStatus = ProxyCommand(aConnection,
+                               aBuffer,
+                               aSize,
+                               aMatches,
+                               kQueryResponse,
+                               GroupsController::QueryCompleteHandler,
+                               GroupsController::CommandErrorHandler,
+                               GroupsController::QueryRequestReceivedHandler,
+                               this);
+        nlREQUIRE_SUCCESS(lStatus, exit);
+    }
+
+ exit:
+    if (lStatus < kStatus_Success)
     {
         lStatus = SendErrorResponse(aConnection);
         nlVERIFY_SUCCESS(lStatus);

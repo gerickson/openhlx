@@ -613,15 +613,28 @@ void InfraredController :: QueryRequestReceivedHandler(Server::ConnectionBasis &
     if (lStatus >= kStatus_Success)
     {
         lStatus = SendResponse(aConnection, lResponseBuffer);
-        nlVERIFY_SUCCESS(lStatus);
+        nlREQUIRE_SUCCESS(lStatus, exit);
     }
-    else
+    else if (lStatus == kError_NotInitialized)
+    {
+        lStatus = ProxyCommand(aConnection,
+                               aBuffer,
+                               aSize,
+                               aMatches,
+                               kQueryResponse,
+                               InfraredController::QueryCompleteHandler,
+                               InfraredController::CommandErrorHandler,
+                               InfraredController::QueryRequestReceivedHandler,
+                               this);
+        nlREQUIRE_SUCCESS(lStatus, exit);
+    }
+
+ exit:
+    if (lStatus < kStatus_Success)
     {
         lStatus = SendErrorResponse(aConnection);
         nlVERIFY_SUCCESS(lStatus);
     }
-
-    return;
 }
 
 void InfraredController :: SetDisabledRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
