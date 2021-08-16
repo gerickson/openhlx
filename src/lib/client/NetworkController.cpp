@@ -141,6 +141,9 @@ NetworkController :: Refresh(const Timeout &aTimeout)
 
     (void)aTimeout;
 
+    // Notify the base controller that we have begun a refresh
+    // operation.
+
     SetRefreshRequested(true);
 
     lRetval = Query();
