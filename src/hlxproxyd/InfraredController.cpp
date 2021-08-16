@@ -123,8 +123,27 @@ done:
 Status
 InfraredController :: DoRequestHandlers(const bool &aRegister)
 {
+    static const RequestHandlerBasis  lRequestHandlers[] = {
+        {
+            kQueryRequest,
+            InfraredController::QueryRequestReceivedHandler
+        },
+
+        {
+            kSetDisabledRequest,
+            InfraredController::SetDisabledRequestReceivedHandler
+        }
+    };
+    static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
     Status                   lRetval = kStatus_Success;
 
+    lRetval = Server::ControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
+                                                         &lRequestHandlers[lRequestHandlerCount],
+                                                         this,
+                                                         aRegister);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
     return (lRetval);
 }
 
@@ -237,6 +256,8 @@ InfraredController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnec
 
 
     (void)aConnection;
+
+    QueryHandler(aBuffer);
 
     return (lRetval);
 }
@@ -565,7 +586,113 @@ InfraredController :: DisabledNotificationReceivedHandler(const uint8_t *aBuffer
 
 // MARK: Client-facing Server Command Request Completion Handlers
 
+
+void InfraredController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+{
+    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
+    Status                                   lStatus;
+
+
+    (void)aBuffer;
+    (void)aSize;
+
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Infrared::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+
+    lResponseBuffer.reset(new ConnectionBuffer);
+    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
+
+    lStatus = lResponseBuffer->Init();
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    QueryHandler(lResponseBuffer);
+
+ done:
+    if (lStatus >= kStatus_Success)
+    {
+        lStatus = SendResponse(aConnection, lResponseBuffer);
+        nlVERIFY_SUCCESS(lStatus);
+    }
+    else
+    {
+        lStatus = SendErrorResponse(aConnection);
+        nlVERIFY_SUCCESS(lStatus);
+    }
+
+    return;
+}
+
+void InfraredController :: SetDisabledRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+{
+    InfraredModel::DisabledType                  lDisabled;
+    Server::Command::Infrared::DisabledResponse  lResponse;
+    ConnectionBuffer::MutableCountedPointer      lResponseBuffer;
+    Status                                       lStatus;
+
+
+    (void)aSize;
+
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Infrared::SetDisabledRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+
+    // Match 2/2: Disabled
+
+    lStatus = Utilities::Parse(aBuffer + aMatches.at(1).rm_so,
+                               Common::Utilities::Distance(aMatches.at(1)),
+                               lDisabled);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lResponseBuffer.reset(new ConnectionBuffer);
+    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
+
+    lStatus = lResponseBuffer->Init();
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lStatus = mInfraredModel.SetDisabled(lDisabled);
+    nlREQUIRE(lStatus >= kStatus_Success, done);
+
+    if (lStatus == kStatus_Success)
+    {
+        ;
+    }
+
+    lStatus = HandleDisabledResponse(lDisabled, lResponseBuffer);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    if (lStatus >= kStatus_Success)
+    {
+        lStatus = SendResponse(aConnection, lResponseBuffer);
+        nlVERIFY_SUCCESS(lStatus);
+    }
+    else
+    {
+        lStatus = SendErrorResponse(aConnection);
+        nlVERIFY_SUCCESS(lStatus);
+    }
+
+    return;
+}
+
 // MARK: Client-facing Server Command Request Handler Trampolines
+
+void InfraredController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+{
+    InfraredController *lController = static_cast<InfraredController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->QueryRequestReceivedHandler(aConnection, aBuffer, aSize, aMatches);
+    }
+}
+
+void InfraredController :: SetDisabledRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+{
+    InfraredController *lController = static_cast<InfraredController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->SetDisabledRequestReceivedHandler(aConnection, aBuffer, aSize, aMatches);
+    }
+}
 
 // MARK: Proxy Handlers
 
@@ -574,6 +701,43 @@ InfraredController :: DisabledNotificationReceivedHandler(const uint8_t *aBuffer
 // MARK: Server-facing Client Implementation
 
 // MARK: Client-facing Server Implementation
+
+void InfraredController :: QueryHandler(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+{
+    InfraredModel::DisabledType              lDisabled;
+    Status                                   lStatus;
+
+
+    lStatus = mInfraredModel.GetDisabled(lDisabled);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lStatus = HandleDisabledResponse(lDisabled, aBuffer);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return;
+}
+
+Status InfraredController :: HandleDisabledResponse(const InfraredModel::DisabledType &aDisabled, ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    Server::Command::Infrared::DisabledResponse  lDisabledResponse;
+    const uint8_t *                              lBuffer;
+    size_t                                       lSize;
+    Status                                       lStatus;
+
+
+    lStatus = lDisabledResponse.Init(aDisabled);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lBuffer = lDisabledResponse.GetBuffer();
+    lSize = lDisabledResponse.GetSize();
+
+    lStatus = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return (lStatus);
+}
 
 }; // namespace Proxy
 

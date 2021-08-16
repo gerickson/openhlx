@@ -128,8 +128,32 @@ done:
 Status
 FrontPanelController :: DoRequestHandlers(const bool &aRegister)
 {
+    static const RequestHandlerBasis  lRequestHandlers[] = {
+        {
+            kQueryRequest,
+            FrontPanelController::QueryRequestReceivedHandler
+        },
+
+        {
+            kSetBrightnessRequest,
+            FrontPanelController::SetBrightnessRequestReceivedHandler
+        },
+
+        {
+            kSetLockedRequest,
+            FrontPanelController::SetLockedRequestReceivedHandler
+        }
+    };
+    static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
     Status                   lRetval = kStatus_Success;
 
+    lRetval = Server::ControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
+                                                         &lRequestHandlers[lRequestHandlerCount],
+                                                         this,
+                                                         aRegister);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
     return (lRetval);
 }
 
@@ -238,10 +262,12 @@ Status
 FrontPanelController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     DeclareScopedFunctionTracer(lTracer);
-    Status                                lRetval = kStatus_Success;
+    Status  lRetval = kStatus_Success;
 
 
     (void)aConnection;
+
+    QueryHandler(aBuffer);
 
     return (lRetval);
 }
@@ -718,7 +744,177 @@ FrontPanelController :: LockedNotificationReceivedHandler(const uint8_t *aBuffer
 
 // MARK: Client-facing Server Command Request Completion Handlers
 
+void FrontPanelController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+{
+    FrontPanelModel::LockedType              lLocked;
+    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
+    Status                                   lStatus;
+
+
+    (void)aBuffer;
+    (void)aSize;
+
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::FrontPanel::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+
+    lResponseBuffer.reset(new ConnectionBuffer);
+    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
+
+    lStatus = lResponseBuffer->Init();
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lStatus = mFrontPanelModel.GetLocked(lLocked);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lStatus = HandleLockedResponse(lLocked, lResponseBuffer);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    if (lStatus >= kStatus_Success)
+    {
+        lStatus = SendResponse(aConnection, lResponseBuffer);
+        nlVERIFY_SUCCESS(lStatus);
+    }
+    else
+    {
+        lStatus = SendErrorResponse(aConnection);
+        nlVERIFY_SUCCESS(lStatus);
+    }
+
+    return;
+}
+
+void FrontPanelController :: SetBrightnessRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+{
+    FrontPanelModel::BrightnessType          lBrightness;
+    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
+    Status                                   lStatus;
+
+
+    (void)aSize;
+
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::FrontPanel::SetBrightnessRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+
+    // Match 2/2: Brightness
+
+    lStatus = Utilities::Parse(aBuffer + aMatches.at(1).rm_so,
+                               Common::Utilities::Distance(aMatches.at(1)),
+                               lBrightness);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lResponseBuffer.reset(new ConnectionBuffer);
+    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
+
+    lStatus = lResponseBuffer->Init();
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lStatus = mFrontPanelModel.SetBrightness(lBrightness);
+    nlREQUIRE(lStatus >= kStatus_Success, done);
+
+    if (lStatus == kStatus_Success)
+    {
+        ;
+    }
+
+    lStatus = HandleBrightnessResponse(lBrightness, lResponseBuffer);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    if (lStatus >= kStatus_Success)
+    {
+        lStatus = SendResponse(aConnection, lResponseBuffer);
+        nlVERIFY_SUCCESS(lStatus);
+    }
+    else
+    {
+        lStatus = SendErrorResponse(aConnection);
+        nlVERIFY_SUCCESS(lStatus);
+    }
+
+    return;
+}
+
+void FrontPanelController :: SetLockedRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+{
+    FrontPanelModel::LockedType                  lLocked;
+    Server::Command::FrontPanel::LockedResponse  lLockedResponse;
+    ConnectionBuffer::MutableCountedPointer      lResponseBuffer;
+    Status                                       lStatus;
+
+
+    (void)aSize;
+
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::FrontPanel::SetLockedRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+
+    // Match 2/2: Locked
+
+    lStatus = Utilities::Parse(aBuffer + aMatches.at(1).rm_so,
+                               Common::Utilities::Distance(aMatches.at(1)),
+                               lLocked);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lResponseBuffer.reset(new ConnectionBuffer);
+    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
+
+    lStatus = lResponseBuffer->Init();
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lStatus = mFrontPanelModel.SetLocked(lLocked);
+    nlREQUIRE(lStatus >= kStatus_Success, done);
+
+    if (lStatus == kStatus_Success)
+    {
+        ;
+    }
+
+    lStatus = HandleLockedResponse(lLocked, lResponseBuffer);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    if (lStatus >= kStatus_Success)
+    {
+        lStatus = SendResponse(aConnection, lResponseBuffer);
+        nlVERIFY_SUCCESS(lStatus);
+    }
+    else
+    {
+        lStatus = SendErrorResponse(aConnection);
+        nlVERIFY_SUCCESS(lStatus);
+    }
+
+    return;
+}
+
 // MARK: Client-facing Server Command Request Handler Trampolines
+
+void FrontPanelController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+{
+    FrontPanelController *lController = static_cast<FrontPanelController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->QueryRequestReceivedHandler(aConnection, aBuffer, aSize, aMatches);
+    }
+}
+
+void FrontPanelController :: SetBrightnessRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+{
+    FrontPanelController *lController = static_cast<FrontPanelController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->SetBrightnessRequestReceivedHandler(aConnection, aBuffer, aSize, aMatches);
+    }
+}
+
+void FrontPanelController :: SetLockedRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+{
+    FrontPanelController *lController = static_cast<FrontPanelController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->SetLockedRequestReceivedHandler(aConnection, aBuffer, aSize, aMatches);
+    }
+}
 
 // MARK: Proxy Handlers
 
@@ -727,6 +923,71 @@ FrontPanelController :: LockedNotificationReceivedHandler(const uint8_t *aBuffer
 // MARK: Server-facing Client Implementation
 
 // MARK: Client-facing Server Implementation
+
+void FrontPanelController :: QueryHandler(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+{
+    FrontPanelModel::BrightnessType          lBrightness;
+    FrontPanelModel::LockedType              lLocked;
+    Status                                   lStatus;
+
+
+    lStatus = mFrontPanelModel.GetBrightness(lBrightness);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lStatus = HandleBrightnessResponse(lBrightness, aBuffer);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lStatus = mFrontPanelModel.GetLocked(lLocked);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lStatus = HandleLockedResponse(lLocked, aBuffer);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return;
+}
+
+Status FrontPanelController :: HandleBrightnessResponse(const FrontPanelModel::BrightnessType &aBrightness, ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    Server::Command::FrontPanel::BrightnessResponse  lBrightnessResponse;
+    const uint8_t *                                  lBuffer;
+    size_t                                           lSize;
+    Status                                           lStatus;
+
+
+    lStatus = lBrightnessResponse.Init(aBrightness);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lBuffer = lBrightnessResponse.GetBuffer();
+    lSize = lBrightnessResponse.GetSize();
+
+    lStatus = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return (lStatus);
+}
+
+Status FrontPanelController :: HandleLockedResponse(const FrontPanelModel::LockedType &aLocked, ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    Server::Command::FrontPanel::LockedResponse  lLockedResponse;
+    const uint8_t *                              lBuffer;
+    size_t                                       lSize;
+    Status                                       lStatus;
+
+
+    lStatus = lLockedResponse.Init(aLocked);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lBuffer = lLockedResponse.GetBuffer();
+    lSize = lLockedResponse.GetSize();
+
+    lStatus = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return (lStatus);
+}
 
 }; // namespace Proxy
 

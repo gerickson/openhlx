@@ -49,6 +49,27 @@ namespace HLX
 namespace Proxy
 {
 
+// The query network response contains both state and
+// configuration settings.
+
+static const char * const kQueryResponseBuffer = \
+"(DHCP1)\r\n"
+"(IP192.168.1.48)\r\n"
+"(NM255.255.255.0)\r\n"
+"(GW192.168.1.1)\r\n"
+"(MAC00-50-C2-D8-24-71)\r\n"
+"(SDDP0)\r\n";
+
+// The query current configuration response contains ONLY
+// configuration settings.
+
+static const char * const kQueryCurrentResponseBuffer = \
+"(DHCP1)\r\n"
+"(IP192.168.1.48)\r\n"
+"(NM255.255.255.0)\r\n"
+"(GW192.168.1.1)\r\n"
+"(SDDP0)\r\n";
+
 /**
  *  @brief
  *    This is the class default constructor.
@@ -106,8 +127,22 @@ NetworkController :: DoNotificationHandlers(const bool &aRegister)
 Status
 NetworkController :: DoRequestHandlers(const bool &aRegister)
 {
+    static const RequestHandlerBasis  lRequestHandlers[] = {
+        {
+            kQueryRequest,
+            NetworkController::QueryRequestReceivedHandler
+        }
+    };
+    static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
     Status                   lRetval = kStatus_Success;
 
+    lRetval = Server::ControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
+                                                         &lRequestHandlers[lRequestHandlerCount],
+                                                         this,
+                                                         aRegister);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
     return (lRetval);
 }
 
@@ -216,6 +251,8 @@ NetworkController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnect
 
     (void)aConnection;
 
+    QueryHandler(kQueryCurrentResponseBuffer, aBuffer);
+
     return (lRetval);
 }
 
@@ -231,7 +268,67 @@ NetworkController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnect
 
 // MARK: Client-facing Server Command Request Completion Handlers
 
+void NetworkController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+{
+    Server::Command::Network::QueryResponse  lResponse;
+    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
+    Status                                   lStatus;
+    const uint8_t *                          lBuffer;
+    size_t                                   lSize;
+
+
+    (void)aBuffer;
+    (void)aSize;
+
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Network::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+
+    lResponseBuffer.reset(new ConnectionBuffer);
+    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
+
+    lStatus = lResponseBuffer->Init();
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // First, put the solicited notifications portion.
+
+    QueryHandler(kQueryResponseBuffer, lResponseBuffer);
+
+    // Second, put the response completion portion.
+
+    lStatus = lResponse.Init();
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lBuffer = lResponse.GetBuffer();
+    lSize = lResponse.GetSize();
+
+    lStatus = Common::Utilities::Put(*lResponseBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    if (lStatus >= kStatus_Success)
+    {
+        lStatus = SendResponse(aConnection, lResponseBuffer);
+        nlVERIFY_SUCCESS(lStatus);
+    }
+    else
+    {
+        lStatus = SendErrorResponse(aConnection);
+        nlVERIFY_SUCCESS(lStatus);
+    }
+
+    return;
+}
+
 // MARK: Client-facing Server Command Request Handler Trampolines
+
+void NetworkController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+{
+    NetworkController *lController = static_cast<NetworkController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->QueryRequestReceivedHandler(aConnection, aBuffer, aSize, aMatches);
+    }
+}
 
 // MARK: Proxy Handlers
 
@@ -240,6 +337,23 @@ NetworkController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnect
 // MARK: Server-facing Client Implementation
 
 // MARK: Client-facing Server Implementation
+
+void NetworkController :: QueryHandler(const char *aInputBuffer, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer)
+{
+    const uint8_t *                          lBuffer;
+    size_t                                   lSize;
+    Status                                   lStatus;
+
+
+    lBuffer = reinterpret_cast<const uint8_t *>(aInputBuffer);
+    lSize = strlen(aInputBuffer);
+
+    lStatus = Common::Utilities::Put(*aOutputBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return;
+}
 
 }; // namespace Proxy
 
