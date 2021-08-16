@@ -257,7 +257,7 @@ InfraredController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnec
 
     (void)aConnection;
 
-    lRetval = QueryHandler(aBuffer);
+    lRetval = HandleQueryReceived(aBuffer);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -606,7 +606,7 @@ void InfraredController :: QueryRequestReceivedHandler(Server::ConnectionBasis &
     lStatus = lResponseBuffer->Init();
     nlREQUIRE_SUCCESS(lStatus, done);
 
-    lStatus = QueryHandler(lResponseBuffer);
+    lStatus = HandleQueryReceived(lResponseBuffer);
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
@@ -706,7 +706,7 @@ void InfraredController :: SetDisabledRequestReceivedHandler(Server::ConnectionB
 // MARK: Client-facing Server Implementation
 
 Status
-InfraredController :: QueryHandler(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+InfraredController :: HandleQueryReceived(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     InfraredModel::DisabledType              lDisabled;
     Status                                   lRetval;

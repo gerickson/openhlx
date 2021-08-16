@@ -252,7 +252,7 @@ NetworkController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnect
 
     (void)aConnection;
 
-    lRetval = QueryHandler(kQueryCurrentResponseBuffer, aBuffer);
+    lRetval = HandleQueryReceived(kQueryCurrentResponseBuffer, aBuffer);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -293,7 +293,7 @@ void NetworkController :: QueryRequestReceivedHandler(Server::ConnectionBasis &a
 
     // First, put the solicited notifications portion.
 
-    lStatus = QueryHandler(kQueryResponseBuffer, lResponseBuffer);
+    lStatus = HandleQueryReceived(kQueryResponseBuffer, lResponseBuffer);
     nlREQUIRE_SUCCESS(lStatus, done);
 
     // Second, put the response completion portion.
@@ -343,7 +343,7 @@ void NetworkController :: QueryRequestReceivedHandler(Server::ConnectionBasis &a
 // MARK: Client-facing Server Implementation
 
 Status
-NetworkController :: QueryHandler(const char *aInputBuffer, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer)
+NetworkController :: HandleQueryReceived(const char *aInputBuffer, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer)
 {
     const uint8_t *                          lBuffer;
     size_t                                   lSize;

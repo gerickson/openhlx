@@ -120,7 +120,7 @@ private:
 private:
     // Client-facing Server Implementation
 
-    static Common::Status QueryHandler(const char *aInputBuffer, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer);
+    static Common::Status HandleQueryReceived(const char *aInputBuffer, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer);
 };
 
 }; // namespace Proxy

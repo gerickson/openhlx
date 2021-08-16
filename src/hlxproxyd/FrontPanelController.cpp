@@ -267,7 +267,7 @@ FrontPanelController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConn
 
     (void)aConnection;
 
-    lRetval = QueryHandler(aBuffer);
+    lRetval = HandleQueryReceived(aBuffer);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -927,7 +927,7 @@ void FrontPanelController :: SetLockedRequestReceivedHandler(Server::ConnectionB
 // MARK: Client-facing Server Implementation
 
 Status
-FrontPanelController :: QueryHandler(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+FrontPanelController :: HandleQueryReceived(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     FrontPanelModel::BrightnessType          lBrightness;
     FrontPanelModel::LockedType              lLocked;

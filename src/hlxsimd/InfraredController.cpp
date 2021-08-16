@@ -143,7 +143,7 @@ done:
     return (lRetval);
 }
 
-void InfraredController :: QueryHandler(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+void InfraredController :: HandleQueryReceived(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     InfraredModel::DisabledType              lDisabled;
     Status                                   lStatus;
@@ -186,7 +186,7 @@ void InfraredController :: QueryCurrentConfiguration(Server::ConnectionBasis &aC
 {
     (void)aConnection;
 
-    QueryHandler(aBuffer);
+    HandleQueryReceived(aBuffer);
 }
 
 void InfraredController :: ResetToDefaultConfiguration(void)
@@ -289,7 +289,7 @@ void InfraredController :: QueryRequestReceivedHandler(Server::ConnectionBasis &
     lStatus = lResponseBuffer->Init();
     nlREQUIRE_SUCCESS(lStatus, done);
 
-    QueryHandler(lResponseBuffer);
+    HandleQueryReceived(lResponseBuffer);
 
  done:
     if (lStatus >= kStatus_Success)

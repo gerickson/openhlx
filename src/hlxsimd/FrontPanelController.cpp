@@ -151,7 +151,7 @@ done:
     return (lRetval);
 }
 
-void FrontPanelController :: QueryHandler(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+void FrontPanelController :: HandleQueryReceived(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     FrontPanelModel::BrightnessType          lBrightness;
     FrontPanelModel::LockedType              lLocked;
@@ -222,7 +222,7 @@ void FrontPanelController :: QueryCurrentConfiguration(Server::ConnectionBasis &
 {
     (void)aConnection;
 
-    QueryHandler(aBuffer);
+    HandleQueryReceived(aBuffer);
 }
 
 void FrontPanelController :: ResetToDefaultConfiguration(void)

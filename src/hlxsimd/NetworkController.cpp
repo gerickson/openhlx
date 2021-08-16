@@ -161,7 +161,7 @@ done:
     return (lRetval);
 }
 
-void NetworkController :: QueryHandler(const char *aInputBuffer, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer)
+void NetworkController :: HandleQueryReceived(const char *aInputBuffer, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer)
 {
     const uint8_t *                          lBuffer;
     size_t                                   lSize;
@@ -184,7 +184,7 @@ void NetworkController :: QueryCurrentConfiguration(Server::ConnectionBasis &aCo
 {
     (void)aConnection;
 
-    QueryHandler(kQueryCurrentResponseBuffer, aBuffer);
+    HandleQueryReceived(kQueryCurrentResponseBuffer, aBuffer);
 }
 
 void NetworkController :: ResetToDefaultConfiguration(void)
@@ -216,7 +216,7 @@ void NetworkController :: QueryRequestReceivedHandler(Server::ConnectionBasis &a
 
     // First, put the solicited notifications portion.
 
-    QueryHandler(kQueryResponseBuffer, lResponseBuffer);
+    HandleQueryReceived(kQueryResponseBuffer, lResponseBuffer);
 
     // Second, put the response completion portion.
 

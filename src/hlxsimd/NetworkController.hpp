@@ -72,7 +72,7 @@ public:
 private:
     Common::Status DoRequestHandlers(const bool &aRegister);
 
-    static void QueryHandler(const char *aInputBuffer, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer);
+    static void HandleQueryReceived(const char *aInputBuffer, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer);
 
     // Command Completion Handlers
 

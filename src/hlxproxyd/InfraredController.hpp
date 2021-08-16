@@ -128,7 +128,7 @@ private:
 private:
     // Client-facing Server Implementation
 
-    Common::Status QueryHandler(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
+    Common::Status HandleQueryReceived(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
 
     static Common::Status HandleDisabledResponse(const Model::InfraredModel::DisabledType &aDisabled, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
 };
