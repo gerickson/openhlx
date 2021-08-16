@@ -61,7 +61,7 @@ InfraredController :: InfraredController(void) :
     Proxy::ControllerBasis(),
     Common::InfraredControllerBasis(),
     Client::InfraredControllerBasis(),
-    Server::InfraredControllerBasis()
+    Server::InfraredControllerBasis(Common::InfraredControllerBasis::mInfraredModel)
 {
     return;
 }
@@ -537,7 +537,7 @@ InfraredController :: DisabledNotificationReceivedHandler(const uint8_t *aBuffer
     // the first time set or a change and state change notification
     // needs to be sent.
 
-    lStatus = mInfraredModel.SetDisabled(lDisabled);
+    lStatus = GetModel().SetDisabled(lDisabled);
     nlEXPECT_SUCCESS(lStatus, done);
 
     lStatus = lStateChangeNotification.Init(lDisabled);
@@ -649,7 +649,7 @@ void InfraredController :: SetDisabledRequestReceivedHandler(Server::ConnectionB
     lStatus = lResponseBuffer->Init();
     nlREQUIRE_SUCCESS(lStatus, done);
 
-    lStatus = mInfraredModel.SetDisabled(lDisabled);
+    lStatus = GetModel().SetDisabled(lDisabled);
     nlREQUIRE(lStatus >= kStatus_Success, done);
 
     if (lStatus == kStatus_Success)
@@ -712,7 +712,7 @@ InfraredController :: HandleQueryReceived(Common::ConnectionBuffer::MutableCount
     Status                                   lRetval;
 
 
-    lRetval = mInfraredModel.GetDisabled(lDisabled);
+    lRetval = GetModel().GetDisabled(lDisabled);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = HandleDisabledResponse(lDisabled, aBuffer);

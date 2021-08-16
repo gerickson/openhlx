@@ -49,7 +49,10 @@ Server::Command::Sources::SetNameRequest      SourcesControllerBasis::kSetNameRe
  *    This is the class default constructor.
  *
  */
-SourcesControllerBasis :: SourcesControllerBasis(void)
+SourcesControllerBasis :: SourcesControllerBasis(Model::SourcesModel &aSourcesModel,
+                                                 const Model::SourceModel::IdentifierType &aSourcesMax) :
+    mSourcesModel(aSourcesModel),
+    mSourcesMax(aSourcesMax)
 {
     return;
 }
@@ -63,6 +66,8 @@ SourcesControllerBasis :: ~SourcesControllerBasis(void)
 {
     return;
 }
+
+// MARK: Initializer(s)
 
 Status
 SourcesControllerBasis :: Init(void)

@@ -25,6 +25,7 @@
 #ifndef OPENHLXSERVERINFRAREDCONTROLLERBASIS_HPP
 #define OPENHLXSERVERINFRAREDCONTROLLERBASIS_HPP
 
+#include <OpenHLX/Model/InfraredModel.hpp>
 #include <OpenHLX/Server/InfraredControllerCommands.hpp>
 
 
@@ -48,12 +49,30 @@ public:
     virtual ~InfraredControllerBasis(void);
 
 protected:
-    InfraredControllerBasis(void);
+    InfraredControllerBasis(Model::InfraredModel &aInfraredModel);
+
+    // Initializer(s)
 
     Common::Status Init(void);
 
-protected:
+private:
     Common::Status RequestInit(void);
+
+private:
+    Model::InfraredModel & mInfraredModel;
+
+protected:
+    // Observation (Query) Command Request Handlers
+
+    // Observation (Query) Command Request Instance Handlers
+
+protected:
+    // Observation (Query) Command Request Class (Static) Handlers
+
+protected:
+    // Command Response Handlers
+
+    // Command Response Class (Static) Handlers
 
 protected:
     static Server::Command::Infrared::QueryRequest          kQueryRequest;

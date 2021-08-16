@@ -25,6 +25,7 @@
 #ifndef OPENHLXSERVERFRONTPANELCONTROLLERBASIS_HPP
 #define OPENHLXSERVERFRONTPANELCONTROLLERBASIS_HPP
 
+#include <OpenHLX/Model/FrontPanelModel.hpp>
 #include <OpenHLX/Server/FrontPanelControllerCommands.hpp>
 
 
@@ -48,12 +49,30 @@ public:
     virtual ~FrontPanelControllerBasis(void);
 
 protected:
-    FrontPanelControllerBasis(void);
+    FrontPanelControllerBasis(Model::FrontPanelModel &aFrontPanelModel);
+
+    // Initializer(s)
 
     Common::Status Init(void);
 
-protected:
+private:
     Common::Status RequestInit(void);
+
+private:
+    Model::FrontPanelModel & mFrontPanelModel;
+
+protected:
+    // Observation (Query) Command Request Handlers
+
+    // Observation (Query) Command Request Instance Handlers
+
+protected:
+    // Observation (Query) Command Request Class (Static) Handlers
+
+protected:
+    // Command Response Handlers
+
+    // Command Response Class (Static) Handlers
 
 protected:
     static Server::Command::FrontPanel::QueryRequest          kQueryRequest;

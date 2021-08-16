@@ -238,7 +238,8 @@ EqualizerPresetsController :: EqualizerPresetsController(void) :
     Simulator::ControllerBasis(),
     Server::ContainerControllerBasis(),
     Common::EqualizerPresetsControllerBasis(),
-    Server::EqualizerPresetsControllerBasis()
+    Server::EqualizerPresetsControllerBasis(Common::EqualizerPresetsControllerBasis::mEqualizerPresets,
+                                            Common::EqualizerPresetsControllerBasis::kEqualizerPresetsMax)
 {
     return;
 }

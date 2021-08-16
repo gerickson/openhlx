@@ -61,7 +61,7 @@ FrontPanelController :: FrontPanelController(void) :
     Proxy::ControllerBasis(),
     Common::FrontPanelControllerBasis(),
     Client::FrontPanelControllerBasis(),
-    Server::FrontPanelControllerBasis()
+    Server::FrontPanelControllerBasis(Common::FrontPanelControllerBasis::mFrontPanelModel)
 {
     return;
 }
@@ -606,7 +606,7 @@ FrontPanelController :: BrightnessNotificationReceivedHandler(const uint8_t *aBu
     // the first time set or a change and state change notification
     // needs to be sent.
 
-    lStatus = mFrontPanelModel.SetBrightness(lBrightness);
+    lStatus = GetModel().SetBrightness(lBrightness);
     nlEXPECT_SUCCESS(lStatus, done);
 
     lStatus = lStateChangeNotification.Init(lBrightness);
@@ -660,7 +660,7 @@ FrontPanelController :: LockedNotificationReceivedHandler(const uint8_t *aBuffer
     // the first time set or a change and state change notification
     // needs to be sent.
 
-    lStatus = mFrontPanelModel.SetLocked(lLocked);
+    lStatus = GetModel().SetLocked(lLocked);
     nlEXPECT_SUCCESS(lStatus, done);
 
     lStatus = lStateChangeNotification.Init(lLocked);
@@ -764,7 +764,7 @@ void FrontPanelController :: QueryRequestReceivedHandler(Server::ConnectionBasis
     lStatus = lResponseBuffer->Init();
     nlREQUIRE_SUCCESS(lStatus, done);
 
-    lStatus = mFrontPanelModel.GetLocked(lLocked);
+    lStatus = GetModel().GetLocked(lLocked);
     nlREQUIRE_SUCCESS(lStatus, done);
 
     lStatus = HandleLockedResponse(lLocked, lResponseBuffer);
@@ -809,7 +809,7 @@ void FrontPanelController :: SetBrightnessRequestReceivedHandler(Server::Connect
     lStatus = lResponseBuffer->Init();
     nlREQUIRE_SUCCESS(lStatus, done);
 
-    lStatus = mFrontPanelModel.SetBrightness(lBrightness);
+    lStatus = GetModel().SetBrightness(lBrightness);
     nlREQUIRE(lStatus >= kStatus_Success, done);
 
     if (lStatus == kStatus_Success)
@@ -860,7 +860,7 @@ void FrontPanelController :: SetLockedRequestReceivedHandler(Server::ConnectionB
     lStatus = lResponseBuffer->Init();
     nlREQUIRE_SUCCESS(lStatus, done);
 
-    lStatus = mFrontPanelModel.SetLocked(lLocked);
+    lStatus = GetModel().SetLocked(lLocked);
     nlREQUIRE(lStatus >= kStatus_Success, done);
 
     if (lStatus == kStatus_Success)
@@ -934,13 +934,13 @@ FrontPanelController :: HandleQueryReceived(Common::ConnectionBuffer::MutableCou
     Status                                   lRetval;
 
 
-    lRetval = mFrontPanelModel.GetBrightness(lBrightness);
+    lRetval = GetModel().GetBrightness(lBrightness);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = HandleBrightnessResponse(lBrightness, aBuffer);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mFrontPanelModel.GetLocked(lLocked);
+    lRetval = GetModel().GetLocked(lLocked);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = HandleLockedResponse(lLocked, aBuffer);

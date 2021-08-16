@@ -71,7 +71,8 @@ GroupsController :: GroupsController(void) :
     Proxy::ControllerBasis(),
     Common::GroupsControllerBasis(),
     Client::GroupsControllerBasis(),
-    Server::GroupsControllerBasis()
+    Server::GroupsControllerBasis(Common::GroupsControllerBasis::mGroups,
+                                  Common::GroupsControllerBasis::kGroupsMax)
 {
     return;
 }

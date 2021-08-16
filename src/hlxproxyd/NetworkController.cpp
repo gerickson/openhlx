@@ -80,7 +80,7 @@ NetworkController :: NetworkController(void) :
     Proxy::ControllerBasis(),
     Common::NetworkControllerBasis(),
     Client::NetworkControllerBasis(),
-    Server::NetworkControllerBasis()
+    Server::NetworkControllerBasis(Common::NetworkControllerBasis::mNetworkModel)
 {
     return;
 }

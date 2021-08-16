@@ -134,7 +134,8 @@ GroupsController :: GroupsController(void) :
     Simulator::ControllerBasis(),
     ContainerControllerBasis(),
     Common::GroupsControllerBasis(),
-    Server::GroupsControllerBasis(),
+    Server::GroupsControllerBasis(Common::GroupsControllerBasis::mGroups,
+                                  Common::GroupsControllerBasis::kGroupsMax),
     mDelegate(nullptr)
 {
     return;

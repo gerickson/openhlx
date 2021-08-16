@@ -78,7 +78,7 @@ Server::Command::Zones::ToggleMuteRequest             ZonesControllerBasis::kTog
  *
  */
 ZonesControllerBasis :: ZonesControllerBasis(Model::ZonesModel &aZonesModel,
-                                             const IdentifierType &aZonesMax) :
+                                             const Model::ZoneModel::IdentifierType &aZonesMax) :
     mZonesModel(aZonesModel),
     mZonesMax(aZonesMax)
 {
@@ -226,7 +226,7 @@ ZonesControllerBasis :: HandleQueryReceived(const bool &aIsConfiguration, Common
 }
 
 Status
-ZonesControllerBasis :: HandleQueryReceived(const bool &aIsConfiguration, const IdentifierType &aZoneIdentifier, ConnectionBuffer::MutableCountedPointer &aOutputBuffer) const
+ZonesControllerBasis :: HandleQueryReceived(const bool &aIsConfiguration, const Model::ZoneModel::IdentifierType &aZoneIdentifier, ConnectionBuffer::MutableCountedPointer &aOutputBuffer) const
 {
     const ZoneModel *                        lZoneModel;
     const char *                             lName;
@@ -302,7 +302,7 @@ ZonesControllerBasis :: HandleQueryReceived(const bool &aIsConfiguration, const 
 }
 
 Status
-ZonesControllerBasis :: HandleQueryMuteReceived(const IdentifierType &aZoneIdentifier,
+ZonesControllerBasis :: HandleQueryMuteReceived(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                            Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     const ZoneModel *                  lZoneModel;
@@ -320,7 +320,7 @@ ZonesControllerBasis :: HandleQueryMuteReceived(const IdentifierType &aZoneIdent
 }
 
 Status
-ZonesControllerBasis :: HandleQuerySourceReceived(const IdentifierType &aZoneIdentifier,
+ZonesControllerBasis :: HandleQuerySourceReceived(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                              Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     const ZoneModel *                  lZoneModel;
@@ -338,7 +338,7 @@ ZonesControllerBasis :: HandleQuerySourceReceived(const IdentifierType &aZoneIde
 }
 
 Status
-ZonesControllerBasis :: HandleQueryVolumeReceived(const IdentifierType &aZoneIdentifier,
+ZonesControllerBasis :: HandleQueryVolumeReceived(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                              Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     const ZoneModel *                  lZoneModel;
@@ -358,7 +358,7 @@ ZonesControllerBasis :: HandleQueryVolumeReceived(const IdentifierType &aZoneIde
 // MARK: Observation (Query) Command Request Class (Static) Handlers
 
 Status
-ZonesControllerBasis :: HandleQueryEqualizerPreset(const IdentifierType &aZoneIdentifier,
+ZonesControllerBasis :: HandleQueryEqualizerPreset(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                               const ZoneModel &aZoneModel,
                                               ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
@@ -376,7 +376,7 @@ ZonesControllerBasis :: HandleQueryEqualizerPreset(const IdentifierType &aZoneId
 }
 
 Status
-ZonesControllerBasis :: HandleQueryHighpassCrossover(const IdentifierType &aZoneIdentifier,
+ZonesControllerBasis :: HandleQueryHighpassCrossover(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                                 const ZoneModel &aZoneModel,
                                                 ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
@@ -394,7 +394,7 @@ ZonesControllerBasis :: HandleQueryHighpassCrossover(const IdentifierType &aZone
 }
 
 Status
-ZonesControllerBasis :: HandleQueryLowpassCrossover(const IdentifierType &aZoneIdentifier,
+ZonesControllerBasis :: HandleQueryLowpassCrossover(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                                const ZoneModel &aZoneModel,
                                                ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
@@ -412,7 +412,7 @@ ZonesControllerBasis :: HandleQueryLowpassCrossover(const IdentifierType &aZoneI
 }
 
 Status
-ZonesControllerBasis :: HandleQueryMuteReceived(const IdentifierType &aZoneIdentifier,
+ZonesControllerBasis :: HandleQueryMuteReceived(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                            const Model::ZoneModel &aZoneModel,
                                            Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
@@ -431,7 +431,7 @@ ZonesControllerBasis :: HandleQueryMuteReceived(const IdentifierType &aZoneIdent
 }
 
 Status
-ZonesControllerBasis :: HandleQuerySoundMode(const IdentifierType &aZoneIdentifier,
+ZonesControllerBasis :: HandleQuerySoundMode(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                         const ZoneModel &aZoneModel,
                                         ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
@@ -479,7 +479,7 @@ ZonesControllerBasis :: HandleQuerySoundMode(const IdentifierType &aZoneIdentifi
 }
 
 Status
-ZonesControllerBasis :: HandleQuerySourceReceived(const IdentifierType &aZoneIdentifier,
+ZonesControllerBasis :: HandleQuerySourceReceived(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                              const Model::ZoneModel &aZoneModel,
                                              Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
@@ -507,7 +507,7 @@ ZonesControllerBasis :: HandleQuerySourceReceived(const IdentifierType &aZoneIde
 }
 
 Status
-ZonesControllerBasis :: HandleQueryTone(const IdentifierType &aZoneIdentifier,
+ZonesControllerBasis :: HandleQueryTone(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                    const ZoneModel &aZoneModel,
                                    ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
@@ -526,7 +526,7 @@ ZonesControllerBasis :: HandleQueryTone(const IdentifierType &aZoneIdentifier,
 }
 
 Status
-ZonesControllerBasis :: HandleQueryVolumeReceived(const IdentifierType &aZoneIdentifier,
+ZonesControllerBasis :: HandleQueryVolumeReceived(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                              const Model::ZoneModel &aZoneModel,
                                              Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
@@ -545,7 +545,7 @@ ZonesControllerBasis :: HandleQueryVolumeReceived(const IdentifierType &aZoneIde
 }
 
 Status
-ZonesControllerBasis :: HandleQueryVolumeFixed(const IdentifierType &aZoneIdentifier,
+ZonesControllerBasis :: HandleQueryVolumeFixed(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                           const ZoneModel &aZoneModel,
                                           ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
@@ -564,7 +564,7 @@ ZonesControllerBasis :: HandleQueryVolumeFixed(const IdentifierType &aZoneIdenti
 }
 
 Status
-ZonesControllerBasis :: HandleQueryZoneEqualizer(const IdentifierType &aZoneIdentifier,
+ZonesControllerBasis :: HandleQueryZoneEqualizer(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                             const ZoneModel &aZoneModel,
                                             ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
@@ -595,7 +595,7 @@ ZonesControllerBasis :: HandleQueryZoneEqualizer(const IdentifierType &aZoneIden
 // MARK: Command Response Class (Static) Handlers
 
 Status
-ZonesControllerBasis :: HandleEqualizerBandResponse(const IdentifierType &aZoneIdentifier,
+ZonesControllerBasis :: HandleEqualizerBandResponse(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                                const EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier,
                                                const EqualizerBandModel::LevelType &aBandLevel,
                                                ConnectionBuffer::MutableCountedPointer &aBuffer)
@@ -619,7 +619,7 @@ ZonesControllerBasis :: HandleEqualizerBandResponse(const IdentifierType &aZoneI
 }
 
 Status
-ZonesControllerBasis :: HandleEqualizerPresetResponse(const IdentifierType &aZoneIdentifier,
+ZonesControllerBasis :: HandleEqualizerPresetResponse(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                                  const EqualizerPresetModel::IdentifierType &aEqualizerPresetIdentifier,
                                                  ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
@@ -642,7 +642,7 @@ ZonesControllerBasis :: HandleEqualizerPresetResponse(const IdentifierType &aZon
 }
 
 Status
-ZonesControllerBasis :: HandleHighpassCrossoverResponse(const IdentifierType &aZoneIdentifier,
+ZonesControllerBasis :: HandleHighpassCrossoverResponse(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                                    const CrossoverModel::FrequencyType &aHighpassFrequency,
                                                    ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
@@ -665,7 +665,7 @@ ZonesControllerBasis :: HandleHighpassCrossoverResponse(const IdentifierType &aZ
 }
 
 Status
-ZonesControllerBasis :: HandleLowpassCrossoverResponse(const IdentifierType &aZoneIdentifier,
+ZonesControllerBasis :: HandleLowpassCrossoverResponse(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                                   const CrossoverModel::FrequencyType &aLowpassFrequency,
                                                   ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
@@ -688,7 +688,7 @@ ZonesControllerBasis :: HandleLowpassCrossoverResponse(const IdentifierType &aZo
 }
 
 Status
-ZonesControllerBasis :: HandleMuteResponse(const IdentifierType &aZoneIdentifier,
+ZonesControllerBasis :: HandleMuteResponse(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                       const VolumeModel::MuteType &aMute,
                                       ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
@@ -711,7 +711,7 @@ ZonesControllerBasis :: HandleMuteResponse(const IdentifierType &aZoneIdentifier
 }
 
 Status
-ZonesControllerBasis :: HandleSoundModeResponse(const IdentifierType &aZoneIdentifier,
+ZonesControllerBasis :: HandleSoundModeResponse(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                            const SoundModel::SoundMode &aSoundMode,
                                            ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
@@ -735,7 +735,7 @@ ZonesControllerBasis :: HandleSoundModeResponse(const IdentifierType &aZoneIdent
 }
 
     Status
-ZonesControllerBasis :: HandleToneResponse(const IdentifierType &aZoneIdentifier,
+ZonesControllerBasis :: HandleToneResponse(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                       const Model::ToneModel::LevelType &aBass,
                                       Model::ToneModel::LevelType &aTreble,
                                       ConnectionBuffer::MutableCountedPointer &aBuffer)
@@ -760,7 +760,7 @@ ZonesControllerBasis :: HandleToneResponse(const IdentifierType &aZoneIdentifier
 }
 
 Status
-ZonesControllerBasis :: HandleVolumeResponse(const IdentifierType &aZoneIdentifier,
+ZonesControllerBasis :: HandleVolumeResponse(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                         const VolumeModel::LevelType &aVolume,
                                         ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
@@ -784,7 +784,7 @@ ZonesControllerBasis :: HandleVolumeResponse(const IdentifierType &aZoneIdentifi
 }
 
 Status
-ZonesControllerBasis :: HandleVolumeFixedResponse(const IdentifierType &aZoneIdentifier,
+ZonesControllerBasis :: HandleVolumeFixedResponse(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                              const VolumeModel::FixedType &aVolumeFixed,
                                              ConnectionBuffer::MutableCountedPointer &aBuffer)
 {

@@ -80,7 +80,7 @@ static CFStringRef           kDisabledSchemaKey = CFSTR("Disabled");
 
 InfraredController :: InfraredController(void) :
     Common::InfraredControllerBasis(),
-    Server::InfraredControllerBasis(),
+    Server::InfraredControllerBasis(Common::InfraredControllerBasis::mInfraredModel),
     Simulator::ControllerBasis()
 {
     return;
@@ -149,7 +149,7 @@ void InfraredController :: HandleQueryReceived(Common::ConnectionBuffer::Mutable
     Status                                   lStatus;
 
 
-    lStatus = mInfraredModel.GetDisabled(lDisabled);
+    lStatus = GetModel().GetDisabled(lDisabled);
     nlREQUIRE_SUCCESS(lStatus, done);
 
     lStatus = HandleDisabledResponse(lDisabled, aBuffer);
@@ -193,7 +193,7 @@ void InfraredController :: ResetToDefaultConfiguration(void)
 {
     Status lStatus;
 
-    lStatus = mInfraredModel.SetDisabled(kInfraredModelDefaults.mDisabled);
+    lStatus = GetModel().SetDisabled(kInfraredModelDefaults.mDisabled);
     nlCHECK_SUCCESS(lStatus);
 
     if (lStatus == kStatus_Success)
@@ -224,7 +224,7 @@ Status InfraredController :: LoadFromBackupConfiguration(CFDictionaryRef aBackup
 
     // Attempt to set the disabled configuration.
 
-    lRetval = mInfraredModel.SetDisabled(lDisabled);
+    lRetval = GetModel().SetDisabled(lDisabled);
     nlCHECK_SUCCESS(lRetval);
 
     if (lRetval == kStatus_Success)
@@ -244,7 +244,7 @@ void InfraredController :: SaveToBackupConfiguration(CFMutableDictionaryRef aBac
 
     // Attempt to get the disabled value from the model.
 
-    lStatus = mInfraredModel.GetDisabled(lDisabled);
+    lStatus = GetModel().GetDisabled(lDisabled);
     nlREQUIRE_SUCCESS(lStatus, done);
 
     // Create a mutable dictionary to store the disabled value from
@@ -331,7 +331,7 @@ void InfraredController :: SetDisabledRequestReceivedHandler(Server::ConnectionB
     lStatus = lResponseBuffer->Init();
     nlREQUIRE_SUCCESS(lStatus, done);
 
-    lStatus = mInfraredModel.SetDisabled(lDisabled);
+    lStatus = GetModel().SetDisabled(lDisabled);
     nlREQUIRE(lStatus >= kStatus_Success, done);
 
     if (lStatus == kStatus_Success)

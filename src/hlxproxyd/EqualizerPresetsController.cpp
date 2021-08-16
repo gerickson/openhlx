@@ -60,7 +60,8 @@ EqualizerPresetsController :: EqualizerPresetsController(void) :
     Proxy::ControllerBasis(),
     Common::EqualizerPresetsControllerBasis(),
     Client::EqualizerPresetsControllerBasis(),
-    Server::EqualizerPresetsControllerBasis()
+    Server::EqualizerPresetsControllerBasis(Common::EqualizerPresetsControllerBasis::mEqualizerPresets,
+                                            Common::EqualizerPresetsControllerBasis::kEqualizerPresetsMax)
 {
     return;
 }

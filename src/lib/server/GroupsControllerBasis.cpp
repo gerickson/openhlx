@@ -59,7 +59,10 @@ Server::Command::Groups::ToggleMuteRequest      GroupsControllerBasis::kToggleMu
  *    This is the class default constructor.
  *
  */
-GroupsControllerBasis :: GroupsControllerBasis(void)
+GroupsControllerBasis :: GroupsControllerBasis(Model::GroupsModel &aGroupsModel,
+                                               const Model::GroupsModel::IdentifierType &aGroupsMax) :
+    mGroupsModel(aGroupsModel),
+    mGroupsMax(aGroupsMax)
 {
     return;
 }
@@ -73,6 +76,8 @@ GroupsControllerBasis :: ~GroupsControllerBasis(void)
 {
     return;
 }
+
+// MARK: Initializer(s)
 
 Status
 GroupsControllerBasis :: Init(void)

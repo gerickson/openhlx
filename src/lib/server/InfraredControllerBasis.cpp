@@ -50,7 +50,8 @@ Server::Command::Infrared::SetDisabledRequest  InfraredControllerBasis::kSetDisa
  *    This is the class default constructor.
  *
  */
-InfraredControllerBasis :: InfraredControllerBasis(void)
+InfraredControllerBasis :: InfraredControllerBasis(Model::InfraredModel &aInfraredModel) :
+    mInfraredModel(aInfraredModel)
 {
     return;
 }
@@ -64,6 +65,8 @@ InfraredControllerBasis :: ~InfraredControllerBasis(void)
 {
     return;
 }
+
+// MARK: Initializer(s)
 
 Status
 InfraredControllerBasis :: Init(void)

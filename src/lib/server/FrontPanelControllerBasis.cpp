@@ -51,7 +51,8 @@ Server::Command::FrontPanel::SetLockedRequest      FrontPanelControllerBasis::kS
  *    This is the class default constructor.
  *
  */
-FrontPanelControllerBasis :: FrontPanelControllerBasis(void)
+FrontPanelControllerBasis :: FrontPanelControllerBasis(Model::FrontPanelModel &aFrontPanelModel) :
+    mFrontPanelModel(aFrontPanelModel)
 {
     return;
 }
@@ -65,6 +66,8 @@ FrontPanelControllerBasis :: ~FrontPanelControllerBasis(void)
 {
     return;
 }
+
+// MARK: Initializer(s)
 
 Status
 FrontPanelControllerBasis :: Init(void)

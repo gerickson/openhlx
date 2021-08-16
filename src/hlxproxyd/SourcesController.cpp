@@ -61,7 +61,8 @@ SourcesController :: SourcesController(void) :
     Proxy::ControllerBasis(),
     Common::SourcesControllerBasis(),
     Client::SourcesControllerBasis(),
-    Server::SourcesControllerBasis()
+    Server::SourcesControllerBasis(Common::SourcesControllerBasis::mSources,
+                                   Common::SourcesControllerBasis::kSourcesMax)
 {
     return;
 }

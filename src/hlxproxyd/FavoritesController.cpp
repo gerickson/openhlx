@@ -61,7 +61,8 @@ FavoritesController :: FavoritesController(void) :
     Proxy::ControllerBasis(),
     Common::FavoritesControllerBasis(),
     Client::FavoritesControllerBasis(),
-    Server::FavoritesControllerBasis()
+    Server::FavoritesControllerBasis(Common::FavoritesControllerBasis::mFavorites,
+                                     Common::FavoritesControllerBasis::kFavoritesMax)
 {
     return;
 }

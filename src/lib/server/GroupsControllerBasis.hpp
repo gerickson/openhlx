@@ -25,6 +25,8 @@
 #ifndef OPENHLXSERVERGROUPSCONTROLLERBASIS_HPP
 #define OPENHLXSERVERGROUPSCONTROLLERBASIS_HPP
 
+#include <OpenHLX/Model/GroupModel.hpp>
+#include <OpenHLX/Model/GroupsModel.hpp>
 #include <OpenHLX/Server/GroupsControllerCommands.hpp>
 
 
@@ -48,12 +50,32 @@ public:
     virtual ~GroupsControllerBasis(void);
 
 protected:
-    GroupsControllerBasis(void);
+    GroupsControllerBasis(Model::GroupsModel &aGroupsModel,
+                          const Model::GroupModel::IdentifierType &aGroupsMax);
+
+    // Initializer(s)
 
     Common::Status Init(void);
 
-protected:
+private:
     Common::Status RequestInit(void);
+
+private:
+    Model::GroupsModel &                      mGroupsModel;
+    const Model::GroupModel::IdentifierType & mGroupsMax;
+
+protected:
+    // Observation (Query) Command Request Handlers
+
+    // Observation (Query) Command Request Instance Handlers
+
+protected:
+    // Observation (Query) Command Request Class (Static) Handlers
+
+protected:
+    // Command Response Handlers
+
+    // Command Response Class (Static) Handlers
 
 protected:
     static Server::Command::Groups::AddZoneRequest         kAddZoneRequest;

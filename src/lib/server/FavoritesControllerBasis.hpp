@@ -25,6 +25,8 @@
 #ifndef OPENHLXSERVERFAVORITESCONTROLLERBASIS_HPP
 #define OPENHLXSERVERFAVORITESCONTROLLERBASIS_HPP
 
+#include <OpenHLX/Model/FavoriteModel.hpp>
+#include <OpenHLX/Model/FavoritesModel.hpp>
 #include <OpenHLX/Server/FavoritesControllerCommands.hpp>
 
 
@@ -48,12 +50,32 @@ public:
     virtual ~FavoritesControllerBasis(void);
 
 protected:
-    FavoritesControllerBasis(void);
+    FavoritesControllerBasis(Model::FavoritesModel &aFavoritesModel,
+                             const Model::FavoriteModel::IdentifierType &aFavoritesMax);
+
+    // Initializer(s)
 
     Common::Status Init(void);
 
-protected:
+private:
     Common::Status RequestInit(void);
+
+private:
+    Model::FavoritesModel &                      mFavoritesModel;
+    const Model::FavoriteModel::IdentifierType & mFavoritesMax;
+
+protected:
+    // Observation (Query) Command Request Handlers
+
+    // Observation (Query) Command Request Instance Handlers
+
+protected:
+    // Observation (Query) Command Request Class (Static) Handlers
+
+protected:
+    // Command Response Handlers
+
+    // Command Response Class (Static) Handlers
 
 protected:
     static Server::Command::Favorites::QueryRequest    kQueryRequest;

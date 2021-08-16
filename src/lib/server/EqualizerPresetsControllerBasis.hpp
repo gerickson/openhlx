@@ -25,6 +25,8 @@
 #ifndef OPENHLXSERVEREQUALIZERPRESETSCONTROLLERBASIS_HPP
 #define OPENHLXSERVEREQUALIZERPRESETSCONTROLLERBASIS_HPP
 
+#include <OpenHLX/Model/EqualizerPresetModel.hpp>
+#include <OpenHLX/Model/EqualizerPresetsModel.hpp>
 #include <OpenHLX/Server/EqualizerPresetsControllerCommands.hpp>
 
 
@@ -48,12 +50,32 @@ public:
     virtual ~EqualizerPresetsControllerBasis(void);
 
 protected:
-    EqualizerPresetsControllerBasis(void);
+    EqualizerPresetsControllerBasis(Model::EqualizerPresetsModel &aEqualizerPresetsModel,
+                                    const Model::EqualizerPresetModel::IdentifierType &aEqualizerPresetsMax);
+
+    // Initializer(s)
 
     Common::Status Init(void);
 
-protected:
+private:
     Common::Status RequestInit(void);
+
+private:
+    Model::EqualizerPresetsModel &                      mEqualizerPresetsModel;
+    const Model::EqualizerPresetModel::IdentifierType & mEqualizerPresetsMax;
+
+protected:
+    // Observation (Query) Command Request Handlers
+
+    // Observation (Query) Command Request Instance Handlers
+
+protected:
+    // Observation (Query) Command Request Class (Static) Handlers
+
+protected:
+    // Command Response Handlers
+
+    // Command Response Class (Static) Handlers
 
 protected:
     static Server::Command::EqualizerPresets::DecreaseBandRequest  kDecreaseBandRequest;

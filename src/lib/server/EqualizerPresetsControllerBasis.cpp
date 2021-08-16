@@ -53,7 +53,10 @@ Server::Command::EqualizerPresets::SetNameRequest       EqualizerPresetsControll
  *    This is the class default constructor.
  *
  */
-EqualizerPresetsControllerBasis :: EqualizerPresetsControllerBasis(void)
+EqualizerPresetsControllerBasis :: EqualizerPresetsControllerBasis(Model::EqualizerPresetsModel &aEqualizerPresetsModel,
+                                                                   const Model::EqualizerPresetModel::IdentifierType &aEqualizerPresetsMax) :
+    mEqualizerPresetsModel(aEqualizerPresetsModel),
+    mEqualizerPresetsMax(aEqualizerPresetsMax)
 {
     return;
 }
@@ -67,6 +70,8 @@ EqualizerPresetsControllerBasis :: ~EqualizerPresetsControllerBasis(void)
 {
     return;
 }
+
+// MARK: Initializer(s)
 
 Status
 EqualizerPresetsControllerBasis :: Init(void)

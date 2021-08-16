@@ -49,7 +49,8 @@ Server::Command::Network::QueryRequest  NetworkControllerBasis::kQueryRequest;
  *    This is the class default constructor.
  *
  */
-NetworkControllerBasis :: NetworkControllerBasis(void)
+NetworkControllerBasis :: NetworkControllerBasis(Model::NetworkModel &aNetworkModel) :
+    mNetworkModel(aNetworkModel)
 {
     return;
 }
@@ -63,6 +64,8 @@ NetworkControllerBasis :: ~NetworkControllerBasis(void)
 {
     return;
 }
+
+// MARK: Initializer(s)
 
 Status
 NetworkControllerBasis :: Init(void)

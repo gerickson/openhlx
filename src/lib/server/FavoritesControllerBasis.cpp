@@ -50,7 +50,10 @@ Server::Command::Favorites::SetNameRequest  FavoritesControllerBasis::kSetNameRe
  *    This is the class default constructor.
  *
  */
-FavoritesControllerBasis :: FavoritesControllerBasis(void)
+FavoritesControllerBasis :: FavoritesControllerBasis(Model::FavoritesModel &aFavoritesModel,
+                                                     const Model::FavoriteModel::IdentifierType &aFavoritesMax) :
+    mFavoritesModel(aFavoritesModel),
+    mFavoritesMax(aFavoritesMax)
 {
     return;
 }
@@ -64,6 +67,8 @@ FavoritesControllerBasis :: ~FavoritesControllerBasis(void)
 {
     return;
 }
+
+// MARK: Initializer(s)
 
 Status
 FavoritesControllerBasis :: Init(void)

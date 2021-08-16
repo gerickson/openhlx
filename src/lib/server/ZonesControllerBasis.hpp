@@ -50,18 +50,11 @@ namespace Server
 class ZonesControllerBasis
 {
 public:
-    /**
-     *  A locally-scoped convenience type for a zone identifier.
-     *
-     */
-    typedef Model::ZoneModel::IdentifierType IdentifierType;
-
-public:
     virtual ~ZonesControllerBasis(void);
 
 protected:
     ZonesControllerBasis(Model::ZonesModel &aZonesModel,
-                         const IdentifierType &aZonesMax);
+                         const Model::ZoneModel::IdentifierType &aZonesMax);
 
     // Initializer(s)
 
@@ -78,46 +71,46 @@ protected:
     Common::Status        HandleQueryReceived(const bool &aIsConfiguration,
                                               Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer) const;
     Common::Status        HandleQueryReceived(const bool &aIsConfiguration,
-                                              const IdentifierType &aZoneIdentifier,
+                                              const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                               Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer) const;
-    Common::Status        HandleQueryMuteReceived(const IdentifierType &aZoneIdentifier,
+    Common::Status        HandleQueryMuteReceived(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                                   Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
-    Common::Status        HandleQuerySourceReceived(const IdentifierType &aZoneIdentifier,
+    Common::Status        HandleQuerySourceReceived(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                                     Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
-    Common::Status        HandleQueryVolumeReceived(const IdentifierType &aZoneIdentifier,
+    Common::Status        HandleQueryVolumeReceived(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                                     Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
 
 protected:
     // Observation (Query) Command Request Class (Static) Handlers
 
-    static Common::Status HandleQueryEqualizerPreset(const IdentifierType &aZoneIdentifier,
+    static Common::Status HandleQueryEqualizerPreset(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                                      const Model::ZoneModel &aZoneModel,
                                                      Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
-    static Common::Status HandleQueryHighpassCrossover(const IdentifierType &aZoneIdentifier,
+    static Common::Status HandleQueryHighpassCrossover(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                                        const Model::ZoneModel &aZoneModel,
                                                        Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
-    static Common::Status HandleQueryLowpassCrossover(const IdentifierType &aZoneIdentifier,
+    static Common::Status HandleQueryLowpassCrossover(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                                       const Model::ZoneModel &aZoneModel,
                                                       Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
-    static Common::Status HandleQueryMuteReceived(const IdentifierType &aZoneIdentifier,
+    static Common::Status HandleQueryMuteReceived(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                                   const Model::ZoneModel &aZoneModel,
                                                   Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
-    static Common::Status HandleQuerySoundMode(const IdentifierType &aZoneIdentifier,
+    static Common::Status HandleQuerySoundMode(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                                const Model::ZoneModel &aZoneModel,
                                                Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
-    static Common::Status HandleQuerySourceReceived(const IdentifierType &aZoneIdentifier,
+    static Common::Status HandleQuerySourceReceived(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                                     const Model::ZoneModel &aZoneModel,
                                                     Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
-    static Common::Status HandleQueryTone(const IdentifierType &aZoneIdentifier,
+    static Common::Status HandleQueryTone(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                           const Model::ZoneModel &aZoneModel,
                                           Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
-    static Common::Status HandleQueryVolumeReceived(const IdentifierType &aZoneIdentifier,
+    static Common::Status HandleQueryVolumeReceived(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                                     const Model::ZoneModel &aZoneModel,
                                                     Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
-    static Common::Status HandleQueryVolumeFixed(const IdentifierType &aZoneIdentifier,
+    static Common::Status HandleQueryVolumeFixed(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                                  const Model::ZoneModel &aZoneModel,
                                                  Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
-    static Common::Status HandleQueryZoneEqualizer(const IdentifierType &aZoneIdentifier,
+    static Common::Status HandleQueryZoneEqualizer(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                                    const Model::ZoneModel &aZoneModel,
                                                    Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
 
@@ -126,39 +119,39 @@ protected:
 
     // Command Response Class (Static) Handlers
 
-    static Common::Status HandleEqualizerBandResponse(const IdentifierType &aZoneIdentifier,
+    static Common::Status HandleEqualizerBandResponse(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                                       const Model::EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier,
                                                       const Model::EqualizerBandModel::LevelType &aBandLevel,
                                                       Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
-    static Common::Status HandleEqualizerPresetResponse(const IdentifierType &aZoneIdentifier,
+    static Common::Status HandleEqualizerPresetResponse(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                                         const Model::EqualizerPresetModel::IdentifierType &aEqualizerPresetIdentifier,
                                                         Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
-    static Common::Status HandleHighpassCrossoverResponse(const IdentifierType &aZoneIdentifier,
+    static Common::Status HandleHighpassCrossoverResponse(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                                           const Model::CrossoverModel::FrequencyType &aHighpassFrequency,
                                                           Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
-    static Common::Status HandleLowpassCrossoverResponse(const IdentifierType &aZoneIdentifier,
+    static Common::Status HandleLowpassCrossoverResponse(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                                          const Model::CrossoverModel::FrequencyType &aLowpassFrequency,
                                                          Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
-    static Common::Status HandleMuteResponse(const IdentifierType &aZoneIdentifier,
+    static Common::Status HandleMuteResponse(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                              const Model::VolumeModel::MuteType &aMute,
                                              Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
-    static Common::Status HandleSoundModeResponse(const IdentifierType &aZoneIdentifier,
+    static Common::Status HandleSoundModeResponse(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                                   const Model::SoundModel::SoundMode &aSoundMode,
                                                   Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
-    static Common::Status HandleToneResponse(const IdentifierType &aZoneIdentifier,
+    static Common::Status HandleToneResponse(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                              const Model::ToneModel::LevelType &aBass,
                                              Model::ToneModel::LevelType &aTreble,
                                              Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
-    static Common::Status HandleVolumeFixedResponse(const IdentifierType &aZoneIdentifier,
+    static Common::Status HandleVolumeFixedResponse(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                                     const Model::VolumeModel::FixedType &aVolumeFixed,
                                                     Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
-    static Common::Status HandleVolumeResponse(const IdentifierType &aZoneIdentifier,
+    static Common::Status HandleVolumeResponse(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                                const Model::VolumeModel::LevelType &aVolume,
                                                Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
 
 private:
-    Model::ZonesModel &    mZonesModel;
-    const IdentifierType & mZonesMax;
+    Model::ZonesModel &                      mZonesModel;
+    const Model::ZoneModel::IdentifierType & mZonesMax;
 
 protected:
     static Server::Command::Zones::AdjustBalanceRequest          kAdjustBalanceRequest;

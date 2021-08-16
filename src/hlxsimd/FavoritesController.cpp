@@ -92,7 +92,8 @@ FavoritesController :: FavoritesController(void) :
     Simulator::ControllerBasis(),
     Server::ContainerControllerBasis(),
     Common::FavoritesControllerBasis(),
-    Server::FavoritesControllerBasis()
+    Server::FavoritesControllerBasis(Common::FavoritesControllerBasis::mFavorites,
+                                     Common::FavoritesControllerBasis::kFavoritesMax)
 {
     return;
 }

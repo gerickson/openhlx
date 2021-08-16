@@ -25,6 +25,8 @@
 #ifndef OPENHLXSERVERSOURCESCONTROLLERBASIS_HPP
 #define OPENHLXSERVERSOURCESCONTROLLERBASIS_HPP
 
+#include <OpenHLX/Model/SourceModel.hpp>
+#include <OpenHLX/Model/SourcesModel.hpp>
 #include <OpenHLX/Server/SourcesControllerCommands.hpp>
 
 
@@ -48,12 +50,32 @@ public:
     virtual ~SourcesControllerBasis(void);
 
 protected:
-    SourcesControllerBasis(void);
+    SourcesControllerBasis(Model::SourcesModel &aSourcesModel,
+                           const Model::SourceModel::IdentifierType &aSourcesMax);
+
+    // Initializer(s)
 
     Common::Status Init(void);
 
-protected:
+private:
     Common::Status RequestInit(void);
+
+private:
+    Model::SourcesModel &                      mSourcesModel;
+    const Model::SourceModel::IdentifierType & mSourcesMax;
+
+protected:
+    // Observation (Query) Command Request Handlers
+
+    // Observation (Query) Command Request Instance Handlers
+
+protected:
+    // Observation (Query) Command Request Class (Static) Handlers
+
+protected:
+    // Command Response Handlers
+
+    // Command Response Class (Static) Handlers
 
 protected:
     static Server::Command::Sources::SetNameRequest  kSetNameRequest;

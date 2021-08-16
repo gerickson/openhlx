@@ -82,7 +82,7 @@ static CFStringRef               kLockedSchemaKey = CFSTR("Locked");
 
 FrontPanelController :: FrontPanelController(void) :
     Common::FrontPanelControllerBasis(),
-    Server::FrontPanelControllerBasis(),
+    Server::FrontPanelControllerBasis(Common::FrontPanelControllerBasis::mFrontPanelModel),
     Simulator::ControllerBasis()
 {
     return;
@@ -158,13 +158,13 @@ void FrontPanelController :: HandleQueryReceived(Common::ConnectionBuffer::Mutab
     Status                                   lStatus;
 
 
-    lStatus = mFrontPanelModel.GetBrightness(lBrightness);
+    lStatus = GetModel().GetBrightness(lBrightness);
     nlREQUIRE_SUCCESS(lStatus, done);
 
     lStatus = HandleBrightnessResponse(lBrightness, aBuffer);
     nlREQUIRE_SUCCESS(lStatus, done);
 
-    lStatus = mFrontPanelModel.GetLocked(lLocked);
+    lStatus = GetModel().GetLocked(lLocked);
     nlREQUIRE_SUCCESS(lStatus, done);
 
     lStatus = HandleLockedResponse(lLocked, aBuffer);
@@ -229,7 +229,7 @@ void FrontPanelController :: ResetToDefaultConfiguration(void)
 {
     Status lStatus;
 
-    lStatus = mFrontPanelModel.SetBrightness(kFrontPanelModelDefaults.mBrightness);
+    lStatus = GetModel().SetBrightness(kFrontPanelModelDefaults.mBrightness);
     nlCHECK_SUCCESS(lStatus);
 
     if (lStatus == kStatus_Success)
@@ -237,7 +237,7 @@ void FrontPanelController :: ResetToDefaultConfiguration(void)
         OnConfigurationIsDirty();
     }
 
-    lStatus = mFrontPanelModel.SetLocked(kFrontPanelModelDefaults.mLocked);
+    lStatus = GetModel().SetLocked(kFrontPanelModelDefaults.mLocked);
     nlCHECK_SUCCESS(lStatus);
 
     if (lStatus == kStatus_Success)
@@ -278,7 +278,7 @@ Status FrontPanelController :: LoadFromBackupConfiguration(CFDictionaryRef aBack
 
     // Attempt to set the brightness and locked configuration.
 
-    lRetval = mFrontPanelModel.SetBrightness(lBrightness);
+    lRetval = GetModel().SetBrightness(lBrightness);
     nlREQUIRE(lRetval >= kStatus_Success, done);
 
     if (lRetval == kStatus_Success)
@@ -286,7 +286,7 @@ Status FrontPanelController :: LoadFromBackupConfiguration(CFDictionaryRef aBack
         OnConfigurationIsDirty();
     }
 
-    lRetval = mFrontPanelModel.SetLocked(lLocked);
+    lRetval = GetModel().SetLocked(lLocked);
     nlREQUIRE(lRetval >= kStatus_Success, done);
 
     if (lRetval == kStatus_Success)
@@ -308,12 +308,12 @@ void FrontPanelController :: SaveToBackupConfiguration(CFMutableDictionaryRef aB
 
     // Attempt to get the brightness value from the model.
 
-    lStatus = mFrontPanelModel.GetBrightness(lBrightness);
+    lStatus = GetModel().GetBrightness(lBrightness);
     nlREQUIRE_SUCCESS(lStatus, done);
 
     // Attempt to get the locked value from the model.
 
-    lStatus = mFrontPanelModel.GetLocked(lLocked);
+    lStatus = GetModel().GetLocked(lLocked);
     nlREQUIRE_SUCCESS(lStatus, done);
 
     // Create a mutable dictionary to store the values from the model
@@ -361,7 +361,7 @@ void FrontPanelController :: QueryRequestReceivedHandler(Server::ConnectionBasis
     lStatus = lResponseBuffer->Init();
     nlREQUIRE_SUCCESS(lStatus, done);
 
-    lStatus = mFrontPanelModel.GetLocked(lLocked);
+    lStatus = GetModel().GetLocked(lLocked);
     nlREQUIRE_SUCCESS(lStatus, done);
 
     lStatus = HandleLockedResponse(lLocked, lResponseBuffer);
@@ -406,7 +406,7 @@ void FrontPanelController :: SetBrightnessRequestReceivedHandler(Server::Connect
     lStatus = lResponseBuffer->Init();
     nlREQUIRE_SUCCESS(lStatus, done);
 
-    lStatus = mFrontPanelModel.SetBrightness(lBrightness);
+    lStatus = GetModel().SetBrightness(lBrightness);
     nlREQUIRE(lStatus >= kStatus_Success, done);
 
     if (lStatus == kStatus_Success)
@@ -457,7 +457,7 @@ void FrontPanelController :: SetLockedRequestReceivedHandler(Server::ConnectionB
     lStatus = lResponseBuffer->Init();
     nlREQUIRE_SUCCESS(lStatus, done);
 
-    lStatus = mFrontPanelModel.SetLocked(lLocked);
+    lStatus = GetModel().SetLocked(lLocked);
     nlREQUIRE(lStatus >= kStatus_Success, done);
 
     if (lStatus == kStatus_Success)

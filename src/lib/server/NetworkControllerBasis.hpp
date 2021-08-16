@@ -25,6 +25,7 @@
 #ifndef OPENHLXSERVERNETWORKCONTROLLERBASIS_HPP
 #define OPENHLXSERVERNETWORKCONTROLLERBASIS_HPP
 
+#include <OpenHLX/Model/NetworkModel.hpp>
 #include <OpenHLX/Server/NetworkControllerCommands.hpp>
 
 
@@ -48,12 +49,30 @@ public:
     virtual ~NetworkControllerBasis(void);
 
 protected:
-    NetworkControllerBasis(void);
+    NetworkControllerBasis(Model::NetworkModel &aNetworkModel);
+
+    // Initializer(s)
 
     Common::Status Init(void);
 
-protected:
+private:
     Common::Status RequestInit(void);
+
+private:
+    Model::NetworkModel & mNetworkModel;
+
+protected:
+    // Observation (Query) Command Request Handlers
+
+    // Observation (Query) Command Request Instance Handlers
+
+protected:
+    // Observation (Query) Command Request Class (Static) Handlers
+
+protected:
+    // Command Response Handlers
+
+    // Command Response Class (Static) Handlers
 
 protected:
     static Server::Command::Network::QueryRequest  kQueryRequest;
