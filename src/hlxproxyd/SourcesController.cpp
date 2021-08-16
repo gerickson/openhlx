@@ -223,23 +223,6 @@ done:
     return (lRetval);
 }
 
-// MARK: Configuration Management Methods
-
-Status
-SourcesController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    DeclareScopedFunctionTracer(lTracer);
-    Status                                lRetval = kStatus_Success;
-
-
-    (void)aConnection;
-
-    // For each source, query the configuration.
-
-done:
-    return (lRetval);
-}
-
 // MARK: Server-facing Client Observer Methods
 
 // MARK: Server-facing Client Command Completion Handlers
