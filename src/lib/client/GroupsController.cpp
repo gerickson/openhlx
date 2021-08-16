@@ -345,26 +345,6 @@ GroupsController :: Query(const IdentifierType &aGroupIdentifier)
 
 /**
  *  @brief
- *    Get the maximum number of supported HLX groups.
- *
- *  @param[out]  aGroups  The maximum number of HLX groups on
- *                        success.
- *
- *  @retval  kStatus_Success  Unconditionally.
- *
- */
-Status
-GroupsController :: GetGroupsMax(size_t &aGroups) const
-{
-    Status  lRetval = kStatus_Success;
-
-    aGroups = kGroupsMax;
-
-    return (lRetval);
-}
-
-/**
- *  @brief
  *    Get the group model associated with specified group
  *    identifier.
  *

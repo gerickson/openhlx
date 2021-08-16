@@ -218,26 +218,6 @@ SourcesController :: Refresh(const Timeout &aTimeout)
 
 /**
  *  @brief
- *    Get the maximum number of supported HLX sources.
- *
- *  @param[out]  aSources  The maximum number of HLX sources on
- *                         success.
- *
- *  @retval  kStatus_Success  Unconditionally.
- *
- */
-Status
-SourcesController :: GetSourcesMax(size_t &aSources) const
-{
-    Status  lRetval = kStatus_Success;
-
-    aSources = kSourcesMax;
-
-    return (lRetval);
-}
-
-/**
- *  @brief
  *    Get the source model associated with specified source
  *    identifier.
  *

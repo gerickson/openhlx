@@ -69,8 +69,6 @@ public:
 
     Common::Status GetSource(const IdentifierType &aIdentifier, const Model::SourceModel *&aModel) const;
 
-    Common::Status GetSourcesMax(size_t &aSources) const;
-
     Common::Status LookupIdentifier(const char *aName, IdentifierType &aSourceIdentifier) const;
 
     // Mutator Methods

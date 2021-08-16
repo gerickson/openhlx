@@ -70,8 +70,6 @@ public:
     Common::Status Query(void);
     Common::Status Query(const IdentifierType &aFavoriteIdentifier);
 
-    Common::Status GetFavoritesMax(size_t &aFavorites) const;
-
     Common::Status GetFavorite(const IdentifierType &aIdentifier, const Model::FavoriteModel *&aModel) const;
 
     Common::Status LookupIdentifier(const char *aName, IdentifierType &aFavoriteIdentifier) const;

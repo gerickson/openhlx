@@ -71,8 +71,6 @@ public:
     Common::Status Query(void);
     Common::Status Query(const IdentifierType &aEqualizerPresetIdentifier);
 
-    Common::Status GetEqualizerPresetsMax(size_t &aEqualizerPresets) const;
-
     Common::Status GetEqualizerPreset(const IdentifierType &aIdentifier, const Model::EqualizerPresetModel *&aModel) const;
 
     Common::Status LookupIdentifier(const char *aName, IdentifierType &aEqualizerPresetIdentifier) const;

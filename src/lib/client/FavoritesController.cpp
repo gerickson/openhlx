@@ -293,26 +293,6 @@ FavoritesController :: Query(const IdentifierType &aFavoriteIdentifier)
 
 /**
  *  @brief
- *    Get the maximum number of supported HLX favorites.
- *
- *  @param[out]  aFavorites  The maximum number of HLX favorites on
- *                           success.
- *
- *  @retval  kStatus_Success  Unconditionally.
- *
- */
-Status
-FavoritesController :: GetFavoritesMax(size_t &aFavorites) const
-{
-    Status  lRetval = kStatus_Success;
-
-    aFavorites = kFavoritesMax;
-
-    return (lRetval);
-}
-
-/**
- *  @brief
  *    Get the favorite model associated with specified favorite
  *    identifier.
  *

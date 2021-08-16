@@ -73,8 +73,6 @@ public:
     Common::Status Query(void);
     Common::Status Query(const IdentifierType &aGroupIdentifier);
 
-    Common::Status GetGroupsMax(size_t &aGroups) const;
-
     Common::Status GetGroup(const IdentifierType &aIdentifier, const Model::GroupModel *&aModel) const;
 
     Common::Status LookupIdentifier(const char *aName, IdentifierType &aGroupIdentifier) const;
