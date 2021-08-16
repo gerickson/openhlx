@@ -247,7 +247,6 @@ done:
 Status
 EqualizerPresetsController :: Refresh(const Timeout &aTimeout)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 
@@ -344,7 +343,6 @@ done:
 Status
 EqualizerPresetsController :: Query(const IdentifierType &aEqualizerPresetIdentifier)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Client::Command::ExchangeBasis::MutableCountedPointer lCommand;
     Status                                                lRetval = kStatus_Success;
 

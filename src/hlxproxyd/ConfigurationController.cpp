@@ -262,7 +262,6 @@ ConfigurationController :: SetDelegate(ConfigurationControllerDelegate *aDelegat
 Status
 ConfigurationController :: Refresh(const Timeout &aTimeout)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 

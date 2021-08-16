@@ -312,7 +312,6 @@ done:
 Status
 ZonesController :: Refresh(const Timeout &aTimeout)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 
@@ -404,7 +403,6 @@ done:
 Status
 ZonesController :: Query(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Client::Command::ExchangeBasis::MutableCountedPointer lCommand;
     Status                                                lRetval = kStatus_Success;
 

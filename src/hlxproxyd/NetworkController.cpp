@@ -227,7 +227,6 @@ done:
 Status
 NetworkController :: Refresh(const Timeout &aTimeout)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 

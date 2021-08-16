@@ -496,7 +496,6 @@ done:
 Status
 Controller :: Refresh(void)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status                 lRetval = kStatus_Success;
     Controllers::iterator  lCurrent, lEnd;
 

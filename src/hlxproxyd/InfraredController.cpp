@@ -226,7 +226,6 @@ done:
 Status
 InfraredController :: Refresh(const Timeout &aTimeout)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 
