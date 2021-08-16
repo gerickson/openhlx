@@ -140,12 +140,18 @@ GroupsController :: GroupsController(void) :
     return;
 }
 
+/**
+ *  @brief
+ *    This is the class destructor.
+ *
+ */
 GroupsController :: ~GroupsController(void)
 {
     return;
 }
 
-Status GroupsController :: DoRequestHandlers(const bool &aRegister)
+Status
+GroupsController :: DoRequestHandlers(const bool &aRegister)
 {
     static const RequestHandlerBasis  lRequestHandlers[] = {
         {
@@ -219,8 +225,8 @@ done:
 Status GroupsController :: Init(CommandManager &aCommandManager)
 {
     DeclareScopedFunctionTracer(lTracer);
-    const bool  lRegister = true;
-    Status      lRetval = kStatus_Success;
+    constexpr bool  kRegister = true;
+    Status          lRetval = kStatus_Success;
 
 
     lRetval = Common::GroupsControllerBasis::Init();
@@ -235,10 +241,10 @@ Status GroupsController :: Init(CommandManager &aCommandManager)
     // This MUST come AFTER the base class initialization due to a
     // dependency on the command manager instance.
 
-    lRetval = DoRequestHandlers(lRegister);
+    lRetval = DoRequestHandlers(kRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
@@ -729,7 +735,7 @@ void GroupsController :: SaveToBackupConfiguration(CFMutableDictionaryRef aBacku
                                                         kGroupsSchemaKey);
 }
 
-// MARK: Command Completion Handlers
+// MARK: Command Request Completion Handlers
 
 void GroupsController :: AddZoneRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
