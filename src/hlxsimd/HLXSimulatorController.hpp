@@ -155,7 +155,7 @@ private:
         ShouldDoForGroupZonesFunctorBasis(ZonesController &aZonesController);
 
     public:
-        virtual Common::Status operator ()(const ZonesController::IdentifierType &aZoneIdentifier) = 0;
+        virtual Common::Status operator ()(const Model::ZoneModel::IdentifierType &aZoneIdentifier) = 0;
 
     protected:
         ZonesController &                           mZonesController;
@@ -167,7 +167,7 @@ private:
     public:
         ShouldAdjustVolumeFunctor(ZonesController &aZonesController, const Model::VolumeModel::LevelType &aAdjustment);
 
-        virtual Common::Status operator ()(const ZonesController::IdentifierType &aZoneIdentifier) final;
+        virtual Common::Status operator ()(const Model::ZoneModel::IdentifierType &aZoneIdentifier) final;
 
     private:
         const Model::VolumeModel::LevelType &      mAdjustment;
@@ -179,7 +179,7 @@ private:
     public:
         ShouldSetMuteFunctor(ZonesController &aZonesController, const Model::VolumeModel::MuteType &aMute);
 
-        virtual Common::Status operator ()(const ZonesController::IdentifierType &aZoneIdentifier) final;
+        virtual Common::Status operator ()(const Model::ZoneModel::IdentifierType &aZoneIdentifier) final;
 
     private:
         const Model::VolumeModel::MuteType &        mMute;
@@ -191,7 +191,7 @@ private:
     public:
         ShouldSetSourceFunctor(ZonesController &aZonesController, const Model::SourceModel::IdentifierType &aSourceIdentifier);
 
-        virtual Common::Status operator ()(const ZonesController::IdentifierType &aZoneIdentifier) final;
+        virtual Common::Status operator ()(const Model::ZoneModel::IdentifierType &aZoneIdentifier) final;
 
     private:
         const Model::SourceModel::IdentifierType &  mSourceIdentifier;
@@ -203,7 +203,7 @@ private:
     public:
         ShouldSetVolumeFunctor(ZonesController &aZonesController, const Model::VolumeModel::LevelType &aVolume);
 
-        virtual Common::Status operator ()(const ZonesController::IdentifierType &aZoneIdentifier) final;
+        virtual Common::Status operator ()(const Model::ZoneModel::IdentifierType &aZoneIdentifier) final;
 
     private:
         const Model::VolumeModel::LevelType &      mVolume;
@@ -215,7 +215,7 @@ private:
     public:
         ShouldToggleMuteFunctor(ZonesController &aZonesController);
 
-        virtual Common::Status operator ()(const ZonesController::IdentifierType &aZoneIdentifier) final;
+        virtual Common::Status operator ()(const Model::ZoneModel::IdentifierType &aZoneIdentifier) final;
     };
 
     Common::Status ShouldDoForGroupZones(const Model::GroupModel::IdentifierType &aGroupIdentifier, const Model::GroupModel &aGroupModel, ShouldDoForGroupZonesFunctorBasis &aFunctorBasis);

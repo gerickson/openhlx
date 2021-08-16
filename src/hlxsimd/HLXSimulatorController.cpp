@@ -770,7 +770,7 @@ Controller :: ShouldAdjustVolumeFunctor :: ShouldAdjustVolumeFunctor(ZonesContro
     return;
 }
 
-Common::Status Controller :: ShouldAdjustVolumeFunctor :: operator ()(const ZonesController::IdentifierType &aZoneIdentifier)
+Common::Status Controller :: ShouldAdjustVolumeFunctor :: operator ()(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
 {
     VolumeModel::LevelType       lVolume;
     Status                        lRetval;
@@ -798,7 +798,7 @@ Controller :: ShouldSetMuteFunctor :: ShouldSetMuteFunctor(ZonesController &aZon
     return;
 }
 
-Status Controller :: ShouldSetMuteFunctor :: operator ()(const ZonesController::IdentifierType &aZoneIdentifier)
+Status Controller :: ShouldSetMuteFunctor :: operator ()(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
 {
     Status                        lRetval;
 
@@ -816,7 +816,7 @@ Controller :: ShouldSetSourceFunctor :: ShouldSetSourceFunctor(ZonesController &
     return;
 }
 
-Status Controller :: ShouldSetSourceFunctor :: operator ()(const ZonesController::IdentifierType &aZoneIdentifier)
+Status Controller :: ShouldSetSourceFunctor :: operator ()(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
 {
     Status                        lRetval;
 
@@ -834,7 +834,7 @@ Controller :: ShouldSetVolumeFunctor :: ShouldSetVolumeFunctor(ZonesController &
     return;
 }
 
-Status Controller :: ShouldSetVolumeFunctor :: operator ()(const ZonesController::IdentifierType &aZoneIdentifier)
+Status Controller :: ShouldSetVolumeFunctor :: operator ()(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
 {
     Status                        lRetval;
 
@@ -851,7 +851,7 @@ Controller :: ShouldToggleMuteFunctor :: ShouldToggleMuteFunctor(ZonesController
     return;
 }
 
-Status Controller :: ShouldToggleMuteFunctor :: operator ()(const ZonesController::IdentifierType &aZoneIdentifier)
+Status Controller :: ShouldToggleMuteFunctor :: operator ()(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
 {
     VolumeModel::MuteType         lMute;
     Status                        lRetval;

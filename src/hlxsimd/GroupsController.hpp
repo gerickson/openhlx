@@ -95,16 +95,16 @@ private:
     Common::Status DoRequestHandlers(const bool &aRegister);
 
     Common::Status GroupZonesLoadFromBackupConfiguration(CFDictionaryRef aGroupDictionary, Model::GroupModel &aGroupModel);
-    Common::Status ElementLoadFromBackupConfiguration(CFDictionaryRef aGroupsDictionary, const IdentifierType &aGroupIdentifier) final;
+    Common::Status ElementLoadFromBackupConfiguration(CFDictionaryRef aGroupsDictionary, const Model::GroupModel::IdentifierType &aGroupIdentifier) final;
     Common::Status ElementSaveToBackupConfiguration(CFMutableDictionaryRef aGroupsDictionary, const IdentifierType &aZoneIdentifier) const final;
     static Common::Status GroupZonesSaveToBackupConfiguration(CFMutableDictionaryRef aGroupDictionary, const Model::GroupModel &aGroupModel);
 
-    Common::Status HandleQueryReceived(const IdentifierType &aGroupIdentifier, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
+    Common::Status HandleQueryReceived(const Model::GroupModel::IdentifierType &aGroupIdentifier, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
 
-    Common::Status HandleSetMute(const IdentifierType &aGroupIdentifier, const Model::VolumeModel::MuteType &aMute, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    Common::Status HandleSetMute(const Model::GroupModel::IdentifierType &aGroupIdentifier, const Model::VolumeModel::MuteType &aMute, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
 
-    Common::Status HandleAdjustVolumeReceived(const uint8_t *aInputBuffer, const size_t &aInputSize, const IdentifierType &aGroupIdentifier, const Model::VolumeModel::LevelType &aAdjustment, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
-    Common::Status HandleSetVolumeReceived(const IdentifierType &aGroupIdentifier, const Model::VolumeModel::LevelType &aVolume, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    Common::Status HandleAdjustVolumeReceived(const uint8_t *aInputBuffer, const size_t &aInputSize, const Model::GroupModel::IdentifierType &aGroupIdentifier, const Model::VolumeModel::LevelType &aAdjustment, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    Common::Status HandleSetVolumeReceived(const Model::GroupModel::IdentifierType &aGroupIdentifier, const Model::VolumeModel::LevelType &aVolume, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
 
     static Common::Status HandleAdjustVolumeResponse(const uint8_t *aInputBuffer, const size_t &aInputSize, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer);
     static Common::Status HandleSetMuteResponse(const IdentifierType &aZoneIdentifier, const Model::VolumeModel::MuteType &aMute, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
@@ -127,11 +127,11 @@ private:
 
     // Delegate Fanout Methods
 
-    Common::Status OnAdjustVolume(const IdentifierType &aGroupIdentifier, const Model::GroupModel &aGroupModel, const Model::VolumeModel::LevelType &aAdjustment);
-    Common::Status OnSetMute(const IdentifierType &aGroupIdentifier, const Model::GroupModel &aGroupModel, const Model::VolumeModel::MuteType &aMute);
-    Common::Status OnSetSource(const IdentifierType &aGroupIdentifier, const Model::GroupModel &aGroupModel, const Model::SourceModel::IdentifierType &aSourceIdentifier);
-    Common::Status OnSetVolume(const IdentifierType &aGroupIdentifier, const Model::GroupModel &aGroupModel, const Model::VolumeModel::LevelType &aVolume);
-    Common::Status OnToggleMute(const IdentifierType &aGroupIdentifier, const Model::GroupModel &aGroupModel);
+    Common::Status OnAdjustVolume(const Model::GroupModel::IdentifierType &aGroupIdentifier, const Model::GroupModel &aGroupModel, const Model::VolumeModel::LevelType &aAdjustment);
+    Common::Status OnSetMute(const Model::GroupModel::IdentifierType &aGroupIdentifier, const Model::GroupModel &aGroupModel, const Model::VolumeModel::MuteType &aMute);
+    Common::Status OnSetSource(const Model::GroupModel::IdentifierType &aGroupIdentifier, const Model::GroupModel &aGroupModel, const Model::SourceModel::IdentifierType &aSourceIdentifier);
+    Common::Status OnSetVolume(const Model::GroupModel::IdentifierType &aGroupIdentifier, const Model::GroupModel &aGroupModel, const Model::VolumeModel::LevelType &aVolume);
+    Common::Status OnToggleMute(const Model::GroupModel::IdentifierType &aGroupIdentifier, const Model::GroupModel &aGroupModel);
 
 private:
     GroupsControllerDelegate *                     mDelegate;
