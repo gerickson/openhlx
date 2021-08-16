@@ -156,42 +156,8 @@ public:
     static void ToggleMuteRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
-    // Proxy Handlers
-
-    void ProxyErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange,
-                           const Common::Error &aError,
-                           Server::ConnectionBasis &aConnection,
-                           Client::CommandManager::OnCommandErrorFunc aOnCommandErrorHandler,
-                           void * aContext);
-    void ProxyCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange,
-                              const Common::RegularExpression::Matches &aClientMatches,
-                              Server::ConnectionBasis &aConnection,
-                              const uint8_t *aBuffer,
-                              const size_t &aSize,
-                              const Common::RegularExpression::Matches &aServerMatches,
-                              Client::CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
-                              Server::CommandManager::OnRequestReceivedFunc aOnRequestReceivedHandler,
-                              void * aContext);
-
-public:
-    // Proxy Handler Trampolines
-
-    static void ProxyErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError, void *aContext);
-    static void ProxyCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-
-private:
     Common::Status DoNotificationHandlers(const bool &aRegister);
     Common::Status DoRequestHandlers(const bool &aRegister);
-
-    Common::Status ProxyCommand(Server::ConnectionBasis &aConnection,
-                                const uint8_t *aBuffer,
-                                const size_t &aSize,
-                                const Common::RegularExpression::Matches &aMatches,
-                                const Client::Command::ResponseBasis &aResponse,
-                                Client::CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
-                                Client::CommandManager::OnCommandErrorFunc aOnCommandErrorHandler,
-                                Server::CommandManager::OnRequestReceivedFunc aOnRequestReceivedHandler,
-                                void *aContext);
 
     // Server-facing Client Command Completion Handlers
 
