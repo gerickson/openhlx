@@ -92,6 +92,11 @@ struct NetworkModelDefaults
     NetworkModel::EnabledType          mSDDPEnabled;
 };
 
+/**
+ *  @brief
+ *    This is the class default constructor.
+ *
+ */
 NetworkController :: NetworkController(void) :
     Common::NetworkControllerBasis(),
     Simulator::ControllerBasis()
@@ -99,6 +104,11 @@ NetworkController :: NetworkController(void) :
     return;
 }
 
+/**
+ *  @brief
+ *    This is the class destructor.
+ *
+ */
 NetworkController :: ~NetworkController(void)
 {
     return;
@@ -128,8 +138,8 @@ done:
 Status NetworkController :: Init(Server::CommandManager &aCommandManager, const Timeout &aTimeout)
 {
     DeclareScopedFunctionTracer(lTracer);
-    const bool  lRegister = true;
-    Status      lRetval = kStatus_Success;
+    constexpr bool  kRegister = true;
+    Status          lRetval = kStatus_Success;
 
 
     lRetval = Common::NetworkControllerBasis::Init();
@@ -144,10 +154,10 @@ Status NetworkController :: Init(Server::CommandManager &aCommandManager, const 
     // This MUST come AFTER the base class initialization due to a
     // dependency on the command manager instance.
 
-    lRetval = DoRequestHandlers(lRegister);
+    lRetval = DoRequestHandlers(kRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
@@ -182,7 +192,7 @@ void NetworkController :: ResetToDefaultConfiguration(void)
     return;
 }
 
-// MARK: Command Completion Handlers
+// MARK: Command Request Completion Handlers
 
 void NetworkController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {

@@ -93,7 +93,8 @@ FrontPanelController :: ~FrontPanelController(void)
     return;
 }
 
-Status FrontPanelController :: DoRequestHandlers(const bool &aRegister)
+Status
+FrontPanelController :: DoRequestHandlers(const bool &aRegister)
 {
     static const RequestHandlerBasis  lRequestHandlers[] = {
         {
@@ -127,8 +128,8 @@ done:
 Status FrontPanelController :: Init(Server::CommandManager &aCommandManager, const Timeout &aTimeout)
 {
     DeclareScopedFunctionTracer(lTracer);
-    const bool  lRegister = true;
-    Status      lRetval = kStatus_Success;
+    constexpr bool  kRegister = true;
+    Status          lRetval = kStatus_Success;
 
 
     lRetval = Common::FrontPanelControllerBasis::Init();
@@ -143,10 +144,10 @@ Status FrontPanelController :: Init(Server::CommandManager &aCommandManager, con
     // This MUST come AFTER the base class initialization due to a
     // dependency on the command manager instance.
 
-    lRetval = DoRequestHandlers(lRegister);
+    lRetval = DoRequestHandlers(kRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
@@ -340,7 +341,7 @@ void FrontPanelController :: SaveToBackupConfiguration(CFMutableDictionaryRef aB
     return;
 }
 
-// MARK: Command Completion Handlers
+// MARK: Command Request Completion Handlers
 
 void FrontPanelController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {

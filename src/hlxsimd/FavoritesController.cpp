@@ -131,8 +131,8 @@ done:
 Status FavoritesController :: Init(Server::CommandManager &aCommandManager, const Timeout &aTimeout)
 {
     DeclareScopedFunctionTracer(lTracer);
-    const bool  lRegister = true;
-    Status      lRetval = kStatus_Success;
+    constexpr bool  kRegister = true;
+    Status          lRetval = kStatus_Success;
 
 
     lRetval = Common::FavoritesControllerBasis::Init();
@@ -147,10 +147,10 @@ Status FavoritesController :: Init(Server::CommandManager &aCommandManager, cons
     // This MUST come AFTER the base class initialization due to a
     // dependency on the command manager instance.
 
-    lRetval = DoRequestHandlers(lRegister);
+    lRetval = DoRequestHandlers(kRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
@@ -187,19 +187,20 @@ Status FavoritesController :: HandleQueryReceived(const IdentifierType &aFavorit
 
 void FavoritesController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
-    IdentifierType  lFavoriteIdentifier;
     Status          lStatus;
 
 
     (void)aConnection;
 
-    for (lFavoriteIdentifier = IdentifierModel::kIdentifierMin; lFavoriteIdentifier <= kFavoritesMax; lFavoriteIdentifier++)
+    // For each favorite, query the configuration.
+
+    for (auto lFavoriteIdentifier = IdentifierModel::kIdentifierMin; lFavoriteIdentifier <= kFavoritesMax; lFavoriteIdentifier++)
     {
         lStatus = HandleQueryReceived(lFavoriteIdentifier, aBuffer);
         nlREQUIRE_SUCCESS(lStatus, done);
     }
 
- done:
+done:
     return;
 }
 
@@ -328,7 +329,7 @@ void FavoritesController :: SaveToBackupConfiguration(CFMutableDictionaryRef aBa
                                                         kFavoritesSchemaKey);
 }
 
-// MARK: Command Completion Handlers
+// MARK: Command Request Handlers
 
 void FavoritesController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {

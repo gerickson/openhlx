@@ -120,8 +120,8 @@ done:
 Status InfraredController :: Init(Server::CommandManager &aCommandManager, const Timeout &aTimeout)
 {
     DeclareScopedFunctionTracer(lTracer);
-    const bool  lRegister = true;
-    Status      lRetval = kStatus_Success;
+    constexpr bool  kRegister = true;
+    Status          lRetval = kStatus_Success;
 
 
     lRetval = Common::InfraredControllerBasis::Init();
@@ -136,10 +136,10 @@ Status InfraredController :: Init(Server::CommandManager &aCommandManager, const
     // This MUST come AFTER the base class initialization due to a
     // dependency on the command manager instance.
 
-    lRetval = DoRequestHandlers(lRegister);
+    lRetval = DoRequestHandlers(kRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
@@ -270,7 +270,7 @@ void InfraredController :: SaveToBackupConfiguration(CFMutableDictionaryRef aBac
     return;
 }
 
-// MARK: Command Completion Handlers
+// MARK: Command Request Completion Handlers
 
 void InfraredController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
