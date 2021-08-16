@@ -37,6 +37,7 @@
 #include "ProxyCommand.hpp"
 
 
+using namespace HLX::Client;
 using namespace HLX::Common;
 using namespace HLX::Model;
 using namespace HLX::Server;
@@ -237,6 +238,9 @@ NetworkController :: Refresh(const Timeout &aTimeout)
 
     SetRefreshRequested(true);
 
+    lRetval = Query();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
 done:
     return (lRetval);
 }
@@ -261,9 +265,170 @@ done:
 
 // MARK: Server-facing Client Observer Methods
 
+/**
+ *  @brief
+ *    Query the Ethernet network interface state.
+ *
+ *  This queries the current HLX server Ethernet network interface state.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated
+ *                                        for the command exchange or
+ *                                        exchange state.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+NetworkController :: Query(void)
+{
+    Client::Command::ExchangeBasis::MutableCountedPointer  lCommand;
+    Status                                         lRetval = kStatus_Success;
+
+
+    lCommand.reset(new Client::Command::Network::Query());
+    nlREQUIRE_ACTION(lCommand, done, lRetval = -ENOMEM);
+
+    lRetval = std::static_pointer_cast<Client::Command::Network::Query>(lCommand)->Init();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = SendCommand(lCommand,
+                          NetworkController::QueryCompleteHandler,
+                          NetworkController::CommandErrorHandler,
+                          this);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
 // MARK: Server-facing Client Command Completion Handlers
 
+/**
+ *  @brief
+ *    Asynchronous query Ethernet network interface client command
+ *    response completion handler.
+ *
+ *  This handles an asynchronous client command response for the query
+ *  Ethernet network interface command request.
+ *
+ *  @param[in]  aExchange  A mutable shared pointer to the exchange
+ *                         associated with the client command response
+ *                         and its original request.
+ *  @param[in]  aMatches   An immutable reference to the regular
+ *                         expression substring matches associated
+ *                         with the client command response that
+ *                         triggered this handler.
+ *
+ */
+void
+NetworkController :: QueryCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange,
+                                          const RegularExpression::Matches &aMatches)
+{
+    const Client::Command::ResponseBasis * lResponse = aExchange->GetResponse();
+    const size_t                   lExpectedMatchCount = lResponse->GetRegularExpression().GetExpectedMatchCount();
+
+
+    nlREQUIRE(aMatches.size() == lExpectedMatchCount, done);
+
+    MaybeUpdateRefreshIfRefreshWasRequested();
+
+ done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Asynchronous network controller client command request
+ *    error handler.
+ *
+ *  This handles any asynchronous client network controller
+ *  command request that results in an error response from the HLX
+ *  peer server.
+ *
+ *  @param[in]  aExchange  A mutable shared pointer to the exchange
+ *                         associated with the client command error
+ *                         and its original request.
+ *  @param[in]  aError     An immutable reference to the error
+ *                         associated with the failed client command
+ *                         request.
+ *
+ */
+void
+NetworkController :: CommandErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError)
+{
+    const Client::Command::RequestBasis *  lRequest    = aExchange->GetRequest();
+    const uint8_t *                lBuffer     = lRequest->GetBuffer();
+    const size_t                   lBufferSize = lRequest->GetSize();
+
+    OnCommandError(lBuffer, lBufferSize, "Network Command", aError);
+}
+
 // MARK: Server-facing Client Command Completion Handler Trampolines
+
+/**
+ *  @brief
+ *    Asynchronous query Ethernet network interface client command
+ *    response completion handler trampoline.
+ *
+ *  This invokes the handler for an asynchronous client command
+ *  response for the query Ethernet network interface command request.
+ *
+ *  @param[in]      aExchange  A mutable shared pointer to the exchange
+ *                             associated with the client command
+ *                             response and its original request.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+NetworkController :: QueryCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    NetworkController *lController = static_cast<NetworkController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->QueryCompleteHandler(aExchange, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Asynchronous network controller client command request error
+ *    handler trampoline.
+ *
+ *  This invokes the handler for any asynchronous client network
+ *  controller command request that results in an error response from
+ *  the HLX peer server.
+ *
+ *  @param[in]      aExchange  A mutable shared pointer to the exchange
+ *                             associated with the client command
+ *                             error response and its original
+ *                             request.
+ *  @param[in]      aError     An immutable reference to the error
+ *                             associated with the failed command
+ *                             request.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+NetworkController :: CommandErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError, void *aContext)
+{
+    NetworkController *lController = static_cast<NetworkController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->CommandErrorHandler(aExchange, aError);
+    }
+}
 
 // MARK: Server-facing Client Unsolicited Notification Handlers
 
