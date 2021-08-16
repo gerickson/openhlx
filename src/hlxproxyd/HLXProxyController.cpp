@@ -53,6 +53,13 @@ Controller :: Controller(void) :
     mServerConnectionManager(),
     mServerCommandManager(),
     mConfigurationController(),
+    mNetworkController(),
+    mFavoritesController(),
+    mGroupsController(),
+    mFrontPanelController(),
+    mInfraredController(),
+    mEqualizerPresetsController(),
+    mSourcesController(),
     mZonesController(),
     mControllers(),
     mControllersDidRefreshCount(0),
@@ -233,6 +240,13 @@ Controller :: InitControllers(const RunLoopParameters &aRunLoopParameters)
     // 2) this is the priority we want to run operations like refresh.
 
     AddController(mConfigurationController);
+    AddController(mNetworkController);
+    AddController(mFavoritesController);
+    AddController(mGroupsController);
+    AddController(mFrontPanelController);
+    AddController(mInfraredController);
+    AddController(mEqualizerPresetsController);
+    AddController(mSourcesController);
     AddController(mZonesController);
 
     // Explicitly set this parent controller to be the delegate for

@@ -43,7 +43,14 @@
 
 #include "ConfigurationController.hpp"
 #include "ConfigurationControllerDelegate.hpp"
+#include "EqualizerPresetsController.hpp"
+#include "FavoritesController.hpp"
+#include "FrontPanelController.hpp"
+#include "GroupsController.hpp"
 #include "HLXProxyControllerDelegate.hpp"
+#include "InfraredController.hpp"
+#include "NetworkController.hpp"
+#include "SourcesController.hpp"
 #include "ZonesController.hpp"
 
 
@@ -179,6 +186,13 @@ private:
     Server::ConnectionManager       mServerConnectionManager;
     Server::CommandManager          mServerCommandManager;
     ConfigurationController         mConfigurationController;
+    NetworkController               mNetworkController;
+    FavoritesController             mFavoritesController;
+    GroupsController                mGroupsController;
+    FrontPanelController            mFrontPanelController;
+    InfraredController              mInfraredController;
+    EqualizerPresetsController      mEqualizerPresetsController;
+    SourcesController               mSourcesController;
     ZonesController                 mZonesController;
     Controllers                     mControllers;
     size_t                          mControllersDidRefreshCount;
