@@ -1098,7 +1098,7 @@ ConfigurationController :: ProxyErrorHandler(Client::Command::ExchangeBasis::Mut
 ConfigurationController :: ProxyCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     DeclareScopedFunctionTracer(lTracer);
-    Detail::ProxyContext *lContext = static_cast<Detail::ProxyContext *>(aContext);    
+    Detail::ProxyContext *lContext = static_cast<Detail::ProxyContext *>(aContext);
 
     if (lContext != nullptr)
     {
