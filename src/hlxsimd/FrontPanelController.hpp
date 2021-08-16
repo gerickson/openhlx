@@ -55,7 +55,7 @@ class FrontPanelController :
 {
 public:
     FrontPanelController(void);
-    ~FrontPanelController(void);
+    virtual ~FrontPanelController(void);
 
     Common::Status Init(Server::CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
 
@@ -75,10 +75,7 @@ public:
 private:
     Common::Status DoRequestHandlers(const bool &aRegister);
 
-    void HandleQueryReceived(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
 
-    static Common::Status HandleBrightnessResponse(const Model::FrontPanelModel::BrightnessType &aBrightness, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
-    static Common::Status HandleLockedResponse(const Model::FrontPanelModel::LockedType &aLocked, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
 
     // Command Completion Handlers
 

@@ -95,6 +95,34 @@ done:
     return (lRetval);
 }
 
+// MARK: Observation (Query) Command Request Handlers
+
+// MARK: Observation (Query) Command Request Instance Handlers
+
+// MARK: Observation (Query) Command Request Class (Static) Handlers
+
+Status
+NetworkControllerBasis :: HandleQueryReceived(const char *aInputBuffer, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer)
+{
+    const uint8_t *  lBuffer;
+    size_t           lSize;
+    Status           lRetval;
+
+
+    lBuffer = reinterpret_cast<const uint8_t *>(aInputBuffer);
+    lSize = strlen(aInputBuffer);
+
+    lRetval = Common::Utilities::Put(*aOutputBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+// MARK: Command Response Handlers
+
+// MARK: Command Response Class (Static) Handlers
+
 }; // namespace Server
 
 }; // namespace HLX

@@ -99,17 +99,10 @@ private:
     Common::Status ElementSaveToBackupConfiguration(CFMutableDictionaryRef aGroupsDictionary, const IdentifierType &aZoneIdentifier) const final;
     static Common::Status GroupZonesSaveToBackupConfiguration(CFMutableDictionaryRef aGroupDictionary, const Model::GroupModel &aGroupModel);
 
-    Common::Status HandleQueryReceived(const Model::GroupModel::IdentifierType &aGroupIdentifier, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
-
     Common::Status HandleSetMute(const Model::GroupModel::IdentifierType &aGroupIdentifier, const Model::VolumeModel::MuteType &aMute, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
 
     Common::Status HandleAdjustVolumeReceived(const uint8_t *aInputBuffer, const size_t &aInputSize, const Model::GroupModel::IdentifierType &aGroupIdentifier, const Model::VolumeModel::LevelType &aAdjustment, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
     Common::Status HandleSetVolumeReceived(const Model::GroupModel::IdentifierType &aGroupIdentifier, const Model::VolumeModel::LevelType &aVolume, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
-
-    static Common::Status HandleAdjustVolumeResponse(const uint8_t *aInputBuffer, const size_t &aInputSize, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer);
-    static Common::Status HandleSetMuteResponse(const IdentifierType &aZoneIdentifier, const Model::VolumeModel::MuteType &aMute, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
-    static Common::Status HandleSetVolumeResponse(const IdentifierType &aZoneIdentifier, const Model::VolumeModel::LevelType &aVolume, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
-    static Common::Status HandleToggleMuteResponse(const uint8_t *aInputBuffer, const size_t &aInputSize, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer);
 
     // Command Completion Handlers
 

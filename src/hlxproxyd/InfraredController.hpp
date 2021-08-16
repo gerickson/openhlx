@@ -127,10 +127,6 @@ private:
 
 private:
     // Client-facing Server Implementation
-
-    Common::Status HandleQueryReceived(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
-
-    static Common::Status HandleDisabledResponse(const Model::InfraredModel::DisabledType &aDisabled, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
 };
 
 }; // namespace Proxy

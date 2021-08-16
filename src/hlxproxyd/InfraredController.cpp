@@ -705,44 +705,6 @@ void InfraredController :: SetDisabledRequestReceivedHandler(Server::ConnectionB
 
 // MARK: Client-facing Server Implementation
 
-Status
-InfraredController :: HandleQueryReceived(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
-{
-    InfraredModel::DisabledType              lDisabled;
-    Status                                   lRetval;
-
-
-    lRetval = GetModel().GetDisabled(lDisabled);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = HandleDisabledResponse(lDisabled, aBuffer);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-done:
-    return (lRetval);
-}
-
-Status InfraredController :: HandleDisabledResponse(const InfraredModel::DisabledType &aDisabled, ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    Server::Command::Infrared::DisabledResponse  lDisabledResponse;
-    const uint8_t *                              lBuffer;
-    size_t                                       lSize;
-    Status                                       lStatus;
-
-
-    lStatus = lDisabledResponse.Init(aDisabled);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lBuffer = lDisabledResponse.GetBuffer();
-    lSize = lDisabledResponse.GetSize();
-
-    lStatus = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
- done:
-    return (lStatus);
-}
-
 }; // namespace Proxy
 
 }; // namespace HLX

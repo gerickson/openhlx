@@ -66,6 +66,8 @@ protected:
 
     // Observation (Query) Command Request Instance Handlers
 
+    Common::Status HandleQueryReceived(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
+
 protected:
     // Observation (Query) Command Request Class (Static) Handlers
 
@@ -73,6 +75,9 @@ protected:
     // Command Response Handlers
 
     // Command Response Class (Static) Handlers
+
+    static Common::Status HandleBrightnessResponse(const Model::FrontPanelModel::BrightnessType &aBrightness, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    static Common::Status HandleLockedResponse(const Model::FrontPanelModel::LockedType &aLocked, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
 
 protected:
     static Server::Command::FrontPanel::QueryRequest          kQueryRequest;

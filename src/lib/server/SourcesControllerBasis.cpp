@@ -97,6 +97,16 @@ done:
     return (lRetval);
 }
 
+// MARK: Observation (Query) Command Request Handlers
+
+// MARK: Observation (Query) Command Request Instance Handlers
+
+// MARK: Observation (Query) Command Request Class (Static) Handlers
+
+// MARK: Command Response Handlers
+
+// MARK: Command Response Class (Static) Handlers
+
 }; // namespace Server
 
 }; // namespace HLX

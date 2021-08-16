@@ -342,24 +342,6 @@ void NetworkController :: QueryRequestReceivedHandler(Server::ConnectionBasis &a
 
 // MARK: Client-facing Server Implementation
 
-Status
-NetworkController :: HandleQueryReceived(const char *aInputBuffer, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer)
-{
-    const uint8_t *                          lBuffer;
-    size_t                                   lSize;
-    Status                                   lRetval;
-
-
-    lBuffer = reinterpret_cast<const uint8_t *>(aInputBuffer);
-    lSize = strlen(aInputBuffer);
-
-    lRetval = Common::Utilities::Put(*aOutputBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-done:
-    return (lRetval);
-}
-
 }; // namespace Proxy
 
 }; // namespace HLX

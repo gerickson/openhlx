@@ -72,8 +72,6 @@ public:
 private:
     Common::Status DoRequestHandlers(const bool &aRegister);
 
-    static void HandleQueryReceived(const char *aInputBuffer, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer);
-
     // Command Completion Handlers
 
     void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);

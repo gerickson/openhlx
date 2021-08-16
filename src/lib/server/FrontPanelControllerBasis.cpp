@@ -30,6 +30,7 @@
 
 
 using namespace HLX::Common;
+using namespace HLX::Model;
 using namespace HLX::Utilities;
 using namespace Nuovations;
 
@@ -100,6 +101,84 @@ FrontPanelControllerBasis :: RequestInit(void)
 
 done:
     return (lRetval);
+}
+
+// MARK: Observation (Query) Command Request Handlers
+
+// MARK: Observation (Query) Command Request Instance Handlers
+
+Status
+FrontPanelControllerBasis :: HandleQueryReceived(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+{
+    FrontPanelModel::BrightnessType          lBrightness;
+    FrontPanelModel::LockedType              lLocked;
+    Status                                   lRetval;
+
+
+    lRetval = mFrontPanelModel.GetBrightness(lBrightness);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = HandleBrightnessResponse(lBrightness, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = mFrontPanelModel.GetLocked(lLocked);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = HandleLockedResponse(lLocked, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+// MARK: Observation (Query) Command Request Class (Static) Handlers
+
+// MARK: Command Response Handlers
+
+// MARK: Command Response Class (Static) Handlers
+
+Status
+FrontPanelControllerBasis :: HandleBrightnessResponse(const FrontPanelModel::BrightnessType &aBrightness, ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    Server::Command::FrontPanel::BrightnessResponse  lBrightnessResponse;
+    const uint8_t *                                  lBuffer;
+    size_t                                           lSize;
+    Status                                           lStatus;
+
+
+    lStatus = lBrightnessResponse.Init(aBrightness);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lBuffer = lBrightnessResponse.GetBuffer();
+    lSize = lBrightnessResponse.GetSize();
+
+    lStatus = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return (lStatus);
+}
+
+Status
+FrontPanelControllerBasis :: HandleLockedResponse(const FrontPanelModel::LockedType &aLocked, ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    Server::Command::FrontPanel::LockedResponse  lLockedResponse;
+    const uint8_t *                              lBuffer;
+    size_t                                       lSize;
+    Status                                       lStatus;
+
+
+    lStatus = lLockedResponse.Init(aLocked);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lBuffer = lLockedResponse.GetBuffer();
+    lSize = lLockedResponse.GetSize();
+
+    lStatus = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return (lStatus);
 }
 
 }; // namespace Server

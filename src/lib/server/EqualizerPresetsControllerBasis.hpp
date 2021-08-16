@@ -69,13 +69,19 @@ protected:
 
     // Observation (Query) Command Request Instance Handlers
 
-protected:
-    // Observation (Query) Command Request Class (Static) Handlers
+    Common::Status HandleQueryReceived(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
+    Common::Status HandleQueryReceived(const Model::EqualizerPresetModel::IdentifierType &aEqualizerPresetIdentifier,
+                                       Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
 
 protected:
     // Command Response Handlers
 
     // Command Response Class (Static) Handlers
+
+    static Common::Status HandleBandResponse(const Model::EqualizerPresetModel::IdentifierType &aEqualizerPresetIdentifier,
+                                             const Model::EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier,
+                                             const Model::EqualizerBandModel::LevelType &aBandLevel,
+                                             Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
 
 protected:
     static Server::Command::EqualizerPresets::DecreaseBandRequest  kDecreaseBandRequest;

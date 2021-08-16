@@ -335,13 +335,8 @@ GroupsController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnecti
 
     (void)aConnection;
 
-    // For each group, query the configuration.
-
-    for (auto lGroupIdentifier = IdentifierModel::kIdentifierMin; lGroupIdentifier <= kGroupsMax; lGroupIdentifier++)
-    {
-        lRetval = HandleQueryReceived(lGroupIdentifier, aBuffer);
-        nlREQUIRE_SUCCESS(lRetval, done);
-    }
+    lRetval = HandleQueryReceived(aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
     return (lRetval);
@@ -2831,76 +2826,7 @@ GroupsController :: HandleSourcesChange(const IdentifierType & aGroupIdentifier,
     return;
 }
 
-
 // MARK: Client-facing Server Implementation
-
-Status GroupsController :: HandleQueryReceived(const IdentifierType &aGroupIdentifier, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
-{
-    const GroupModel *                     lGroupModel;
-    const char *                           lName;
-    Server::Command::Groups::NameResponse  lNameResponse;
-    const uint8_t *                        lBuffer;
-    size_t                                 lSize;
-    size_t                                 lZoneCount;
-    Status                                 lRetval;
-
-
-    lRetval = mGroups.GetGroup(aGroupIdentifier, lGroupModel);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    // Name Response
-
-    lRetval = lGroupModel->GetName(lName);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = lNameResponse.Init(aGroupIdentifier, lName);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lBuffer = lNameResponse.GetBuffer();
-    lSize = lNameResponse.GetSize();
-
-    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    // Zone Membership Response
-
-    lRetval = lGroupModel->GetZones(lZoneCount);
-    nlEXPECT_SUCCESS(lRetval, done);
-
-    if (lZoneCount > 0)
-    {
-        Detail::ZoneIdentifiers                  lZoneIdentifiers;
-        Detail::ZoneIdentifiers::const_iterator  lZoneIdentifierCurrent;
-        Detail::ZoneIdentifiers::const_iterator  lZoneIdentifierEnd;
-
-        lZoneIdentifiers.resize(lZoneCount);
-
-        lRetval = lGroupModel->GetZones(&lZoneIdentifiers[0], lZoneCount);
-        nlREQUIRE_SUCCESS(lRetval, done);
-
-        lZoneIdentifierCurrent = lZoneIdentifiers.begin();
-        lZoneIdentifierEnd     = lZoneIdentifiers.end();
-
-        while (lZoneIdentifierCurrent != lZoneIdentifierEnd)
-        {
-            Server::Command::Groups::ZoneResponse  lZoneResponse;
-
-            lRetval = lZoneResponse.Init(aGroupIdentifier, *lZoneIdentifierCurrent);
-            nlREQUIRE_SUCCESS(lRetval, done);
-
-            lBuffer = lZoneResponse.GetBuffer();
-            lSize = lZoneResponse.GetSize();
-
-            lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
-            nlREQUIRE_SUCCESS(lRetval, done);
-
-            lZoneIdentifierCurrent++;
-        }
-    }
-
- done:
-    return (lRetval);
-}
 
 Status GroupsController :: HandleSetMute(const IdentifierType &aGroupIdentifier, const VolumeModel::MuteType &aMute, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
@@ -2955,95 +2881,6 @@ Status GroupsController :: HandleSetVolumeReceived(const IdentifierType &aGroupI
     // XXX - nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = HandleSetVolumeResponse(aGroupIdentifier, aVolume, aBuffer);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status GroupsController :: HandleAdjustVolumeResponse(const uint8_t *aInputBuffer, const size_t &aInputSize, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer)
-{
-    Server::Command::Groups::AdjustVolumeResponse  lAdjustVolumeResponse;
-    const uint8_t *                                lBuffer;
-    size_t                                         lSize;
-    Status                                         lRetval;
-
-
-    // Strip the incoming request delimiters '[' and ']' by adjusting
-    // the buffer pointer by one (1) and size by two (2).
-
-    lRetval = lAdjustVolumeResponse.Init(aInputBuffer + 1, aInputSize - 2);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lBuffer = lAdjustVolumeResponse.GetBuffer();
-    lSize = lAdjustVolumeResponse.GetSize();
-
-    lRetval = Common::Utilities::Put(*aOutputBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status GroupsController :: HandleSetMuteResponse(const IdentifierType &aGroupIdentifier, const VolumeModel::MuteType &aMute, ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    Server::Command::Groups::SetMuteResponse  lSetMuteResponse;
-    const uint8_t *                           lBuffer;
-    size_t                                    lSize;
-    Status                                    lRetval;
-
-    lRetval = lSetMuteResponse.Init(aGroupIdentifier, aMute);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lBuffer = lSetMuteResponse.GetBuffer();
-    lSize = lSetMuteResponse.GetSize();
-
-    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status GroupsController :: HandleSetVolumeResponse(const IdentifierType &aGroupIdentifier, const VolumeModel::LevelType &aVolume, ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    Server::Command::Groups::SetVolumeResponse  lSetVolumeResponse;
-    const uint8_t *                             lBuffer;
-    size_t                                      lSize;
-    Status                                      lRetval;
-
-
-    lRetval = lSetVolumeResponse.Init(aGroupIdentifier, aVolume);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lBuffer = lSetVolumeResponse.GetBuffer();
-    lSize = lSetVolumeResponse.GetSize();
-
-    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status GroupsController :: HandleToggleMuteResponse(const uint8_t *aInputBuffer, const size_t &aInputSize, ConnectionBuffer::MutableCountedPointer &aOutputBuffer)
-{
-    Server::Command::Groups::ToggleMuteResponse  lToggleMuteResponse;
-    const uint8_t *                              lBuffer;
-    size_t                                       lSize;
-    Status                                       lRetval;
-
-
-    // Strip the incoming request delimiters '[' and ']' by adjusting
-    // the buffer pointer by one (1) and size by two (2).
-
-    lRetval = lToggleMuteResponse.Init(aInputBuffer + 1, aInputSize - 2);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lBuffer = lToggleMuteResponse.GetBuffer();
-    lSize = lToggleMuteResponse.GetSize();
-
-    lRetval = Common::Utilities::Put(*aOutputBuffer.get(), lBuffer, lSize);
     nlREQUIRE_SUCCESS(lRetval, done);
 
  done:

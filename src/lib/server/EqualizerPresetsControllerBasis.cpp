@@ -30,6 +30,7 @@
 
 
 using namespace HLX::Common;
+using namespace HLX::Model;
 using namespace HLX::Utilities;
 using namespace Nuovations;
 
@@ -109,6 +110,108 @@ EqualizerPresetsControllerBasis :: RequestInit(void)
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
+    return (lRetval);
+}
+
+// MARK: Observation (Query) Command Request Handlers
+
+// MARK: Observation (Query) Command Request Instance Handlers
+
+Status
+EqualizerPresetsControllerBasis :: HandleQueryReceived(ConnectionBuffer::MutableCountedPointer &aBuffer) const
+{
+    Status lRetval = kStatus_Success;
+
+    for (auto lEqualizerPresetIdentifier = IdentifierModel::kIdentifierMin; lEqualizerPresetIdentifier <= mEqualizerPresetsMax; lEqualizerPresetIdentifier++)
+    {
+        lRetval = HandleQueryReceived(lEqualizerPresetIdentifier, aBuffer);
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
+
+ done:
+    return (lRetval);
+}
+
+Status
+EqualizerPresetsControllerBasis :: HandleQueryReceived(const Model::EqualizerPresetModel::IdentifierType &aEqualizerPresetIdentifier,
+                                                       ConnectionBuffer::MutableCountedPointer &aBuffer) const
+{
+    const EqualizerPresetModel *                     lEqualizerPresetModel;
+    const char *                                     lName;
+    Server::Command::EqualizerPresets::NameResponse  lNameResponse;
+    const uint8_t *                                  lBuffer;
+    size_t                                           lSize;
+    EqualizerBandModel::IdentifierType               lEqualizerBandIdentifier;
+    const EqualizerBandModel *                       lEqualizerBandModel;
+    EqualizerBandModel::LevelType                    lLevel;
+    Server::Command::EqualizerPresets::BandResponse  lBandResponse;
+    Status                                           lRetval;
+
+
+    lRetval = mEqualizerPresetsModel.GetEqualizerPreset(aEqualizerPresetIdentifier, lEqualizerPresetModel);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = lEqualizerPresetModel->GetName(lName);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = lNameResponse.Init(aEqualizerPresetIdentifier, lName);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lBuffer = lNameResponse.GetBuffer();
+    lSize = lNameResponse.GetSize();
+
+    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    for (lEqualizerBandIdentifier = IdentifierModel::kIdentifierMin; lEqualizerBandIdentifier <= EqualizerBandsModel::kEqualizerBandsMax; lEqualizerBandIdentifier++)
+    {
+        lRetval = lEqualizerPresetModel->GetEqualizerBand(lEqualizerBandIdentifier, lEqualizerBandModel);
+        nlREQUIRE_SUCCESS(lRetval, done);
+
+        lRetval = lEqualizerBandModel->GetLevel(lLevel);
+        nlREQUIRE_SUCCESS(lRetval, done);
+
+        lRetval = lBandResponse.Init(aEqualizerPresetIdentifier, lEqualizerBandIdentifier, lLevel);
+        nlREQUIRE_SUCCESS(lRetval, done);
+
+        lBuffer = lBandResponse.GetBuffer();
+        lSize = lBandResponse.GetSize();
+
+        lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
+
+ done:
+    return (lRetval);
+}
+
+// MARK: Observation (Query) Command Request Class (Static) Handlers
+
+// MARK: Command Response Handlers
+
+// MARK: Command Response Class (Static) Handlers
+
+Status
+EqualizerPresetsControllerBasis :: HandleBandResponse(const Model::EqualizerPresetModel::IdentifierType &aEqualizerPresetIdentifier,
+                                                      const EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier,
+                                                      const EqualizerBandModel::LevelType &aBandLevel,
+                                                      ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    Server::Command::EqualizerPresets::BandResponse  lBandResponse;
+    const uint8_t *                                  lBuffer;
+    size_t                                           lSize;
+    Status                                           lRetval;
+
+    lRetval = lBandResponse.Init(aEqualizerPresetIdentifier, aEqualizerBandIdentifier, aBandLevel);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lBuffer = lBandResponse.GetBuffer();
+    lSize = lBandResponse.GetSize();
+
+    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
     return (lRetval);
 }
 

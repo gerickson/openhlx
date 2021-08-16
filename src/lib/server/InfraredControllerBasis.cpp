@@ -30,6 +30,7 @@
 
 
 using namespace HLX::Common;
+using namespace HLX::Model;
 using namespace HLX::Utilities;
 using namespace Nuovations;
 
@@ -96,6 +97,55 @@ InfraredControllerBasis :: RequestInit(void)
 
 done:
     return (lRetval);
+}
+
+// MARK: Observation (Query) Command Request Handlers
+
+// MARK: Observation (Query) Command Request Instance Handlers
+
+Status
+InfraredControllerBasis :: HandleQueryReceived(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+{
+    InfraredModel::DisabledType  lDisabled;
+    Status                       lRetval;
+
+
+    lRetval = mInfraredModel.GetDisabled(lDisabled);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = HandleDisabledResponse(lDisabled, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+// MARK: Observation (Query) Command Request Class (Static) Handlers
+
+// MARK: Command Response Handlers
+
+// MARK: Command Response Class (Static) Handlers
+
+Status
+InfraredControllerBasis :: HandleDisabledResponse(const InfraredModel::DisabledType &aDisabled, ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    Server::Command::Infrared::DisabledResponse  lDisabledResponse;
+    const uint8_t *                              lBuffer;
+    size_t                                       lSize;
+    Status                                       lStatus;
+
+
+    lStatus = lDisabledResponse.Init(aDisabled);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lBuffer = lDisabledResponse.GetBuffer();
+    lSize = lDisabledResponse.GetSize();
+
+    lStatus = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return (lStatus);
 }
 
 }; // namespace Server

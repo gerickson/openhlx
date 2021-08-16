@@ -69,13 +69,7 @@ protected:
 
     // Observation (Query) Command Request Instance Handlers
 
-protected:
-    // Observation (Query) Command Request Class (Static) Handlers
-
-protected:
-    // Command Response Handlers
-
-    // Command Response Class (Static) Handlers
+    Common::Status HandleQueryReceived(const Model::FavoriteModel::IdentifierType &aFavoriteIdentifier, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
 
 protected:
     static Server::Command::Favorites::QueryRequest    kQueryRequest;

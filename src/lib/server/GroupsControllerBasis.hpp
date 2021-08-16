@@ -69,13 +69,18 @@ protected:
 
     // Observation (Query) Command Request Instance Handlers
 
-protected:
-    // Observation (Query) Command Request Class (Static) Handlers
+    Common::Status HandleQueryReceived(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
+    Common::Status HandleQueryReceived(const Model::GroupModel::IdentifierType &aGroupIdentifier, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
 
 protected:
     // Command Response Handlers
 
     // Command Response Class (Static) Handlers
+
+    static Common::Status HandleAdjustVolumeResponse(const uint8_t *aInputBuffer, const size_t &aInputSize, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer);
+    static Common::Status HandleSetMuteResponse(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const Model::VolumeModel::MuteType &aMute, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    static Common::Status HandleSetVolumeResponse(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const Model::VolumeModel::LevelType &aVolume, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    static Common::Status HandleToggleMuteResponse(const uint8_t *aInputBuffer, const size_t &aInputSize, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer);
 
 protected:
     static Server::Command::Groups::AddZoneRequest         kAddZoneRequest;

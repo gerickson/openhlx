@@ -76,9 +76,7 @@ public:
 private:
     Common::Status DoRequestHandlers(const bool &aRegister);
 
-    void HandleQueryReceived(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
 
-    static Common::Status HandleDisabledResponse(const Model::InfraredModel::DisabledType &aDisabled, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
 
     // Command Completion Handlers
 

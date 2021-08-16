@@ -162,23 +162,6 @@ done:
     return (lRetval);
 }
 
-void NetworkController :: HandleQueryReceived(const char *aInputBuffer, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer)
-{
-    const uint8_t *                          lBuffer;
-    size_t                                   lSize;
-    Status                                   lStatus;
-
-
-    lBuffer = reinterpret_cast<const uint8_t *>(aInputBuffer);
-    lSize = strlen(aInputBuffer);
-
-    lStatus = Common::Utilities::Put(*aOutputBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
- done:
-    return;
-}
-
 // MARK: Configuration Management Methods
 
 void NetworkController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const

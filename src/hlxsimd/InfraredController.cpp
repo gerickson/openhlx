@@ -143,43 +143,6 @@ done:
     return (lRetval);
 }
 
-void InfraredController :: HandleQueryReceived(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
-{
-    InfraredModel::DisabledType              lDisabled;
-    Status                                   lStatus;
-
-
-    lStatus = GetModel().GetDisabled(lDisabled);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lStatus = HandleDisabledResponse(lDisabled, aBuffer);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
- done:
-    return;
-}
-
-Status InfraredController :: HandleDisabledResponse(const InfraredModel::DisabledType &aDisabled, ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    Server::Command::Infrared::DisabledResponse  lDisabledResponse;
-    const uint8_t *                              lBuffer;
-    size_t                                       lSize;
-    Status                                       lStatus;
-
-
-    lStatus = lDisabledResponse.Init(aDisabled);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lBuffer = lDisabledResponse.GetBuffer();
-    lSize = lDisabledResponse.GetSize();
-
-    lStatus = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
- done:
-    return (lStatus);
-}
-
 // MARK: Configuration Management Methods
 
 void InfraredController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const

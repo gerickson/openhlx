@@ -30,6 +30,7 @@
 
 
 using namespace HLX::Common;
+using namespace HLX::Model;
 using namespace HLX::Utilities;
 using namespace Nuovations;
 
@@ -99,6 +100,46 @@ FavoritesControllerBasis :: RequestInit(void)
 done:
     return (lRetval);
 }
+
+// MARK: Observation (Query) Command Request Handlers
+
+// MARK: Observation (Query) Command Request Instance Handlers
+
+Status
+FavoritesControllerBasis :: HandleQueryReceived(const Model::FavoritesModel::IdentifierType &aFavoriteIdentifier, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+{
+    const FavoriteModel *                     lFavoriteModel;
+    const char *                              lName;
+    Server::Command::Favorites::NameResponse  lResponse;
+    const uint8_t *                           lBuffer;
+    size_t                                    lSize;
+    Status                                    lRetval;
+
+
+    lRetval = mFavoritesModel.GetFavorite(aFavoriteIdentifier, lFavoriteModel);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = lFavoriteModel->GetName(lName);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = lResponse.Init(aFavoriteIdentifier, lName);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lBuffer = lResponse.GetBuffer();
+    lSize = lResponse.GetSize();
+
+    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+// MARK: Observation (Query) Command Request Class (Static) Handlers
+
+// MARK: Command Response Handlers
+
+// MARK: Command Response Class (Static) Handlers
 
 }; // namespace Server
 
