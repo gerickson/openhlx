@@ -58,11 +58,16 @@ public:
 
     // Observer Methods
 
+    static Common::Status GetZonesMax(size_t &aZones);
+    static size_t         GetZonesMax(void);
+
     static bool           IsValidIdentifier(const IdentifierType &aZoneIdentifier);
     static Common::Status ValidateIdentifier(const IdentifierType &aZoneIdentifier);
 
 protected:
     ZonesControllerBasis(void) = default;
+
+    // Initializer(s)
 
     Common::Status Init(void);
 
