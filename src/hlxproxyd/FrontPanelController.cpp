@@ -267,8 +267,10 @@ FrontPanelController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConn
 
     (void)aConnection;
 
-    QueryHandler(aBuffer);
+    lRetval = QueryHandler(aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
+done:
     return (lRetval);
 }
 
@@ -924,27 +926,28 @@ void FrontPanelController :: SetLockedRequestReceivedHandler(Server::ConnectionB
 
 // MARK: Client-facing Server Implementation
 
-void FrontPanelController :: QueryHandler(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+Status
+FrontPanelController :: QueryHandler(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     FrontPanelModel::BrightnessType          lBrightness;
     FrontPanelModel::LockedType              lLocked;
-    Status                                   lStatus;
+    Status                                   lRetval;
 
 
-    lStatus = mFrontPanelModel.GetBrightness(lBrightness);
-    nlREQUIRE_SUCCESS(lStatus, done);
+    lRetval = mFrontPanelModel.GetBrightness(lBrightness);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
-    lStatus = HandleBrightnessResponse(lBrightness, aBuffer);
-    nlREQUIRE_SUCCESS(lStatus, done);
+    lRetval = HandleBrightnessResponse(lBrightness, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
-    lStatus = mFrontPanelModel.GetLocked(lLocked);
-    nlREQUIRE_SUCCESS(lStatus, done);
+    lRetval = mFrontPanelModel.GetLocked(lLocked);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
-    lStatus = HandleLockedResponse(lLocked, aBuffer);
-    nlREQUIRE_SUCCESS(lStatus, done);
+    lRetval = HandleLockedResponse(lLocked, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
  done:
-    return;
+    return (lRetval);
 }
 
 Status FrontPanelController :: HandleBrightnessResponse(const FrontPanelModel::BrightnessType &aBrightness, ConnectionBuffer::MutableCountedPointer &aBuffer)

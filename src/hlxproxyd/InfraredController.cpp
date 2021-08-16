@@ -257,8 +257,10 @@ InfraredController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnec
 
     (void)aConnection;
 
-    QueryHandler(aBuffer);
+    lRetval = QueryHandler(aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
+done:
     return (lRetval);
 }
 
@@ -604,7 +606,8 @@ void InfraredController :: QueryRequestReceivedHandler(Server::ConnectionBasis &
     lStatus = lResponseBuffer->Init();
     nlREQUIRE_SUCCESS(lStatus, done);
 
-    QueryHandler(lResponseBuffer);
+    lStatus = QueryHandler(lResponseBuffer);
+    nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
     if (lStatus >= kStatus_Success)
@@ -702,20 +705,21 @@ void InfraredController :: SetDisabledRequestReceivedHandler(Server::ConnectionB
 
 // MARK: Client-facing Server Implementation
 
-void InfraredController :: QueryHandler(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+Status
+InfraredController :: QueryHandler(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     InfraredModel::DisabledType              lDisabled;
-    Status                                   lStatus;
+    Status                                   lRetval;
 
 
-    lStatus = mInfraredModel.GetDisabled(lDisabled);
-    nlREQUIRE_SUCCESS(lStatus, done);
+    lRetval = mInfraredModel.GetDisabled(lDisabled);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
-    lStatus = HandleDisabledResponse(lDisabled, aBuffer);
-    nlREQUIRE_SUCCESS(lStatus, done);
+    lRetval = HandleDisabledResponse(lDisabled, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
-    return;
+done:
+    return (lRetval);
 }
 
 Status InfraredController :: HandleDisabledResponse(const InfraredModel::DisabledType &aDisabled, ConnectionBuffer::MutableCountedPointer &aBuffer)

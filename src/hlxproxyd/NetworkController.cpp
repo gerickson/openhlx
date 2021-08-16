@@ -251,8 +251,10 @@ NetworkController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnect
 
     (void)aConnection;
 
-    QueryHandler(kQueryCurrentResponseBuffer, aBuffer);
+    lRetval = QueryHandler(kQueryCurrentResponseBuffer, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
+done:
     return (lRetval);
 }
 
@@ -290,7 +292,8 @@ void NetworkController :: QueryRequestReceivedHandler(Server::ConnectionBasis &a
 
     // First, put the solicited notifications portion.
 
-    QueryHandler(kQueryResponseBuffer, lResponseBuffer);
+    lStatus = QueryHandler(kQueryResponseBuffer, lResponseBuffer);
+    nlREQUIRE_SUCCESS(lStatus, done);
 
     // Second, put the response completion portion.
 
@@ -338,21 +341,22 @@ void NetworkController :: QueryRequestReceivedHandler(Server::ConnectionBasis &a
 
 // MARK: Client-facing Server Implementation
 
-void NetworkController :: QueryHandler(const char *aInputBuffer, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer)
+Status
+NetworkController :: QueryHandler(const char *aInputBuffer, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer)
 {
     const uint8_t *                          lBuffer;
     size_t                                   lSize;
-    Status                                   lStatus;
+    Status                                   lRetval;
 
 
     lBuffer = reinterpret_cast<const uint8_t *>(aInputBuffer);
     lSize = strlen(aInputBuffer);
 
-    lStatus = Common::Utilities::Put(*aOutputBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lStatus, done);
+    lRetval = Common::Utilities::Put(*aOutputBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
-    return;
+done:
+    return (lRetval);
 }
 
 }; // namespace Proxy
