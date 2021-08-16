@@ -30,12 +30,15 @@
 
 #include <LogUtilities/LogUtilities.hpp>
 
+#include <OpenHLX/Client/SourcesControllerCommands.hpp>
+#include <OpenHLX/Client/SourcesStateChangeNotifications.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
 #include <OpenHLX/Utilities/ElementsOf.hpp>
 
 #include "ProxyCommand.hpp"
 
 
+using namespace HLX::Client;
 using namespace HLX::Common;
 using namespace HLX::Model;
 using namespace HLX::Server;
@@ -98,8 +101,22 @@ SourcesController :: ~SourcesController(void)
 Status
 SourcesController :: DoNotificationHandlers(const bool &aRegister)
 {
+    static const NotificationHandlerBasis  lNotificationHandlers[] = {
+        {
+            kNameResponse,
+            SourcesController::NameNotificationReceivedHandler
+        }
+    };
+    static constexpr size_t  lNotificationHandlerCount = ElementsOf(lNotificationHandlers);
     Status                   lRetval = kStatus_Success;
 
+    lRetval = Client::ControllerBasis::DoNotificationHandlers(&lNotificationHandlers[0],
+                                                              &lNotificationHandlers[lNotificationHandlerCount],
+                                                              this,
+                                                              aRegister);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
     return (lRetval);
 }
 
@@ -226,11 +243,230 @@ done:
 
 // MARK: Server-facing Client Command Completion Handlers
 
+/**
+ *  @brief
+ *    Asynchronous source set name client command response
+ *    completion handler.
+ *
+ *  This handles an asynchronous client command response for the
+ *  source set name command request.
+ *
+ *  @param[in]  aExchange  A mutable shared pointer to the exchange
+ *                         associated with the client command response
+ *                         and its original request.
+ *  @param[in]  aMatches   An immutable reference to the regular
+ *                         expression substring matches associated
+ *                         with the client command response that
+ *                         triggered this handler.
+ *
+ */
+void
+SourcesController :: SetNameCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const RegularExpression::Matches &aMatches)
+{
+    const Client::Command::ResponseBasis * lResponse   = aExchange->GetResponse();
+    const uint8_t *                lBuffer     = lResponse->GetBuffer()->GetHead();
+    const size_t                   lBufferSize = lResponse->GetBuffer()->GetSize();
+
+    NameNotificationReceivedHandler(lBuffer, lBufferSize, aMatches);
+}
+
+/**
+ *  @brief
+ *    Asynchronous sources controller client command request
+ *    error handler.
+ *
+ *  This handles any asynchronous client sources controller
+ *  command request that results in an error response from the HLX
+ *  peer server.
+ *
+ *  @param[in]  aExchange  A mutable shared pointer to the exchange
+ *                         associated with the client command error
+ *                         and its original request.
+ *  @param[in]  aError     An immutable reference to the error
+ *                         associated with the failed client command
+ *                         request.
+ *
+ */
+void
+SourcesController :: CommandErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError)
+{
+    const Client::Command::RequestBasis *  lRequest    = aExchange->GetRequest();
+    const uint8_t *                lBuffer     = lRequest->GetBuffer();
+    const size_t                   lBufferSize = lRequest->GetSize();
+
+    OnCommandError(lBuffer, lBufferSize, "Source Command", aError);
+}
+
 // MARK: Server-facing Client Command Completion Handler Trampolines
+
+/**
+ *  @brief
+ *    Asynchronous source set name client command response
+ *    completion handler trampoline.
+ *
+ *  This invokes the handler for an asynchronous client command
+ *  response for the source set name command request.
+ *
+ *  @param[in]      aExchange  A mutable shared pointer to the exchange
+ *                             associated with the client command
+ *                             response and its original request.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+SourcesController :: SetNameCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    SourcesController *lController = static_cast<SourcesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->SetNameCompleteHandler(aExchange, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Asynchronous sources controller client command request error
+ *    handler trampoline.
+ *
+ *  This invokes the handler for any asynchronous client sources
+ *  controller command request that results in an error response from
+ *  the HLX peer server.
+ *
+ *  @param[in]      aExchange  A mutable shared pointer to the exchange
+ *                             associated with the client command
+ *                             error response and its original
+ *                             request.
+ *  @param[in]      aError     An immutable reference to the error
+ *                             associated with the failed command
+ *                             request.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+SourcesController :: CommandErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError, void *aContext)
+{
+    SourcesController *lController = static_cast<SourcesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->CommandErrorHandler(aExchange, aError);
+    }
+}
 
 // MARK: Server-facing Client Unsolicited Notification Handlers
 
+/**
+ *  @brief
+ *    Source name changed client unsolicited notification handler.
+ *
+ *  This handles an asynchronous, unsolicited client notification for
+ *  the source name changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+SourcesController :: NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    IdentifierType                         lSourceIdentifier;
+    const char *                           lName;
+    size_t                                 lNameSize;
+    SourceModel *                          lSourceModel;
+    StateChange::SourcesNameNotification   lStateChangeNotification;
+    Status                                 lStatus;
+
+
+    (void)aSize;
+
+    nlREQUIRE(aMatches.size() == Client::Command::Sources::NameResponse::kExpectedMatches, done);
+
+    // Match 2/3: Source Identifier
+
+    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
+                                                Common::Utilities::Distance(aMatches.at(1)),
+                                                lSourceIdentifier);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // Match 3/3: Name
+
+    lName = (reinterpret_cast<const char *>(aBuffer) + aMatches.at(2).rm_so);
+    lNameSize = Common::Utilities::Distance(aMatches.at(2));
+
+    lStatus = mSources.GetSource(lSourceIdentifier, lSourceModel);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // If the name is unchanged, SetName will return
+    // kStatus_ValueAlreadySet and there will be no need to send a
+    // state change notification. If we receive kStatus_Success, it is
+    // the first time set or a change and state change notification
+    // needs to be sent.
+
+    lStatus = lSourceModel->SetName(lName, lNameSize);
+    nlEXPECT_SUCCESS(lStatus, done);
+
+    lStatus = lStateChangeNotification.Init(lSourceIdentifier, lName, lNameSize);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    OnStateDidChange(lStateChangeNotification);
+
+ done:
+    return;
+}
+
 // MARK: Server-facing Client Unsolicited Notification Handler Trampolines
+
+/**
+ *  @brief
+ *    Source name changed client unsolicited notification handler
+ *    trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the source name changed notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+SourcesController :: NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    SourcesController *lController = static_cast<SourcesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->NameNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
 
 // MARK: Client-facing Server Command Request Completion Handlers
 
