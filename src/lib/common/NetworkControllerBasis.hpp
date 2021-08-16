@@ -51,7 +51,14 @@ public:
 protected:
     NetworkControllerBasis(void) = default;
 
+    // Initializer(s)
+
     Common::Status Init(void);
+
+    // Observers
+
+    Model::NetworkModel &GetModel(void);
+    const Model::NetworkModel &GetModel(void) const;
 
 protected:
     Model::NetworkModel  mNetworkModel;

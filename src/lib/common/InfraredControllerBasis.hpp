@@ -52,7 +52,14 @@ public:
 protected:
     InfraredControllerBasis(void) = default;
 
+    // Initializer(s)
+
     Common::Status Init(void);
+
+    // Observers
+
+    Model::InfraredModel &GetModel(void);
+    const Model::InfraredModel &GetModel(void) const;
 
 protected:
     Model::InfraredModel  mInfraredModel;

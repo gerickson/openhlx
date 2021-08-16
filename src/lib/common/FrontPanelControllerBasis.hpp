@@ -52,7 +52,14 @@ public:
 protected:
     FrontPanelControllerBasis(void) = default;
 
+    // Initializer(s)
+
     Common::Status Init(void);
+
+    // Observers
+
+    Model::FrontPanelModel &GetModel(void);
+    const Model::FrontPanelModel &GetModel(void) const;
 
 protected:
     Model::FrontPanelModel  mFrontPanelModel;

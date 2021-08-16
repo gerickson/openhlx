@@ -38,6 +38,8 @@ namespace HLX
 namespace Common
 {
 
+// MARK: Initializer(s)
+
 Status
 NetworkControllerBasis :: Init(void)
 {
@@ -48,6 +50,20 @@ NetworkControllerBasis :: Init(void)
 
 done:
     return (lRetval);
+}
+
+// MARK: Observers
+
+Model::NetworkModel &
+NetworkControllerBasis :: GetModel(void)
+{
+    return (mNetworkModel);
+}
+
+const Model::NetworkModel &
+NetworkControllerBasis :: GetModel(void) const
+{
+    return (mNetworkModel);
 }
 
 }; // namespace Common

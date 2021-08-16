@@ -38,6 +38,8 @@ namespace HLX
 namespace Common
 {
 
+// MARK: Initializer(s)
+
 Status
 InfraredControllerBasis :: Init(void)
 {
@@ -48,6 +50,20 @@ InfraredControllerBasis :: Init(void)
 
 done:
     return (lRetval);
+}
+
+// MARK: Observers
+
+Model::InfraredModel &
+InfraredControllerBasis :: GetModel(void)
+{
+    return (mInfraredModel);
+}
+
+const Model::InfraredModel &
+InfraredControllerBasis :: GetModel(void) const
+{
+    return (mInfraredModel);
 }
 
 }; // namespace Common

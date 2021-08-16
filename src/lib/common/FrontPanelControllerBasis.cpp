@@ -38,6 +38,8 @@ namespace HLX
 namespace Common
 {
 
+// MARK: Initializer(s)
+
 Status
 FrontPanelControllerBasis :: Init(void)
 {
@@ -48,6 +50,20 @@ FrontPanelControllerBasis :: Init(void)
 
 done:
     return (lRetval);
+}
+
+// MARK: Observers
+
+Model::FrontPanelModel &
+FrontPanelControllerBasis :: GetModel(void)
+{
+    return (mFrontPanelModel);
+}
+
+const Model::FrontPanelModel &
+FrontPanelControllerBasis :: GetModel(void) const
+{
+    return (mFrontPanelModel);
 }
 
 }; // namespace Common
