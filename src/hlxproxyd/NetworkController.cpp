@@ -27,6 +27,7 @@
 #include <memory>
 
 #include <errno.h>
+#include <string.h>
 
 #include <LogUtilities/LogUtilities.hpp>
 
