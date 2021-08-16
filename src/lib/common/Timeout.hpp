@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef HLXCOMMONTIMEOUT_HPP
-#define HLXCOMMONTIMEOUT_HPP
+#ifndef OPENHLXCOMMONTIMEOUT_HPP
+#define OPENHLXCOMMONTIMEOUT_HPP
 
 #include <stdint.h>
 
@@ -119,4 +119,4 @@ extern const struct TimeoutBasis kTimeoutForever;
 
 }; // namespace HLX
 
-#endif // HLXCOMMONTIMEOUT_HPP
+#endif // OPENHLXCOMMONTIMEOUT_HPP

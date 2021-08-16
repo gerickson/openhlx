@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef HLXCOMMONIPADDRESS_HPP
-#define HLXCOMMONIPADDRESS_HPP
+#ifndef OPENHLXCOMMONIPADDRESS_HPP
+#define OPENHLXCOMMONIPADDRESS_HPP
 
 #include <stdint.h>
 
@@ -94,4 +94,4 @@ private:
 
 }; // namespace HLX
 
-#endif // HLXCOMMONIPADDRESS_HPP
+#endif // OPENHLXCOMMONIPADDRESS_HPP

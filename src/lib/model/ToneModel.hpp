@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXMMODELTONEMODEL_HPP
-#define HLXMMODELTONEMODEL_HPP
+#ifndef OPENHLXMMODELTONEMODEL_HPP
+#define OPENHLXMMODELTONEMODEL_HPP
 
 #include <string>
 
@@ -101,4 +101,4 @@ private:
 
 }; // namespace HLX
 
-#endif // HLXMMODELTONEMODEL_HPP
+#endif // OPENHLXMMODELTONEMODEL_HPP

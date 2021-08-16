@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXSERVERLISTENERTELNET_HPP
-#define HLXSERVERLISTENERTELNET_HPP
+#ifndef OPENHLXSERVERLISTENERTELNET_HPP
+#define OPENHLXSERVERLISTENERTELNET_HPP
 
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Server/ListenerBasis.hpp>
@@ -61,4 +61,4 @@ public:
 
 }; // namespace HLX
 
-#endif // HLXSERVERLISTENERTELNET_HPP
+#endif // OPENHLXSERVERLISTENERTELNET_HPP

@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXCOMMONERRORS_HPP
-#define HLXCOMMONERRORS_HPP
+#ifndef OPENHLXCOMMONERRORS_HPP
+#define OPENHLXCOMMONERRORS_HPP
 
 #include <stdint.h>
 
@@ -131,4 +131,4 @@ enum
 
 }; // namespace HLX
 
-#endif // HLXCOMMONERRORS_HPP
+#endif // OPENHLXCOMMONERRORS_HPP

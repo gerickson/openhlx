@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXMMODELIDENTIFIERMODEL_HPP
-#define HLXMMODELIDENTIFIERMODEL_HPP
+#ifndef OPENHLXMMODELIDENTIFIERMODEL_HPP
+#define OPENHLXMMODELIDENTIFIERMODEL_HPP
 
 #include <stddef.h>
 #include <stdint.h>
@@ -185,4 +185,4 @@ inline Common::Status ParseIdentifier(const uint8_t *aString, IdentifierModel::I
 
 }; // namespace HLX
 
-#endif // HLXMMODELIDENTIFIERMODEL_HPP
+#endif // OPENHLXMMODELIDENTIFIERMODEL_HPP

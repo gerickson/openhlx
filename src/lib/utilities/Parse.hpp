@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXPARSE_HPP
-#define HLXPARSE_HPP
+#ifndef OPENHLXPARSE_HPP
+#define OPENHLXPARSE_HPP
 
 #include <stddef.h>
 #include <stdint.h>
@@ -222,4 +222,4 @@ inline Common::Status Parse(const uint8_t *aString, uint8_t &aValue)
 
 }; // namespace HLX
 
-#endif // HLXPARSE_HPP
+#endif // OPENHLXPARSE_HPP

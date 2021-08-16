@@ -200,4 +200,4 @@ private:
 
 }; // namespace HLX
 
-#endif // HLXPROXYGROUPSCONTROLLER_HPP
+#endif // OPENHLXPROXYGROUPSCONTROLLER_HPP

@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXSERVERCOMMANDREQUESTBASIS_HPP
-#define HLXSERVERCOMMANDREQUESTBASIS_HPP
+#ifndef OPENHLXSERVERCOMMANDREQUESTBASIS_HPP
+#define OPENHLXSERVERCOMMANDREQUESTBASIS_HPP
 
 #include <OpenHLX/Common/CommandRegularExpressionBasis.hpp>
 #include <OpenHLX/Common/CommandRoleDelimitedRegularExpression.hpp>
@@ -66,4 +66,4 @@ protected:
 
 }; // namespace HLX
 
-#endif // HLXSERVERCOMMANDREQUESTBASIS_HPP
+#endif // OPENHLXSERVERCOMMANDREQUESTBASIS_HPP

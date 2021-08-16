@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXELEMENTSOF_HPP
-#define HLXELEMENTSOF_HPP
+#ifndef OPENHLXELEMENTSOF_HPP
+#define OPENHLXELEMENTSOF_HPP
 
 #include <stddef.h>
 
@@ -58,4 +58,4 @@ ElementsOf(const T (&aArray)[N])
 
 }; // namespace HLX
 
-#endif // HLXELEMENTSOF_HPP
+#endif // OPENHLXELEMENTSOF_HPP

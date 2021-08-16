@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXCLIENTCOMMANDRESPONSEBASIS_HPP
-#define HLXCLIENTCOMMANDRESPONSEBASIS_HPP
+#ifndef OPENHLXCLIENTCOMMANDRESPONSEBASIS_HPP
+#define OPENHLXCLIENTCOMMANDRESPONSEBASIS_HPP
 
 #include <OpenHLX/Common/CommandRegularExpressionBasis.hpp>
 #include <OpenHLX/Common/CommandRoleDelimitedRegularExpression.hpp>
@@ -66,4 +66,4 @@ public:
 
 }; // namespace HLX
 
-#endif // HLXCLIENTCOMMANDRESPONSEBASIS_HPP
+#endif // OPENHLXCLIENTCOMMANDRESPONSEBASIS_HPP

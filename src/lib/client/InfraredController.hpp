@@ -24,8 +24,8 @@
  *
  */
 
-#ifndef HLXCLIENTINFRAREDCONTROLLER_HPP
-#define HLXCLIENTINFRAREDCONTROLLER_HPP
+#ifndef OPENHLXCLIENTINFRAREDCONTROLLER_HPP
+#define OPENHLXCLIENTINFRAREDCONTROLLER_HPP
 
 #include <OpenHLX/Common/InfraredControllerBasis.hpp>
 #include <OpenHLX/Client/ControllerBasis.hpp>
@@ -102,4 +102,4 @@ private:
 
 }; // namespace HLX
 
-#endif // HLXCLIENTINFRAREDCONTROLLER_HPP
+#endif // OPENHLXCLIENTINFRAREDCONTROLLER_HPP

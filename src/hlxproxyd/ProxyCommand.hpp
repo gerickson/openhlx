@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef HLXPROXYCOMMAND_HPP
-#define HLXPROXYCOMMAND_HPP
+#ifndef OPENHLXPROXYCOMMAND_HPP
+#define OPENHLXPROXYCOMMAND_HPP
 
 #include <OpenHLX/Client/CommandExchangeBasis.hpp>
 #include <OpenHLX/Client/CommandRequestBasis.hpp>
@@ -62,4 +62,4 @@ private:
 
 }; // namespace HLX
 
-#endif // HLXPROXYCOMMAND_HPP
+#endif // OPENHLXPROXYCOMMAND_HPP

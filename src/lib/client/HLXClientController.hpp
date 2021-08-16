@@ -297,4 +297,4 @@ private:
 
 }; // namespace HLX
 
-#endif // HLXCLIENTCONTROLLER_HPP
+#endif // OPENHLXCLIENTCONTROLLER_HPP

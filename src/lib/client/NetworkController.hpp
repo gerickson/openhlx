@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXCLIENTNETWORKCONTROLLER_HPP
-#define HLXCLIENTNETWORKCONTROLLER_HPP
+#ifndef OPENHLXCLIENTNETWORKCONTROLLER_HPP
+#define OPENHLXCLIENTNETWORKCONTROLLER_HPP
 
 #include <OpenHLX/Common/NetworkControllerBasis.hpp>
 #include <OpenHLX/Client/ControllerBasis.hpp>
@@ -82,4 +82,4 @@ private:
 
 }; // namespace HLX
 
-#endif // HLXCLIENTNETWORKCONTROLLER_HPP
+#endif // OPENHLXCLIENTNETWORKCONTROLLER_HPP

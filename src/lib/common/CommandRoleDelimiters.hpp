@@ -24,8 +24,8 @@
  *
  */
 
-#ifndef HLXCOMMONCOMMANDROLEDELIMITERS_HPP
-#define HLXCOMMONCOMMANDROLEDELIMITERS_HPP
+#ifndef OPENHLXCOMMONCOMMANDROLEDELIMITERS_HPP
+#define OPENHLXCOMMONCOMMANDROLEDELIMITERS_HPP
 
 #include <OpenHLX/Common/CommandDelimiters.hpp>
 #include <OpenHLX/Common/CommandRole.hpp>
@@ -49,4 +49,4 @@ const Delimiters &GetRoleRegularExpressionDelimiters(const Role &inRole);
 
 }; // namespace HLX
 
-#endif // HLXCOMMONCOMMANDROLEDELIMITERS_HPP
+#endif // OPENHLXCOMMONCOMMANDROLEDELIMITERS_HPP

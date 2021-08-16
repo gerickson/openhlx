@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef HLXSERVERUTILITIES_HPP
-#define HLXSERVERUTILITIES_HPP
+#ifndef OPENHLXSERVERUTILITIES_HPP
+#define OPENHLXSERVERUTILITIES_HPP
 
 #include <stdint.h>
 
@@ -52,4 +52,4 @@ extern CFStringRef CreateCFString(const uint8_t &aValue);
 
 }; // namespace HLX
 
-#endif // HLXSERVERUTILITIES_HPP
+#endif // OPENHLXSERVERUTILITIES_HPP

@@ -183,4 +183,4 @@ private:
 
 }; // namespace HLX
 
-#endif // HLXPROXYZONESCONTROLLER_HPP
+#endif // OPENHLXPROXYZONESCONTROLLER_HPP
