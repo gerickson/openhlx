@@ -34,6 +34,8 @@
 #include <OpenHLX/Utilities/Assert.hpp>
 #include <OpenHLX/Utilities/ElementsOf.hpp>
 
+#include "ProxyCommand.hpp"
+
 
 using namespace HLX::Common;
 using namespace HLX::Model;
@@ -47,6 +49,27 @@ namespace HLX
 
 namespace Proxy
 {
+
+namespace Detail
+{
+    // XXX - Need to figure out how to make the lifetime of this
+    // persist across multiple, potentially-failed proxy requests and
+    // how to limit the number of proxy requests since infinite loops
+    // may be introduced.
+
+    struct ProxyContext
+    {
+        Server::ConnectionBasis *  mConnection;
+        const uint8_t *            mBuffer;
+        size_t                     mSize;
+        RegularExpression::Matches mMatches;
+        Client::CommandManager::OnCommandCompleteFunc mOnCommandCompleteHandler;
+        Client::CommandManager::OnCommandErrorFunc    mOnCommandErrorHandler;
+        Server::CommandManager::OnRequestReceivedFunc mOnRequestReceivedHandler;
+        void *                                        mTheirContext;
+        void *                                        mOurContext;
+    };
+}
 
 /**
  *  @brief
@@ -99,8 +122,43 @@ ZonesController :: DoNotificationHandlers(const bool &aRegister)
 {
     static const NotificationHandlerBasis  lNotificationHandlers[] = {
         {
+            kBalanceResponse,
+            ZonesController::BalanceNotificationReceivedHandler
+        },
+
+        {
+            kEqualizerBandResponse,
+            ZonesController::EqualizerBandNotificationReceivedHandler
+        },
+
+        {
+            kEqualizerPresetResponse,
+            ZonesController::EqualizerPresetNotificationReceivedHandler
+        },
+
+        {
+            kHighpassCrossoverResponse,
+            ZonesController::HighpassCrossoverNotificationReceivedHandler
+        },
+
+        {
+            kLowpassCrossoverResponse,
+            ZonesController::LowpassCrossoverNotificationReceivedHandler
+        },
+
+        {
             kMuteResponse,
             ZonesController::MuteNotificationReceivedHandler
+        },
+
+        {
+            kNameResponse,
+            ZonesController::NameNotificationReceivedHandler
+        },
+
+        {
+            kSoundModeResponse,
+            ZonesController::SoundModeNotificationReceivedHandler
         },
 
         {
@@ -109,8 +167,28 @@ ZonesController :: DoNotificationHandlers(const bool &aRegister)
         },
 
         {
+            kSourceAllResponse,
+            ZonesController::SourceAllNotificationReceivedHandler
+        },
+
+        {
+            kToneResponse,
+            ZonesController::ToneNotificationReceivedHandler
+        },
+
+        {
             kVolumeResponse,
             ZonesController::VolumeNotificationReceivedHandler
+        },
+
+        {
+            kVolumeAllResponse,
+            ZonesController::VolumeAllNotificationReceivedHandler
+        },
+
+        {
+            kVolumeFixedResponse,
+            ZonesController::VolumeFixedNotificationReceivedHandler
         }
     };
     static constexpr size_t  lNotificationHandlerCount = ElementsOf(lNotificationHandlers);
@@ -143,6 +221,16 @@ ZonesController :: DoRequestHandlers(const bool &aRegister)
         {
             kQueryRequest,
             ZonesController::QueryRequestReceivedHandler
+        },
+
+        {
+            kQueryMuteRequest,
+            ZonesController::QueryMuteRequestReceivedHandler
+        },
+
+        {
+            kQuerySourceRequest,
+            ZonesController::QuerySourceRequestReceivedHandler
         },
 
         {
@@ -221,6 +309,57 @@ ZonesController :: Init(Client::CommandManager &aClientCommandManager, Server::C
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
+    return (lRetval);
+}
+
+Status
+ZonesController :: ProxyCommand(Server::ConnectionBasis &aConnection,
+                                const uint8_t *aBuffer,
+                                const size_t &aSize,
+                                const Common::RegularExpression::Matches &aMatches,
+                                const Client::Command::ResponseBasis &aResponse,
+                                Client::CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
+                                Client::CommandManager::OnCommandErrorFunc aOnCommandErrorHandler,
+                                Server::CommandManager::OnRequestReceivedFunc aOnRequestReceivedHandler,
+                                void *aContext)
+{
+    DeclareScopedFunctionTracer(lTracer);
+    Client::Command::ExchangeBasis::MutableCountedPointer lCommand;
+    std::unique_ptr<Detail::ProxyContext>                 lProxyContext;
+    Status                                                lRetval = kStatus_Success;
+
+    nlREQUIRE_ACTION(aBuffer != nullptr, done, lRetval = -EINVAL);
+    nlREQUIRE_ACTION(aSize > 0, done, lRetval = -EINVAL);
+    nlREQUIRE_ACTION(aOnCommandCompleteHandler != nullptr, done, lRetval = -EINVAL);
+    nlREQUIRE_ACTION(aOnCommandErrorHandler != nullptr, done, lRetval = -EINVAL);
+    nlREQUIRE_ACTION(aOnRequestReceivedHandler != nullptr, done, lRetval = -EINVAL);
+    nlREQUIRE_ACTION(aContext != nullptr, done, lRetval = -EINVAL);
+
+    lProxyContext.reset(new Detail::ProxyContext());
+    nlREQUIRE_ACTION(lProxyContext, done, lRetval = -ENOMEM);
+
+    lProxyContext->mConnection               = &aConnection;
+    lProxyContext->mBuffer                   = aBuffer;
+    lProxyContext->mSize                     = aSize;
+    lProxyContext->mMatches                  = aMatches;
+    lProxyContext->mOnCommandCompleteHandler = aOnCommandCompleteHandler;
+    lProxyContext->mOnCommandErrorHandler    = aOnCommandErrorHandler;
+    lProxyContext->mOnRequestReceivedHandler = aOnRequestReceivedHandler;
+    lProxyContext->mTheirContext             = aContext;
+    lProxyContext->mOurContext               = this;
+
+    lCommand.reset(new Proxy::Command::Proxy());
+    nlREQUIRE_ACTION(lCommand, done, lRetval = -ENOMEM);
+
+    lRetval = std::static_pointer_cast<Proxy::Command::Proxy>(lCommand)->Init(aBuffer, aSize, aResponse);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = SendCommand(lCommand,
+                          ZonesController::ProxyCompleteHandler,
+                          ZonesController::ProxyErrorHandler,
+                          lProxyContext.release());
+
+ done:
     return (lRetval);
 }
 
@@ -349,6 +488,7 @@ done:
 Status
 ZonesController :: Query(const IdentifierType &aZoneIdentifier)
 {
+    DeclareScopedFunctionTracer(lTracer);
     Client::Command::ExchangeBasis::MutableCountedPointer lCommand;
     Status                                                lRetval = kStatus_Success;
 
@@ -375,6 +515,7 @@ done:
 Status
 ZonesController :: QueryMute(const IdentifierType &aZoneIdentifier)
 {
+    DeclareScopedFunctionTracer(lTracer);
     Client::Command::ExchangeBasis::MutableCountedPointer lCommand;
     Status                                                lRetval = kStatus_Success;
 
@@ -401,6 +542,7 @@ done:
 Status
 ZonesController :: QuerySource(const IdentifierType &aZoneIdentifier)
 {
+    DeclareScopedFunctionTracer(lTracer);
     Client::Command::ExchangeBasis::MutableCountedPointer lCommand;
     Status                                                lRetval = kStatus_Success;
 
@@ -427,6 +569,7 @@ done:
 Status
 ZonesController :: QueryVolume(const IdentifierType &aZoneIdentifier)
 {
+    DeclareScopedFunctionTracer(lTracer);
     Client::Command::ExchangeBasis::MutableCountedPointer lCommand;
     Status                                                lRetval = kStatus_Success;
 
@@ -961,6 +1104,445 @@ ZonesController :: CommandErrorHandler(Client::Command::ExchangeBasis::MutableCo
 
 /**
  *  @brief
+ *    Zone stereophonic channel balance client unsolicited
+ *    notification handler.
+ *
+ *  This handles an unsolicited, asynchronous client notification for
+ *  a zone stereophonic channel balance changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ *  @ingroup balance
+ *
+ */
+void
+ZonesController :: BalanceNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    IdentifierType                         lZoneIdentifier;
+    BalanceModel::ChannelType              lChannel;
+    BalanceModel::BalanceType              lBalance;
+    ZoneModel *                            lZoneModel;
+    Client::StateChange::ZonesBalanceNotification  lStateChangeNotification;
+    Status                                 lStatus;
+
+
+    (void)aSize;
+
+    nlREQUIRE(aMatches.size() == Client::Command::Zones::BalanceResponse::kExpectedMatches, done);
+
+    // Match 2/4: Zone Identifier
+
+    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
+                                                Common::Utilities::Distance(aMatches.at(1)),
+                                                lZoneIdentifier);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // Match 3/4: Channel
+
+    lChannel = *((const char *)(aBuffer) + aMatches.at(2).rm_so);
+
+    // Match 4/4: Level
+
+    lStatus = Utilities::Parse(aBuffer + aMatches.at(3).rm_so,
+                               Common::Utilities::Distance(aMatches.at(3)),
+                               lBalance);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // Adjust the balance from the HLX's L:{80, 0} to {0, 80}:R tagged
+    // discontinuous model to a non-tagged, continuous L:{-80, 80}:R
+    // model.
+
+    if (lChannel == BalanceModel::kChannelLeft)
+    {
+        lBalance = -lBalance;
+    }
+
+    lStatus = mZones.GetZone(lZoneIdentifier, lZoneModel);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // If the balance is unchanged, SetBalance will return
+    // kStatus_ValueAlreadySet and there will be no need to send a
+    // state change notification. If we receive kStatus_Success, it is
+    // the first time set or a change and state change notification
+    // needs to be sent.
+
+    lStatus = lZoneModel->SetBalance(lBalance);
+    nlEXPECT_SUCCESS(lStatus, done);
+
+    lStatus = lStateChangeNotification.Init(lZoneIdentifier, lBalance);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    OnStateDidChange(lStateChangeNotification);
+
+done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Zone equalizer band level client unsolicited notification
+ *    handler.
+ *
+ *  This handles an unsolicited, asynchronous client notification for
+ *  a zone equalizer band level changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+ZonesController :: EqualizerBandNotificationReceivedHandler(const uint8_t *aBuffer,
+                                                            const size_t &aSize,
+                                                            const RegularExpression::Matches &aMatches)
+{
+    ZoneModel::IdentifierType                        lZoneIdentifier;
+    EqualizerBandModel::IdentifierType               lEqualizerBandIdentifier;
+    EqualizerBandModel::LevelType                    lLevel;
+    ZoneModel *                                      lZoneModel;
+    EqualizerBandModel *                             lEqualizerBandModel;
+    Client::StateChange::ZonesEqualizerBandNotification      lStateChangeNotification;
+    Status                                           lStatus;
+
+
+    (void)aSize;
+
+    nlREQUIRE(aMatches.size() == Client::Command::Zones::EqualizerBandResponse::kExpectedMatches, done);
+
+    // Match 2/4: Zone Identifier
+
+    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
+                                                Common::Utilities::Distance(aMatches.at(1)),
+                                                lZoneIdentifier);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // Match 3/4: Equalizer Band Identifier
+
+    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(2).rm_so,
+                                                Common::Utilities::Distance(aMatches.at(2)),
+                                                lEqualizerBandIdentifier);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // Match 4/4: Equalizer Band Level
+
+    lStatus = Utilities::Parse(aBuffer + aMatches.at(3).rm_so,
+                               Common::Utilities::Distance(aMatches.at(3)),
+                               lLevel);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lStatus = mZones.GetZone(lZoneIdentifier, lZoneModel);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lStatus = lZoneModel->GetEqualizerBand(lEqualizerBandIdentifier, lEqualizerBandModel);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // If the level is unchanged, SetLevel will return
+    // kStatus_ValueAlreadySet and there will be no need to send a
+    // state change notification. If we receive kStatus_Success, it is
+    // the first time set or a change and state change notification
+    // needs to be sent.
+
+    lStatus = lEqualizerBandModel->SetLevel(lLevel);
+    nlEXPECT_SUCCESS(lStatus, done);
+
+    lStatus = lStateChangeNotification.Init(lZoneIdentifier, lEqualizerBandIdentifier, lLevel);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    OnStateDidChange(lStateChangeNotification);
+
+done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Zone equalizer preset client unsolicited notification handler.
+ *
+ *  This handles an unsolicited, asynchronous client notification for
+ *  a zone equalizer preset changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+ZonesController :: EqualizerPresetNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    ZoneModel::IdentifierType                        lZoneIdentifier;
+    EqualizerPresetModel::IdentifierType             lEqualizerPresetIdentifier;
+    ZoneModel *                                      lZoneModel;
+    Client::StateChange::ZonesEqualizerPresetNotification    lStateChangeNotification;
+    Status                                           lStatus;
+
+
+    (void)aSize;
+
+    nlREQUIRE(aMatches.size() == Client::Command::Zones::EqualizerPresetResponse::kExpectedMatches, done);
+
+    // Match 2/3: Zone Identifier
+
+    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
+                                                Common::Utilities::Distance(aMatches.at(1)),
+                                                lZoneIdentifier);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // Match 3/3: Equalizer Preset Identifier
+
+    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(2).rm_so,
+                                                Common::Utilities::Distance(aMatches.at(2)),
+                                                lEqualizerPresetIdentifier);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lStatus = mZones.GetZone(lZoneIdentifier, lZoneModel);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // If the equalizer preset is unchanged, SetEqualizerPreset will
+    // return kStatus_ValueAlreadySet and there will be no need to
+    // send a state change notification. If we receive
+    // kStatus_Success, it is the first time set or a change and state
+    // change notification needs to be sent.
+
+    lStatus = lZoneModel->SetEqualizerPreset(lEqualizerPresetIdentifier);
+    nlEXPECT_SUCCESS(lStatus, done);
+
+    lStatus = lStateChangeNotification.Init(lZoneIdentifier, lEqualizerPresetIdentifier);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    OnStateDidChange(lStateChangeNotification);
+
+done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Zone tone equalizer state client unsolicited notification
+ *    handler.
+ *
+ *  This handles an unsolicited, asynchronous client notification for
+ *  a zone tone equalizer state changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+ZonesController :: ToneNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    ZoneModel::IdentifierType           lZoneIdentifier;
+    ToneModel::LevelType                lBass;
+    ToneModel::LevelType                lTreble;
+    ZoneModel *                         lZoneModel;
+    Client::StateChange::ZonesToneNotification  lStateChangeNotification;
+    Status                              lStatus;
+
+
+    (void)aSize;
+
+    nlREQUIRE(aMatches.size() == Client::Command::Zones::ToneResponse::kExpectedMatches, done);
+
+    // Match 2/4: Zone Identifier
+
+    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
+                                                Common::Utilities::Distance(aMatches.at(1)),
+                                                lZoneIdentifier);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // Match 3/4: Bass Level
+
+    lStatus = Utilities::Parse(aBuffer + aMatches.at(2).rm_so,
+                               Common::Utilities::Distance(aMatches.at(2)),
+                               lBass);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // Match 4/4: Treble Level
+
+    lStatus = Utilities::Parse(aBuffer + aMatches.at(3).rm_so,
+                               Common::Utilities::Distance(aMatches.at(3)),
+                               lTreble);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lStatus = mZones.GetZone(lZoneIdentifier, lZoneModel);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // If the tone is unchanged, SetTone will return
+    // kStatus_ValueAlreadySet and there will be no need to send a
+    // state change notification. If we receive kStatus_Success, it is
+    // the first time set or a change and state change notification
+    // needs to be sent.
+
+    lStatus = lZoneModel->SetTone(lBass, lTreble);
+    nlEXPECT_SUCCESS(lStatus, done);
+
+    lStatus = lStateChangeNotification.Init(lZoneIdentifier, lBass, lTreble);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    OnStateDidChange(lStateChangeNotification);
+
+done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Zone highpass filter crossover frequency client unsolicited
+ *    notification handler.
+ *
+ *  This handles an unsolicited, asynchronous client notification for
+ *  a zone highpass filter crossover frequency changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+ZonesController :: HighpassCrossoverNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    ZoneModel::IdentifierType                        lZoneIdentifier;
+    CrossoverModel::FrequencyType                    lHighpassFrequency;
+    ZoneModel *                                      lZoneModel;
+    Client::StateChange::ZonesHighpassCrossoverNotification  lStateChangeNotification;
+    Status                                           lStatus;
+
+
+    (void)aSize;
+
+    nlREQUIRE(aMatches.size() == Client::Command::Zones::HighpassCrossoverResponse::kExpectedMatches, done);
+
+    // Match 2/3: Zone Identifier
+
+    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
+                                                Common::Utilities::Distance(aMatches.at(1)),
+                                                lZoneIdentifier);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // Match 3/3: Highpass Frequency
+
+    lStatus = Utilities::Parse(aBuffer + aMatches.at(2).rm_so,
+                               Common::Utilities::Distance(aMatches.at(2)),
+                               lHighpassFrequency);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lStatus = mZones.GetZone(lZoneIdentifier, lZoneModel);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // If the highpass crossover frequency is unchanged,
+    // SetHighpassFrequency will return kStatus_ValueAlreadySet and
+    // there will be no need to send a state change notification. If
+    // we receive kStatus_Success, it is the first time set or a
+    // change and state change notification needs to be sent.
+
+    lStatus = lZoneModel->SetHighpassFrequency(lHighpassFrequency);
+    nlEXPECT_SUCCESS(lStatus, done);
+
+    lStatus = lStateChangeNotification.Init(lZoneIdentifier, lHighpassFrequency);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    OnStateDidChange(lStateChangeNotification);
+
+done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Zone lowpass filter crossover frequency client unsolicited
+ *    notification handler.
+ *
+ *  This handles an unsolicited, asynchronous client notification for
+ *  a zone lowpass filter crossover frequency changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+ZonesController :: LowpassCrossoverNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    ZoneModel::IdentifierType                        lZoneIdentifier;
+    CrossoverModel::FrequencyType                    lLowpassFrequency;
+    ZoneModel *                                      lZoneModel;
+    Client::StateChange::ZonesLowpassCrossoverNotification   lStateChangeNotification;
+    Status                                           lStatus;
+
+
+    (void)aSize;
+
+    nlREQUIRE(aMatches.size() == Client::Command::Zones::LowpassCrossoverResponse::kExpectedMatches, done);
+
+    // Match 2/3: Zone Identifier
+
+    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
+                                                Common::Utilities::Distance(aMatches.at(1)),
+                                                lZoneIdentifier);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // Match 3/3: Lowpass Frequency
+
+    lStatus = Utilities::Parse(aBuffer + aMatches.at(2).rm_so,
+                               Common::Utilities::Distance(aMatches.at(2)),
+                               lLowpassFrequency);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lStatus = mZones.GetZone(lZoneIdentifier, lZoneModel);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // If the lowpass crossover frequency is unchanged,
+    // SetLowpassFrequency will return kStatus_ValueAlreadySet and
+    // there will be no need to send a state change notification. If
+    // we receive kStatus_Success, it is the first time set or a
+    // change and state change notification needs to be sent.
+
+    lStatus = lZoneModel->SetLowpassFrequency(lLowpassFrequency);
+    nlEXPECT_SUCCESS(lStatus, done);
+
+    lStatus = lStateChangeNotification.Init(lZoneIdentifier, lLowpassFrequency);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    OnStateDidChange(lStateChangeNotification);
+
+done:
+    return;
+}
+
+/**
+ *  @brief
  *    Zone volume mute state changed client unsolicited notification
  *    handler.
  *
@@ -1003,6 +1585,138 @@ ZonesController :: MuteNotificationReceivedHandler(const uint8_t *aBuffer, const
     nlREQUIRE_SUCCESS(lStatus, done);
 
     HandleMuteChange(lZoneIdentifier, lMute);
+
+done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Zone name changed client unsolicited notification handler.
+ *
+ *  This handles an asynchronous, unsolicited client notification for
+ *  the zone name changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+ZonesController :: NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    IdentifierType                         lZoneIdentifier;
+    const char *                           lName;
+    size_t                                 lNameSize;
+    ZoneModel *                            lZoneModel;
+    Client::StateChange::ZonesNameNotification     lStateChangeNotification;
+    Status                                 lStatus;
+
+
+    (void)aSize;
+
+    nlREQUIRE(aMatches.size() == Client::Command::Zones::NameResponse::kExpectedMatches, done);
+
+    // Match 2/3: Zone Identifier
+
+    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
+                                                Common::Utilities::Distance(aMatches.at(1)),
+                                                lZoneIdentifier);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // Match 3/3: Name
+
+    lName = (reinterpret_cast<const char *>(aBuffer) + aMatches.at(2).rm_so);
+    lNameSize = Common::Utilities::Distance(aMatches.at(2));
+
+    lStatus = mZones.GetZone(lZoneIdentifier, lZoneModel);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // If the name is unchanged, SetName will return
+    // kStatus_ValueAlreadySet and there will be no need to send a
+    // state change notification. If we receive kStatus_Success, it is
+    // the first time set or a change and state change notification
+    // needs to be sent.
+
+    lStatus = lZoneModel->SetName(lName, lNameSize);
+    nlEXPECT_SUCCESS(lStatus, done);
+
+    lStatus = lStateChangeNotification.Init(lZoneIdentifier, lName, lNameSize);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    OnStateDidChange(lStateChangeNotification);
+
+done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Zone equalizer sound mode changed client unsolicited
+ *    notification handler.
+ *
+ *  This handles an asynchronous, unsolicited client notification for
+ *  the zone equalizer sound mode changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+ZonesController :: SoundModeNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    IdentifierType                           lZoneIdentifier;
+    SoundModel::SoundMode                    lSoundMode;
+    ZoneModel *                              lZoneModel;
+    Client::StateChange::ZonesSoundModeNotification  lStateChangeNotification;
+    Status                                   lStatus;
+
+
+    (void)aSize;
+
+    nlREQUIRE(aMatches.size() == Client::Command::Zones::SoundModeResponse::kExpectedMatches, done);
+
+    // Match 2/3: Zone Identifier
+
+    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
+                                                Common::Utilities::Distance(aMatches.at(1)),
+                                                lZoneIdentifier);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // Match 3/3: Sound Mode
+
+    lStatus = Utilities::Parse(aBuffer + aMatches.at(2).rm_so,
+                               Common::Utilities::Distance(aMatches.at(2)),
+                               lSoundMode);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lStatus = mZones.GetZone(lZoneIdentifier, lZoneModel);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // If the sound mode is unchanged, SetSoundMode will return
+    // kStatus_ValueAlreadySet and there will be no need to send a
+    // state change notification. If we receive kStatus_Success, it is
+    // the first time set or a change and state change notification
+    // needs to be sent.
+
+    lStatus = lZoneModel->SetSoundMode(lSoundMode);
+    nlEXPECT_SUCCESS(lStatus, done);
+
+    lStatus = lStateChangeNotification.Init(lZoneIdentifier, lSoundMode);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    OnStateDidChange(lStateChangeNotification);
 
 done:
     return;
@@ -1060,6 +1774,52 @@ done:
 
 /**
  *  @brief
+ *    All zones source (input) changed client unsolicited notification
+ *    handler.
+ *
+ *  This handles an unsolicited, asynchronous client notification for
+ *  the all zones source (input) changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+ZonesController :: SourceAllNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    IdentifierType                         lZoneIdentifier;
+    SourceModel::IdentifierType            lSourceIdentifier;
+    Status                                 lStatus;
+
+
+    (void)aSize;
+
+    nlREQUIRE(aMatches.size() == Client::Command::Zones::SourceAllResponse::kExpectedMatches, done);
+
+    // Match 2/2: Source Identifier
+
+    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
+                                                Common::Utilities::Distance(aMatches.at(1)),
+                                                lSourceIdentifier);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    for (lZoneIdentifier = IdentifierModel::kIdentifierMin; lZoneIdentifier <= kZonesMax; lZoneIdentifier++)
+    {
+        HandleSourceChange(lZoneIdentifier, lSourceIdentifier);
+    }
+
+done:
+    return;
+}
+
+/**
+ *  @brief
  *    Zone volume level state changed client unsolicited notification
  *    handler.
  *
@@ -1108,7 +1868,336 @@ done:
     return;
 }
 
+/**
+ *  @brief
+ *    All zones volume level state changed client unsolicited notification
+ *    handler.
+ *
+ *  This handles an asynchronous, unsolicited client notification for
+ *  the all zones volume level state changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+ZonesController :: VolumeAllNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    IdentifierType                         lZoneIdentifier;
+    VolumeModel::LevelType                lVolume;
+    Status                                 lStatus;
+
+
+    (void)aSize;
+
+    nlREQUIRE(aMatches.size() == Client::Command::Zones::VolumeAllResponse::kExpectedMatches, done);
+
+
+    // Match 2/2: Volume
+
+    lStatus = Utilities::Parse(aBuffer + aMatches.at(1).rm_so,
+                               Common::Utilities::Distance(aMatches.at(1)),
+                               lVolume);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    for (lZoneIdentifier = IdentifierModel::kIdentifierMin; lZoneIdentifier <= kZonesMax; lZoneIdentifier++)
+    {
+        HandleVolumeChange(lZoneIdentifier, lVolume);
+    }
+
+done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Zone volume fixed/locked state changed client unsolicited
+ *    notification handler.
+ *
+ *  This handles an asynchronous, unsolicited client notification for
+ *  the zone volume fixed/locked state changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+ZonesController :: VolumeFixedNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    IdentifierType                              lZoneIdentifier;
+    VolumeModel::FixedType                      lLocked;
+    ZoneModel *                                 lZoneModel;
+    Client::StateChange::ZonesVolumeLockedNotification  lStateChangeNotification;
+    Status                                      lStatus;
+
+
+    (void)aSize;
+
+    nlREQUIRE(aMatches.size() == Client::Command::Zones::VolumeFixedResponse::kExpectedMatches, done);
+
+    // Match 2/3: Zone Identifier
+
+    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
+                                                Common::Utilities::Distance(aMatches.at(1)),
+                                                lZoneIdentifier);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // Match 3/3: Volume Fixed
+
+    lStatus = Utilities::Parse(aBuffer + aMatches.at(2).rm_so,
+                               Common::Utilities::Distance(aMatches.at(2)),
+                               lLocked);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lStatus = mZones.GetZone(lZoneIdentifier, lZoneModel);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // If the volume lock (fixed) is unchanged, SetVolumeFixed will
+    // return kStatus_ValueAlreadySet and there will be no need to
+    // send a state change notification. If we receive
+    // kStatus_Success, it is the first time set or a change and state
+    // change notification needs to be sent.
+
+    lStatus = lZoneModel->SetVolumeFixed(lLocked);
+    nlEXPECT_SUCCESS(lStatus, done);
+
+    lStatus = lStateChangeNotification.Init(lZoneIdentifier, lLocked);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    OnStateDidChange(lStateChangeNotification);
+
+done:
+    return;
+}
+
 // MARK: Server-facing Client Unsolicited Notification Handler Trampolines
+
+/**
+ *  @brief
+ *    Zone stereophonic channel balance changed client unsolicited
+ *    notification handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the zone stereophonic channel balance changed
+ *  notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+ZonesController :: BalanceNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->BalanceNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Zone equalizer band level changed client unsolicited
+ *    notification handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the zone equalizer band level changed
+ *  notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+ZonesController :: EqualizerBandNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->EqualizerBandNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Zone equalizer preset changed client unsolicited notification
+ *    handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the zone equalizer preset changed notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+ZonesController :: EqualizerPresetNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->EqualizerPresetNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Zone tone equalizer state changed client unsolicited
+ *    notification handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the zone tone equalizer state changed
+ *  notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+ZonesController :: ToneNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->ToneNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Zone highpass filter crossover frequency changed client
+ *    unsolicited notification handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the zone highpass filter crossover frequency
+ *  changed notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+ZonesController :: HighpassCrossoverNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->HighpassCrossoverNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Zone lowpass filter crossover frequency changed client
+ *    unsolicited notification handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the zone lowpass filter crossover frequency
+ *  changed notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+ZonesController :: LowpassCrossoverNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->LowpassCrossoverNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
 
 /**
  *  @brief
@@ -1142,6 +2231,77 @@ ZonesController :: MuteNotificationReceivedHandler(const uint8_t *aBuffer, const
     if (lController != nullptr)
     {
         lController->MuteNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Zone name changed client unsolicited notification handler
+ *    trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the zone name changed notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+ZonesController :: NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->NameNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Zone equalizer sound mode changed client unsolicited
+ *    notification handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the zone equalizer sound mode changed
+ *  notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+ZonesController :: SoundModeNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->SoundModeNotificationReceivedHandler(aBuffer, aSize, aMatches);
     }
 }
 
@@ -1182,6 +2342,42 @@ ZonesController :: SourceNotificationReceivedHandler(const uint8_t *aBuffer, con
 
 /**
  *  @brief
+ *    All zones source (input) changed client unsolicited notification
+ *    handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the all zones source (input) changed
+ *  notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+ZonesController :: SourceAllNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->SourceAllNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
  *    Zone volume level state changed client unsolicited notification
  *    handler trampoline.
  *
@@ -1215,10 +2411,83 @@ ZonesController :: VolumeNotificationReceivedHandler(const uint8_t *aBuffer, con
     }
 }
 
+/**
+ *  @brief
+ *    All zones volume level state changed client unsolicited
+ *    notification handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the all zones volume level state changed
+ *  notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+ZonesController :: VolumeAllNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->VolumeAllNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Zone volume fixed/locked state changed client unsolicited
+ *    notification handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the zone volume fixed/locked state changed
+ *  notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+ZonesController :: VolumeFixedNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->VolumeFixedNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
 // MARK: Client-facing Server Command Request Completion Handlers
 
 void ZonesController :: DecreaseVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
+    DeclareScopedFunctionTracer(lTracer);
     static const VolumeModel::MuteType       kMuted = true;
     static const VolumeModel::LevelType      kAdjustment = -1;
     IdentifierType                           lZoneIdentifier;
@@ -1276,6 +2545,7 @@ void ZonesController :: DecreaseVolumeRequestReceivedHandler(Server::ConnectionB
 
 void ZonesController :: IncreaseVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
+    DeclareScopedFunctionTracer(lTracer);
     static const VolumeModel::MuteType       kMuted = true;
     static const VolumeModel::LevelType      kAdjustment = 1;
     IdentifierType                           lZoneIdentifier;
@@ -1333,6 +2603,7 @@ void ZonesController :: IncreaseVolumeRequestReceivedHandler(Server::ConnectionB
 
 void ZonesController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
+    DeclareScopedFunctionTracer(lTracer);
     static const bool                        kIsConfiguration = true;
     IdentifierType                           lZoneIdentifier;
     Server::Command::Zones::QueryResponse    lResponse;
@@ -1384,9 +2655,148 @@ void ZonesController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aCo
     if (lStatus >= kStatus_Success)
     {
         lStatus = SendResponse(aConnection, lResponseBuffer);
+        nlREQUIRE_SUCCESS(lStatus, exit);
+    }
+    else if (lStatus == kError_NotInitialized)
+    {
+        lStatus = ProxyCommand(aConnection,
+                               aBuffer,
+                               aSize,
+                               aMatches,
+                               kQueryResponse,
+                               ZonesController::QueryCompleteHandler,
+                               ZonesController::CommandErrorHandler,
+                               ZonesController::QueryRequestReceivedHandler,
+                               this);
+        nlREQUIRE_SUCCESS(lStatus, exit);
+    }
+
+ exit:
+    if (lStatus < kStatus_Success)
+    {
+        lStatus = SendErrorResponse(aConnection);
         nlVERIFY_SUCCESS(lStatus);
     }
-    else
+
+    return;
+}
+
+void ZonesController :: QueryMuteRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    IdentifierType                           lZoneIdentifier;
+    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
+    Status                                   lStatus;
+
+
+    (void)aSize;
+
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+
+    // Match 2/2: Zone Identifier
+    //
+    // The validity of the zone identifier will be range checked at
+    // HandleQueryMuteReceived below.
+
+    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
+                                                Common::Utilities::Distance(aMatches.at(1)),
+                                                lZoneIdentifier);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lResponseBuffer.reset(new ConnectionBuffer);
+    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
+
+    lStatus = lResponseBuffer->Init();
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // First, put the solicited notifications portion.
+
+    lStatus = HandleQueryMuteReceived(lZoneIdentifier, lResponseBuffer);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    if (lStatus >= kStatus_Success)
+    {
+        lStatus = SendResponse(aConnection, lResponseBuffer);
+        nlREQUIRE_SUCCESS(lStatus, exit);
+    }
+    else if (lStatus == kError_NotInitialized)
+    {
+        lStatus = ProxyCommand(aConnection,
+                               aBuffer,
+                               aSize,
+                               aMatches,
+                               kMuteResponse,
+                               ZonesController::SetMuteCompleteHandler,
+                               ZonesController::CommandErrorHandler,
+                               ZonesController::QueryMuteRequestReceivedHandler,
+                               this);
+        nlREQUIRE_SUCCESS(lStatus, exit);
+    }
+
+ exit:
+    if (lStatus < kStatus_Success)
+    {
+        lStatus = SendErrorResponse(aConnection);
+        nlVERIFY_SUCCESS(lStatus);
+    }
+
+    return;
+}
+
+void ZonesController :: QuerySourceRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    IdentifierType                           lZoneIdentifier;
+    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
+    Status                                   lStatus;
+
+
+    (void)aSize;
+
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Zones::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+
+    // Match 2/2: Zone Identifier
+    //
+    // The validity of the zone identifier will be range checked at
+    // HandleQuerySourceReceived below.
+
+    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
+                                                Common::Utilities::Distance(aMatches.at(1)),
+                                                lZoneIdentifier);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lResponseBuffer.reset(new ConnectionBuffer);
+    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
+
+    lStatus = lResponseBuffer->Init();
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // First, put the solicited notifications portion.
+
+    lStatus = HandleQuerySourceReceived(lZoneIdentifier, lResponseBuffer);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    if (lStatus >= kStatus_Success)
+    {
+        lStatus = SendResponse(aConnection, lResponseBuffer);
+        nlREQUIRE_SUCCESS(lStatus, exit);
+    }
+    else if (lStatus == kError_NotInitialized)
+    {
+        lStatus = ProxyCommand(aConnection,
+                               aBuffer,
+                               aSize,
+                               aMatches,
+                               kSourceResponse,
+                               ZonesController::SetSourceCompleteHandler,
+                               ZonesController::CommandErrorHandler,
+                               ZonesController::QuerySourceRequestReceivedHandler,
+                               this);
+        nlREQUIRE_SUCCESS(lStatus, exit);
+    }
+
+ exit:
+    if (lStatus < kStatus_Success)
     {
         lStatus = SendErrorResponse(aConnection);
         nlVERIFY_SUCCESS(lStatus);
@@ -1397,6 +2807,7 @@ void ZonesController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aCo
 
 void ZonesController :: QueryVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
+    DeclareScopedFunctionTracer(lTracer);
     IdentifierType                           lZoneIdentifier;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
@@ -1416,6 +2827,16 @@ void ZonesController :: QueryVolumeRequestReceivedHandler(Server::ConnectionBasi
                                                 lZoneIdentifier);
     nlREQUIRE_SUCCESS(lStatus, done);
 
+    // At this point, the inbound command appears valid. One of two
+    // things will happen next. We'll attempt to satisfy the request
+    // from our local data model cache. If we can satisfy it, we'll
+    // send the response. If we cannot satisfy it due to a TBD error,
+    // then we need to forward the request onto the proxied server. On
+    // response, we will update the local cache and forward the
+    // response back to the initiator. On server error, we will
+    // forward the error back to the initiator. On server timeout, we
+    // will send an error response back to the initiator.
+
     lResponseBuffer.reset(new ConnectionBuffer);
     nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
 
@@ -1425,15 +2846,32 @@ void ZonesController :: QueryVolumeRequestReceivedHandler(Server::ConnectionBasi
     // First, put the solicited notifications portion.
 
     lStatus = HandleQueryVolumeReceived(lZoneIdentifier, lResponseBuffer);
+    Log::Debug().Write("%s: %d: lStatus %d\n",
+                       __func__, __LINE__, lStatus);
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
     if (lStatus >= kStatus_Success)
     {
         lStatus = SendResponse(aConnection, lResponseBuffer);
-        nlVERIFY_SUCCESS(lStatus);
+        nlREQUIRE_SUCCESS(lStatus, exit);
     }
-    else
+    else if (lStatus == kError_NotInitialized)
+    {
+        lStatus = ProxyCommand(aConnection,
+                               aBuffer,
+                               aSize,
+                               aMatches,
+                               kVolumeResponse,
+                               ZonesController::SetVolumeCompleteHandler,
+                               ZonesController::CommandErrorHandler,
+                               ZonesController::QueryVolumeRequestReceivedHandler,
+                               this);
+        nlREQUIRE_SUCCESS(lStatus, exit);
+    }
+
+ exit:
+    if (lStatus < kStatus_Success)
     {
         lStatus = SendErrorResponse(aConnection);
         nlVERIFY_SUCCESS(lStatus);
@@ -1444,6 +2882,7 @@ void ZonesController :: QueryVolumeRequestReceivedHandler(Server::ConnectionBasi
 
 void ZonesController :: SetVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
+    DeclareScopedFunctionTracer(lTracer);
     static const VolumeModel::MuteType       kMuted = true;
     IdentifierType                           lZoneIdentifier;
     VolumeModel::LevelType                   lVolume;
@@ -1603,6 +3042,7 @@ done:
 Status
 ZonesController :: AdjustVolume(const IdentifierType &aZoneIdentifier, const VolumeModel::LevelType &aAdjustment, VolumeModel::LevelType &aVolume)
 {
+    DeclareScopedFunctionTracer(lTracer);
     ZoneModel *                        lZoneModel;
     Status                             lRetval;
 
@@ -1673,6 +3113,8 @@ ZonesController :: HandleQueryReceived(const bool &aIsConfiguration, const Ident
     // Name Response
 
     lRetval = lZoneModel->GetName(lName);
+    Log::Debug().Write("%s: %d: lRetval %d\n",
+                       __func__, __LINE__, lRetval);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = lNameResponse.Init(aZoneIdentifier, lName);
@@ -1686,7 +3128,8 @@ ZonesController :: HandleQueryReceived(const bool &aIsConfiguration, const Ident
 
     // Source Response
 
-    ;
+    lRetval = HandleQuerySourceReceived(aZoneIdentifier, *lZoneModel, aOutputBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
     // Volume Response
 
@@ -1699,7 +3142,8 @@ ZonesController :: HandleQueryReceived(const bool &aIsConfiguration, const Ident
 
     // Mute Response
 
-    ;
+    lRetval = HandleQueryMuteReceived(aZoneIdentifier, *lZoneModel, aOutputBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
     // Sound Mode Response
 
@@ -1714,7 +3158,44 @@ ZonesController :: HandleQueryReceived(const bool &aIsConfiguration, const Ident
 }
 
 Status
-ZonesController :: HandleQueryVolumeReceived(const IdentifierType &aZoneIdentifier,
+ZonesController :: HandleQueryMuteReceived(const IdentifierType &aZoneIdentifier,
+                                           Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+{
+    const ZoneModel *                  lZoneModel;
+    Status                             lRetval;
+
+
+    lRetval = mZones.GetZone(aZoneIdentifier, lZoneModel);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = HandleQueryMuteReceived(aZoneIdentifier, *lZoneModel, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesController :: HandleQueryMuteReceived(const IdentifierType &aZoneIdentifier,
+                                           const Model::ZoneModel &aZoneModel,
+                                           Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    VolumeModel::MuteType              lMute;
+    Status                             lRetval;
+
+
+    lRetval = aZoneModel.GetMute(lMute);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = HandleMuteResponse(aZoneIdentifier, lMute, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesController :: HandleQuerySourceReceived(const IdentifierType &aZoneIdentifier,
                                              Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     const ZoneModel *                  lZoneModel;
@@ -1724,7 +3205,58 @@ ZonesController :: HandleQueryVolumeReceived(const IdentifierType &aZoneIdentifi
     lRetval = mZones.GetZone(aZoneIdentifier, lZoneModel);
     nlREQUIRE_SUCCESS(lRetval, done);
 
+    lRetval = HandleQuerySourceReceived(aZoneIdentifier, *lZoneModel, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesController :: HandleQuerySourceReceived(const IdentifierType &aZoneIdentifier,
+                                             const Model::ZoneModel &aZoneModel,
+                                             Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    SourceModel::IdentifierType             lSourceIdentifier;
+    Server::Command::Zones::SourceResponse  lSourceResponse;
+    const uint8_t *                         lBuffer;
+    size_t                                  lSize;
+    Status                                  lRetval;
+
+
+    lRetval = aZoneModel.GetSource(lSourceIdentifier);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = lSourceResponse.Init(aZoneIdentifier, lSourceIdentifier);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lBuffer = lSourceResponse.GetBuffer();
+    lSize = lSourceResponse.GetSize();
+
+    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesController :: HandleQueryVolumeReceived(const IdentifierType &aZoneIdentifier,
+                                             Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+{
+    DeclareScopedFunctionTracer(lTracer);
+    const ZoneModel *                  lZoneModel;
+    Status                             lRetval;
+
+
+    lRetval = mZones.GetZone(aZoneIdentifier, lZoneModel);
+    Log::Debug().Write("%s: %d: lStatus %d\n",
+                       __func__, __LINE__, lRetval);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
     lRetval = HandleQueryVolumeReceived(aZoneIdentifier, *lZoneModel, aBuffer);
+    Log::Debug().Write("%s: %d: lStatus %d\n",
+                       __func__, __LINE__, lRetval);
     nlREQUIRE_SUCCESS(lRetval, done);
 
  done:
@@ -1736,14 +3268,19 @@ ZonesController :: HandleQueryVolumeReceived(const IdentifierType &aZoneIdentifi
                                              const Model::ZoneModel &aZoneModel,
                                              Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
+    DeclareScopedFunctionTracer(lTracer);
     VolumeModel::LevelType lVolume;
     Status                 lRetval;
 
 
     lRetval = aZoneModel.GetVolume(lVolume);
+    Log::Debug().Write("%s: %d: lStatus %d\n",
+                       __func__, __LINE__, lRetval);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = HandleVolumeResponse(aZoneIdentifier, lVolume, aBuffer);
+    Log::Debug().Write("%s: %d: lStatus %d\n",
+                       __func__, __LINE__, lRetval);
     nlREQUIRE_SUCCESS(lRetval, done);
 
  done:
@@ -1787,6 +3324,7 @@ ZonesController :: HandleSetMuteConditionally(const IdentifierType &aZoneIdentif
 Status
 ZonesController :: HandleAdjustVolumeReceived(const IdentifierType &aZoneIdentifier, const VolumeModel::LevelType &aAdjustment, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
+    DeclareScopedFunctionTracer(lTracer);
     VolumeModel::LevelType lVolume;
     Status                 lRetval;
 
@@ -1806,6 +3344,7 @@ ZonesController :: HandleAdjustVolumeReceived(const IdentifierType &aZoneIdentif
 Status
 ZonesController :: HandleSetVolumeReceived(const IdentifierType &aZoneIdentifier, const VolumeModel::LevelType &aVolume, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
+    DeclareScopedFunctionTracer(lTracer);
     Status                             lRetval;
 
 
@@ -1886,11 +3425,32 @@ void ZonesController :: IncreaseVolumeRequestReceivedHandler(Server::ConnectionB
 
 void ZonesController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
 {
+    DeclareScopedFunctionTracer(lTracer);
     ZonesController *lController = static_cast<ZonesController *>(aContext);
 
     if (lController != nullptr)
     {
         lController->QueryRequestReceivedHandler(aConnection, aBuffer, aSize, aMatches);
+    }
+}
+
+void ZonesController :: QueryMuteRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->QueryMuteRequestReceivedHandler(aConnection, aBuffer, aSize, aMatches);
+    }
+}
+
+void ZonesController :: QuerySourceRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->QuerySourceRequestReceivedHandler(aConnection, aBuffer, aSize, aMatches);
     }
 }
 
@@ -1911,6 +3471,95 @@ void ZonesController :: SetVolumeRequestReceivedHandler(Server::ConnectionBasis 
     if (lController != nullptr)
     {
         lController->SetVolumeRequestReceivedHandler(aConnection, aBuffer, aSize, aMatches);
+    }
+}
+
+// MARK: Proxy Handlers
+
+void
+ZonesController :: ProxyErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange,
+                                     const Common::Error &aError,
+                                     Server::ConnectionBasis &aConnection,
+                                     Client::CommandManager::OnCommandErrorFunc aOnCommandErrorHandler,
+                                     void * aContext)
+{
+    DeclareScopedFunctionTracer(lTracer);
+    Status lStatus;
+
+    aOnCommandErrorHandler(aExchange, aError, aContext);
+
+    lStatus = SendErrorResponse(aConnection);
+    nlVERIFY_SUCCESS(lStatus);
+}
+
+void
+ZonesController :: ProxyCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange,
+                                        const Common::RegularExpression::Matches &aClientMatches,
+                                        Server::ConnectionBasis &aConnection,
+                                        const uint8_t *aBuffer,
+                                        const size_t &aSize,
+                                        const Common::RegularExpression::Matches &aServerMatches,
+                                        Client::CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
+                                        Server::CommandManager::OnRequestReceivedFunc aOnRequestReceivedHandler,
+                                        void * aContext)
+{
+    DeclareScopedFunctionTracer(lTracer);
+
+    aOnCommandCompleteHandler(aExchange, aClientMatches, aContext);
+
+    aOnRequestReceivedHandler(aConnection, aBuffer, aSize, aServerMatches, aContext);
+}
+
+// MARK: Proxy Handler Trampolines
+
+/* static */ void
+ZonesController :: ProxyErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError, void *aContext)
+{
+    DeclareScopedFunctionTracer(lTracer);
+    Detail::ProxyContext *lContext = static_cast<Detail::ProxyContext *>(aContext);
+
+    if (lContext != nullptr)
+    {
+        ZonesController *lController = static_cast<ZonesController *>(lContext->mOurContext);
+
+        if (lController != nullptr)
+        {
+            lController->ProxyErrorHandler(aExchange,
+                                           aError,
+                                           *lContext->mConnection,
+                                           lContext->mOnCommandErrorHandler,
+                                           lContext->mTheirContext);
+        }
+
+        delete lContext;
+    }
+}
+
+/* static */ void
+ZonesController :: ProxyCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext)
+{
+    DeclareScopedFunctionTracer(lTracer);
+    Detail::ProxyContext *lContext = static_cast<Detail::ProxyContext *>(aContext);    
+
+    if (lContext != nullptr)
+    {
+        ZonesController *lController = static_cast<ZonesController *>(lContext->mOurContext);
+
+        if (lController != nullptr)
+        {
+            lController->ProxyCompleteHandler(aExchange,
+                                              aMatches,
+                                              *lContext->mConnection,
+                                              lContext->mBuffer,
+                                              lContext->mSize,
+                                              lContext->mMatches,
+                                              lContext->mOnCommandCompleteHandler,
+                                              lContext->mOnRequestReceivedHandler,
+                                              lContext->mTheirContext);
+
+        }
+
+        delete lContext;
     }
 }
 
