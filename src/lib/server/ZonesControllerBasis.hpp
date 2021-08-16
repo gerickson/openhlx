@@ -25,6 +25,11 @@
 #ifndef OPENHLXSERVERZONESCONTROLLERBASIS_HPP
 #define OPENHLXSERVERZONESCONTROLLERBASIS_HPP
 
+#include <OpenHLX/Model/EqualizerBandModel.hpp>
+#include <OpenHLX/Model/EqualizerPresetModel.hpp>
+#include <OpenHLX/Model/SoundModel.hpp>
+#include <OpenHLX/Model/ZoneModel.hpp>
+#include <OpenHLX/Model/ZonesModel.hpp>
 #include <OpenHLX/Server/ZonesControllerCommands.hpp>
 
 
@@ -45,15 +50,115 @@ namespace Server
 class ZonesControllerBasis
 {
 public:
+    /**
+     *  A locally-scoped convenience type for a zone identifier.
+     *
+     */
+    typedef Model::ZoneModel::IdentifierType IdentifierType;
+
+public:
     virtual ~ZonesControllerBasis(void);
 
 protected:
-    ZonesControllerBasis(void);
+    ZonesControllerBasis(Model::ZonesModel &aZonesModel,
+                         const IdentifierType &aZonesMax);
+
+    // Initializer(s)
 
     Common::Status Init(void);
 
-protected:
+private:
     Common::Status RequestInit(void);
+
+protected:
+    // Observation (Query) Command Request Handlers
+
+    // Observation (Query) Command Request Instance Handlers
+
+    Common::Status        HandleQueryReceived(const bool &aIsConfiguration,
+                                              Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer) const;
+    Common::Status        HandleQueryReceived(const bool &aIsConfiguration,
+                                              const IdentifierType &aZoneIdentifier,
+                                              Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer) const;
+    Common::Status        HandleQueryMuteReceived(const IdentifierType &aZoneIdentifier,
+                                                  Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
+    Common::Status        HandleQuerySourceReceived(const IdentifierType &aZoneIdentifier,
+                                                    Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
+    Common::Status        HandleQueryVolumeReceived(const IdentifierType &aZoneIdentifier,
+                                                    Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
+
+protected:
+    // Observation (Query) Command Request Class (Static) Handlers
+
+    static Common::Status HandleQueryEqualizerPreset(const IdentifierType &aZoneIdentifier,
+                                                     const Model::ZoneModel &aZoneModel,
+                                                     Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    static Common::Status HandleQueryHighpassCrossover(const IdentifierType &aZoneIdentifier,
+                                                       const Model::ZoneModel &aZoneModel,
+                                                       Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    static Common::Status HandleQueryLowpassCrossover(const IdentifierType &aZoneIdentifier,
+                                                      const Model::ZoneModel &aZoneModel,
+                                                      Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    static Common::Status HandleQueryMuteReceived(const IdentifierType &aZoneIdentifier,
+                                                  const Model::ZoneModel &aZoneModel,
+                                                  Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    static Common::Status HandleQuerySoundMode(const IdentifierType &aZoneIdentifier,
+                                               const Model::ZoneModel &aZoneModel,
+                                               Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    static Common::Status HandleQuerySourceReceived(const IdentifierType &aZoneIdentifier,
+                                                    const Model::ZoneModel &aZoneModel,
+                                                    Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    static Common::Status HandleQueryTone(const IdentifierType &aZoneIdentifier,
+                                          const Model::ZoneModel &aZoneModel,
+                                          Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    static Common::Status HandleQueryVolumeReceived(const IdentifierType &aZoneIdentifier,
+                                                    const Model::ZoneModel &aZoneModel,
+                                                    Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    static Common::Status HandleQueryVolumeFixed(const IdentifierType &aZoneIdentifier,
+                                                 const Model::ZoneModel &aZoneModel,
+                                                 Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    static Common::Status HandleQueryZoneEqualizer(const IdentifierType &aZoneIdentifier,
+                                                   const Model::ZoneModel &aZoneModel,
+                                                   Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+
+protected:
+    // Command Response Handlers
+
+    // Command Response Class (Static) Handlers
+
+    static Common::Status HandleEqualizerBandResponse(const IdentifierType &aZoneIdentifier,
+                                                      const Model::EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier,
+                                                      const Model::EqualizerBandModel::LevelType &aBandLevel,
+                                                      Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    static Common::Status HandleEqualizerPresetResponse(const IdentifierType &aZoneIdentifier,
+                                                        const Model::EqualizerPresetModel::IdentifierType &aEqualizerPresetIdentifier,
+                                                        Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    static Common::Status HandleHighpassCrossoverResponse(const IdentifierType &aZoneIdentifier,
+                                                          const Model::CrossoverModel::FrequencyType &aHighpassFrequency,
+                                                          Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    static Common::Status HandleLowpassCrossoverResponse(const IdentifierType &aZoneIdentifier,
+                                                         const Model::CrossoverModel::FrequencyType &aLowpassFrequency,
+                                                         Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    static Common::Status HandleMuteResponse(const IdentifierType &aZoneIdentifier,
+                                             const Model::VolumeModel::MuteType &aMute,
+                                             Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    static Common::Status HandleSoundModeResponse(const IdentifierType &aZoneIdentifier,
+                                                  const Model::SoundModel::SoundMode &aSoundMode,
+                                                  Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    static Common::Status HandleToneResponse(const IdentifierType &aZoneIdentifier,
+                                             const Model::ToneModel::LevelType &aBass,
+                                             Model::ToneModel::LevelType &aTreble,
+                                             Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    static Common::Status HandleVolumeFixedResponse(const IdentifierType &aZoneIdentifier,
+                                                    const Model::VolumeModel::FixedType &aVolumeFixed,
+                                                    Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    static Common::Status HandleVolumeResponse(const IdentifierType &aZoneIdentifier,
+                                               const Model::VolumeModel::LevelType &aVolume,
+                                               Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+
+private:
+    Model::ZonesModel &    mZonesModel;
+    const IdentifierType & mZonesMax;
 
 protected:
     static Server::Command::Zones::AdjustBalanceRequest          kAdjustBalanceRequest;

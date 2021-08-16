@@ -30,6 +30,7 @@
 
 
 using namespace HLX::Common;
+using namespace HLX::Model;
 using namespace HLX::Utilities;
 using namespace Nuovations;
 
@@ -76,7 +77,10 @@ Server::Command::Zones::ToggleMuteRequest             ZonesControllerBasis::kTog
  *    This is the class default constructor.
  *
  */
-ZonesControllerBasis :: ZonesControllerBasis(void)
+ZonesControllerBasis :: ZonesControllerBasis(Model::ZonesModel &aZonesModel,
+                                             const IdentifierType &aZonesMax) :
+    mZonesModel(aZonesModel),
+    mZonesMax(aZonesMax)
 {
     return;
 }
@@ -90,6 +94,8 @@ ZonesControllerBasis :: ~ZonesControllerBasis(void)
 {
     return;
 }
+
+// MARK: Initializer(s)
 
 Status
 ZonesControllerBasis :: Init(void)
@@ -197,6 +203,607 @@ ZonesControllerBasis :: RequestInit(void)
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
+    return (lRetval);
+}
+
+// MARK: Observation (Query) Command Request Handlers
+
+// MARK: Observation (Query) Command Request Instance Handlers
+
+Status
+ZonesControllerBasis :: HandleQueryReceived(const bool &aIsConfiguration, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer) const
+{
+    Status lRetval = kStatus_Success;
+
+    for (auto lZoneIdentifier = IdentifierModel::kIdentifierMin; lZoneIdentifier <= mZonesMax; lZoneIdentifier++)
+    {
+        lRetval = HandleQueryReceived(aIsConfiguration, lZoneIdentifier, aOutputBuffer);
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesControllerBasis :: HandleQueryReceived(const bool &aIsConfiguration, const IdentifierType &aZoneIdentifier, ConnectionBuffer::MutableCountedPointer &aOutputBuffer) const
+{
+    const ZoneModel *                        lZoneModel;
+    const char *                             lName;
+    Server::Command::Zones::NameResponse     lNameResponse;
+    BalanceModel::BalanceType                lBalance;
+    Server::Command::Zones::BalanceResponse  lBalanceResponse;
+    const uint8_t *                          lBuffer;
+    size_t                                   lSize;
+    Status                                   lRetval;
+
+
+    lRetval = mZonesModel.GetZone(aZoneIdentifier, lZoneModel);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // Name Response
+
+    lRetval = lZoneModel->GetName(lName);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = lNameResponse.Init(aZoneIdentifier, lName);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lBuffer = lNameResponse.GetBuffer();
+    lSize = lNameResponse.GetSize();
+
+    lRetval = Common::Utilities::Put(*aOutputBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // Source Response
+
+    lRetval = HandleQuerySourceReceived(aZoneIdentifier, *lZoneModel, aOutputBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // Volume Response
+
+    lRetval = HandleQueryVolumeReceived(aZoneIdentifier, *lZoneModel, aOutputBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // Volume Fixed Response (include if for configuration)
+
+    if (aIsConfiguration)
+    {
+        lRetval = HandleQueryVolumeFixed(aZoneIdentifier, *lZoneModel, aOutputBuffer);
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
+
+    // Mute Response
+
+    lRetval = HandleQueryMuteReceived(aZoneIdentifier, *lZoneModel, aOutputBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // Sound Mode Response
+
+    lRetval = HandleQuerySoundMode(aZoneIdentifier, *lZoneModel, aOutputBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // Balance Response
+
+    lRetval = lZoneModel->GetBalance(lBalance);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = lBalanceResponse.Init(aZoneIdentifier, lBalance);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lBuffer = lBalanceResponse.GetBuffer();
+    lSize = lBalanceResponse.GetSize();
+
+    lRetval = Common::Utilities::Put(*aOutputBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesControllerBasis :: HandleQueryMuteReceived(const IdentifierType &aZoneIdentifier,
+                                           Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+{
+    const ZoneModel *                  lZoneModel;
+    Status                             lRetval;
+
+
+    lRetval = mZonesModel.GetZone(aZoneIdentifier, lZoneModel);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = HandleQueryMuteReceived(aZoneIdentifier, *lZoneModel, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesControllerBasis :: HandleQuerySourceReceived(const IdentifierType &aZoneIdentifier,
+                                             Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+{
+    const ZoneModel *                  lZoneModel;
+    Status                             lRetval;
+
+
+    lRetval = mZonesModel.GetZone(aZoneIdentifier, lZoneModel);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = HandleQuerySourceReceived(aZoneIdentifier, *lZoneModel, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesControllerBasis :: HandleQueryVolumeReceived(const IdentifierType &aZoneIdentifier,
+                                             Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+{
+    const ZoneModel *                  lZoneModel;
+    Status                             lRetval;
+
+
+    lRetval = mZonesModel.GetZone(aZoneIdentifier, lZoneModel);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = HandleQueryVolumeReceived(aZoneIdentifier, *lZoneModel, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+// MARK: Observation (Query) Command Request Class (Static) Handlers
+
+Status
+ZonesControllerBasis :: HandleQueryEqualizerPreset(const IdentifierType &aZoneIdentifier,
+                                              const ZoneModel &aZoneModel,
+                                              ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    EqualizerPresetModel::IdentifierType  lEqualizerPresetIdentifier;
+    Status                                lRetval;
+
+    lRetval = aZoneModel.GetEqualizerPreset(lEqualizerPresetIdentifier);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = HandleEqualizerPresetResponse(aZoneIdentifier, lEqualizerPresetIdentifier, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesControllerBasis :: HandleQueryHighpassCrossover(const IdentifierType &aZoneIdentifier,
+                                                const ZoneModel &aZoneModel,
+                                                ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    CrossoverModel::FrequencyType      lHighpassFrequency;
+    Status                             lRetval;
+
+    lRetval = aZoneModel.GetHighpassFrequency(lHighpassFrequency);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = HandleHighpassCrossoverResponse(aZoneIdentifier, lHighpassFrequency, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesControllerBasis :: HandleQueryLowpassCrossover(const IdentifierType &aZoneIdentifier,
+                                               const ZoneModel &aZoneModel,
+                                               ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    CrossoverModel::FrequencyType      lLowpassFrequency;
+    Status                             lRetval;
+
+    lRetval = aZoneModel.GetLowpassFrequency(lLowpassFrequency);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = HandleLowpassCrossoverResponse(aZoneIdentifier, lLowpassFrequency, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesControllerBasis :: HandleQueryMuteReceived(const IdentifierType &aZoneIdentifier,
+                                           const Model::ZoneModel &aZoneModel,
+                                           Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    VolumeModel::MuteType              lMute;
+    Status                             lRetval;
+
+
+    lRetval = aZoneModel.GetMute(lMute);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = HandleMuteResponse(aZoneIdentifier, lMute, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesControllerBasis :: HandleQuerySoundMode(const IdentifierType &aZoneIdentifier,
+                                        const ZoneModel &aZoneModel,
+                                        ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    SoundModel::SoundMode              lSoundMode;
+    Status                             lRetval;
+
+    lRetval = aZoneModel.GetSoundMode(lSoundMode);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = HandleSoundModeResponse(aZoneIdentifier, lSoundMode, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    switch (lSoundMode)
+    {
+
+    case SoundModel::kSoundModeZoneEqualizer:
+        lRetval = HandleQueryZoneEqualizer(aZoneIdentifier, aZoneModel, aBuffer);
+        nlREQUIRE_SUCCESS(lRetval, done);
+        break;
+
+    case SoundModel::kSoundModePresetEqualizer:
+        lRetval = HandleQueryEqualizerPreset(aZoneIdentifier, aZoneModel, aBuffer);
+        nlREQUIRE_SUCCESS(lRetval, done);
+        break;
+
+    case SoundModel::kSoundModeTone:
+        lRetval = HandleQueryTone(aZoneIdentifier, aZoneModel, aBuffer);
+        nlREQUIRE_SUCCESS(lRetval, done);
+        break;
+
+    case SoundModel::kSoundModeLowpass:
+        lRetval = HandleQueryLowpassCrossover(aZoneIdentifier, aZoneModel, aBuffer);
+        nlREQUIRE_SUCCESS(lRetval, done);
+        break;
+
+    case SoundModel::kSoundModeHighpass:
+        lRetval = HandleQueryHighpassCrossover(aZoneIdentifier, aZoneModel, aBuffer);
+        nlREQUIRE_SUCCESS(lRetval, done);
+        break;
+
+    }
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesControllerBasis :: HandleQuerySourceReceived(const IdentifierType &aZoneIdentifier,
+                                             const Model::ZoneModel &aZoneModel,
+                                             Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    SourceModel::IdentifierType             lSourceIdentifier;
+    Server::Command::Zones::SourceResponse  lSourceResponse;
+    const uint8_t *                         lBuffer;
+    size_t                                  lSize;
+    Status                                  lRetval;
+
+
+    lRetval = aZoneModel.GetSource(lSourceIdentifier);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = lSourceResponse.Init(aZoneIdentifier, lSourceIdentifier);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lBuffer = lSourceResponse.GetBuffer();
+    lSize = lSourceResponse.GetSize();
+
+    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesControllerBasis :: HandleQueryTone(const IdentifierType &aZoneIdentifier,
+                                   const ZoneModel &aZoneModel,
+                                   ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    ToneModel::LevelType               lBass;
+    ToneModel::LevelType               lTreble;
+    Status                             lRetval;
+
+    lRetval = aZoneModel.GetTone(lBass, lTreble);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = HandleToneResponse(aZoneIdentifier, lBass, lTreble, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesControllerBasis :: HandleQueryVolumeReceived(const IdentifierType &aZoneIdentifier,
+                                             const Model::ZoneModel &aZoneModel,
+                                             Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    VolumeModel::LevelType            lVolume;
+    Status                             lRetval;
+
+
+    lRetval = aZoneModel.GetVolume(lVolume);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = HandleVolumeResponse(aZoneIdentifier, lVolume, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesControllerBasis :: HandleQueryVolumeFixed(const IdentifierType &aZoneIdentifier,
+                                          const ZoneModel &aZoneModel,
+                                          ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    VolumeModel::FixedType             lVolumeFixed;
+    Status                             lRetval;
+
+
+    lRetval = aZoneModel.GetVolumeFixed(lVolumeFixed);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = HandleVolumeFixedResponse(aZoneIdentifier, lVolumeFixed, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesControllerBasis :: HandleQueryZoneEqualizer(const IdentifierType &aZoneIdentifier,
+                                            const ZoneModel &aZoneModel,
+                                            ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    EqualizerBandModel::IdentifierType       lEqualizerBandIdentifier;
+    const EqualizerBandModel *               lEqualizerBandModel;
+    EqualizerBandModel::LevelType            lBandLevel;
+    Status                                   lRetval;
+
+
+    for (lEqualizerBandIdentifier = IdentifierModel::kIdentifierMin; lEqualizerBandIdentifier <= EqualizerBandsModel::kEqualizerBandsMax; lEqualizerBandIdentifier++)
+    {
+        lRetval = aZoneModel.GetEqualizerBand(lEqualizerBandIdentifier, lEqualizerBandModel);
+        nlREQUIRE_SUCCESS(lRetval, done);
+
+        lRetval = lEqualizerBandModel->GetLevel(lBandLevel);
+        nlREQUIRE_SUCCESS(lRetval, done);
+
+        lRetval = HandleEqualizerBandResponse(aZoneIdentifier, lEqualizerBandIdentifier, lBandLevel, aBuffer);
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
+
+ done:
+    return (lRetval);
+}
+
+// MARK: Command Response Handlers
+
+// MARK: Command Response Class (Static) Handlers
+
+Status
+ZonesControllerBasis :: HandleEqualizerBandResponse(const IdentifierType &aZoneIdentifier,
+                                               const EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier,
+                                               const EqualizerBandModel::LevelType &aBandLevel,
+                                               ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    Server::Command::Zones::EqualizerBandResponse  lEqualizerBandResponse;
+    const uint8_t *                                lBuffer;
+    size_t                                         lSize;
+    Status                                         lRetval;
+
+    lRetval = lEqualizerBandResponse.Init(aZoneIdentifier, aEqualizerBandIdentifier, aBandLevel);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lBuffer = lEqualizerBandResponse.GetBuffer();
+    lSize = lEqualizerBandResponse.GetSize();
+
+    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesControllerBasis :: HandleEqualizerPresetResponse(const IdentifierType &aZoneIdentifier,
+                                                 const EqualizerPresetModel::IdentifierType &aEqualizerPresetIdentifier,
+                                                 ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    Server::Command::Zones::EqualizerPresetResponse  lEqualizerPresetResponse;
+    const uint8_t *                                  lBuffer;
+    size_t                                           lSize;
+    Status                                           lRetval;
+
+    lRetval = lEqualizerPresetResponse.Init(aZoneIdentifier, aEqualizerPresetIdentifier);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lBuffer = lEqualizerPresetResponse.GetBuffer();
+    lSize = lEqualizerPresetResponse.GetSize();
+
+    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesControllerBasis :: HandleHighpassCrossoverResponse(const IdentifierType &aZoneIdentifier,
+                                                   const CrossoverModel::FrequencyType &aHighpassFrequency,
+                                                   ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    Server::Command::Zones::HighpassCrossoverResponse  lHighpassCrossoverResponse;
+    const uint8_t *                                    lBuffer;
+    size_t                                             lSize;
+    Status                                             lRetval;
+
+    lRetval = lHighpassCrossoverResponse.Init(aZoneIdentifier, aHighpassFrequency);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lBuffer = lHighpassCrossoverResponse.GetBuffer();
+    lSize = lHighpassCrossoverResponse.GetSize();
+
+    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesControllerBasis :: HandleLowpassCrossoverResponse(const IdentifierType &aZoneIdentifier,
+                                                  const CrossoverModel::FrequencyType &aLowpassFrequency,
+                                                  ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    Server::Command::Zones::LowpassCrossoverResponse  lLowpassCrossoverResponse;
+    const uint8_t *                                   lBuffer;
+    size_t                                            lSize;
+    Status                                            lRetval;
+
+    lRetval = lLowpassCrossoverResponse.Init(aZoneIdentifier, aLowpassFrequency);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lBuffer = lLowpassCrossoverResponse.GetBuffer();
+    lSize = lLowpassCrossoverResponse.GetSize();
+
+    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesControllerBasis :: HandleMuteResponse(const IdentifierType &aZoneIdentifier,
+                                      const VolumeModel::MuteType &aMute,
+                                      ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    Server::Command::Zones::MuteResponse  lMuteResponse;
+    const uint8_t *                       lBuffer;
+    size_t                                lSize;
+    Status                                lRetval;
+
+    lRetval = lMuteResponse.Init(aZoneIdentifier, aMute);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lBuffer = lMuteResponse.GetBuffer();
+    lSize = lMuteResponse.GetSize();
+
+    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesControllerBasis :: HandleSoundModeResponse(const IdentifierType &aZoneIdentifier,
+                                           const SoundModel::SoundMode &aSoundMode,
+                                           ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    Server::Command::Zones::SoundModeResponse  lSoundModeResponse;
+    const uint8_t *                            lBuffer;
+    size_t                                     lSize;
+    Status                                     lRetval;
+
+
+    lRetval = lSoundModeResponse.Init(aZoneIdentifier, aSoundMode);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lBuffer = lSoundModeResponse.GetBuffer();
+    lSize = lSoundModeResponse.GetSize();
+
+    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+    Status
+ZonesControllerBasis :: HandleToneResponse(const IdentifierType &aZoneIdentifier,
+                                      const Model::ToneModel::LevelType &aBass,
+                                      Model::ToneModel::LevelType &aTreble,
+                                      ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    Server::Command::Zones::ToneResponse  lToneResponse;
+    const uint8_t *                       lBuffer;
+    size_t                                lSize;
+    Status                                lRetval;
+
+
+    lRetval = lToneResponse.Init(aZoneIdentifier, aBass, aTreble);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lBuffer = lToneResponse.GetBuffer();
+    lSize = lToneResponse.GetSize();
+
+    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesControllerBasis :: HandleVolumeResponse(const IdentifierType &aZoneIdentifier,
+                                        const VolumeModel::LevelType &aVolume,
+                                        ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    Server::Command::Zones::VolumeResponse  lVolumeResponse;
+    const uint8_t *                         lBuffer;
+    size_t                                  lSize;
+    Status                                  lRetval;
+
+
+    lRetval = lVolumeResponse.Init(aZoneIdentifier, aVolume);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lBuffer = lVolumeResponse.GetBuffer();
+    lSize = lVolumeResponse.GetSize();
+
+    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+ZonesControllerBasis :: HandleVolumeFixedResponse(const IdentifierType &aZoneIdentifier,
+                                             const VolumeModel::FixedType &aVolumeFixed,
+                                             ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    Server::Command::Zones::VolumeFixedResponse  lVolumeFixedResponse;
+    const uint8_t *                              lBuffer;
+    size_t                                       lSize;
+    Status                                       lRetval;
+
+
+    lRetval = lVolumeFixedResponse.Init(aZoneIdentifier, aVolumeFixed);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lBuffer = lVolumeFixedResponse.GetBuffer();
+    lSize = lVolumeFixedResponse.GetSize();
+
+    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
     return (lRetval);
 }
 
