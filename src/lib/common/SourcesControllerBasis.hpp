@@ -58,11 +58,16 @@ public:
 
     // Observer Methods
 
+    static Common::Status GetSourcesMax(size_t &aSources);
+    static size_t         GetSourcesMax(void);
+
     static bool           IsValidIdentifier(const IdentifierType &aSourceIdentifier);
     static Common::Status ValidateIdentifier(const IdentifierType &aSourceIdentifier);
 
 protected:
     SourcesControllerBasis(void) = default;
+
+    // Initializer(s)
 
     Common::Status Init(void);
 

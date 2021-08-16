@@ -51,6 +51,39 @@ const GroupsControllerBasis::IdentifierType  GroupsControllerBasis::kGroupsMax =
 
 /**
  *  @brief
+ *    Get the maximum number of supported HLX groups.
+ *
+ *  @param[out]  aGroups  The maximum number of HLX groups on success.
+ *
+ *  @retval  kStatus_Success  Unconditionally.
+ *
+ */
+Status
+GroupsControllerBasis :: GetGroupsMax(size_t &aGroups)
+{
+    Status  lRetval = kStatus_Success;
+
+    aGroups = GetGroupsMax();
+
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Get the maximum number of supported HLX groups.
+ *
+ *  @returns
+ *    The maximum number of supported HLX groups.
+ *
+ */
+size_t
+GroupsControllerBasis :: GetGroupsMax(void)
+{
+    return (kGroupsMax);
+}
+
+/**
+ *  @brief
  *    Determine whether or not an group identifier is valid.
  *
  *  This determines whether or not the specified group

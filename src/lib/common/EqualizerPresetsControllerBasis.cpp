@@ -51,6 +51,40 @@ const EqualizerPresetsControllerBasis::IdentifierType  EqualizerPresetsControlle
 
 /**
  *  @brief
+ *    Get the maximum number of supported HLX equalizer presets.
+ *
+ *  @param[out]  aEqualizerPresets  The maximum number of HLX
+ *                                  equalizer presets on success.
+ *
+ *  @retval  kStatus_Success  Unconditionally.
+ *
+ */
+Status
+EqualizerPresetsControllerBasis :: GetEqualizerPresetsMax(size_t &aEqualizerPresets)
+{
+    Status  lRetval = kStatus_Success;
+
+    aEqualizerPresets = GetEqualizerPresetsMax();
+
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Get the maximum number of supported HLX equalizer presets.
+ *
+ *  @returns
+ *    The maximum number of supported HLX equalizer presets.
+ *
+ */
+size_t
+EqualizerPresetsControllerBasis :: GetEqualizerPresetsMax(void)
+{
+    return (kEqualizerPresetsMax);
+}
+
+/**
+ *  @brief
  *    Determine whether or not an equalizer preset identifier is valid.
  *
  *  This determines whether or not the specified equalizer preset

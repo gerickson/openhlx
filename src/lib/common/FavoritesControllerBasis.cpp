@@ -51,6 +51,39 @@ const FavoritesControllerBasis::IdentifierType  FavoritesControllerBasis::kFavor
 
 /**
  *  @brief
+ *    Get the maximum number of supported HLX favorites.
+ *
+ *  @param[out]  aFavorites  The maximum number of HLX favorites on success.
+ *
+ *  @retval  kStatus_Success  Unconditionally.
+ *
+ */
+Status
+FavoritesControllerBasis :: GetFavoritesMax(size_t &aFavorites)
+{
+    Status  lRetval = kStatus_Success;
+
+    aFavorites = GetFavoritesMax();
+
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Get the maximum number of supported HLX favorites.
+ *
+ *  @returns
+ *    The maximum number of supported HLX favorites.
+ *
+ */
+size_t
+FavoritesControllerBasis :: GetFavoritesMax(void)
+{
+    return (kFavoritesMax);
+}
+
+/**
+ *  @brief
  *    Determine whether or not an favorite identifier is valid.
  *
  *  This determines whether or not the specified favorite

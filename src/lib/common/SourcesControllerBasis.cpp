@@ -50,6 +50,39 @@ const SourcesControllerBasis::IdentifierType  SourcesControllerBasis::kSourcesMa
 
 /**
  *  @brief
+ *    Get the maximum number of supported HLX sources.
+ *
+ *  @param[out]  aSources  The maximum number of HLX sources on success.
+ *
+ *  @retval  kStatus_Success  Unconditionally.
+ *
+ */
+Status
+SourcesControllerBasis :: GetSourcesMax(size_t &aSources)
+{
+    Status  lRetval = kStatus_Success;
+
+    aSources = GetSourcesMax();
+
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Get the maximum number of supported HLX sources.
+ *
+ *  @returns
+ *    The maximum number of supported HLX sources.
+ *
+ */
+size_t
+SourcesControllerBasis :: GetSourcesMax(void)
+{
+    return (kSourcesMax);
+}
+
+/**
+ *  @brief
  *    Determine whether or not an source identifier is valid.
  *
  *  This determines whether or not the specified source
