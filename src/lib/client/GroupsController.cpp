@@ -160,8 +160,8 @@ GroupsController :: DoNotificationHandlers(const bool &aRegister)
             GroupsController::ZoneNotificationReceivedHandler
         }
     };
-    static constexpr size_t                lNotificationHandlerCount = ElementsOf(lNotificationHandlers);
-    Status                                 lRetval = kStatus_Success;
+    static constexpr size_t  lNotificationHandlerCount = ElementsOf(lNotificationHandlers);
+    Status                   lRetval = kStatus_Success;
 
     lRetval = Client::ControllerBasis::DoNotificationHandlers(&lNotificationHandlers[0],
                                                               &lNotificationHandlers[lNotificationHandlerCount],
@@ -200,8 +200,8 @@ Status
 GroupsController :: Init(CommandManager &aCommandManager, const Timeout &aTimeout)
 {
     DeclareScopedFunctionTracer(lTracer);
-    const bool  lRegister = true;
-    Status      lRetval = kStatus_Success;
+    constexpr bool  kRegister = true;
+    Status          lRetval = kStatus_Success;
 
 
     lRetval = Common::GroupsControllerBasis::Init();
@@ -216,10 +216,10 @@ GroupsController :: Init(CommandManager &aCommandManager, const Timeout &aTimeou
     // This MUST come AFTER the base class initialization due to a
     // dependency on the command manager instance.
 
-    lRetval = DoNotificationHandlers(lRegister);
+    lRetval = DoNotificationHandlers(kRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 

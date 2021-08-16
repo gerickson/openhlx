@@ -108,8 +108,8 @@ InfraredController :: DoNotificationHandlers(const bool &aRegister)
             InfraredController::DisabledNotificationReceivedHandler
         }
     };
-    static constexpr size_t                lNotificationHandlerCount = ElementsOf(lNotificationHandlers);
-    Status                                 lRetval = kStatus_Success;
+    static constexpr size_t  lNotificationHandlerCount = ElementsOf(lNotificationHandlers);
+    Status                   lRetval = kStatus_Success;
 
     lRetval = Client::ControllerBasis::DoNotificationHandlers(&lNotificationHandlers[0],
                                                               &lNotificationHandlers[lNotificationHandlerCount],
@@ -117,7 +117,7 @@ InfraredController :: DoNotificationHandlers(const bool &aRegister)
                                                               aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
@@ -148,8 +148,8 @@ Status
 InfraredController :: Init(CommandManager &aCommandManager, const Timeout &aTimeout)
 {
     DeclareScopedFunctionTracer(lTracer);
-    const bool  lRegister = true;
-    Status      lRetval = kStatus_Success;
+    constexpr bool  kRegister = true;
+    Status          lRetval = kStatus_Success;
 
 
     lRetval = Common::InfraredControllerBasis::Init();
@@ -164,10 +164,10 @@ InfraredController :: Init(CommandManager &aCommandManager, const Timeout &aTime
     // This MUST come AFTER the base class initialization due to a
     // dependency on the command manager instance.
 
-    lRetval = DoNotificationHandlers(lRegister);
+    lRetval = DoNotificationHandlers(kRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
@@ -246,7 +246,7 @@ InfraredController :: Query(void)
                           this);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
