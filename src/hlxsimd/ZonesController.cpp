@@ -598,7 +598,8 @@ ZonesController :: ZonesController(void) :
     Simulator::ControllerBasis(),
     ContainerControllerBasis(),
     Common::ZonesControllerBasis(),
-    Server::ZonesControllerBasis()
+    Server::ZonesControllerBasis(Common::ZonesControllerBasis::mZones,
+                                 Common::ZonesControllerBasis::kZonesMax)
 {
     return;
 }
@@ -800,7 +801,7 @@ done:
 // MARK: Data Model Mutation State Change Methods
 
 Status
-ZonesController :: AdjustVolume(const IdentifierType &aZoneIdentifier, const VolumeModel::LevelType &aAdjustment, VolumeModel::LevelType &aVolume)
+ZonesController :: AdjustVolume(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const VolumeModel::LevelType &aAdjustment, VolumeModel::LevelType &aVolume)
 {
     ZoneModel *                        lZoneModel;
     Status                             lRetval;
@@ -832,7 +833,7 @@ ZonesController :: AdjustVolume(const IdentifierType &aZoneIdentifier, const Vol
 }
 
 Status
-ZonesController :: SetMute(const IdentifierType &aZoneIdentifier, const Model::VolumeModel::MuteType &aMute)
+ZonesController :: SetMute(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const Model::VolumeModel::MuteType &aMute)
 {
     ZoneModel *                        lZoneModel;
     Status                             lRetval;
@@ -854,7 +855,7 @@ ZonesController :: SetMute(const IdentifierType &aZoneIdentifier, const Model::V
 }
 
 Status
-ZonesController :: SetVolume(const IdentifierType &aZoneIdentifier, const Model::VolumeModel::LevelType &aVolume)
+ZonesController :: SetVolume(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const Model::VolumeModel::LevelType &aVolume)
 {
     ZoneModel *                        lZoneModel;
     Status                             lRetval;
@@ -876,7 +877,7 @@ ZonesController :: SetVolume(const IdentifierType &aZoneIdentifier, const Model:
 }
 
 Status
-ZonesController :: SetSource(const IdentifierType &aZoneIdentifier,
+ZonesController :: SetSource(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                              const Model::SourceModel::IdentifierType &aSourceIdentifier)
 {
     ZoneModel *                        lZoneModel;
@@ -899,7 +900,7 @@ ZonesController :: SetSource(const IdentifierType &aZoneIdentifier,
 }
 
 Status
-ZonesController :: ToggleMute(const IdentifierType &aZoneIdentifier,
+ZonesController :: ToggleMute(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                               Model::VolumeModel::MuteType &aMute)
 {
     ZoneModel *                        lZoneModel;
@@ -917,7 +918,7 @@ ZonesController :: ToggleMute(const IdentifierType &aZoneIdentifier,
 }
 
 Status
-ZonesController :: GetEqualizerBand(const IdentifierType &aZoneIdentifier, const Model::EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier, Model::EqualizerBandModel *&aEqualizerBandModel)
+ZonesController :: GetEqualizerBand(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const Model::EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier, Model::EqualizerBandModel *&aEqualizerBandModel)
 {
     ZoneModel *                        lZoneModel;
     Status                             lRetval;
@@ -942,356 +943,7 @@ ZonesController :: GetEqualizerBand(const IdentifierType &aZoneIdentifier, const
 }
 
 Status
-ZonesController :: HandleQueryReceived(const bool &aIsConfiguration, const IdentifierType &aZoneIdentifier, ConnectionBuffer::MutableCountedPointer &aOutputBuffer) const
-{
-    const ZoneModel *                        lZoneModel;
-    const char *                             lName;
-    Server::Command::Zones::NameResponse     lNameResponse;
-    BalanceModel::BalanceType                lBalance;
-    Server::Command::Zones::BalanceResponse  lBalanceResponse;
-    const uint8_t *                          lBuffer;
-    size_t                                   lSize;
-    Status                                   lRetval;
-
-
-    lRetval = mZones.GetZone(aZoneIdentifier, lZoneModel);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    // Name Response
-
-    lRetval = lZoneModel->GetName(lName);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = lNameResponse.Init(aZoneIdentifier, lName);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lBuffer = lNameResponse.GetBuffer();
-    lSize = lNameResponse.GetSize();
-
-    lRetval = Common::Utilities::Put(*aOutputBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    // Source Response
-
-    lRetval = HandleQuerySourceReceived(aZoneIdentifier, *lZoneModel, aOutputBuffer);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    // Volume Response
-
-    lRetval = HandleQueryVolumeReceived(aZoneIdentifier, *lZoneModel, aOutputBuffer);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    // Volume Fixed Response (include if for configuration)
-
-    if (aIsConfiguration)
-    {
-        lRetval = HandleQueryVolumeFixed(aZoneIdentifier, *lZoneModel, aOutputBuffer);
-        nlREQUIRE_SUCCESS(lRetval, done);
-    }
-
-    // Mute Response
-
-    lRetval = HandleQueryMuteReceived(aZoneIdentifier, *lZoneModel, aOutputBuffer);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    // Sound Mode Response
-
-    lRetval = HandleQuerySoundMode(aZoneIdentifier, *lZoneModel, aOutputBuffer);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    // Balance Response
-
-    lRetval = lZoneModel->GetBalance(lBalance);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = lBalanceResponse.Init(aZoneIdentifier, lBalance);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lBuffer = lBalanceResponse.GetBuffer();
-    lSize = lBalanceResponse.GetSize();
-
-    lRetval = Common::Utilities::Put(*aOutputBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-ZonesController :: HandleQueryMuteReceived(const IdentifierType &aZoneIdentifier,
-                                           Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
-{
-    const ZoneModel *                  lZoneModel;
-    Status                             lRetval;
-
-
-    lRetval = mZones.GetZone(aZoneIdentifier, lZoneModel);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = HandleQueryMuteReceived(aZoneIdentifier, *lZoneModel, aBuffer);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-ZonesController :: HandleQueryMuteReceived(const IdentifierType &aZoneIdentifier,
-                                           const Model::ZoneModel &aZoneModel,
-                                           Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    VolumeModel::MuteType              lMute;
-    Status                             lRetval;
-
-
-    lRetval = aZoneModel.GetMute(lMute);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = HandleMuteResponse(aZoneIdentifier, lMute, aBuffer);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-ZonesController :: HandleQuerySoundMode(const IdentifierType &aZoneIdentifier, const ZoneModel &aZoneModel, ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    SoundModel::SoundMode              lSoundMode;
-    Status                             lRetval;
-
-    lRetval = aZoneModel.GetSoundMode(lSoundMode);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = HandleSoundModeResponse(aZoneIdentifier, lSoundMode, aBuffer);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    switch (lSoundMode)
-    {
-
-    case SoundModel::kSoundModeZoneEqualizer:
-        lRetval = HandleQueryZoneEqualizer(aZoneIdentifier, aZoneModel, aBuffer);
-        nlREQUIRE_SUCCESS(lRetval, done);
-        break;
-
-    case SoundModel::kSoundModePresetEqualizer:
-        lRetval = HandleQueryEqualizerPreset(aZoneIdentifier, aZoneModel, aBuffer);
-        nlREQUIRE_SUCCESS(lRetval, done);
-        break;
-
-    case SoundModel::kSoundModeTone:
-        lRetval = HandleQueryTone(aZoneIdentifier, aZoneModel, aBuffer);
-        nlREQUIRE_SUCCESS(lRetval, done);
-        break;
-
-    case SoundModel::kSoundModeLowpass:
-        lRetval = HandleQueryLowpassCrossover(aZoneIdentifier, aZoneModel, aBuffer);
-        nlREQUIRE_SUCCESS(lRetval, done);
-        break;
-
-    case SoundModel::kSoundModeHighpass:
-        lRetval = HandleQueryHighpassCrossover(aZoneIdentifier, aZoneModel, aBuffer);
-        nlREQUIRE_SUCCESS(lRetval, done);
-        break;
-
-    }
-
- done:
-    return (lRetval);
-}
-
-Status
-ZonesController :: HandleQueryEqualizerPreset(const IdentifierType &aZoneIdentifier, const ZoneModel &aZoneModel, ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    EqualizerPresetModel::IdentifierType  lEqualizerPresetIdentifier;
-    Status                                lRetval;
-
-    lRetval = aZoneModel.GetEqualizerPreset(lEqualizerPresetIdentifier);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = HandleEqualizerPresetResponse(aZoneIdentifier, lEqualizerPresetIdentifier, aBuffer);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-ZonesController :: HandleQueryHighpassCrossover(const IdentifierType &aZoneIdentifier, const ZoneModel &aZoneModel, ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    CrossoverModel::FrequencyType      lHighpassFrequency;
-    Status                             lRetval;
-
-    lRetval = aZoneModel.GetHighpassFrequency(lHighpassFrequency);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = HandleHighpassCrossoverResponse(aZoneIdentifier, lHighpassFrequency, aBuffer);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-ZonesController :: HandleQueryLowpassCrossover(const IdentifierType &aZoneIdentifier, const ZoneModel &aZoneModel, ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    CrossoverModel::FrequencyType      lLowpassFrequency;
-    Status                             lRetval;
-
-    lRetval = aZoneModel.GetLowpassFrequency(lLowpassFrequency);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = HandleLowpassCrossoverResponse(aZoneIdentifier, lLowpassFrequency, aBuffer);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-ZonesController :: HandleQueryTone(const IdentifierType &aZoneIdentifier, const ZoneModel &aZoneModel, ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    ToneModel::LevelType               lBass;
-    ToneModel::LevelType               lTreble;
-    Status                             lRetval;
-
-    lRetval = aZoneModel.GetTone(lBass, lTreble);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = HandleToneResponse(aZoneIdentifier, lBass, lTreble, aBuffer);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-ZonesController :: HandleQueryZoneEqualizer(const IdentifierType &aZoneIdentifier, const ZoneModel &aZoneModel, ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    EqualizerBandModel::IdentifierType       lEqualizerBandIdentifier;
-    const EqualizerBandModel *               lEqualizerBandModel;
-    EqualizerBandModel::LevelType            lBandLevel;
-    Status                                   lRetval;
-
-
-    for (lEqualizerBandIdentifier = IdentifierModel::kIdentifierMin; lEqualizerBandIdentifier <= EqualizerBandsModel::kEqualizerBandsMax; lEqualizerBandIdentifier++)
-    {
-        lRetval = aZoneModel.GetEqualizerBand(lEqualizerBandIdentifier, lEqualizerBandModel);
-        nlREQUIRE_SUCCESS(lRetval, done);
-
-        lRetval = lEqualizerBandModel->GetLevel(lBandLevel);
-        nlREQUIRE_SUCCESS(lRetval, done);
-
-        lRetval = HandleEqualizerBandResponse(aZoneIdentifier, lEqualizerBandIdentifier, lBandLevel, aBuffer);
-        nlREQUIRE_SUCCESS(lRetval, done);
-    }
-
- done:
-    return (lRetval);
-}
-
-Status
-ZonesController :: HandleQuerySourceReceived(const IdentifierType &aZoneIdentifier,
-                                             Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
-{
-    const ZoneModel *                  lZoneModel;
-    Status                             lRetval;
-
-
-    lRetval = mZones.GetZone(aZoneIdentifier, lZoneModel);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = HandleQuerySourceReceived(aZoneIdentifier, *lZoneModel, aBuffer);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-ZonesController :: HandleQuerySourceReceived(const IdentifierType &aZoneIdentifier,
-                                             const Model::ZoneModel &aZoneModel,
-                                             Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    SourceModel::IdentifierType             lSourceIdentifier;
-    Server::Command::Zones::SourceResponse  lSourceResponse;
-    const uint8_t *                         lBuffer;
-    size_t                                  lSize;
-    Status                                  lRetval;
-
-
-    lRetval = aZoneModel.GetSource(lSourceIdentifier);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = lSourceResponse.Init(aZoneIdentifier, lSourceIdentifier);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lBuffer = lSourceResponse.GetBuffer();
-    lSize = lSourceResponse.GetSize();
-
-    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-ZonesController :: HandleQueryVolumeReceived(const IdentifierType &aZoneIdentifier,
-                                             Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
-{
-    const ZoneModel *                  lZoneModel;
-    Status                             lRetval;
-
-
-    lRetval = mZones.GetZone(aZoneIdentifier, lZoneModel);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = HandleQueryVolumeReceived(aZoneIdentifier, *lZoneModel, aBuffer);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-ZonesController :: HandleQueryVolumeReceived(const IdentifierType &aZoneIdentifier,
-                                             const Model::ZoneModel &aZoneModel,
-                                             Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    VolumeModel::LevelType            lVolume;
-    Status                             lRetval;
-
-
-    lRetval = aZoneModel.GetVolume(lVolume);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = HandleVolumeResponse(aZoneIdentifier, lVolume, aBuffer);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-ZonesController :: HandleQueryVolumeFixed(const IdentifierType &aZoneIdentifier, const ZoneModel &aZoneModel, ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    VolumeModel::FixedType             lVolumeFixed;
-    Status                             lRetval;
-
-
-    lRetval = aZoneModel.GetVolumeFixed(lVolumeFixed);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = HandleVolumeFixedResponse(aZoneIdentifier, lVolumeFixed, aBuffer);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-ZonesController :: HandleAdjustBalanceReceived(const IdentifierType &aZoneIdentifier, const BalanceModel::ChannelType &aChannel, ConnectionBuffer::MutableCountedPointer &aBuffer)
+ZonesController :: HandleAdjustBalanceReceived(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const BalanceModel::ChannelType &aChannel, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     ZoneModel *                              lZoneModel;
     BalanceModel::BalanceType                lBalance;
@@ -1338,7 +990,7 @@ ZonesController :: HandleAdjustBalanceReceived(const IdentifierType &aZoneIdenti
 }
 
 Status
-ZonesController :: HandleSetBalanceReceived(const IdentifierType &aZoneIdentifier, const BalanceModel::BalanceType &aBalance, ConnectionBuffer::MutableCountedPointer &aBuffer)
+ZonesController :: HandleSetBalanceReceived(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const BalanceModel::BalanceType &aBalance, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     ZoneModel *                              lZoneModel;
     Server::Command::Zones::BalanceResponse  lBalanceResponse;
@@ -1373,7 +1025,7 @@ ZonesController :: HandleSetBalanceReceived(const IdentifierType &aZoneIdentifie
 
 Status
 ZonesController :: HandleAdjustBassReceived(Server::ConnectionBasis &aConnection,
-                                            const IdentifierType &aZoneIdentifier,
+                                            const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                             const Model::ToneModel::LevelType &aAdjustment)
 {
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
@@ -1415,7 +1067,7 @@ ZonesController :: HandleAdjustBassReceived(Server::ConnectionBasis &aConnection
 }
 
 Status
-ZonesController :: HandleAdjustBassReceived(const IdentifierType &aZoneIdentifier,
+ZonesController :: HandleAdjustBassReceived(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                             const Model::ToneModel::LevelType &aAdjustment,
                                             Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
@@ -1459,7 +1111,7 @@ ZonesController :: HandleAdjustBassReceived(const IdentifierType &aZoneIdentifie
 }
 
 Status
-ZonesController :: HandleAdjustTrebleReceived(Server::ConnectionBasis &aConnection, const IdentifierType &aZoneIdentifier, const Model::ToneModel::LevelType &aAdjustment)
+ZonesController :: HandleAdjustTrebleReceived(Server::ConnectionBasis &aConnection, const Model::ZoneModel::IdentifierType &aZoneIdentifier, const Model::ToneModel::LevelType &aAdjustment)
 {
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lRetval;
@@ -1500,7 +1152,7 @@ ZonesController :: HandleAdjustTrebleReceived(Server::ConnectionBasis &aConnecti
 }
 
 Status
-ZonesController :: HandleAdjustTrebleReceived(const IdentifierType &aZoneIdentifier,
+ZonesController :: HandleAdjustTrebleReceived(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                               const Model::ToneModel::LevelType &aAdjustment,
                                               Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
@@ -1544,7 +1196,7 @@ ZonesController :: HandleAdjustTrebleReceived(const IdentifierType &aZoneIdentif
 }
 
 Status
-ZonesController :: HandleSetMute(const bool &aConditionally, const IdentifierType &aZoneIdentifier, const VolumeModel::MuteType &aMute, ConnectionBuffer::MutableCountedPointer &aBuffer)
+ZonesController :: HandleSetMute(const bool &aConditionally, const Model::ZoneModel::IdentifierType &aZoneIdentifier, const VolumeModel::MuteType &aMute, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     Status                             lRetval;
 
@@ -1570,7 +1222,7 @@ ZonesController :: HandleSetMute(const bool &aConditionally, const IdentifierTyp
 }
 
 Status
-ZonesController :: HandleSetMuteConditionally(const IdentifierType &aZoneIdentifier, const VolumeModel::MuteType &aMute, ConnectionBuffer::MutableCountedPointer &aBuffer)
+ZonesController :: HandleSetMuteConditionally(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const VolumeModel::MuteType &aMute, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     const bool kConditionally = true;
 
@@ -1578,7 +1230,7 @@ ZonesController :: HandleSetMuteConditionally(const IdentifierType &aZoneIdentif
 }
 
 Status
-ZonesController :: HandleSetMuteUnconditionally(const IdentifierType &aZoneIdentifier, const VolumeModel::MuteType &aMute, ConnectionBuffer::MutableCountedPointer &aBuffer)
+ZonesController :: HandleSetMuteUnconditionally(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const VolumeModel::MuteType &aMute, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     const bool kConditionally = true;
 
@@ -1586,7 +1238,7 @@ ZonesController :: HandleSetMuteUnconditionally(const IdentifierType &aZoneIdent
 }
 
 Status
-ZonesController :: HandleSetSoundMode(const bool &aConditionally, const IdentifierType &aZoneIdentifier, const SoundModel::SoundMode &aSoundMode, ConnectionBuffer::MutableCountedPointer &aBuffer)
+ZonesController :: HandleSetSoundMode(const bool &aConditionally, const Model::ZoneModel::IdentifierType &aZoneIdentifier, const SoundModel::SoundMode &aSoundMode, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     ZoneModel *                        lZoneModel;
     Status                             lRetval;
@@ -1621,7 +1273,7 @@ ZonesController :: HandleSetSoundMode(const bool &aConditionally, const Identifi
 }
 
 Status
-ZonesController :: HandleSetSoundModeConditionally(const IdentifierType &aZoneIdentifier, const SoundModel::SoundMode &aSoundMode, ConnectionBuffer::MutableCountedPointer &aBuffer)
+ZonesController :: HandleSetSoundModeConditionally(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const SoundModel::SoundMode &aSoundMode, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     const bool kConditionally = true;
 
@@ -1629,7 +1281,7 @@ ZonesController :: HandleSetSoundModeConditionally(const IdentifierType &aZoneId
 }
 
 Status
-ZonesController :: HandleSetSoundModeUnconditionally(const IdentifierType &aZoneIdentifier, const SoundModel::SoundMode &aSoundMode, ConnectionBuffer::MutableCountedPointer &aBuffer)
+ZonesController :: HandleSetSoundModeUnconditionally(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const SoundModel::SoundMode &aSoundMode, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     const bool kConditionally = true;
 
@@ -1637,7 +1289,7 @@ ZonesController :: HandleSetSoundModeUnconditionally(const IdentifierType &aZone
 }
 
 Status
-ZonesController :: HandleAdjustVolumeReceived(const IdentifierType &aZoneIdentifier, const VolumeModel::LevelType &aAdjustment, ConnectionBuffer::MutableCountedPointer &aBuffer)
+ZonesController :: HandleAdjustVolumeReceived(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const VolumeModel::LevelType &aAdjustment, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     VolumeModel::LevelType            lVolume;
     Status                             lRetval;
@@ -1656,7 +1308,7 @@ ZonesController :: HandleAdjustVolumeReceived(const IdentifierType &aZoneIdentif
 }
 
 Status
-ZonesController :: HandleSetVolumeReceived(const IdentifierType &aZoneIdentifier, const VolumeModel::LevelType &aVolume, ConnectionBuffer::MutableCountedPointer &aBuffer)
+ZonesController :: HandleSetVolumeReceived(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const VolumeModel::LevelType &aVolume, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     Status                             lRetval;
 
@@ -1672,7 +1324,7 @@ ZonesController :: HandleSetVolumeReceived(const IdentifierType &aZoneIdentifier
 }
 
 Status
-ZonesController :: HandleAdjustEqualizerBandReceived(Server::ConnectionBasis &aConnection, const IdentifierType &aZoneIdentifier, const Model::EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier, const Model::EqualizerBandModel::LevelType &aBandAdjustment)
+ZonesController :: HandleAdjustEqualizerBandReceived(Server::ConnectionBasis &aConnection, const Model::ZoneModel::IdentifierType &aZoneIdentifier, const Model::EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier, const Model::EqualizerBandModel::LevelType &aBandAdjustment)
 {
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lRetval;
@@ -1713,7 +1365,7 @@ ZonesController :: HandleAdjustEqualizerBandReceived(Server::ConnectionBasis &aC
 }
 
 Status
-ZonesController :: HandleAdjustEqualizerBandReceived(const IdentifierType &aZoneIdentifier,
+ZonesController :: HandleAdjustEqualizerBandReceived(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                                      const Model::EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier,
                                                      const Model::EqualizerBandModel::LevelType &aBandAdjustment,
                                                      Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
@@ -1757,7 +1409,7 @@ ZonesController :: HandleAdjustEqualizerBandReceived(const IdentifierType &aZone
 }
 
 Status
-ZonesController :: HandleSetEqualizerBandReceived(const IdentifierType &aZoneIdentifier, const EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier, const EqualizerBandModel::LevelType &aBandLevel, ConnectionBuffer::MutableCountedPointer &aBuffer)
+ZonesController :: HandleSetEqualizerBandReceived(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier, const EqualizerBandModel::LevelType &aBandLevel, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     EqualizerBandModel *               lEqualizerBandModel;
     Status                             lRetval;
@@ -1785,220 +1437,18 @@ ZonesController :: HandleSetEqualizerBandReceived(const IdentifierType &aZoneIde
     return (lRetval);
 }
 
-Status
-ZonesController :: HandleEqualizerBandResponse(const IdentifierType &aZoneIdentifier, const EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier, const EqualizerBandModel::LevelType &aBandLevel, ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    Server::Command::Zones::EqualizerBandResponse  lEqualizerBandResponse;
-    const uint8_t *                                lBuffer;
-    size_t                                         lSize;
-    Status                                         lRetval;
-
-    lRetval = lEqualizerBandResponse.Init(aZoneIdentifier, aEqualizerBandIdentifier, aBandLevel);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lBuffer = lEqualizerBandResponse.GetBuffer();
-    lSize = lEqualizerBandResponse.GetSize();
-
-    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-ZonesController :: HandleEqualizerPresetResponse(const IdentifierType &aZoneIdentifier, const EqualizerPresetModel::IdentifierType &aEqualizerPresetIdentifier, ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    Server::Command::Zones::EqualizerPresetResponse  lEqualizerPresetResponse;
-    const uint8_t *                                  lBuffer;
-    size_t                                           lSize;
-    Status                                           lRetval;
-
-    lRetval = lEqualizerPresetResponse.Init(aZoneIdentifier, aEqualizerPresetIdentifier);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lBuffer = lEqualizerPresetResponse.GetBuffer();
-    lSize = lEqualizerPresetResponse.GetSize();
-
-    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-ZonesController :: HandleHighpassCrossoverResponse(const IdentifierType &aZoneIdentifier, const CrossoverModel::FrequencyType &aHighpassFrequency, ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    Server::Command::Zones::HighpassCrossoverResponse  lHighpassCrossoverResponse;
-    const uint8_t *                                    lBuffer;
-    size_t                                             lSize;
-    Status                                             lRetval;
-
-    lRetval = lHighpassCrossoverResponse.Init(aZoneIdentifier, aHighpassFrequency);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lBuffer = lHighpassCrossoverResponse.GetBuffer();
-    lSize = lHighpassCrossoverResponse.GetSize();
-
-    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-ZonesController :: HandleLowpassCrossoverResponse(const IdentifierType &aZoneIdentifier, const CrossoverModel::FrequencyType &aLowpassFrequency, ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    Server::Command::Zones::LowpassCrossoverResponse  lLowpassCrossoverResponse;
-    const uint8_t *                                   lBuffer;
-    size_t                                            lSize;
-    Status                                            lRetval;
-
-    lRetval = lLowpassCrossoverResponse.Init(aZoneIdentifier, aLowpassFrequency);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lBuffer = lLowpassCrossoverResponse.GetBuffer();
-    lSize = lLowpassCrossoverResponse.GetSize();
-
-    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-ZonesController :: HandleMuteResponse(const IdentifierType &aZoneIdentifier, const VolumeModel::MuteType &aMute, ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    Server::Command::Zones::MuteResponse  lMuteResponse;
-    const uint8_t *                       lBuffer;
-    size_t                                lSize;
-    Status                                lRetval;
-
-    lRetval = lMuteResponse.Init(aZoneIdentifier, aMute);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lBuffer = lMuteResponse.GetBuffer();
-    lSize = lMuteResponse.GetSize();
-
-    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-ZonesController :: HandleSoundModeResponse(const IdentifierType &aZoneIdentifier, const SoundModel::SoundMode &aSoundMode, ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    Server::Command::Zones::SoundModeResponse  lSoundModeResponse;
-    const uint8_t *                            lBuffer;
-    size_t                                     lSize;
-    Status                                     lRetval;
-
-
-    lRetval = lSoundModeResponse.Init(aZoneIdentifier, aSoundMode);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lBuffer = lSoundModeResponse.GetBuffer();
-    lSize = lSoundModeResponse.GetSize();
-
-    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-    Status
-ZonesController :: HandleToneResponse(const IdentifierType &aZoneIdentifier, const Model::ToneModel::LevelType &aBass, Model::ToneModel::LevelType &aTreble, ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    Server::Command::Zones::ToneResponse  lToneResponse;
-    const uint8_t *                       lBuffer;
-    size_t                                lSize;
-    Status                                lRetval;
-
-
-    lRetval = lToneResponse.Init(aZoneIdentifier, aBass, aTreble);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lBuffer = lToneResponse.GetBuffer();
-    lSize = lToneResponse.GetSize();
-
-    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-ZonesController :: HandleVolumeResponse(const IdentifierType &aZoneIdentifier, const VolumeModel::LevelType &aVolume, ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    Server::Command::Zones::VolumeResponse  lVolumeResponse;
-    const uint8_t *                         lBuffer;
-    size_t                                  lSize;
-    Status                                  lRetval;
-
-
-    lRetval = lVolumeResponse.Init(aZoneIdentifier, aVolume);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lBuffer = lVolumeResponse.GetBuffer();
-    lSize = lVolumeResponse.GetSize();
-
-    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-ZonesController :: HandleVolumeFixedResponse(const IdentifierType &aZoneIdentifier, const VolumeModel::FixedType &aVolumeFixed, ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    Server::Command::Zones::VolumeFixedResponse  lVolumeFixedResponse;
-    const uint8_t *                              lBuffer;
-    size_t                                       lSize;
-    Status                                       lRetval;
-
-
-    lRetval = lVolumeFixedResponse.Init(aZoneIdentifier, aVolumeFixed);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lBuffer = lVolumeFixedResponse.GetBuffer();
-    lSize = lVolumeFixedResponse.GetSize();
-
-    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
 // MARK: Configuration Management Methods
 
 void ZonesController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
-    IdentifierType  lZoneIdentifier;
-    Status          lStatus;
+    static const bool kIsConfiguration = true;
+    Status            lStatus;
 
 
     (void)aConnection;
 
-    // For each zone, query the configuration, passing the Boolean
-    // indicating this is a general configuration query not a
-    // zone-specific one.
-
-    for (lZoneIdentifier = IdentifierModel::kIdentifierMin; lZoneIdentifier <= kZonesMax; lZoneIdentifier++)
-    {
-        static const bool kIsConfiguration = true;
-
-        lStatus = HandleQueryReceived(kIsConfiguration, lZoneIdentifier, aBuffer);
-        nlREQUIRE_SUCCESS(lStatus, done);
-    }
+    lStatus = HandleQueryReceived(kIsConfiguration, aBuffer);
+    nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
     return;
@@ -2006,14 +1456,13 @@ void ZonesController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConn
 
 void ZonesController :: ResetToDefaultConfiguration(void)
 {
-    IdentifierType                      lZoneIdentifier;
     ZoneModel *                         lZoneModel;
     EqualizerBandModel *                lEqualizerBandModel;
     EqualizerBandModel::IdentifierType  lEqualizerBandIdentifier;
     Status                              lStatus;
 
 
-    for (lZoneIdentifier = IdentifierModel::kIdentifierMin; lZoneIdentifier <= kZonesMax; lZoneIdentifier++)
+    for (auto lZoneIdentifier = IdentifierModel::kIdentifierMin; lZoneIdentifier <= kZonesMax; lZoneIdentifier++)
     {
         const ZoneModelDefaults &lZoneModelDefaults = kZoneModelDefaults[lZoneIdentifier - 1];
 
@@ -2397,7 +1846,7 @@ ZonesController :: ZoneVolumeLoadFromBackupConfiguration(CFDictionaryRef aZoneDi
 }
 
 Status
-ZonesController :: ElementLoadFromBackupConfiguration(CFDictionaryRef aZonesDictionary, const IdentifierType &aZoneIdentifier)
+ZonesController :: ElementLoadFromBackupConfiguration(CFDictionaryRef aZonesDictionary, const Model::ZoneModel::IdentifierType &aZoneIdentifier)
 {
     CFDictionaryRef                  lZoneDictionary = nullptr;
     CFStringRef                      lZoneIdentifierKey = nullptr;
@@ -2719,7 +2168,7 @@ ZonesController :: ZoneVolumeSaveToBackupConfiguration(CFMutableDictionaryRef aZ
 }
 
 Status
-ZonesController :: ElementSaveToBackupConfiguration(CFMutableDictionaryRef aZonesDictionary, const IdentifierType &aZoneIdentifier) const
+ZonesController :: ElementSaveToBackupConfiguration(CFMutableDictionaryRef aZonesDictionary, const Model::ZoneModel::IdentifierType &aZoneIdentifier) const
 {
     CFStringRef                           lZoneIdentifierKey = nullptr;
     CFMutableDictionaryRef                lZoneDictionary = nullptr;
@@ -2795,7 +2244,7 @@ void ZonesController :: SaveToBackupConfiguration(CFMutableDictionaryRef aBackup
 
 void ZonesController :: AdjustBalanceRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    IdentifierType                           lZoneIdentifier;
+    Model::ZoneModel::IdentifierType         lZoneIdentifier;
     BalanceModel::ChannelType                lChannel;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
@@ -2849,7 +2298,7 @@ void ZonesController :: AdjustBalanceRequestReceivedHandler(Server::ConnectionBa
 void ZonesController :: DecreaseBassRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     static const ToneModel::LevelType        kAdjustment = -1;
-    IdentifierType                           lZoneIdentifier;
+    Model::ZoneModel::IdentifierType         lZoneIdentifier;
     Status                                   lStatus;
 
 
@@ -2877,7 +2326,7 @@ void ZonesController :: DecreaseBassRequestReceivedHandler(Server::ConnectionBas
 void ZonesController :: IncreaseBassRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     static const ToneModel::LevelType        kAdjustment = 1;
-    IdentifierType                           lZoneIdentifier;
+    Model::ZoneModel::IdentifierType         lZoneIdentifier;
     Status                                   lStatus;
 
 
@@ -2905,7 +2354,7 @@ void ZonesController :: IncreaseBassRequestReceivedHandler(Server::ConnectionBas
 void ZonesController :: DecreaseTrebleRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     static const ToneModel::LevelType        kAdjustment = -1;
-    IdentifierType                           lZoneIdentifier;
+    Model::ZoneModel::IdentifierType         lZoneIdentifier;
     Status                                   lStatus;
 
 
@@ -2933,7 +2382,7 @@ void ZonesController :: DecreaseTrebleRequestReceivedHandler(Server::ConnectionB
 void ZonesController :: IncreaseTrebleRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     static const ToneModel::LevelType        kAdjustment = 1;
-    IdentifierType                           lZoneIdentifier;
+    Model::ZoneModel::IdentifierType         lZoneIdentifier;
     Status                                   lStatus;
 
 
@@ -2961,7 +2410,7 @@ void ZonesController :: IncreaseTrebleRequestReceivedHandler(Server::ConnectionB
 void ZonesController :: DecreaseEqualizerBandRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     static const EqualizerBandModel::LevelType  kAdjustment = -1;
-    IdentifierType                              lZoneIdentifier;
+    Model::ZoneModel::IdentifierType         lZoneIdentifier;
     EqualizerBandModel::IdentifierType          lEqualizerBandIdentifier;
     ConnectionBuffer::MutableCountedPointer     lResponseBuffer;
     Status                                      lStatus;
@@ -3001,7 +2450,7 @@ void ZonesController :: DecreaseEqualizerBandRequestReceivedHandler(Server::Conn
 void ZonesController :: IncreaseEqualizerBandRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     static const EqualizerBandModel::LevelType  kAdjustment = 1;
-    IdentifierType                              lZoneIdentifier;
+    Model::ZoneModel::IdentifierType            lZoneIdentifier;
     EqualizerBandModel::IdentifierType          lEqualizerBandIdentifier;
     ConnectionBuffer::MutableCountedPointer     lResponseBuffer;
     Status                                      lStatus;
@@ -3042,7 +2491,7 @@ void ZonesController :: DecreaseVolumeRequestReceivedHandler(Server::ConnectionB
 {
     static const VolumeModel::MuteType       kMuted = true;
     static const VolumeModel::LevelType      kAdjustment = -1;
-    IdentifierType                           lZoneIdentifier;
+    Model::ZoneModel::IdentifierType         lZoneIdentifier;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
 
@@ -3099,7 +2548,7 @@ void ZonesController :: IncreaseVolumeRequestReceivedHandler(Server::ConnectionB
 {
     static const VolumeModel::MuteType       kMuted = true;
     static const VolumeModel::LevelType      kAdjustment = 1;
-    IdentifierType                           lZoneIdentifier;
+    Model::ZoneModel::IdentifierType         lZoneIdentifier;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
 
@@ -3155,7 +2604,7 @@ void ZonesController :: IncreaseVolumeRequestReceivedHandler(Server::ConnectionB
 void ZonesController :: MuteRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
     const char *                             lMutep;
-    IdentifierType                           lZoneIdentifier;
+    Model::ZoneModel::IdentifierType         lZoneIdentifier;
     VolumeModel::MuteType                    lMute;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
@@ -3207,7 +2656,7 @@ void ZonesController :: MuteRequestReceivedHandler(Server::ConnectionBasis &aCon
 void ZonesController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
     static const bool                        kIsConfiguration = true;
-    IdentifierType                           lZoneIdentifier;
+    Model::ZoneModel::IdentifierType         lZoneIdentifier;
     Server::Command::Zones::QueryResponse    lResponse;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
@@ -3270,7 +2719,7 @@ void ZonesController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aCo
 
 void ZonesController :: QueryMuteRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    IdentifierType                           lZoneIdentifier;
+    Model::ZoneModel::IdentifierType         lZoneIdentifier;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
 
@@ -3317,7 +2766,7 @@ void ZonesController :: QueryMuteRequestReceivedHandler(Server::ConnectionBasis 
 
 void ZonesController :: QuerySourceRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    IdentifierType                           lZoneIdentifier;
+    Model::ZoneModel::IdentifierType         lZoneIdentifier;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
 
@@ -3364,7 +2813,7 @@ void ZonesController :: QuerySourceRequestReceivedHandler(Server::ConnectionBasi
 
 void ZonesController :: QueryVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    IdentifierType                           lZoneIdentifier;
+    Model::ZoneModel::IdentifierType         lZoneIdentifier;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
 
@@ -3411,7 +2860,7 @@ void ZonesController :: QueryVolumeRequestReceivedHandler(Server::ConnectionBasi
 
 void ZonesController :: SetBalanceRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    IdentifierType                           lZoneIdentifier;
+    Model::ZoneModel::IdentifierType         lZoneIdentifier;
     BalanceModel::ChannelType                lChannel;
     BalanceModel::BalanceType                lBalance;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
@@ -3484,7 +2933,7 @@ void ZonesController :: SetBalanceRequestReceivedHandler(Server::ConnectionBasis
 
 void ZonesController :: SetEqualizerBandRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    IdentifierType                           lZoneIdentifier;
+    Model::ZoneModel::IdentifierType         lZoneIdentifier;
     EqualizerBandModel::IdentifierType       lEqualizerBandIdentifier;
     EqualizerBandModel::LevelType            lBandLevel;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
@@ -3561,7 +3010,7 @@ void ZonesController :: SetEqualizerBandRequestReceivedHandler(Server::Connectio
 
 void ZonesController :: SetEqualizerPresetRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    IdentifierType                           lZoneIdentifier;
+    Model::ZoneModel::IdentifierType         lZoneIdentifier;
     EqualizerPresetModel::IdentifierType     lEqualizerPresetIdentifier;
     ZoneModel *                              lZoneModel;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
@@ -3641,7 +3090,7 @@ void ZonesController :: SetEqualizerPresetRequestReceivedHandler(Server::Connect
 
 void ZonesController :: SetHighpassCrossoverRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    IdentifierType                           lZoneIdentifier;
+    Model::ZoneModel::IdentifierType         lZoneIdentifier;
     CrossoverModel::FrequencyType            lHighpassFrequency;
     ZoneModel *                              lZoneModel;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
@@ -3719,7 +3168,7 @@ void ZonesController :: SetHighpassCrossoverRequestReceivedHandler(Server::Conne
 
 void ZonesController :: SetLowpassCrossoverRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    IdentifierType                           lZoneIdentifier;
+    Model::ZoneModel::IdentifierType         lZoneIdentifier;
     CrossoverModel::FrequencyType            lLowpassFrequency;
     ZoneModel *                              lZoneModel;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
@@ -3797,7 +3246,7 @@ void ZonesController :: SetLowpassCrossoverRequestReceivedHandler(Server::Connec
 
 void ZonesController :: SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    IdentifierType                           lZoneIdentifier;
+    Model::ZoneModel::IdentifierType         lZoneIdentifier;
     const char *                             lName;
     size_t                                   lNameSize;
     ZoneModel *                              lZoneModel;
@@ -3879,7 +3328,7 @@ void ZonesController :: SetNameRequestReceivedHandler(Server::ConnectionBasis &a
 
 void ZonesController :: SetSoundModeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    IdentifierType                           lZoneIdentifier;
+    Model::ZoneModel::IdentifierType         lZoneIdentifier;
     SoundModel::SoundMode                    lSoundMode;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
@@ -3935,7 +3384,7 @@ void ZonesController :: SetSoundModeRequestReceivedHandler(Server::ConnectionBas
 
 void ZonesController :: SetSourceRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    IdentifierType                           lZoneIdentifier;
+    Model::ZoneModel::IdentifierType         lZoneIdentifier;
     SourceModel::IdentifierType              lSourceIdentifier;
     Server::Command::Zones::SourceResponse   lSourceResponse;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
@@ -4005,7 +3454,7 @@ void ZonesController :: SetSourceRequestReceivedHandler(Server::ConnectionBasis 
 
 void ZonesController :: SetSourceAllRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    IdentifierType                             lZoneIdentifier;
+    Model::ZoneModel::IdentifierType           lZoneIdentifier;
     SourceModel::IdentifierType                lSourceIdentifier;
     Server::Command::Zones::SourceAllResponse  lSourceAllResponse;
     ConnectionBuffer::MutableCountedPointer    lResponseBuffer;
@@ -4068,7 +3517,7 @@ void ZonesController :: SetSourceAllRequestReceivedHandler(Server::ConnectionBas
 
 void ZonesController :: SetToneRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    IdentifierType                           lZoneIdentifier;
+    Model::ZoneModel::IdentifierType         lZoneIdentifier;
     ToneModel::LevelType                     lBass;
     ToneModel::LevelType                     lTreble;
     ZoneModel *                              lZoneModel;
@@ -4158,7 +3607,7 @@ void ZonesController :: SetToneRequestReceivedHandler(Server::ConnectionBasis &a
 void ZonesController :: SetVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
     static const VolumeModel::MuteType       kMuted = true;
-    IdentifierType                           lZoneIdentifier;
+    Model::ZoneModel::IdentifierType         lZoneIdentifier;
     VolumeModel::LevelType                   lVolume;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
@@ -4225,7 +3674,7 @@ void ZonesController :: SetVolumeRequestReceivedHandler(Server::ConnectionBasis 
 void ZonesController :: SetVolumeAllRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
     static const VolumeModel::MuteType        kMuted = true;
-    IdentifierType                            lZoneIdentifier;
+    Model::ZoneModel::IdentifierType          lZoneIdentifier;
     VolumeModel::LevelType                    lVolume;
     ConnectionBuffer::MutableCountedPointer   lResponseBuffer;
     Server::Command::Zones::VolumeAllResponse lVolumeAllResponse;
@@ -4296,7 +3745,7 @@ void ZonesController :: SetVolumeAllRequestReceivedHandler(Server::ConnectionBas
 
 void ZonesController :: SetVolumeFixedRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    IdentifierType                           lZoneIdentifier;
+    Model::ZoneModel::IdentifierType         lZoneIdentifier;
     VolumeModel::FixedType                   lLocked;
     ZoneModel *                              lZoneModel;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
@@ -4364,7 +3813,7 @@ void ZonesController :: SetVolumeFixedRequestReceivedHandler(Server::ConnectionB
 
 void ZonesController :: ToggleMuteRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    IdentifierType                           lZoneIdentifier;
+    Model::ZoneModel::IdentifierType         lZoneIdentifier;
     VolumeModel::MuteType                    lMute;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;

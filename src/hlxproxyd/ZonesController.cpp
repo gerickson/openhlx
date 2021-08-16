@@ -80,7 +80,8 @@ ZonesController :: ZonesController(void) :
     Proxy::ControllerBasis(),
     Common::ZonesControllerBasis(),
     Client::ZonesControllerBasis(),
-    Server::ZonesControllerBasis()
+    Server::ZonesControllerBasis(Common::ZonesControllerBasis::mZones,
+                                 Common::ZonesControllerBasis::kZonesMax)
 {
     return;
 }
@@ -413,25 +414,14 @@ Status
 ZonesController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     DeclareScopedFunctionTracer(lTracer);
-    IdentifierType  lZoneIdentifier;
-    Status          lRetval = kStatus_Success;
+    static constexpr bool kIsConfiguration = true;
+    Status                lRetval = kStatus_Success;
 
 
     (void)aConnection;
 
-    // For each zone, query the configuration, passing the Boolean
-    // indicating this is a general configuration query not a
-    // zone-specific one.
-
-    for (lZoneIdentifier = IdentifierModel::kIdentifierMin; lZoneIdentifier <= kZonesMax; lZoneIdentifier++)
-    {
-        static constexpr bool kIsConfiguration = true;
-
-        lRetval = HandleQueryReceived(kIsConfiguration, lZoneIdentifier, aBuffer);
-        Log::Debug().Write("%s: %d: lRetval %d\n",
-                           __func__, __LINE__, lRetval);
-        nlREQUIRE_SUCCESS(lRetval, done);
-    }
+    lRetval = HandleQueryReceived(kIsConfiguration, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
     return (lRetval);
@@ -457,7 +447,7 @@ ZonesController :: Query(void)
     Status lRetval = kStatus_Success;
 
 
-    for (IdentifierType lZoneIdentifier = IdentifierModel::kIdentifierMin; lZoneIdentifier <= kZonesMax; lZoneIdentifier++)
+    for (auto lZoneIdentifier = IdentifierModel::kIdentifierMin; lZoneIdentifier <= kZonesMax; lZoneIdentifier++)
     {
         lRetval = Query(lZoneIdentifier);
         nlREQUIRE_SUCCESS(lRetval, done);
@@ -486,7 +476,7 @@ done:
  *
  */
 Status
-ZonesController :: Query(const IdentifierType &aZoneIdentifier)
+ZonesController :: Query(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
 {
     DeclareScopedFunctionTracer(lTracer);
     Client::Command::ExchangeBasis::MutableCountedPointer lCommand;
@@ -513,7 +503,7 @@ done:
 }
 
 Status
-ZonesController :: QueryMute(const IdentifierType &aZoneIdentifier)
+ZonesController :: QueryMute(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
 {
     DeclareScopedFunctionTracer(lTracer);
     Client::Command::ExchangeBasis::MutableCountedPointer lCommand;
@@ -540,7 +530,7 @@ done:
 }
 
 Status
-ZonesController :: QuerySource(const IdentifierType &aZoneIdentifier)
+ZonesController :: QuerySource(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
 {
     DeclareScopedFunctionTracer(lTracer);
     Client::Command::ExchangeBasis::MutableCountedPointer lCommand;
@@ -567,7 +557,7 @@ done:
 }
 
 Status
-ZonesController :: QueryVolume(const IdentifierType &aZoneIdentifier)
+ZonesController :: QueryVolume(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
 {
     DeclareScopedFunctionTracer(lTracer);
     Client::Command::ExchangeBasis::MutableCountedPointer lCommand;
@@ -595,25 +585,6 @@ done:
 
 /**
  *  @brief
- *    Get the maximum number of supported HLX zones.
- *
- *  @param[out]  aZones  The maximum number of HLX zones on success.
- *
- *  @retval  kStatus_Success  Unconditionally.
- *
- */
-Status
-ZonesController :: GetZonesMax(size_t &aZones) const
-{
-    Status  lRetval = kStatus_Success;
-
-    aZones = kZonesMax;
-
-    return (lRetval);
-}
-
-/**
- *  @brief
  *    Get the zone identifier with the specified name.
  *
  *  This attempts to lookup the zone identifier for the zone
@@ -636,7 +607,7 @@ ZonesController :: GetZonesMax(size_t &aZones) const
  *
  */
 Status
-ZonesController :: LookupIdentifier(const char *aName, IdentifierType &aZoneIdentifier) const
+ZonesController :: LookupIdentifier(const char *aName, Model::ZoneModel::IdentifierType &aZoneIdentifier) const
 {
     const ZoneModel * lZoneModel;
     Status            lRetval;
@@ -680,7 +651,7 @@ done:
  *
  */
 Status
-ZonesController :: SetVolume(const IdentifierType &aZoneIdentifier,
+ZonesController :: SetVolume(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                              const Model::VolumeModel::LevelType &aLevel)
 {
     Client::Command::ExchangeBasis::MutableCountedPointer lCommand;
@@ -722,7 +693,7 @@ done:
  *
  */
 Status
-ZonesController :: IncreaseVolume(const IdentifierType &aZoneIdentifier)
+ZonesController :: IncreaseVolume(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
 {
     Client::Command::ExchangeBasis::MutableCountedPointer lCommand;
     Status lRetval = kStatus_Success;
@@ -763,7 +734,7 @@ done:
  *
  */
 Status
-ZonesController :: DecreaseVolume(const IdentifierType &aZoneIdentifier)
+ZonesController :: DecreaseVolume(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
 {
     Client::Command::ExchangeBasis::MutableCountedPointer lCommand;
     Status lRetval = kStatus_Success;
@@ -807,7 +778,7 @@ ZonesController :: QueryCompleteHandler(Client::Command::ExchangeBasis::MutableC
     const Client::Command::ResponseBasis * lResponse = aExchange->GetResponse();
     const size_t                   lExpectedMatchCount = lResponse->GetRegularExpression().GetExpectedMatchCount();
     const uint8_t *                lBuffer = lResponse->GetBuffer()->GetHead();
-    IdentifierType                 lZoneIdentifier;
+    ZoneModel::IdentifierType      lZoneIdentifier;
     Status                         lStatus;
 
 
@@ -1125,7 +1096,7 @@ ZonesController :: CommandErrorHandler(Client::Command::ExchangeBasis::MutableCo
 void
 ZonesController :: BalanceNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    IdentifierType                         lZoneIdentifier;
+    ZoneModel::IdentifierType              lZoneIdentifier;
     BalanceModel::ChannelType              lChannel;
     BalanceModel::BalanceType              lBalance;
     ZoneModel *                            lZoneModel;
@@ -1563,7 +1534,7 @@ void
 ZonesController :: MuteNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
     const char *                           lMutep;
-    IdentifierType                         lZoneIdentifier;
+    ZoneModel::IdentifierType              lZoneIdentifier;
     VolumeModel::MuteType                  lMute;
     Status                                 lStatus;
 
@@ -1610,7 +1581,7 @@ done:
 void
 ZonesController :: NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    IdentifierType                         lZoneIdentifier;
+    ZoneModel::IdentifierType              lZoneIdentifier;
     const char *                           lName;
     size_t                                 lNameSize;
     ZoneModel *                            lZoneModel;
@@ -1676,7 +1647,7 @@ done:
 void
 ZonesController :: SoundModeNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    IdentifierType                           lZoneIdentifier;
+    ZoneModel::IdentifierType                lZoneIdentifier;
     SoundModel::SoundMode                    lSoundMode;
     ZoneModel *                              lZoneModel;
     Client::StateChange::ZonesSoundModeNotification  lStateChangeNotification;
@@ -1743,7 +1714,7 @@ done:
 void
 ZonesController :: SourceNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    IdentifierType                         lZoneIdentifier;
+    ZoneModel::IdentifierType              lZoneIdentifier;
     SourceModel::IdentifierType            lSourceIdentifier;
     Status                                 lStatus;
 
@@ -1793,7 +1764,7 @@ done:
 void
 ZonesController :: SourceAllNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    IdentifierType                         lZoneIdentifier;
+    ZoneModel::IdentifierType              lZoneIdentifier;
     SourceModel::IdentifierType            lSourceIdentifier;
     Status                                 lStatus;
 
@@ -1839,7 +1810,7 @@ done:
 void
 ZonesController :: VolumeNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    IdentifierType                         lZoneIdentifier;
+    ZoneModel::IdentifierType              lZoneIdentifier;
     VolumeModel::LevelType                 lVolume;
     Status                                 lStatus;
 
@@ -1889,8 +1860,8 @@ done:
 void
 ZonesController :: VolumeAllNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    IdentifierType                         lZoneIdentifier;
-    VolumeModel::LevelType                lVolume;
+    ZoneModel::IdentifierType              lZoneIdentifier;
+    VolumeModel::LevelType                 lVolume;
     Status                                 lStatus;
 
 
@@ -1936,7 +1907,7 @@ done:
 void
 ZonesController :: VolumeFixedNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    IdentifierType                              lZoneIdentifier;
+    ZoneModel::IdentifierType                   lZoneIdentifier;
     VolumeModel::FixedType                      lLocked;
     ZoneModel *                                 lZoneModel;
     Client::StateChange::ZonesVolumeLockedNotification  lStateChangeNotification;
@@ -2490,7 +2461,7 @@ void ZonesController :: DecreaseVolumeRequestReceivedHandler(Server::ConnectionB
     DeclareScopedFunctionTracer(lTracer);
     static const VolumeModel::MuteType       kMuted = true;
     static const VolumeModel::LevelType      kAdjustment = -1;
-    IdentifierType                           lZoneIdentifier;
+    ZoneModel::IdentifierType                lZoneIdentifier;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
 
@@ -2548,7 +2519,7 @@ void ZonesController :: IncreaseVolumeRequestReceivedHandler(Server::ConnectionB
     DeclareScopedFunctionTracer(lTracer);
     static const VolumeModel::MuteType       kMuted = true;
     static const VolumeModel::LevelType      kAdjustment = 1;
-    IdentifierType                           lZoneIdentifier;
+    ZoneModel::IdentifierType                lZoneIdentifier;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
 
@@ -2605,7 +2576,7 @@ void ZonesController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aCo
 {
     DeclareScopedFunctionTracer(lTracer);
     static const bool                        kIsConfiguration = true;
-    IdentifierType                           lZoneIdentifier;
+    ZoneModel::IdentifierType                lZoneIdentifier;
     Server::Command::Zones::QueryResponse    lResponse;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
@@ -2683,7 +2654,7 @@ void ZonesController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aCo
 
 void ZonesController :: QueryMuteRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    IdentifierType                           lZoneIdentifier;
+    ZoneModel::IdentifierType                lZoneIdentifier;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
 
@@ -2745,7 +2716,7 @@ void ZonesController :: QueryMuteRequestReceivedHandler(Server::ConnectionBasis 
 
 void ZonesController :: QuerySourceRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    IdentifierType                           lZoneIdentifier;
+    ZoneModel::IdentifierType                lZoneIdentifier;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
 
@@ -2808,7 +2779,7 @@ void ZonesController :: QuerySourceRequestReceivedHandler(Server::ConnectionBasi
 void ZonesController :: QueryVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
     DeclareScopedFunctionTracer(lTracer);
-    IdentifierType                           lZoneIdentifier;
+    ZoneModel::IdentifierType                lZoneIdentifier;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
 
@@ -2884,7 +2855,7 @@ void ZonesController :: SetVolumeRequestReceivedHandler(Server::ConnectionBasis 
 {
     DeclareScopedFunctionTracer(lTracer);
     static const VolumeModel::MuteType       kMuted = true;
-    IdentifierType                           lZoneIdentifier;
+    ZoneModel::IdentifierType                lZoneIdentifier;
     VolumeModel::LevelType                   lVolume;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
@@ -2951,7 +2922,7 @@ void ZonesController :: SetVolumeRequestReceivedHandler(Server::ConnectionBasis 
 // MARK: Server-facing Client Implementation
 
 void
-ZonesController :: HandleMuteChange(const IdentifierType &aZoneIdentifier, const VolumeModel::MuteType &aMute)
+ZonesController :: HandleMuteChange(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const VolumeModel::MuteType &aMute)
 {
     ZoneModel *                            lZoneModel;
     Status                                 lStatus;
@@ -2980,7 +2951,7 @@ done:
 }
 
 void
-ZonesController :: HandleSourceChange(const IdentifierType &aZoneIdentifier, const SourceModel::IdentifierType &aSourceIdentifier)
+ZonesController :: HandleSourceChange(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const SourceModel::IdentifierType &aSourceIdentifier)
 {
     ZoneModel *                            lZoneModel;
     Status                                 lStatus;
@@ -3009,7 +2980,7 @@ done:
 }
 
 void
-ZonesController :: HandleVolumeChange(const IdentifierType &aZoneIdentifier, const VolumeModel::LevelType &aVolume)
+ZonesController :: HandleVolumeChange(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const VolumeModel::LevelType &aVolume)
 {
     ZoneModel *                            lZoneModel;
     Status                                 lStatus;
@@ -3040,7 +3011,7 @@ done:
 // MARK: Client-facing Server Data Model Mutation State Change Methods
 
 Status
-ZonesController :: AdjustVolume(const IdentifierType &aZoneIdentifier, const VolumeModel::LevelType &aAdjustment, VolumeModel::LevelType &aVolume)
+ZonesController :: AdjustVolume(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const VolumeModel::LevelType &aAdjustment, VolumeModel::LevelType &aVolume)
 {
     DeclareScopedFunctionTracer(lTracer);
     ZoneModel *                        lZoneModel;
@@ -3073,7 +3044,7 @@ ZonesController :: AdjustVolume(const IdentifierType &aZoneIdentifier, const Vol
 }
 
 Status
-ZonesController :: SetMute(const IdentifierType &aZoneIdentifier, const Model::VolumeModel::MuteType &aMute)
+ZonesController :: SetMute(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const Model::VolumeModel::MuteType &aMute)
 {
     ZoneModel *                        lZoneModel;
     Status                             lRetval;
@@ -3095,200 +3066,7 @@ ZonesController :: SetMute(const IdentifierType &aZoneIdentifier, const Model::V
 }
 
 Status
-ZonesController :: HandleQueryReceived(const bool &aIsConfiguration, const IdentifierType &aZoneIdentifier, ConnectionBuffer::MutableCountedPointer &aOutputBuffer) const
-{
-    const ZoneModel *                        lZoneModel;
-    const char *                             lName;
-    Server::Command::Zones::NameResponse     lNameResponse;
-    BalanceModel::BalanceType                lBalance;
-    Server::Command::Zones::BalanceResponse  lBalanceResponse;
-    const uint8_t *                          lBuffer;
-    size_t                                   lSize;
-    Status                                   lRetval;
-
-
-    lRetval = mZones.GetZone(aZoneIdentifier, lZoneModel);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    // Name Response
-
-    lRetval = lZoneModel->GetName(lName);
-    Log::Debug().Write("%s: %d: lRetval %d\n",
-                       __func__, __LINE__, lRetval);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = lNameResponse.Init(aZoneIdentifier, lName);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lBuffer = lNameResponse.GetBuffer();
-    lSize = lNameResponse.GetSize();
-
-    lRetval = Common::Utilities::Put(*aOutputBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    // Source Response
-
-    lRetval = HandleQuerySourceReceived(aZoneIdentifier, *lZoneModel, aOutputBuffer);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    // Volume Response
-
-    lRetval = HandleQueryVolumeReceived(aZoneIdentifier, *lZoneModel, aOutputBuffer);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    // Volume Fixed Response (include if for configuration)
-
-    ;
-
-    // Mute Response
-
-    lRetval = HandleQueryMuteReceived(aZoneIdentifier, *lZoneModel, aOutputBuffer);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    // Sound Mode Response
-
-    ;
-
-    // Balance Response
-
-    ;
-
- done:
-    return (lRetval);
-}
-
-Status
-ZonesController :: HandleQueryMuteReceived(const IdentifierType &aZoneIdentifier,
-                                           Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
-{
-    const ZoneModel *                  lZoneModel;
-    Status                             lRetval;
-
-
-    lRetval = mZones.GetZone(aZoneIdentifier, lZoneModel);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = HandleQueryMuteReceived(aZoneIdentifier, *lZoneModel, aBuffer);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-ZonesController :: HandleQueryMuteReceived(const IdentifierType &aZoneIdentifier,
-                                           const Model::ZoneModel &aZoneModel,
-                                           Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    VolumeModel::MuteType              lMute;
-    Status                             lRetval;
-
-
-    lRetval = aZoneModel.GetMute(lMute);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = HandleMuteResponse(aZoneIdentifier, lMute, aBuffer);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-ZonesController :: HandleQuerySourceReceived(const IdentifierType &aZoneIdentifier,
-                                             Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
-{
-    const ZoneModel *                  lZoneModel;
-    Status                             lRetval;
-
-
-    lRetval = mZones.GetZone(aZoneIdentifier, lZoneModel);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = HandleQuerySourceReceived(aZoneIdentifier, *lZoneModel, aBuffer);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-ZonesController :: HandleQuerySourceReceived(const IdentifierType &aZoneIdentifier,
-                                             const Model::ZoneModel &aZoneModel,
-                                             Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    SourceModel::IdentifierType             lSourceIdentifier;
-    Server::Command::Zones::SourceResponse  lSourceResponse;
-    const uint8_t *                         lBuffer;
-    size_t                                  lSize;
-    Status                                  lRetval;
-
-
-    lRetval = aZoneModel.GetSource(lSourceIdentifier);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = lSourceResponse.Init(aZoneIdentifier, lSourceIdentifier);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lBuffer = lSourceResponse.GetBuffer();
-    lSize = lSourceResponse.GetSize();
-
-    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-ZonesController :: HandleQueryVolumeReceived(const IdentifierType &aZoneIdentifier,
-                                             Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
-{
-    DeclareScopedFunctionTracer(lTracer);
-    const ZoneModel *                  lZoneModel;
-    Status                             lRetval;
-
-
-    lRetval = mZones.GetZone(aZoneIdentifier, lZoneModel);
-    Log::Debug().Write("%s: %d: lStatus %d\n",
-                       __func__, __LINE__, lRetval);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = HandleQueryVolumeReceived(aZoneIdentifier, *lZoneModel, aBuffer);
-    Log::Debug().Write("%s: %d: lStatus %d\n",
-                       __func__, __LINE__, lRetval);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-ZonesController :: HandleQueryVolumeReceived(const IdentifierType &aZoneIdentifier,
-                                             const Model::ZoneModel &aZoneModel,
-                                             Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    DeclareScopedFunctionTracer(lTracer);
-    VolumeModel::LevelType lVolume;
-    Status                 lRetval;
-
-
-    lRetval = aZoneModel.GetVolume(lVolume);
-    Log::Debug().Write("%s: %d: lStatus %d\n",
-                       __func__, __LINE__, lRetval);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = HandleVolumeResponse(aZoneIdentifier, lVolume, aBuffer);
-    Log::Debug().Write("%s: %d: lStatus %d\n",
-                       __func__, __LINE__, lRetval);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-ZonesController :: HandleSetMute(const bool &aConditionally, const IdentifierType &aZoneIdentifier, const VolumeModel::MuteType &aMute, ConnectionBuffer::MutableCountedPointer &aBuffer)
+ZonesController :: HandleSetMute(const bool &aConditionally, const Model::ZoneModel::IdentifierType &aZoneIdentifier, const VolumeModel::MuteType &aMute, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     Status                             lRetval;
 
@@ -3314,7 +3092,7 @@ ZonesController :: HandleSetMute(const bool &aConditionally, const IdentifierTyp
 }
 
 Status
-ZonesController :: HandleSetMuteConditionally(const IdentifierType &aZoneIdentifier, const VolumeModel::MuteType &aMute, ConnectionBuffer::MutableCountedPointer &aBuffer)
+ZonesController :: HandleSetMuteConditionally(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const VolumeModel::MuteType &aMute, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     const bool kConditionally = true;
 
@@ -3322,7 +3100,7 @@ ZonesController :: HandleSetMuteConditionally(const IdentifierType &aZoneIdentif
 }
 
 Status
-ZonesController :: HandleAdjustVolumeReceived(const IdentifierType &aZoneIdentifier, const VolumeModel::LevelType &aAdjustment, ConnectionBuffer::MutableCountedPointer &aBuffer)
+ZonesController :: HandleAdjustVolumeReceived(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const VolumeModel::LevelType &aAdjustment, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     DeclareScopedFunctionTracer(lTracer);
     VolumeModel::LevelType lVolume;
@@ -3342,7 +3120,7 @@ ZonesController :: HandleAdjustVolumeReceived(const IdentifierType &aZoneIdentif
 }
 
 Status
-ZonesController :: HandleSetVolumeReceived(const IdentifierType &aZoneIdentifier, const VolumeModel::LevelType &aVolume, ConnectionBuffer::MutableCountedPointer &aBuffer)
+ZonesController :: HandleSetVolumeReceived(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const VolumeModel::LevelType &aVolume, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status                             lRetval;
@@ -3352,49 +3130,6 @@ ZonesController :: HandleSetVolumeReceived(const IdentifierType &aZoneIdentifier
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = HandleVolumeResponse(aZoneIdentifier, aVolume, aBuffer);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-ZonesController :: HandleMuteResponse(const IdentifierType &aZoneIdentifier, const VolumeModel::MuteType &aMute, ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    Server::Command::Zones::MuteResponse  lMuteResponse;
-    const uint8_t *                       lBuffer;
-    size_t                                lSize;
-    Status                                lRetval;
-
-    lRetval = lMuteResponse.Init(aZoneIdentifier, aMute);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lBuffer = lMuteResponse.GetBuffer();
-    lSize = lMuteResponse.GetSize();
-
-    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-ZonesController :: HandleVolumeResponse(const IdentifierType &aZoneIdentifier, const VolumeModel::LevelType &aVolume, ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    Server::Command::Zones::VolumeResponse  lVolumeResponse;
-    const uint8_t *                         lBuffer;
-    size_t                                  lSize;
-    Status                                  lRetval;
-
-
-    lRetval = lVolumeResponse.Init(aZoneIdentifier, aVolume);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lBuffer = lVolumeResponse.GetBuffer();
-    lSize = lVolumeResponse.GetSize();
-
-    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
     nlREQUIRE_SUCCESS(lRetval, done);
 
  done:
@@ -3539,7 +3274,7 @@ ZonesController :: ProxyErrorHandler(Client::Command::ExchangeBasis::MutableCoun
 ZonesController :: ProxyCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     DeclareScopedFunctionTracer(lTracer);
-    Detail::ProxyContext *lContext = static_cast<Detail::ProxyContext *>(aContext);    
+    Detail::ProxyContext *lContext = static_cast<Detail::ProxyContext *>(aContext);
 
     if (lContext != nullptr)
     {
