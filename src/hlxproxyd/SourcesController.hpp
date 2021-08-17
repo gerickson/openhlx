@@ -72,6 +72,10 @@ public:
 
     Common::Status Refresh(const Common::Timeout &aTimeout) final;
 
+    // Configuration Management Methods
+
+    Common::Status QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) final;
+
     // Observer Methods
 
     // Server-facing Client Command Completion Handler Trampolines
@@ -116,8 +120,6 @@ private:
 
 private:
     // Client-facing Server Implementation
-
-    Common::Status HandleQueryReceived(const IdentifierType &aSourceIdentifier, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
 };
 
 }; // namespace Proxy

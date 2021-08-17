@@ -124,8 +124,22 @@ done:
 Status
 SourcesController :: DoRequestHandlers(const bool &aRegister)
 {
+    static const RequestHandlerBasis  lRequestHandlers[] = {
+        {
+            kSetNameRequest,
+            SourcesController::SetNameRequestReceivedHandler
+        }
+    };
+    static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
     Status                   lRetval = kStatus_Success;
 
+    lRetval = Server::ControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
+                                                         &lRequestHandlers[lRequestHandlerCount],
+                                                         this,
+                                                         aRegister);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
     return (lRetval);
 }
 
@@ -225,6 +239,24 @@ SourcesController :: Refresh(const Timeout &aTimeout)
 
     MaybeUpdateRefreshIfRefreshWasRequested();
 
+    return (lRetval);
+}
+
+// MARK: Configuration Management Methods
+
+Status
+SourcesController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    DeclareScopedFunctionTracer(lTracer);
+    Status lRetval = kStatus_Success;
+
+
+    (void)aConnection;
+
+    lRetval = HandleQueryReceived(aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
     return (lRetval);
 }
 
@@ -459,7 +491,99 @@ SourcesController :: NameNotificationReceivedHandler(const uint8_t *aBuffer, con
 
 // MARK: Client-facing Server Command Request Completion Handlers
 
+void SourcesController :: SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+{
+    IdentifierType                           lSourceIdentifier;
+    const char *                             lName;
+    size_t                                   lNameSize;
+    SourceModel *                            lSourceModel;
+    Server::Command::Sources::NameResponse   lNameResponse;
+    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
+    Status                                   lStatus;
+    const uint8_t *                          lBuffer;
+    size_t                                   lSize;
+
+
+    (void)aSize;
+
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Sources::SetNameRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+
+    // Match 2/3: Source Identifier
+    //
+    // The validity of the source identifier will be range checked at
+    // GetSource below.
+
+    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
+                                                Common::Utilities::Distance(aMatches.at(1)),
+                                                lSourceIdentifier);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // Match 3/3: Name
+
+    lName = (reinterpret_cast<const char *>(aBuffer) + aMatches.at(2).rm_so);
+    lNameSize = Common::Utilities::Distance(aMatches.at(2));
+
+    lResponseBuffer.reset(new ConnectionBuffer);
+    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
+
+    lStatus = lResponseBuffer->Init();
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // Get the source model associated with the parsed source
+    // identifier. This will include a range check on the source
+    // identifier.
+
+    lStatus = mSources.GetSource(lSourceIdentifier, lSourceModel);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // Attempt to set the parsed name. This will include range check
+    // on the name length. If the set name is the same as the current
+    // name, that should still be regarded as a success with a
+    // success, rather than error, response sent.
+
+    lStatus = lSourceModel->SetName(lName, lNameSize);
+    nlREQUIRE(lStatus >= kStatus_Success, done);
+
+    if (lStatus == kStatus_Success)
+    {
+        ;
+    }
+
+    lStatus = lNameResponse.Init(lSourceIdentifier, lName, lNameSize);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lBuffer = lNameResponse.GetBuffer();
+    lSize = lNameResponse.GetSize();
+
+    lStatus = Common::Utilities::Put(*lResponseBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    if (lStatus >= kStatus_Success)
+    {
+        lStatus = SendResponse(aConnection, lResponseBuffer);
+        nlVERIFY_SUCCESS(lStatus);
+    }
+    else
+    {
+        lStatus = SendErrorResponse(aConnection);
+        nlVERIFY_SUCCESS(lStatus);
+    }
+
+    return;
+}
+
 // MARK: Client-facing Server Command Request Handler Trampolines
+
+void SourcesController :: SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+{
+    SourcesController *lController = static_cast<SourcesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->SetNameRequestReceivedHandler(aConnection, aBuffer, aSize, aMatches);
+    }
+}
 
 // MARK: Proxy Handlers
 
