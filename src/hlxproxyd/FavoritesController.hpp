@@ -127,8 +127,6 @@ private:
 
 private:
     // Client-facing Server Implementation
-
-    Common::Status HandleQueryReceived(const IdentifierType &aFavoriteIdentifier, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
 };
 
 }; // namespace Proxy

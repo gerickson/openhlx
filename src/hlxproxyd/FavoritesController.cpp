@@ -259,13 +259,8 @@ FavoritesController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConne
 
     (void)aConnection;
 
-    // For each favorite, query the configuration.
-
-    for (auto lFavoriteIdentifier = IdentifierModel::kIdentifierMin; lFavoriteIdentifier <= kFavoritesMax; lFavoriteIdentifier++)
-    {
-        lRetval = HandleQueryReceived(lFavoriteIdentifier, aBuffer);
-        nlREQUIRE_SUCCESS(lRetval, done);
-    }
+    lRetval = HandleQueryReceived(aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
     return (lRetval);
@@ -839,35 +834,6 @@ void FavoritesController :: SetNameRequestReceivedHandler(Server::ConnectionBasi
 // MARK: Server-facing Client Implementation
 
 // MARK: Client-facing Server Implementation
-
-Status FavoritesController :: HandleQueryReceived(const IdentifierType &aFavoriteIdentifier, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
-{
-    const FavoriteModel *                     lFavoriteModel;
-    const char *                              lName;
-    Server::Command::Favorites::NameResponse  lResponse;
-    const uint8_t *                           lBuffer;
-    size_t                                    lSize;
-    Status                                    lRetval;
-
-
-    lRetval = mFavorites.GetFavorite(aFavoriteIdentifier, lFavoriteModel);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = lFavoriteModel->GetName(lName);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = lResponse.Init(aFavoriteIdentifier, lName);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lBuffer = lResponse.GetBuffer();
-    lSize = lResponse.GetSize();
-
-    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
 
 }; // namespace Proxy
 
