@@ -282,7 +282,9 @@ HLXProxy :: Start(const char *aConnectMaybeURL,
 
     // XXX - At some point, Listen should be move to and triggered by
     //       the first successful ControllerDidRefresh event /
-    //       callback.
+    //       callback. However, this would / should only be the case
+    //       if '--initial-refresh' is asserted or, conversely, if
+    //       '--no-initial-refresh' is not asserted.
 
     lRetval = mHLXProxyController.Listen(GetVersions(aUseIPv6, aUseIPv4));
     nlREQUIRE_SUCCESS(lRetval, done);
@@ -472,11 +474,6 @@ void HLXProxy :: ControllerDidConnect(Controller &aController, CFURLRef aURLRef)
 
     Log::Info().Write("Connected to %s.\n", CFString(CFURLGetString(aURLRef)).GetCString());
 
-    // XXX - We may need to know whether this connection was on the
-    // server-facing client side versus the client-facing server side
-    // of the proxy since only the former should trigger a refresh,
-    // not the latter.
-
     if ((sOptFlags & kOptNoInitialRefresh) != kOptNoInitialRefresh)
     {
         lStatus = mHLXProxyController.Refresh();
@@ -526,9 +523,19 @@ void HLXProxy :: ControllerDidDisconnect(Controller &aController, CFURLRef aURLR
     // of the proxy since only the former should trigger a stop (if at
     // all rather than a retry) and not the latter.
 
-    if (aError != kStatus_Success)
+    switch (aError)
     {
+
+    case kStatus_Success:
+        break;
+
+    case -ECONNRESET:
+        break;
+
+    default:
         Stop(aError);
+        break;
+
     }
 
  done:
@@ -602,7 +609,17 @@ void HLXProxy :: ControllerError(Controller &aController, const Error &aError)
 
     Log::Error().Write("Error: %d (%s).\n", aError, strerror(-aError));
 
-    Stop(aError);
+    switch (aError)
+    {
+
+    case -ECONNRESET:
+        break;
+
+    default:
+        Stop(aError);
+        break;
+
+    }
 }
 
 void HLXProxy :: OnSignal(int aSignal)
