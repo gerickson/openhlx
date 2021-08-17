@@ -135,6 +135,7 @@ MapGaiStatusToError(const int &aGaiStatus)
  *
  */
 ConnectionManagerBasis :: ConnectionManagerBasis(void) :
+    mRoles(kRoleNone),
     mApplicationDataDelegate(nullptr)
 {
     return;
@@ -157,11 +158,14 @@ ConnectionManagerBasis :: ConnectionManagerBasis(void) :
  *
  */
 Status
-ConnectionManagerBasis :: Init(const RunLoopParameters &aRunLoopParameters)
+ConnectionManagerBasis :: Init(const Roles &aRoles,
+                               const RunLoopParameters &aRunLoopParameters)
 {
     Status lRetval = kStatus_Success;
 
     (void)aRunLoopParameters;
+
+    mRoles = aRoles;
 
     return (lRetval);
 }
@@ -296,6 +300,12 @@ done:
     }
 
     return (lRetval);
+}
+
+const ConnectionManagerBasis::Roles &
+ConnectionManagerBasis :: GetRoles(void) const
+{
+    return (mRoles);
 }
 
 /**

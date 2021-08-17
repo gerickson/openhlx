@@ -587,7 +587,7 @@ void Controller :: ControllerConfigurationIsDirty(Simulator::ControllerBasis &aC
 
 // Resolve
 
-void Controller :: ConnectionManagerWillResolve(Common::ConnectionManagerBasis &aConnectionManager, const char *aHost)
+void Controller :: ConnectionManagerWillResolve(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, const char *aHost)
 {
     (void)aConnectionManager;
 
@@ -597,7 +597,7 @@ void Controller :: ConnectionManagerWillResolve(Common::ConnectionManagerBasis &
     }
 }
 
-void Controller :: ConnectionManagerIsResolving(Common::ConnectionManagerBasis &aConnectionManager, const char *aHost)
+void Controller :: ConnectionManagerIsResolving(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, const char *aHost)
 {
     (void)aConnectionManager;
 
@@ -607,7 +607,7 @@ void Controller :: ConnectionManagerIsResolving(Common::ConnectionManagerBasis &
     }
 }
 
-void Controller :: ConnectionManagerDidResolve(Common::ConnectionManagerBasis &aConnectionManager, const char *aHost, const Common::IPAddress &aIPAddress)
+void Controller :: ConnectionManagerDidResolve(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, const char *aHost, const Common::IPAddress &aIPAddress)
 {
     (void)aConnectionManager;
 
@@ -617,7 +617,7 @@ void Controller :: ConnectionManagerDidResolve(Common::ConnectionManagerBasis &a
     }
 }
 
-void Controller :: ConnectionManagerDidNotResolve(Common::ConnectionManagerBasis &aConnectionManager, const char *aHost, const Common::Error &aError)
+void Controller :: ConnectionManagerDidNotResolve(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, const char *aHost, const Common::Error &aError)
 {
     (void)aConnectionManager;
 
@@ -713,7 +713,7 @@ void Controller :: ConnectionManagerDidNotAccept(ConnectionManager &aConnectionM
 
 // Disconnect
 
-void Controller :: ConnectionManagerWillDisconnect(Common::ConnectionManagerBasis &aConnectionManager, CFURLRef aURLRef)
+void Controller :: ConnectionManagerWillDisconnect(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, CFURLRef aURLRef)
 {
     (void)aConnectionManager;
 
@@ -723,7 +723,7 @@ void Controller :: ConnectionManagerWillDisconnect(Common::ConnectionManagerBasi
     }
 }
 
-void Controller :: ConnectionManagerDidDisconnect(Common::ConnectionManagerBasis &aConnectionManager, CFURLRef aURLRef, const Common::Error &aError)
+void Controller :: ConnectionManagerDidDisconnect(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, CFURLRef aURLRef, const Common::Error &aError)
 {
     (void)aConnectionManager;
 
@@ -733,7 +733,7 @@ void Controller :: ConnectionManagerDidDisconnect(Common::ConnectionManagerBasis
     }
 }
 
-void Controller :: ConnectionManagerDidNotDisconnect(Common::ConnectionManagerBasis &aConnectionManager, CFURLRef aURLRef, const Common::Error &aError)
+void Controller :: ConnectionManagerDidNotDisconnect(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, CFURLRef aURLRef, const Common::Error &aError)
 {
     (void)aConnectionManager;
 
@@ -745,7 +745,7 @@ void Controller :: ConnectionManagerDidNotDisconnect(Common::ConnectionManagerBa
 
 // Error
 
-void Controller :: ConnectionManagerError(Common::ConnectionManagerBasis &aConnectionManager, const Common::Error &aError)
+void Controller :: ConnectionManagerError(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, const Common::Error &aError)
 {
     (void)aConnectionManager;
 

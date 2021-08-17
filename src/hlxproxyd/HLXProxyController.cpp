@@ -788,9 +788,10 @@ void Controller :: ConnectionManagerDidNotAccept(Server::ConnectionManager &aCon
  *
  */
 void
-Controller :: ConnectionManagerWillResolve(Common::ConnectionManagerBasis &aConnectionManager, const char *aHost)
+Controller :: ConnectionManagerWillResolve(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, const char *aHost)
 {
     (void)aConnectionManager;
+    (void)aRoles;
 
     if (mDelegate != nullptr)
     {
@@ -811,9 +812,10 @@ Controller :: ConnectionManagerWillResolve(Common::ConnectionManagerBasis &aConn
  *
  */
 void
-Controller :: ConnectionManagerIsResolving(Common::ConnectionManagerBasis &aConnectionManager, const char *aHost)
+Controller :: ConnectionManagerIsResolving(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, const char *aHost)
 {
     (void)aConnectionManager;
+    (void)aRoles;
 
     if (mDelegate != nullptr)
     {
@@ -842,9 +844,10 @@ Controller :: ConnectionManagerIsResolving(Common::ConnectionManagerBasis &aConn
  *
  */
 void
-Controller :: ConnectionManagerDidResolve(Common::ConnectionManagerBasis &aConnectionManager, const char *aHost, const Common::IPAddress &aIPAddress)
+Controller :: ConnectionManagerDidResolve(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, const char *aHost, const Common::IPAddress &aIPAddress)
 {
     (void)aConnectionManager;
+    (void)aRoles;
 
     if (mDelegate != nullptr)
     {
@@ -868,9 +871,10 @@ Controller :: ConnectionManagerDidResolve(Common::ConnectionManagerBasis &aConne
  *
  */
 void
-Controller :: ConnectionManagerDidNotResolve(Common::ConnectionManagerBasis &aConnectionManager, const char *aHost, const Common::Error &aError)
+Controller :: ConnectionManagerDidNotResolve(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, const char *aHost, const Common::Error &aError)
 {
     (void)aConnectionManager;
+    (void)aRoles;
 
     if (mDelegate != nullptr)
     {
@@ -892,13 +896,13 @@ Controller :: ConnectionManagerDidNotResolve(Common::ConnectionManagerBasis &aCo
  *
  */
 void
-Controller :: ConnectionManagerWillDisconnect(Common::ConnectionManagerBasis &aConnectionManager, CFURLRef aURLRef)
+Controller :: ConnectionManagerWillDisconnect(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, CFURLRef aURLRef)
 {
     (void)aConnectionManager;
 
     if (mDelegate != nullptr)
     {
-        mDelegate->ControllerWillDisconnect(*this, aURLRef);
+        mDelegate->ControllerWillDisconnect(*this, aRoles, aURLRef);
     }
 }
 
@@ -916,13 +920,13 @@ Controller :: ConnectionManagerWillDisconnect(Common::ConnectionManagerBasis &aC
  *
  */
 void
-Controller :: ConnectionManagerDidDisconnect(Common::ConnectionManagerBasis &aConnectionManager, CFURLRef aURLRef, const Common::Error &aError)
+Controller :: ConnectionManagerDidDisconnect(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, CFURLRef aURLRef, const Common::Error &aError)
 {
     (void)aConnectionManager;
 
     if (mDelegate != nullptr)
     {
-        mDelegate->ControllerDidDisconnect(*this, aURLRef, aError);
+        mDelegate->ControllerDidDisconnect(*this, aRoles, aURLRef, aError);
     }
 }
 
@@ -941,13 +945,13 @@ Controller :: ConnectionManagerDidDisconnect(Common::ConnectionManagerBasis &aCo
  *
  */
 void
-Controller :: ConnectionManagerDidNotDisconnect(Common::ConnectionManagerBasis &aConnectionManager, CFURLRef aURLRef, const Common::Error &aError)
+Controller :: ConnectionManagerDidNotDisconnect(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, CFURLRef aURLRef, const Common::Error &aError)
 {
     (void)aConnectionManager;
 
     if (mDelegate != nullptr)
     {
-        mDelegate->ControllerDidNotDisconnect(*this, aURLRef, aError);
+        mDelegate->ControllerDidNotDisconnect(*this, aRoles, aURLRef, aError);
     }
 }
 
@@ -969,13 +973,13 @@ Controller :: ConnectionManagerDidNotDisconnect(Common::ConnectionManagerBasis &
  *
  */
 void
-Controller :: ConnectionManagerError(Common::ConnectionManagerBasis &aConnectionManager, const Common::Error &aError)
+Controller :: ConnectionManagerError(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, const Common::Error &aError)
 {
     (void)aConnectionManager;
 
     if (mDelegate != nullptr)
     {
-        mDelegate->ControllerError(*this, aError);
+        mDelegate->ControllerError(*this, aRoles, aError);
     }
 }
 

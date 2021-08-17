@@ -95,10 +95,11 @@ ConnectionManager :: ConnectionManager(void) :
 Status
 ConnectionManager :: Init(const RunLoopParameters &aRunLoopParameters)
 {
+    static const ConnectionManagerBasis::Roles kRoles = kRoleServer;
     Status lRetval = kStatus_Success;
 
 
-    lRetval = ConnectionManagerBasis::Init(aRunLoopParameters);
+    lRetval = ConnectionManagerBasis::Init(kRoles, aRunLoopParameters);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mListenerFactory.Init(aRunLoopParameters);
@@ -511,7 +512,7 @@ ConnectionManager :: OnWillResolve(const char *aHost)
 
         while (begin != end)
         {
-            (*begin)->ConnectionManagerWillResolve(*this, aHost);
+            (*begin)->ConnectionManagerWillResolve(*this, GetRoles(), aHost);
 
             ++begin;
         }
@@ -528,7 +529,7 @@ ConnectionManager :: OnIsResolving(const char *aHost)
 
         while (begin != end)
         {
-            (*begin)->ConnectionManagerIsResolving(*this, aHost);
+            (*begin)->ConnectionManagerIsResolving(*this, GetRoles(), aHost);
 
             ++begin;
         }
@@ -545,7 +546,7 @@ ConnectionManager :: OnDidResolve(const char *aHost, const IPAddress &aIPAddress
 
         while (begin != end)
         {
-            (*begin)->ConnectionManagerDidResolve(*this, aHost, aIPAddress);
+            (*begin)->ConnectionManagerDidResolve(*this, GetRoles(), aHost, aIPAddress);
 
             ++begin;
         }
@@ -562,7 +563,7 @@ ConnectionManager :: OnDidNotResolve(const char *aHost, const Common::Error &aEr
 
         while (begin != end)
         {
-            (*begin)->ConnectionManagerDidNotResolve(*this, aHost, aError);
+            (*begin)->ConnectionManagerDidNotResolve(*this, GetRoles(), aHost, aError);
 
             ++begin;
         }
@@ -650,7 +651,7 @@ void ConnectionManager :: ListenerError(ListenerBasis &aListener, const Common::
 
         while (begin != end)
         {
-            (*begin)->ConnectionManagerError(*this, aError);
+            (*begin)->ConnectionManagerError(*this, GetRoles(), aError);
 
             ++begin;
         }
@@ -822,7 +823,7 @@ ConnectionManager :: ConnectionWillDisconnect(ConnectionBasis &aConnection, CFUR
 
         while (begin != end)
         {
-            (*begin)->ConnectionManagerWillDisconnect(*this, aURLRef);
+            (*begin)->ConnectionManagerWillDisconnect(*this, GetRoles(), aURLRef);
             ++begin;
         }
     }
@@ -852,7 +853,7 @@ ConnectionManager :: ConnectionDidDisconnect(ConnectionBasis &aConnection, CFURL
 
         while (begin != end)
         {
-            (*begin)->ConnectionManagerDidDisconnect(*this, aURLRef, aError);
+            (*begin)->ConnectionManagerDidDisconnect(*this, GetRoles(), aURLRef, aError);
 
             ++begin;
         }
@@ -891,7 +892,7 @@ ConnectionManager :: ConnectionDidNotDisconnect(ConnectionBasis &aConnection, CF
 
         while (begin != end)
         {
-            (*begin)->ConnectionManagerDidNotDisconnect(*this, aURLRef, aError);
+            (*begin)->ConnectionManagerDidNotDisconnect(*this, GetRoles(), aURLRef, aError);
 
             ++begin;
         }
@@ -927,7 +928,7 @@ ConnectionManager :: ConnectionError(ConnectionBasis &aConnection, const Common:
 
         while (begin != end)
         {
-            (*begin)->ConnectionManagerError(*this, aError);
+            (*begin)->ConnectionManagerError(*this, GetRoles(), aError);
 
             ++begin;
         }

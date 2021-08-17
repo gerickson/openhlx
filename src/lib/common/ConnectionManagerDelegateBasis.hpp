@@ -28,6 +28,7 @@
 
 #include <CoreFoundation/CFURL.h>
 
+#include <OpenHLX/Common/ConnectionManagerBasis.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/IPAddress.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
@@ -38,8 +39,6 @@ namespace HLX
 
 namespace Common
 {
-
-class ConnectionManagerBasis;
 
 /**
  *  @brief
@@ -72,7 +71,7 @@ public:
      *                                  name that will resolve.
      *
      */
-    virtual void ConnectionManagerWillResolve(ConnectionManagerBasis &aConnectionManager, const char *aHost) = 0;
+    virtual void ConnectionManagerWillResolve(ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, const char *aHost) = 0;
 
     /**
      *  @brief
@@ -86,7 +85,7 @@ public:
      *                                  name that is resolving.
      *
      */
-    virtual void ConnectionManagerIsResolving(ConnectionManagerBasis &aConnectionManager, const char *aHost) = 0;
+    virtual void ConnectionManagerIsResolving(ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, const char *aHost) = 0;
 
     /**
      *  @brief
@@ -108,7 +107,7 @@ public:
      *                                  resolved to.
      *
      */
-    virtual void ConnectionManagerDidResolve(ConnectionManagerBasis &aConnectionManager, const char *aHost, const Common::IPAddress &aIPAddress) = 0;
+    virtual void ConnectionManagerDidResolve(ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, const char *aHost, const Common::IPAddress &aIPAddress) = 0;
 
     /**
      *  @brief
@@ -125,7 +124,7 @@ public:
      *                                  resolution.
      *
      */
-    virtual void ConnectionManagerDidNotResolve(ConnectionManagerBasis &aConnectionManager, const char *aHost, const Common::Error &aError) = 0;
+    virtual void ConnectionManagerDidNotResolve(ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, const char *aHost, const Common::Error &aError) = 0;
 
     // Disconnect
 
@@ -140,7 +139,7 @@ public:
      *                                  server.
      *
      */
-    virtual void ConnectionManagerWillDisconnect(ConnectionManagerBasis &aConnectionManager, CFURLRef aURLRef) = 0;
+    virtual void ConnectionManagerWillDisconnect(ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, CFURLRef aURLRef) = 0;
 
     /**
      *  @brief
@@ -155,7 +154,7 @@ public:
      *                                  associated with the disconnection.
      *
      */
-    virtual void ConnectionManagerDidDisconnect(ConnectionManagerBasis &aConnectionManager, CFURLRef aURLRef, const Common::Error &aError) = 0;
+    virtual void ConnectionManagerDidDisconnect(ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, CFURLRef aURLRef, const Common::Error &aError) = 0;
 
     /**
      *  @brief
@@ -171,7 +170,7 @@ public:
      *                                  disconnection.
      *
      */
-    virtual void ConnectionManagerDidNotDisconnect(ConnectionManagerBasis &aConnectionManager, CFURLRef aURLRef, const Common::Error &aError) = 0;
+    virtual void ConnectionManagerDidNotDisconnect(ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, CFURLRef aURLRef, const Common::Error &aError) = 0;
 
     // Error
 
@@ -190,7 +189,7 @@ public:
      *                                  associated with the event.
      *
      */
-    virtual void ConnectionManagerError(ConnectionManagerBasis &aConnectionManager, const Common::Error &aError) = 0;
+    virtual void ConnectionManagerError(ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, const Common::Error &aError) = 0;
 };
 
 }; // namespace Common

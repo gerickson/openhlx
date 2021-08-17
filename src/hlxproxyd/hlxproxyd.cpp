@@ -179,6 +179,10 @@ public:
     Status GetStatus(void) const;
     void SetStatus(const Status &aStatus);
 
+    static bool IsRole(const Roles &aFirst, const Roles &aSecond);
+    static bool IsClient(const Roles &aRole);
+    static bool IsServer(const Roles &aRole);
+
 private:
     // Resolve
 
@@ -210,9 +214,9 @@ private:
 
     // Disconnect
 
-    void ControllerWillDisconnect(Controller &aController, CFURLRef aURLRef) final;
-    void ControllerDidDisconnect(Controller &aController, CFURLRef aURLRef, const Error &aError) final;
-    void ControllerDidNotDisconnect(Controller &aController, CFURLRef aURLRef, const Error &aError) final;
+    void ControllerWillDisconnect(Controller &aController, const Roles &aRoles, CFURLRef aURLRef) final;
+    void ControllerDidDisconnect(Controller &aController, const Roles &aRoles, CFURLRef aURLRef, const Error &aError) final;
+    void ControllerDidNotDisconnect(Controller &aController, const Roles &aRoles, CFURLRef aURLRef, const Error &aError) final;
 
     // Server-facing Client Refresh / Reload
 
@@ -227,7 +231,7 @@ private:
 
     // Error
 
-    void ControllerError(Controller &aController, const Error &aError) final;
+    void ControllerError(Controller &aController, const Roles &aRoles, const Error &aError) final;
 
     static void OnSignal(int aSignal);
 
@@ -236,6 +240,34 @@ private:
     HLX::Proxy::Controller           mHLXProxyController;
     Status                           mStatus;
 };
+
+static const char *
+GetString(const HLX::Proxy::ControllerDelegate::Roles &aRoles, const bool &aTitleCase)
+{
+    constexpr auto kRoleClient = HLX::Common::ConnectionManagerBasis::kRoleClient;
+    constexpr auto kRoleServer = HLX::Common::ConnectionManagerBasis::kRoleServer;
+    const char *   lRetval     = nullptr;
+
+
+    if ((aRoles & kRoleClient) == kRoleClient)
+    {
+        lRetval = ((aTitleCase) ? "Client" : "client");
+    }
+    else if ((aRoles & kRoleServer) == kRoleServer)
+    {
+        lRetval = ((aTitleCase) ? "Server" : "server");
+    }
+
+    return (lRetval);
+}
+
+static const char *
+GetString(const HLX::Proxy::ControllerDelegate::Roles &aRoles)
+{
+    static const bool kTitleCase = true;
+
+    return (GetString(aRoles, !kTitleCase));
+}
 
 HLXProxy :: HLXProxy(void) :
     ControllerDelegate(),
@@ -347,6 +379,28 @@ Status HLXProxy :: GetStatus(void) const
 void HLXProxy :: SetStatus(const Status &aStatus)
 {
     mStatus = aStatus;
+}
+
+bool
+HLXProxy :: IsRole(const Roles &aFirst, const Roles &aSecond)
+{
+    return ((aFirst & aSecond) == aSecond);
+}
+
+bool
+HLXProxy :: IsClient(const Roles &aRole)
+{
+    constexpr auto kRoleClient = HLX::Common::ConnectionManagerBasis::kRoleClient;
+
+    return (IsRole(aRole, kRoleClient));
+}
+
+bool
+HLXProxy :: IsServer(const Roles &aRole)
+{
+    constexpr auto kRoleServer = HLX::Common::ConnectionManagerBasis::kRoleServer;
+
+    return (IsRole(aRole, kRoleServer));
 }
 
 // Controller Delegate Methods
@@ -495,24 +549,24 @@ void HLXProxy :: ControllerDidNotConnect(Controller &aController, CFURLRef aURLR
 
 // Disconnect
 
-void HLXProxy :: ControllerWillDisconnect(Controller &aController, CFURLRef aURLRef)
+void HLXProxy :: ControllerWillDisconnect(Controller &aController, const Roles &aRoles, CFURLRef aURLRef)
 {
     (void)aController;
 
-    Log::Info().Write("Will disconnect from %s.\n", CFString(CFURLGetString(aURLRef)).GetCString());
+    Log::Info().Write("Will disconnect %s from %s.\n", GetString(aRoles), CFString(CFURLGetString(aURLRef)).GetCString());
 }
 
-void HLXProxy :: ControllerDidDisconnect(Controller &aController, CFURLRef aURLRef, const Error &aError)
+void HLXProxy :: ControllerDidDisconnect(Controller &aController, const Roles &aRoles, CFURLRef aURLRef, const Error &aError)
 {
     (void)aController;
 
     if (aError >= kStatus_Success)
     {
-        Log::Info().Write("Disconnected from %s.\n", CFString(CFURLGetString(aURLRef)).GetCString());
+        Log::Info().Write("Disconnected %s from %s.\n", GetString(aRoles), CFString(CFURLGetString(aURLRef)).GetCString());
     }
     else
     {
-        Log::Info().Write("Disconnected from %s: %d (%s).\n", CFString(CFURLGetString(aURLRef)).GetCString(), aError, strerror(-aError));
+        Log::Info().Write("Disconnected %s from %s: %d (%s).\n", GetString(aRoles), CFString(CFURLGetString(aURLRef)).GetCString(), aError, strerror(-aError));
     }
 
     // Only call stop if we have non-error status; otherwise a
@@ -542,11 +596,11 @@ void HLXProxy :: ControllerDidDisconnect(Controller &aController, CFURLRef aURLR
     return;
 }
 
-void HLXProxy :: ControllerDidNotDisconnect(Controller &aController, CFURLRef aURLRef, const Error &aError)
+void HLXProxy :: ControllerDidNotDisconnect(Controller &aController, const Roles &aRoles, CFURLRef aURLRef, const Error &aError)
 {
     (void)aController;
 
-    Log::Error().Write("Did not disconnect from %s: %d.\n", CFString(CFURLGetString(aURLRef)).GetCString(), aError);
+    Log::Error().Write("Did not disconnect %s from %s: %d.\n", GetString(aRoles), CFString(CFURLGetString(aURLRef)).GetCString(), aError);
 }
 
 // Server-facing Client Refresh / Reload
@@ -603,11 +657,14 @@ void HLXProxy :: ControllerStateDidChange(Controller &aController, const Client:
 
 // Error
 
-void HLXProxy :: ControllerError(Controller &aController, const Error &aError)
+void HLXProxy :: ControllerError(Controller &aController, const Roles &aRoles, const Error &aError)
 {
     (void)aController;
 
-    Log::Error().Write("Error: %d (%s).\n", aError, strerror(-aError));
+    Log::Error().Write("Proxy %s error: %d (%s).\n",
+                       GetString(aRoles),
+                       aError,
+                       strerror(-aError));
 
     switch (aError)
     {

@@ -57,6 +57,9 @@ class Controller;
 class ControllerDelegate
 {
 public:
+    typedef Common::ConnectionManagerBasis::Roles Roles;
+
+public:
     ControllerDelegate(void) = default;
     virtual ~ControllerDelegate(void) = default;
 
@@ -209,7 +212,7 @@ public:
      *  @param[in]  aURLRef      The URL associated with the peer server.
      *
      */
-    virtual void ControllerWillDisconnect(Controller &aController, CFURLRef aURLRef) = 0;
+    virtual void ControllerWillDisconnect(Controller &aController, const Roles &aRoles, CFURLRef aURLRef) = 0;
 
     /**
      *  @brief
@@ -223,7 +226,7 @@ public:
      *                           associated with the disconnection.
      *
      */
-    virtual void ControllerDidDisconnect(Controller &aController, CFURLRef aURLRef, const Common::Error &aError) = 0;
+    virtual void ControllerDidDisconnect(Controller &aController, const Roles &aRoles, CFURLRef aURLRef, const Common::Error &aError) = 0;
 
     /**
      *  @brief
@@ -238,7 +241,7 @@ public:
      *                           disconnection.
      *
      */
-    virtual void ControllerDidNotDisconnect(Controller &aController, CFURLRef aURLRef, const Common::Error &aError) = 0;
+    virtual void ControllerDidNotDisconnect(Controller &aController, const Roles &aRoles, CFURLRef aURLRef, const Common::Error &aError) = 0;
 
     // Server-facing Client Refresh Delegation Methods
 
@@ -327,7 +330,7 @@ public:
      *                           associated with the event.
      *
      */
-    virtual void ControllerError(Controller &aController, const Common::Error &aError) = 0;
+    virtual void ControllerError(Controller &aController, const Roles &aRoles, const Common::Error &aError) = 0;
 };
 
 }; // namespace Proxy
