@@ -36,7 +36,6 @@
 #include <OpenHLX/Utilities/Assert.hpp>
 #include <OpenHLX/Utilities/ElementsOf.hpp>
 
-#include "ProxyCommand.hpp"
 #include "SourcesController.hpp"
 #include "ZonesController.hpp"
 
@@ -2061,15 +2060,15 @@ void GroupsController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aC
     }
     else if (lStatus == kError_NotInitialized)
     {
-        lStatus = ProxyCommand(aConnection,
-                               aBuffer,
-                               aSize,
-                               aMatches,
-                               kQueryResponse,
-                               GroupsController::QueryCompleteHandler,
-                               GroupsController::CommandErrorHandler,
-                               GroupsController::QueryRequestReceivedHandler,
-                               this);
+        lStatus = ProxyObservationCommand(aConnection,
+                                          aBuffer,
+                                          aSize,
+                                          aMatches,
+                                          kQueryResponse,
+                                          GroupsController::QueryCompleteHandler,
+                                          GroupsController::CommandErrorHandler,
+                                          GroupsController::QueryRequestReceivedHandler,
+                                          this);
         nlREQUIRE_SUCCESS(lStatus, exit);
     }
 

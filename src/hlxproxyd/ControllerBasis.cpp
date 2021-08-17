@@ -123,15 +123,15 @@ ControllerBasis :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnectio
 }
 
 Status
-ControllerBasis :: ProxyCommand(Server::ConnectionBasis &aConnection,
-                                const uint8_t *aBuffer,
-                                const size_t &aSize,
-                                const Common::RegularExpression::Matches &aMatches,
-                                const Client::Command::ResponseBasis &aResponse,
-                                Client::CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
-                                Client::CommandManager::OnCommandErrorFunc aOnCommandErrorHandler,
-                                Server::CommandManager::OnRequestReceivedFunc aOnRequestReceivedHandler,
-                                void *aContext)
+ControllerBasis :: ProxyObservationCommand(Server::ConnectionBasis &aConnection,
+                                           const uint8_t *aBuffer,
+                                           const size_t &aSize,
+                                           const Common::RegularExpression::Matches &aMatches,
+                                           const Client::Command::ResponseBasis &aResponse,
+                                           Client::CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
+                                           Client::CommandManager::OnCommandErrorFunc aOnCommandErrorHandler,
+                                           Server::CommandManager::OnRequestReceivedFunc aOnRequestReceivedHandler,
+                                           void *aContext)
 {
     DeclareScopedFunctionTracer(lTracer);
     Client::Command::ExchangeBasis::MutableCountedPointer lCommand;

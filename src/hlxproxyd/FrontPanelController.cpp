@@ -35,8 +35,6 @@
 #include <OpenHLX/Utilities/Assert.hpp>
 #include <OpenHLX/Utilities/ElementsOf.hpp>
 
-#include "ProxyCommand.hpp"
-
 
 using namespace HLX::Client;
 using namespace HLX::Common;
@@ -777,15 +775,15 @@ void FrontPanelController :: QueryRequestReceivedHandler(Server::ConnectionBasis
     }
     else if (lStatus == kError_NotInitialized)
     {
-        lStatus = ProxyCommand(aConnection,
-                               aBuffer,
-                               aSize,
-                               aMatches,
-                               kQueryResponse,
-                               FrontPanelController::QueryCompleteHandler,
-                               FrontPanelController::CommandErrorHandler,
-                               FrontPanelController::QueryRequestReceivedHandler,
-                               this);
+        lStatus = ProxyObservationCommand(aConnection,
+                                          aBuffer,
+                                          aSize,
+                                          aMatches,
+                                          kQueryResponse,
+                                          FrontPanelController::QueryCompleteHandler,
+                                          FrontPanelController::CommandErrorHandler,
+                                          FrontPanelController::QueryRequestReceivedHandler,
+                                          this);
         nlREQUIRE_SUCCESS(lStatus, exit);
     }
 

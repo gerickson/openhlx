@@ -34,8 +34,6 @@
 #include <OpenHLX/Utilities/Assert.hpp>
 #include <OpenHLX/Utilities/ElementsOf.hpp>
 
-#include "ProxyCommand.hpp"
-
 
 using namespace HLX::Client;
 using namespace HLX::Common;
@@ -984,15 +982,15 @@ void EqualizerPresetsController :: QueryRequestReceivedHandler(Server::Connectio
     }
     else if (lStatus == kError_NotInitialized)
     {
-        lStatus = ProxyCommand(aConnection,
-                               aBuffer,
-                               aSize,
-                               aMatches,
-                               kQueryResponse,
-                               EqualizerPresetsController::QueryCompleteHandler,
-                               EqualizerPresetsController::CommandErrorHandler,
-                               EqualizerPresetsController::QueryRequestReceivedHandler,
-                               this);
+        lStatus = ProxyObservationCommand(aConnection,
+                                          aBuffer,
+                                          aSize,
+                                          aMatches,
+                                          kQueryResponse,
+                                          EqualizerPresetsController::QueryCompleteHandler,
+                                          EqualizerPresetsController::CommandErrorHandler,
+                                          EqualizerPresetsController::QueryRequestReceivedHandler,
+                                          this);
         nlREQUIRE_SUCCESS(lStatus, exit);
     }
 

@@ -62,15 +62,15 @@ public:
 
     virtual Common::Status QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
 
-    Common::Status ProxyCommand(Server::ConnectionBasis &aConnection,
-                                const uint8_t *aBuffer,
-                                const size_t &aSize,
-                                const Common::RegularExpression::Matches &aMatches,
-                                const Client::Command::ResponseBasis &aResponse,
-                                Client::CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
-                                Client::CommandManager::OnCommandErrorFunc aOnCommandErrorHandler,
-                                Server::CommandManager::OnRequestReceivedFunc aOnRequestReceivedHandler,
-                                void *aContext);
+    Common::Status ProxyObservationCommand(Server::ConnectionBasis &aConnection,
+                                           const uint8_t *aBuffer,
+                                           const size_t &aSize,
+                                           const Common::RegularExpression::Matches &aMatches,
+                                           const Client::Command::ResponseBasis &aResponse,
+                                           Client::CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
+                                           Client::CommandManager::OnCommandErrorFunc aOnCommandErrorHandler,
+                                           Server::CommandManager::OnRequestReceivedFunc aOnRequestReceivedHandler,
+                                           void *aContext);
 
 protected:
     ControllerBasis(void);

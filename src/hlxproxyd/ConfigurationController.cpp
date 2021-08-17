@@ -34,7 +34,6 @@
 #include <OpenHLX/Utilities/ElementsOf.hpp>
 
 #include "ConfigurationControllerDelegate.hpp"
-#include "ProxyCommand.hpp"
 
 
 using namespace HLX::Common;
@@ -855,20 +854,23 @@ void ConfigurationController :: QueryCurrentRequestReceivedHandler(Server::Conne
     }
     else if (lStatus == kError_NotInitialized)
     {
+        // There is no static query current configuration response, so
+        // we instantiate and initialize one on the stack.
+
         Client::Command::Configuration::QueryCurrentResponse lQueryCurrentResponse;
 
         lStatus = lQueryCurrentResponse.Init();
         nlREQUIRE_SUCCESS(lStatus, exit);
 
-        lStatus = ProxyCommand(aConnection,
-                               aBuffer,
-                               aSize,
-                               aMatches,
-                               lQueryCurrentResponse,
-                               ConfigurationController::QueryCompleteHandler,
-                               ConfigurationController::CommandErrorHandler,
-                               ConfigurationController::QueryCurrentRequestReceivedHandler,
-                               this);
+        lStatus = ProxyObservationCommand(aConnection,
+                                          aBuffer,
+                                          aSize,
+                                          aMatches,
+                                          lQueryCurrentResponse,
+                                          ConfigurationController::QueryCompleteHandler,
+                                          ConfigurationController::CommandErrorHandler,
+                                          ConfigurationController::QueryCurrentRequestReceivedHandler,
+                                          this);
         nlREQUIRE_SUCCESS(lStatus, exit);
     }
 

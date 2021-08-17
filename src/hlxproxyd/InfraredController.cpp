@@ -35,8 +35,6 @@
 #include <OpenHLX/Utilities/Assert.hpp>
 #include <OpenHLX/Utilities/ElementsOf.hpp>
 
-#include "ProxyCommand.hpp"
-
 
 using namespace HLX::Client;
 using namespace HLX::Common;
@@ -616,15 +614,15 @@ void InfraredController :: QueryRequestReceivedHandler(Server::ConnectionBasis &
     }
     else if (lStatus == kError_NotInitialized)
     {
-        lStatus = ProxyCommand(aConnection,
-                               aBuffer,
-                               aSize,
-                               aMatches,
-                               kQueryResponse,
-                               InfraredController::QueryCompleteHandler,
-                               InfraredController::CommandErrorHandler,
-                               InfraredController::QueryRequestReceivedHandler,
-                               this);
+        lStatus = ProxyObservationCommand(aConnection,
+                                          aBuffer,
+                                          aSize,
+                                          aMatches,
+                                          kQueryResponse,
+                                          InfraredController::QueryCompleteHandler,
+                                          InfraredController::CommandErrorHandler,
+                                          InfraredController::QueryRequestReceivedHandler,
+                                          this);
         nlREQUIRE_SUCCESS(lStatus, exit);
     }
 

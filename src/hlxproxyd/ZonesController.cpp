@@ -2554,15 +2554,15 @@ void ZonesController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aCo
     }
     else if (lStatus == kError_NotInitialized)
     {
-        lStatus = ProxyCommand(aConnection,
-                               aBuffer,
-                               aSize,
-                               aMatches,
-                               kQueryResponse,
-                               ZonesController::QueryCompleteHandler,
-                               ZonesController::CommandErrorHandler,
-                               ZonesController::QueryRequestReceivedHandler,
-                               this);
+        lStatus = ProxyObservationCommand(aConnection,
+                                          aBuffer,
+                                          aSize,
+                                          aMatches,
+                                          kQueryResponse,
+                                          ZonesController::QueryCompleteHandler,
+                                          ZonesController::CommandErrorHandler,
+                                          ZonesController::QueryRequestReceivedHandler,
+                                          this);
         nlREQUIRE_SUCCESS(lStatus, exit);
     }
 
@@ -2616,15 +2616,15 @@ void ZonesController :: QueryMuteRequestReceivedHandler(Server::ConnectionBasis 
     }
     else if (lStatus == kError_NotInitialized)
     {
-        lStatus = ProxyCommand(aConnection,
-                               aBuffer,
-                               aSize,
-                               aMatches,
-                               kMuteResponse,
-                               ZonesController::SetMuteCompleteHandler,
-                               ZonesController::CommandErrorHandler,
-                               ZonesController::QueryMuteRequestReceivedHandler,
-                               this);
+        lStatus = ProxyObservationCommand(aConnection,
+                                          aBuffer,
+                                          aSize,
+                                          aMatches,
+                                          kMuteResponse,
+                                          ZonesController::SetMuteCompleteHandler,
+                                          ZonesController::CommandErrorHandler,
+                                          ZonesController::QueryMuteRequestReceivedHandler,
+                                          this);
         nlREQUIRE_SUCCESS(lStatus, exit);
     }
 
@@ -2678,15 +2678,15 @@ void ZonesController :: QuerySourceRequestReceivedHandler(Server::ConnectionBasi
     }
     else if (lStatus == kError_NotInitialized)
     {
-        lStatus = ProxyCommand(aConnection,
-                               aBuffer,
-                               aSize,
-                               aMatches,
-                               kSourceResponse,
-                               ZonesController::SetSourceCompleteHandler,
-                               ZonesController::CommandErrorHandler,
-                               ZonesController::QuerySourceRequestReceivedHandler,
-                               this);
+        lStatus = ProxyObservationCommand(aConnection,
+                                          aBuffer,
+                                          aSize,
+                                          aMatches,
+                                          kSourceResponse,
+                                          ZonesController::SetSourceCompleteHandler,
+                                          ZonesController::CommandErrorHandler,
+                                          ZonesController::QuerySourceRequestReceivedHandler,
+                                          this);
         nlREQUIRE_SUCCESS(lStatus, exit);
     }
 
@@ -2753,15 +2753,15 @@ void ZonesController :: QueryVolumeRequestReceivedHandler(Server::ConnectionBasi
     }
     else if (lStatus == kError_NotInitialized)
     {
-        lStatus = ProxyCommand(aConnection,
-                               aBuffer,
-                               aSize,
-                               aMatches,
-                               kVolumeResponse,
-                               ZonesController::SetVolumeCompleteHandler,
-                               ZonesController::CommandErrorHandler,
-                               ZonesController::QueryVolumeRequestReceivedHandler,
-                               this);
+        lStatus = ProxyObservationCommand(aConnection,
+                                          aBuffer,
+                                          aSize,
+                                          aMatches,
+                                          kVolumeResponse,
+                                          ZonesController::SetVolumeCompleteHandler,
+                                          ZonesController::CommandErrorHandler,
+                                          ZonesController::QueryVolumeRequestReceivedHandler,
+                                          this);
         nlREQUIRE_SUCCESS(lStatus, exit);
     }
 
@@ -2809,6 +2809,31 @@ void ZonesController :: SetVolumeRequestReceivedHandler(Server::ConnectionBasis 
                                       lVolume);
     nlREQUIRE_SUCCESS(lStatus, done);
 
+#if 0
+    // MARK: Proxy server handling path...
+    //
+    // Here, we a fully-formed and mostly-verified command mutation
+    // request. We first send it to the proxied server. When the
+    // response comes back, on success, it will be processed like a
+    // normal volume changed notification with an attendant change to
+    // the proxy data model. On error, it will be processed like a
+    // normal error with the proxy error handler sending the error on
+    // to the original client. On success, since the data model has
+    // already been mutated, there is no further need to peform any
+    // proxy server-side processing. The response is simply sent along
+    // to the originally-initiating client.
+
+    lStatus = ProxyMutationCommand(aConnection,
+                                   aBuffer,
+                                   aSize,
+                                   aMatches,
+                                   ZonesController::SetVolumeCompleteHandler,
+                                   ZonesController::CommandErrorHandler,
+                                   this);
+    nlREQUIRE_SUCCESS(lStatus, exit);
+#else
+    // MARK: Normal server handlng path...
+
     lResponseBuffer.reset(new ConnectionBuffer);
     nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
 
@@ -2839,6 +2864,7 @@ void ZonesController :: SetVolumeRequestReceivedHandler(Server::ConnectionBasis 
         lStatus = SendErrorResponse(aConnection);
         nlVERIFY_SUCCESS(lStatus);
     }
+#endif
 
     return;
 }

@@ -35,8 +35,6 @@
 #include <OpenHLX/Utilities/Assert.hpp>
 #include <OpenHLX/Utilities/ElementsOf.hpp>
 
-#include "ProxyCommand.hpp"
-
 
 using namespace HLX::Client;
 using namespace HLX::Common;
