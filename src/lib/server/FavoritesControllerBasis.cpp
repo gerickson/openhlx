@@ -106,7 +106,22 @@ done:
 // MARK: Observation (Query) Command Request Instance Handlers
 
 Status
-FavoritesControllerBasis :: HandleQueryReceived(const Model::FavoritesModel::IdentifierType &aFavoriteIdentifier, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+FavoritesControllerBasis :: HandleQueryReceived(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+{
+    Status lRetval = kStatus_Success;
+
+    for (auto lFavoriteIdentifier = IdentifierModel::kIdentifierMin; lFavoriteIdentifier <= mFavoritesMax; lFavoriteIdentifier++)
+    {
+        lRetval = HandleQueryReceived(lFavoriteIdentifier, aBuffer);
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
+
+ done:
+    return (lRetval);
+}
+
+Status
+FavoritesControllerBasis :: HandleQueryReceived(const Model::FavoriteModel::IdentifierType &aFavoriteIdentifier, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     const FavoriteModel *                     lFavoriteModel;
     const char *                              lName;
