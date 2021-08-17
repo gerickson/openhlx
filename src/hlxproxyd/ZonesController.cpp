@@ -2809,7 +2809,7 @@ void ZonesController :: SetVolumeRequestReceivedHandler(Server::ConnectionBasis 
                                       lVolume);
     nlREQUIRE_SUCCESS(lStatus, done);
 
-#if 0
+#if NOT_YET
     // MARK: Proxy server handling path...
     //
     // Here, we a fully-formed and mostly-verified command mutation
@@ -2831,7 +2831,7 @@ void ZonesController :: SetVolumeRequestReceivedHandler(Server::ConnectionBasis 
                                    ZonesController::CommandErrorHandler,
                                    this);
     nlREQUIRE_SUCCESS(lStatus, exit);
-#else
+#else // NOT_YET
     // MARK: Normal server handlng path...
 
     lResponseBuffer.reset(new ConnectionBuffer);
@@ -2864,7 +2864,7 @@ void ZonesController :: SetVolumeRequestReceivedHandler(Server::ConnectionBasis 
         lStatus = SendErrorResponse(aConnection);
         nlVERIFY_SUCCESS(lStatus);
     }
-#endif
+#endif // NOT_YET
 
     return;
 }
