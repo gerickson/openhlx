@@ -30,6 +30,7 @@
 
 
 using namespace HLX::Common;
+using namespace HLX::Model;
 using namespace HLX::Utilities;
 using namespace Nuovations;
 
@@ -100,6 +101,51 @@ done:
 // MARK: Observation (Query) Command Request Handlers
 
 // MARK: Observation (Query) Command Request Instance Handlers
+
+Status
+SourcesControllerBasis :: HandleQueryReceived(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+{
+    Status lRetval = kStatus_Success;
+
+    for (auto lSourceIdentifier = IdentifierModel::kIdentifierMin; lSourceIdentifier <= mSourcesMax; lSourceIdentifier++)
+    {
+        lRetval = HandleQueryReceived(lSourceIdentifier, aBuffer);
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
+
+ done:
+    return (lRetval);
+}
+
+Status
+SourcesControllerBasis :: HandleQueryReceived(const Model::SourceModel::IdentifierType &aSourceIdentifier, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+{
+    const SourceModel *                       lSourceModel;
+    const char *                              lName;
+    Server::Command::Sources::NameResponse    lResponse;
+    const uint8_t *                           lBuffer;
+    size_t                                    lSize;
+    Status                                    lRetval;
+
+
+    lRetval = mSourcesModel.GetSource(aSourceIdentifier, lSourceModel);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = lSourceModel->GetName(lName);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = lResponse.Init(aSourceIdentifier, lName);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lBuffer = lResponse.GetBuffer();
+    lSize = lResponse.GetSize();
+
+    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
 
 // MARK: Observation (Query) Command Request Class (Static) Handlers
 

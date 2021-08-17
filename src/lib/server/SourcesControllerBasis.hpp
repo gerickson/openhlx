@@ -69,6 +69,9 @@ protected:
 
     // Observation (Query) Command Request Instance Handlers
 
+    Common::Status HandleQueryReceived(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
+    Common::Status HandleQueryReceived(const Model::SourceModel::IdentifierType &aSourceIdentifier, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
+
 protected:
     // Observation (Query) Command Request Class (Static) Handlers
 
