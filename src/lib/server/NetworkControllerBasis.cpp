@@ -24,6 +24,8 @@
 
 #include "NetworkControllerBasis.hpp"
 
+#include <string.h>
+
 #include <LogUtilities/LogUtilities.hpp>
 
 #include <OpenHLX/Utilities/Assert.hpp>
