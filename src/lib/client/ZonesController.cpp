@@ -356,6 +356,84 @@ done:
     return (lRetval);
 }
 
+Status
+ZonesController :: QueryMute(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
+{
+    Client::Command::ExchangeBasis::MutableCountedPointer lCommand;
+    Status                                                lRetval = kStatus_Success;
+
+
+    lRetval = ValidateIdentifier(aZoneIdentifier);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lCommand.reset(new Client::Command::Zones::QueryMute());
+    nlREQUIRE_ACTION(lCommand, done, lRetval = -ENOMEM);
+
+    lRetval = std::static_pointer_cast<Client::Command::Zones::QueryMute>(lCommand)->Init(aZoneIdentifier);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = SendCommand(lCommand,
+                          ZonesController::SetMuteCompleteHandler,
+                          ZonesController::CommandErrorHandler,
+                          this);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
+Status
+ZonesController :: QuerySource(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
+{
+    Client::Command::ExchangeBasis::MutableCountedPointer lCommand;
+    Status                                                lRetval = kStatus_Success;
+
+
+    lRetval = ValidateIdentifier(aZoneIdentifier);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lCommand.reset(new Client::Command::Zones::QuerySource());
+    nlREQUIRE_ACTION(lCommand, done, lRetval = -ENOMEM);
+
+    lRetval = std::static_pointer_cast<Client::Command::Zones::QuerySource>(lCommand)->Init(aZoneIdentifier);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = SendCommand(lCommand,
+                          ZonesController::SetSourceCompleteHandler,
+                          ZonesController::CommandErrorHandler,
+                          this);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
+Status
+ZonesController :: QueryVolume(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
+{
+    Client::Command::ExchangeBasis::MutableCountedPointer lCommand;
+    Status                                                lRetval = kStatus_Success;
+
+
+    lRetval = ValidateIdentifier(aZoneIdentifier);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lCommand.reset(new Client::Command::Zones::QueryVolume());
+    nlREQUIRE_ACTION(lCommand, done, lRetval = -ENOMEM);
+
+    lRetval = std::static_pointer_cast<Client::Command::Zones::QueryVolume>(lCommand)->Init(aZoneIdentifier);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = SendCommand(lCommand,
+                          ZonesController::SetVolumeCompleteHandler,
+                          ZonesController::CommandErrorHandler,
+                          this);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
 /**
  *  @brief
  *    Get the zone model associated with specified zone
@@ -1879,7 +1957,7 @@ ZonesController :: QueryCompleteHandler(Command::ExchangeBasis::MutableCountedPo
     const Command::ResponseBasis * lResponse = aExchange->GetResponse();
     const size_t                   lExpectedMatchCount = lResponse->GetRegularExpression().GetExpectedMatchCount();
     const uint8_t *                lBuffer = lResponse->GetBuffer()->GetHead();
-    IdentifierType                 lZoneIdentifier;
+    ZoneModel::IdentifierType      lZoneIdentifier;
     Status                         lStatus;
 
 
@@ -2735,7 +2813,7 @@ ZonesController :: CommandErrorHandler(Command::ExchangeBasis::MutableCountedPoi
 void
 ZonesController :: BalanceNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    IdentifierType                         lZoneIdentifier;
+    ZoneModel::IdentifierType              lZoneIdentifier;
     BalanceModel::ChannelType              lChannel;
     BalanceModel::BalanceType              lBalance;
     ZoneModel *                            lZoneModel;

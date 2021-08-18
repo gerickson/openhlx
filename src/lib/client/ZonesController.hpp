@@ -74,6 +74,9 @@ public:
 
     Common::Status Query(void);
     Common::Status Query(const IdentifierType &aZoneIdentifier);
+    Common::Status QueryMute(const Model::ZoneModel::IdentifierType &aZoneIdentifier);
+    Common::Status QuerySource(const Model::ZoneModel::IdentifierType &aZoneIdentifier);
+    Common::Status QueryVolume(const Model::ZoneModel::IdentifierType &aZoneIdentifier);
 
     Common::Status GetZone(const IdentifierType &aIdentifier, const Model::ZoneModel *&aModel) const;
 
