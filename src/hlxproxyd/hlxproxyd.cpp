@@ -1111,7 +1111,7 @@ int main(int argc, char * const argv[])
         lStatus = lHLXProxy.Init();
         nlREQUIRE_SUCCESS_ACTION(lStatus, done, lHLXProxy.SetStatus(lStatus));
 
-        if (sListenMaybeURL != NULL)
+        if (sListenMaybeURL != nullptr)
         {
             lStatus = lHLXProxy.Start(sConnectMaybeURL, sListenMaybeURL, lUseIPv6, lUseIPv4);
             nlREQUIRE_SUCCESS_ACTION(lStatus, done, lHLXProxy.SetStatus(lStatus));
