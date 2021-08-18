@@ -491,78 +491,20 @@ SourcesController :: NameNotificationReceivedHandler(const uint8_t *aBuffer, con
 
 void SourcesController :: SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    IdentifierType                           lSourceIdentifier;
-    const char *                             lName;
-    size_t                                   lNameSize;
-    SourceModel *                            lSourceModel;
-    Server::Command::Sources::NameResponse   lNameResponse;
-    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
-    Status                                   lStatus;
-    const uint8_t *                          lBuffer;
-    size_t                                   lSize;
+    Status lStatus;
 
-
-    (void)aSize;
-
-    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Sources::SetNameRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
-
-    // Match 2/3: Source Identifier
-    //
-    // The validity of the source identifier will be range checked at
-    // GetSource below.
-
-    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
-                                                Common::Utilities::Distance(aMatches.at(1)),
-                                                lSourceIdentifier);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    // Match 3/3: Name
-
-    lName = (reinterpret_cast<const char *>(aBuffer) + aMatches.at(2).rm_so);
-    lNameSize = Common::Utilities::Distance(aMatches.at(2));
-
-    lResponseBuffer.reset(new ConnectionBuffer);
-    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
-
-    lStatus = lResponseBuffer->Init();
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    // Get the source model associated with the parsed source
-    // identifier. This will include a range check on the source
-    // identifier.
-
-    lStatus = mSources.GetSource(lSourceIdentifier, lSourceModel);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    // Attempt to set the parsed name. This will include range check
-    // on the name length. If the set name is the same as the current
-    // name, that should still be regarded as a success with a
-    // success, rather than error, response sent.
-
-    lStatus = lSourceModel->SetName(lName, lNameSize);
-    nlREQUIRE(lStatus >= kStatus_Success, done);
-
-    if (lStatus == kStatus_Success)
-    {
-        ;
-    }
-
-    lStatus = lNameResponse.Init(lSourceIdentifier, lName, lNameSize);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lBuffer = lNameResponse.GetBuffer();
-    lSize = lNameResponse.GetSize();
-
-    lStatus = Common::Utilities::Put(*lResponseBuffer.get(), lBuffer, lSize);
+    lStatus = ProxyMutationCommand(aConnection,
+                                   aBuffer,
+                                   aSize,
+                                   aMatches,
+                                   kNameResponse,
+                                   SourcesController::SetNameCompleteHandler,
+                                   SourcesController::CommandErrorHandler,
+                                   this);
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
-    if (lStatus >= kStatus_Success)
-    {
-        lStatus = SendResponse(aConnection, lResponseBuffer);
-        nlVERIFY_SUCCESS(lStatus);
-    }
-    else
+    if (lStatus < kStatus_Success)
     {
         lStatus = SendErrorResponse(aConnection);
         nlVERIFY_SUCCESS(lStatus);
