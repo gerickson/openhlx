@@ -62,15 +62,23 @@ public:
 
     virtual Common::Status QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
 
-    Common::Status ProxyObservationCommand(Server::ConnectionBasis &aConnection,
-                                           const uint8_t *aBuffer,
-                                           const size_t &aSize,
+    Common::Status ProxyObservationCommand(Server::ConnectionBasis &aClientConnection,
+                                           const uint8_t *aRequestBuffer,
+                                           const size_t &aRequestSize,
                                            const Common::RegularExpression::Matches &aMatches,
-                                           const Client::Command::ResponseBasis &aResponse,
+                                           const Client::Command::ResponseBasis &aExpectedResponse,
                                            Client::CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
                                            Client::CommandManager::OnCommandErrorFunc aOnCommandErrorHandler,
                                            Server::CommandManager::OnRequestReceivedFunc aOnRequestReceivedHandler,
                                            void *aContext);
+    Common::Status ProxyMutationCommand(Server::ConnectionBasis &aClientConnection,
+                                        const uint8_t *aRequestBuffer,
+                                        const size_t &aRequestSize,
+                                        const Common::RegularExpression::Matches &aMatches,
+                                        const Client::Command::ResponseBasis &aExpectedResponse,
+                                        Client::CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
+                                        Client::CommandManager::OnCommandErrorFunc aOnCommandErrorHandler,
+                                        void *aContext);
 
 protected:
     ControllerBasis(void);
@@ -78,26 +86,42 @@ protected:
 private:
     // Proxy Handlers
 
-    void ProxyErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange,
-                           const Common::Error &aError,
-                           Server::ConnectionBasis &aConnection,
+    void ProxyErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aClientExchange,
+                           const Common::Error &aClientError,
+                           Server::ConnectionBasis &aClientConnection,
                            Client::CommandManager::OnCommandErrorFunc aOnCommandErrorHandler,
                            void * aContext);
-    void ProxyCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange,
-                              const Common::RegularExpression::Matches &aClientMatches,
-                              Server::ConnectionBasis &aConnection,
-                              const uint8_t *aBuffer,
-                              const size_t &aSize,
-                              const Common::RegularExpression::Matches &aServerMatches,
-                              Client::CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
-                              Server::CommandManager::OnRequestReceivedFunc aOnRequestReceivedHandler,
-                              void * aContext);
+    void ProxyObservationCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aClientExchange,
+                                         const Common::RegularExpression::Matches &aClientMatches,
+                                         Server::ConnectionBasis &aClientConnection,
+                                         const uint8_t *aRequestBuffer,
+                                         const size_t &aRequestSize,
+                                         const Common::RegularExpression::Matches &aServerMatches,
+                                         Client::CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
+                                         Server::CommandManager::OnRequestReceivedFunc aOnRequestReceivedHandler,
+                                         void * aContext);
+    void ProxyMutationCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aClientExchange,
+                                      const Common::RegularExpression::Matches &aClientMatches,
+                                      Server::ConnectionBasis &aClientConnection,
+                                      const uint8_t *aRequestBuffer,
+                                      const size_t &aRequestSize,
+                                      const Common::RegularExpression::Matches &aServerMatches,
+                                      Client::CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
+                                      void * aContext);
 
 public:
     // Proxy Handler Trampolines
 
-    static void ProxyErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError, void *aContext);
-    static void ProxyCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void ProxyErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aClientExchange,
+                                  const Common::Error &aClientError,
+                                  void *aContext);
+    static void ProxyObservationCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aClientExchange,
+                                                const Common::RegularExpression::Matches &aClientMatches,
+                                                void *aContext);
+    static void ProxyMutationCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange,
+                                             const Common::RegularExpression::Matches &aClientMatches,
+                                             void *aContext);
+
 
 private:
     // Explicitly hide base class initializers

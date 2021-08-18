@@ -54,10 +54,10 @@ namespace Detail
 
     struct ProxyContext
     {
-        Server::ConnectionBasis *  mConnection;
-        const uint8_t *            mBuffer;
-        size_t                     mSize;
-        RegularExpression::Matches mMatches;
+        Server::ConnectionBasis *  mClientConnection;
+        const uint8_t *            mRequestBuffer;
+        size_t                     mRequestSize;
+        RegularExpression::Matches mServerMatches;
         Client::CommandManager::OnCommandCompleteFunc mOnCommandCompleteHandler;
         Client::CommandManager::OnCommandErrorFunc    mOnCommandErrorHandler;
         Server::CommandManager::OnRequestReceivedFunc mOnRequestReceivedHandler;
@@ -113,7 +113,6 @@ done:
 Status
 ControllerBasis :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
     (void)aConnection;
@@ -123,11 +122,11 @@ ControllerBasis :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnectio
 }
 
 Status
-ControllerBasis :: ProxyObservationCommand(Server::ConnectionBasis &aConnection,
-                                           const uint8_t *aBuffer,
-                                           const size_t &aSize,
-                                           const Common::RegularExpression::Matches &aMatches,
-                                           const Client::Command::ResponseBasis &aResponse,
+ControllerBasis :: ProxyObservationCommand(Server::ConnectionBasis &aClientConnection,
+                                           const uint8_t *aRequestBuffer,
+                                           const size_t &aRequestSize,
+                                           const Common::RegularExpression::Matches &aServerMatches,
+                                           const Client::Command::ResponseBasis &aExpectedResponse,
                                            Client::CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
                                            Client::CommandManager::OnCommandErrorFunc aOnCommandErrorHandler,
                                            Server::CommandManager::OnRequestReceivedFunc aOnRequestReceivedHandler,
@@ -138,8 +137,8 @@ ControllerBasis :: ProxyObservationCommand(Server::ConnectionBasis &aConnection,
     std::unique_ptr<Detail::ProxyContext>                 lProxyContext;
     Status                                                lRetval = kStatus_Success;
 
-    nlREQUIRE_ACTION(aBuffer != nullptr, done, lRetval = -EINVAL);
-    nlREQUIRE_ACTION(aSize > 0, done, lRetval = -EINVAL);
+    nlREQUIRE_ACTION(aRequestBuffer != nullptr, done, lRetval = -EINVAL);
+    nlREQUIRE_ACTION(aRequestSize > 0, done, lRetval = -EINVAL);
     nlREQUIRE_ACTION(aOnCommandCompleteHandler != nullptr, done, lRetval = -EINVAL);
     nlREQUIRE_ACTION(aOnCommandErrorHandler != nullptr, done, lRetval = -EINVAL);
     nlREQUIRE_ACTION(aOnRequestReceivedHandler != nullptr, done, lRetval = -EINVAL);
@@ -148,10 +147,10 @@ ControllerBasis :: ProxyObservationCommand(Server::ConnectionBasis &aConnection,
     lProxyContext.reset(new Detail::ProxyContext());
     nlREQUIRE_ACTION(lProxyContext, done, lRetval = -ENOMEM);
 
-    lProxyContext->mConnection               = &aConnection;
-    lProxyContext->mBuffer                   = aBuffer;
-    lProxyContext->mSize                     = aSize;
-    lProxyContext->mMatches                  = aMatches;
+    lProxyContext->mClientConnection         = &aClientConnection;
+    lProxyContext->mRequestBuffer            = aRequestBuffer;
+    lProxyContext->mRequestSize              = aRequestSize;
+    lProxyContext->mServerMatches            = aServerMatches;
     lProxyContext->mOnCommandCompleteHandler = aOnCommandCompleteHandler;
     lProxyContext->mOnCommandErrorHandler    = aOnCommandErrorHandler;
     lProxyContext->mOnRequestReceivedHandler = aOnRequestReceivedHandler;
@@ -161,11 +160,61 @@ ControllerBasis :: ProxyObservationCommand(Server::ConnectionBasis &aConnection,
     lCommand.reset(new Proxy::Command::Proxy());
     nlREQUIRE_ACTION(lCommand, done, lRetval = -ENOMEM);
 
-    lRetval = std::static_pointer_cast<Proxy::Command::Proxy>(lCommand)->Init(aBuffer, aSize, aResponse);
+    lRetval = std::static_pointer_cast<Proxy::Command::Proxy>(lCommand)->Init(aRequestBuffer, aRequestSize, aExpectedResponse);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = SendCommand(lCommand,
-                          ControllerBasis::ProxyCompleteHandler,
+                          ControllerBasis::ProxyObservationCompleteHandler,
+                          ControllerBasis::ProxyErrorHandler,
+                          lProxyContext.release());
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+ControllerBasis :: ProxyMutationCommand(Server::ConnectionBasis &aClientConnection,
+                                        const uint8_t *aRequestBuffer,
+                                        const size_t &aRequestSize,
+                                        const Common::RegularExpression::Matches &aServerMatches,
+                                        const Client::Command::ResponseBasis &aExpectedResponse,
+                                        Client::CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
+                                        Client::CommandManager::OnCommandErrorFunc aOnCommandErrorHandler,
+                                        void *aContext)
+{
+    DeclareScopedFunctionTracer(lTracer);
+    Client::Command::ExchangeBasis::MutableCountedPointer lCommand;
+    std::unique_ptr<Detail::ProxyContext>                 lProxyContext;
+    Status                                                lRetval = kStatus_Success;
+
+    nlREQUIRE_ACTION(aRequestBuffer != nullptr, done, lRetval = -EINVAL);
+    nlREQUIRE_ACTION(aRequestSize > 0, done, lRetval = -EINVAL);
+    nlREQUIRE_ACTION(aOnCommandCompleteHandler != nullptr, done, lRetval = -EINVAL);
+    nlREQUIRE_ACTION(aOnCommandErrorHandler != nullptr, done, lRetval = -EINVAL);
+    nlREQUIRE_ACTION(aContext != nullptr, done, lRetval = -EINVAL);
+
+    lProxyContext.reset(new Detail::ProxyContext());
+    nlREQUIRE_ACTION(lProxyContext, done, lRetval = -ENOMEM);
+
+    lProxyContext->mClientConnection         = &aClientConnection;
+    lProxyContext->mRequestBuffer            = aRequestBuffer;
+    lProxyContext->mRequestSize              = aRequestSize;
+    lProxyContext->mServerMatches            = aServerMatches;
+    lProxyContext->mOnCommandCompleteHandler = aOnCommandCompleteHandler;
+    lProxyContext->mOnCommandErrorHandler    = aOnCommandErrorHandler;
+    lProxyContext->mOnRequestReceivedHandler = nullptr;
+    lProxyContext->mTheirContext             = aContext;
+    lProxyContext->mOurContext               = this;
+
+    lCommand.reset(new Proxy::Command::Proxy());
+    nlREQUIRE_ACTION(lCommand, done, lRetval = -ENOMEM);
+
+    lRetval = std::static_pointer_cast<Proxy::Command::Proxy>(lCommand)->Init(aRequestBuffer, aRequestSize, aExpectedResponse);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = SendCommand(lCommand,
+                          ControllerBasis::ProxyMutationCompleteHandler,
                           ControllerBasis::ProxyErrorHandler,
                           lProxyContext.release());
     nlREQUIRE_SUCCESS(lRetval, done);
@@ -177,43 +226,101 @@ ControllerBasis :: ProxyObservationCommand(Server::ConnectionBasis &aConnection,
 // MARK: Proxy Handlers
 
 void
-ControllerBasis :: ProxyErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange,
-                                     const Common::Error &aError,
-                                     Server::ConnectionBasis &aConnection,
+ControllerBasis :: ProxyErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aClientExchange,
+                                     const Common::Error &aClientError,
+                                     Server::ConnectionBasis &aClientConnection,
                                      Client::CommandManager::OnCommandErrorFunc aOnCommandErrorHandler,
                                      void * aContext)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status lStatus;
 
-    aOnCommandErrorHandler(aExchange, aError, aContext);
+    aOnCommandErrorHandler(aClientExchange, aClientError, aContext);
 
-    lStatus = SendErrorResponse(aConnection);
+    lStatus = SendErrorResponse(aClientConnection);
     nlVERIFY_SUCCESS(lStatus);
 }
 
 void
-ControllerBasis :: ProxyCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange,
-                                        const Common::RegularExpression::Matches &aClientMatches,
-                                        Server::ConnectionBasis &aConnection,
-                                        const uint8_t *aBuffer,
-                                        const size_t &aSize,
-                                        const Common::RegularExpression::Matches &aServerMatches,
-                                        Client::CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
-                                        Server::CommandManager::OnRequestReceivedFunc aOnRequestReceivedHandler,
-                                        void * aContext)
+ControllerBasis :: ProxyObservationCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aClientExchange,
+                                                   const Common::RegularExpression::Matches &aClientMatches,
+                                                   Server::ConnectionBasis &aClientConnection,
+                                                   const uint8_t *aRequestBuffer,
+                                                   const size_t &aRequestSize,
+                                                   const Common::RegularExpression::Matches &aServerMatches,
+                                                   Client::CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
+                                                   Server::CommandManager::OnRequestReceivedFunc aOnRequestReceivedHandler,
+                                                   void * aContext)
 {
     DeclareScopedFunctionTracer(lTracer);
 
-    aOnCommandCompleteHandler(aExchange, aClientMatches, aContext);
+    aOnCommandCompleteHandler(aClientExchange,
+                              aClientMatches,
+                              aContext);
 
-    aOnRequestReceivedHandler(aConnection, aBuffer, aSize, aServerMatches, aContext);
+    aOnRequestReceivedHandler(aClientConnection,
+                              aRequestBuffer,
+                              aRequestSize,
+                              aServerMatches,
+                              aContext);
+}
+
+void
+ControllerBasis :: ProxyMutationCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aClientExchange,
+                                                const Common::RegularExpression::Matches &aClientMatches,
+                                                Server::ConnectionBasis &aClientConnection,
+                                                const uint8_t *aRequestBuffer,
+                                                const size_t &aRequestSize,
+                                                const Common::RegularExpression::Matches &aServerMatches,
+                                                Client::CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
+                                                void * aContext)
+{
+    DeclareScopedFunctionTracer(lTracer);
+    const Client::Command::ResponseBasis *  lServerResponse           = aClientExchange->GetResponse();
+    const uint8_t *                         lServerResponseBuffer     = lServerResponse->GetBuffer()->GetHead();
+    const size_t                            lServerResponseBufferSize = lServerResponse->GetBuffer()->GetSize();
+    ConnectionBuffer::MutableCountedPointer lProxyResponseBuffer;
+    uint8_t *                               lResult;
+    Status                                  lStatus;
+
+    (void)aRequestBuffer;
+    (void)aRequestSize;
+    (void)aServerMatches;
+
+    aOnCommandCompleteHandler(aClientExchange,
+                              aClientMatches,
+                              aContext);
+
+    lProxyResponseBuffer.reset(new ConnectionBuffer);
+    nlREQUIRE_ACTION(lProxyResponseBuffer, done, lStatus = -ENOMEM);
+
+    lStatus = lProxyResponseBuffer->Init(const_cast<uint8_t *>(lServerResponseBuffer),
+                                         lServerResponseBufferSize);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lResult = lProxyResponseBuffer->Put(lServerResponseBufferSize);
+    nlREQUIRE_ACTION(lResult != nullptr, done, lStatus = -ENOSPC);
+
+ done:
+    lStatus = SendResponse(aClientConnection, lProxyResponseBuffer);
+    nlREQUIRE_SUCCESS(lStatus, exit);
+
+ exit:
+    if (lStatus < kStatus_Success)
+    {
+        lStatus = SendErrorResponse(aClientConnection);
+        nlVERIFY_SUCCESS(lStatus);
+    }
+
+    return;
 }
 
 // MARK: Proxy Handler Trampolines
 
 /* static */ void
-ControllerBasis :: ProxyErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError, void *aContext)
+ControllerBasis :: ProxyErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aClientExchange,
+                                     const Common::Error &aClientError,
+                                     void *aContext)
 {
     DeclareScopedFunctionTracer(lTracer);
     Detail::ProxyContext *lContext = static_cast<Detail::ProxyContext *>(aContext);
@@ -224,9 +331,9 @@ ControllerBasis :: ProxyErrorHandler(Client::Command::ExchangeBasis::MutableCoun
 
         if (lController != nullptr)
         {
-            lController->ProxyErrorHandler(aExchange,
-                                           aError,
-                                           *lContext->mConnection,
+            lController->ProxyErrorHandler(aClientExchange,
+                                           aClientError,
+                                           *lContext->mClientConnection,
                                            lContext->mOnCommandErrorHandler,
                                            lContext->mTheirContext);
         }
@@ -236,7 +343,37 @@ ControllerBasis :: ProxyErrorHandler(Client::Command::ExchangeBasis::MutableCoun
 }
 
 /* static */ void
-ControllerBasis :: ProxyCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext)
+ControllerBasis :: ProxyObservationCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aClientExchange,
+                                                   const Common::RegularExpression::Matches &aClientMatches,
+                                                   void *aContext)
+{
+    Detail::ProxyContext *lContext = static_cast<Detail::ProxyContext *>(aContext);
+
+    if (lContext != nullptr)
+    {
+        ControllerBasis *lController = static_cast<ControllerBasis *>(lContext->mOurContext);
+
+        if (lController != nullptr)
+        {
+            lController->ProxyObservationCompleteHandler(aClientExchange,
+                                                         aClientMatches,
+                                                         *lContext->mClientConnection,
+                                                         lContext->mRequestBuffer,
+                                                         lContext->mRequestSize,
+                                                         lContext->mServerMatches,
+                                                         lContext->mOnCommandCompleteHandler,
+                                                         lContext->mOnRequestReceivedHandler,
+                                                         lContext->mTheirContext);
+        }
+
+        delete lContext;
+    }
+}
+
+/* static */ void
+ControllerBasis :: ProxyMutationCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aClientExchange,
+                                                const Common::RegularExpression::Matches &aClientMatches,
+                                                void *aContext)
 {
     DeclareScopedFunctionTracer(lTracer);
     Detail::ProxyContext *lContext = static_cast<Detail::ProxyContext *>(aContext);
@@ -247,16 +384,14 @@ ControllerBasis :: ProxyCompleteHandler(Client::Command::ExchangeBasis::MutableC
 
         if (lController != nullptr)
         {
-            lController->ProxyCompleteHandler(aExchange,
-                                              aMatches,
-                                              *lContext->mConnection,
-                                              lContext->mBuffer,
-                                              lContext->mSize,
-                                              lContext->mMatches,
-                                              lContext->mOnCommandCompleteHandler,
-                                              lContext->mOnRequestReceivedHandler,
-                                              lContext->mTheirContext);
-
+            lController->ProxyMutationCompleteHandler(aClientExchange,
+                                                      aClientMatches,
+                                                      *lContext->mClientConnection,
+                                                      lContext->mRequestBuffer,
+                                                      lContext->mRequestSize,
+                                                      lContext->mServerMatches,
+                                                      lContext->mOnCommandCompleteHandler,
+                                                      lContext->mTheirContext);
         }
 
         delete lContext;
