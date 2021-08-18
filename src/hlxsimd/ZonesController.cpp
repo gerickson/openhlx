@@ -46,9 +46,9 @@
 #include <OpenHLX/Utilities/Utilities.hpp>
 
 #include <EqualizerBandModelDefaults.hpp>
-#include <EqualizerPresetsController.hpp>
+#include "EqualizerPresetsController.hpp"
 #include <NameModelDefaults.hpp>
-#include <SourcesController.hpp>
+#include "SourcesController.hpp"
 #include <Utilities.hpp>
 
 
@@ -1291,8 +1291,8 @@ ZonesController :: HandleSetSoundModeUnconditionally(const Model::ZoneModel::Ide
 Status
 ZonesController :: HandleAdjustVolumeReceived(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const VolumeModel::LevelType &aAdjustment, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    VolumeModel::LevelType            lVolume;
-    Status                             lRetval;
+    VolumeModel::LevelType lVolume;
+    Status                 lRetval;
 
 
     nlREQUIRE_ACTION(aAdjustment != 0, done, lRetval = -EINVAL);
@@ -2491,7 +2491,7 @@ void ZonesController :: DecreaseVolumeRequestReceivedHandler(Server::ConnectionB
 {
     static const VolumeModel::MuteType       kMuted = true;
     static const VolumeModel::LevelType      kAdjustment = -1;
-    Model::ZoneModel::IdentifierType         lZoneIdentifier;
+    ZoneModel::IdentifierType                lZoneIdentifier;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
 
@@ -2548,7 +2548,7 @@ void ZonesController :: IncreaseVolumeRequestReceivedHandler(Server::ConnectionB
 {
     static const VolumeModel::MuteType       kMuted = true;
     static const VolumeModel::LevelType      kAdjustment = 1;
-    Model::ZoneModel::IdentifierType         lZoneIdentifier;
+    ZoneModel::IdentifierType                lZoneIdentifier;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
 
@@ -2656,7 +2656,7 @@ void ZonesController :: MuteRequestReceivedHandler(Server::ConnectionBasis &aCon
 void ZonesController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
     static const bool                        kIsConfiguration = true;
-    Model::ZoneModel::IdentifierType         lZoneIdentifier;
+    ZoneModel::IdentifierType                lZoneIdentifier;
     Server::Command::Zones::QueryResponse    lResponse;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
@@ -2719,7 +2719,7 @@ void ZonesController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aCo
 
 void ZonesController :: QueryMuteRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    Model::ZoneModel::IdentifierType         lZoneIdentifier;
+    ZoneModel::IdentifierType                lZoneIdentifier;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
 
@@ -2766,7 +2766,7 @@ void ZonesController :: QueryMuteRequestReceivedHandler(Server::ConnectionBasis 
 
 void ZonesController :: QuerySourceRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    Model::ZoneModel::IdentifierType         lZoneIdentifier;
+    ZoneModel::IdentifierType                lZoneIdentifier;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
 
@@ -2813,7 +2813,7 @@ void ZonesController :: QuerySourceRequestReceivedHandler(Server::ConnectionBasi
 
 void ZonesController :: QueryVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    Model::ZoneModel::IdentifierType         lZoneIdentifier;
+    ZoneModel::IdentifierType                lZoneIdentifier;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
 
@@ -3607,7 +3607,7 @@ void ZonesController :: SetToneRequestReceivedHandler(Server::ConnectionBasis &a
 void ZonesController :: SetVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
     static const VolumeModel::MuteType       kMuted = true;
-    Model::ZoneModel::IdentifierType         lZoneIdentifier;
+    ZoneModel::IdentifierType                lZoneIdentifier;
     VolumeModel::LevelType                   lVolume;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
