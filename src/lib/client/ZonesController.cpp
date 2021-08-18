@@ -1736,6 +1736,34 @@ done:
     return (lRetval);
 }
 
+Status
+ZonesController :: SetSource(const Model::SourceModel::IdentifierType &aSourceIdentifier)
+{
+    Command::ExchangeBasis::MutableCountedPointer lCommand;
+    Status lRetval = kStatus_Success;
+
+
+#if 0 // XXX
+    lRetval = SourcesController::ValidateIdentifier(aSourceIdentifier);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lCommand.reset(new Command::Zones::SetSourceAll());
+    nlREQUIRE_ACTION(lCommand, done, lRetval = -ENOMEM);
+
+    lRetval = std::static_pointer_cast<Command::Zones::SetSourceAll>(lCommand)->Init(aZoneIdentifier, aSourceIdentifier);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = SendCommand(lCommand,
+                          ZonesController::SetSourceAllCompleteHandler,
+                          ZonesController::CommandErrorHandler,
+                          this);
+    nlREQUIRE_SUCCESS(lRetval, done);
+#endif // XXX
+
+done:
+    return (lRetval);
+}
+
 // MARK: Volume Mutator Commands
 
 /**
@@ -1783,6 +1811,31 @@ ZonesController :: SetVolume(const IdentifierType &aZoneIdentifier,
                           ZonesController::CommandErrorHandler,
                           this);
     nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
+Status
+ZonesController :: SetVolume(const Model::VolumeModel::LevelType &aLevel)
+{
+    Command::ExchangeBasis::MutableCountedPointer lCommand;
+    Status lRetval = kStatus_Success;
+
+
+#if 0 // XXX
+    lCommand.reset(new Command::Zones::SetVolumeAll());
+    nlREQUIRE_ACTION(lCommand, done, lRetval = -ENOMEM);
+
+    lRetval = std::static_pointer_cast<Command::Zones::SetVolumeAll>(lCommand)->Init(aLevel);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = SendCommand(lCommand,
+                          ZonesController::SetVolumeAllCompleteHandler,
+                          ZonesController::CommandErrorHandler,
+                          this);
+    nlREQUIRE_SUCCESS(lRetval, done);
+#endif // XXX
 
 done:
     return (lRetval);
@@ -2223,6 +2276,33 @@ ZonesController :: SetSourceCompleteHandler(Command::ExchangeBasis::MutableCount
 
 /**
  *  @brief
+ *    Asynchronous all zones set source (input) client command
+ *    response completion handler.
+ *
+ *  This handles an asynchronous client command response for the all
+ *  zones set source (input) command request.
+ *
+ *  @param[in]  aExchange  A mutable shared pointer to the exchange
+ *                         associated with the client command response
+ *                         and its original request.
+ *  @param[in]  aMatches   An immutable reference to the regular
+ *                         expression substring matches associated
+ *                         with the client command response that
+ *                         triggered this handler.
+ *
+ */
+void
+ZonesController :: SetSourceAllCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const RegularExpression::Matches &aMatches)
+{
+    const Command::ResponseBasis * lResponse   = aExchange->GetResponse();
+    const uint8_t *                lBuffer     = lResponse->GetBuffer()->GetHead();
+    const size_t                   lBufferSize = lResponse->GetBuffer()->GetSize();
+
+    // XXX - TBD
+}
+
+/**
+ *  @brief
  *    Asynchronous zone decrease/increase/set tone equalizer client
  *    command response completion handler.
  *
@@ -2273,6 +2353,33 @@ ZonesController :: SetVolumeCompleteHandler(Command::ExchangeBasis::MutableCount
     const size_t                   lBufferSize = lResponse->GetBuffer()->GetSize();
 
     VolumeNotificationReceivedHandler(lBuffer, lBufferSize, aMatches);
+}
+
+/**
+ *  @brief
+ *    Asynchronous all zones set volume level client command response
+ *    completion handler.
+ *
+ *  This handles an asynchronous client command response for the
+ *  all zones set volume level command request.
+ *
+ *  @param[in]  aExchange  A mutable shared pointer to the exchange
+ *                         associated with the client command response
+ *                         and its original request.
+ *  @param[in]  aMatches   An immutable reference to the regular
+ *                         expression substring matches associated
+ *                         with the client command response that
+ *                         triggered this handler.
+ *
+ */
+void
+ZonesController :: SetVolumeAllCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const RegularExpression::Matches &aMatches)
+{
+    const Command::ResponseBasis * lResponse   = aExchange->GetResponse();
+    const uint8_t *                lBuffer     = lResponse->GetBuffer()->GetHead();
+    const size_t                   lBufferSize = lResponse->GetBuffer()->GetSize();
+
+    // XXX - TBD
 }
 
 /**
@@ -2632,7 +2739,7 @@ ZonesController :: SetSoundModeCompleteHandler(Command::ExchangeBasis::MutableCo
  *    completion handler trampoline.
  *
  *  This invokes the handler for an asynchronous client command
- *  response for the zone` set source (input) mute command request.
+ *  response for the zone set source (input) command request.
  *
  *  @param[in]      aExchange  A mutable shared pointer to the exchange
  *                             associated with the client command
@@ -2655,6 +2762,38 @@ ZonesController :: SetSourceCompleteHandler(Command::ExchangeBasis::MutableCount
     if (lController != nullptr)
     {
         lController->SetSourceCompleteHandler(aExchange, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Asynchronous all zones set source (input) client command
+ *    response completion handler trampoline.
+ *
+ *  This invokes the handler for an asynchronous client command
+ *  response for the all zones set source (input) command request.
+ *
+ *  @param[in]      aExchange  A mutable shared pointer to the exchange
+ *                             associated with the client command
+ *                             response and its original request.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+ZonesController :: SetSourceAllCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->SetSourceAllCompleteHandler(aExchange, aMatches);
     }
 }
 
@@ -2720,6 +2859,38 @@ ZonesController :: SetVolumeCompleteHandler(Command::ExchangeBasis::MutableCount
     if (lController != nullptr)
     {
         lController->SetVolumeCompleteHandler(aExchange, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Asynchronous all zones set volume level client command response
+ *    completion handler trampoline.
+ *
+ *  This invokes the handler for an asynchronous client command
+ *  response for the all zones set volume level command request.
+ *
+ *  @param[in]      aExchange  A mutable shared pointer to the exchange
+ *                             associated with the client command
+ *                             response and its original request.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+ZonesController :: SetVolumeAllCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->SetVolumeAllCompleteHandler(aExchange, aMatches);
     }
 }
 
