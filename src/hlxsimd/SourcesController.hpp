@@ -79,7 +79,6 @@ private:
 
     Common::Status ElementLoadFromBackupConfiguration(CFDictionaryRef aSourcesDictionary, const IdentifierType &aSourceIdentifier) final;
     Common::Status ElementSaveToBackupConfiguration(CFMutableDictionaryRef aSourcesDictionary, const IdentifierType &aSourceIdentifier) const final;
-    Common::Status HandleQueryReceived(const IdentifierType &aSourceIdentifier, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
 
     // Command Completion Handlers
 

@@ -147,52 +147,19 @@ Status SourcesController :: Init(Server::CommandManager &aCommandManager, const 
     return (lRetval);
 }
 
-Status SourcesController :: HandleQueryReceived(const IdentifierType &aSourceIdentifier, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
-{
-    const SourceModel *                     lSourceModel;
-    const char *                            lName;
-    Server::Command::Sources::NameResponse  lResponse;
-    const uint8_t *                         lBuffer;
-    size_t                                  lSize;
-    Status                                  lRetval;
-
-
-    lRetval = mSources.GetSource(aSourceIdentifier, lSourceModel);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = lSourceModel->GetName(lName);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = lResponse.Init(aSourceIdentifier, lName);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lBuffer = lResponse.GetBuffer();
-    lSize = lResponse.GetSize();
-
-    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
 // MARK: Configuration Management Methods
 
 void SourcesController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
-    IdentifierType  lSourceIdentifier;
-    Status          lStatus;
+    Status lStatus = kStatus_Success;
 
 
     (void)aConnection;
 
-    for (lSourceIdentifier = IdentifierModel::kIdentifierMin; lSourceIdentifier <= kSourcesMax; lSourceIdentifier++)
-    {
-        lStatus = HandleQueryReceived(lSourceIdentifier, aBuffer);
-        nlREQUIRE_SUCCESS(lStatus, done);
-    }
+    lStatus = HandleQueryReceived(aBuffer);
+    nlREQUIRE_SUCCESS(lStatus, done);
 
- done:
+done:
     return;
 }
 
