@@ -103,7 +103,7 @@ public:
 
     // Equalizer Preset Commands
 
-    Common::Status EqualizerPresetsGetMax(size_t &aEqualizerPresets) const;
+    Common::Status EqualizerPresetsGetMax(Model::EqualizerPresetModel::IdentifierType &aEqualizerPresets) const;
 
     Common::Status EqualizerPresetGet(const Model::EqualizerPresetModel::IdentifierType &aEqualizerPresetIdentifier, const Model::EqualizerPresetModel *&aModel) const;
 
@@ -116,7 +116,7 @@ public:
 
     // Group Commands
 
-    Common::Status GroupsGetMax(size_t &aGroups) const;
+    Common::Status GroupsGetMax(Model::GroupModel::IdentifierType &aGroups) const;
 
     Common::Status GroupGet(const Model::GroupModel::IdentifierType &aGroupIdentifier, const Model::GroupModel *&aModel) const;
 
@@ -139,7 +139,7 @@ public:
 
     // Source Commands
 
-    Common::Status SourcesGetMax(size_t &aSources) const;
+    Common::Status SourcesGetMax(Model::SourceModel::IdentifierType &aSources) const;
 
     Common::Status SourceGet(const Model::SourceModel::IdentifierType &aSourceIdentifier, const Model::SourceModel *&aModel) const;
 
@@ -149,7 +149,7 @@ public:
 
     // Zone Commands
 
-    Common::Status ZonesGetMax(size_t &aZones) const;
+    Common::Status ZonesGetMax(Model::ZoneModel::IdentifierType &aZones) const;
 
     Common::Status ZoneQuery(const Model::ZoneModel::IdentifierType &aZoneIdentifier);
 

@@ -601,7 +601,7 @@ Controller :: SetDelegate(ControllerDelegate *aDelegate)
  *
  */
 Status
-Controller :: EqualizerPresetsGetMax(size_t &aEqualizerPresets) const
+Controller :: EqualizerPresetsGetMax(Model::EqualizerPresetModel::IdentifierType &aEqualizerPresets) const
 {
     Status lRetval;
 
@@ -856,7 +856,7 @@ done:
  *
  */
 Status
-Controller :: GroupsGetMax(size_t &aGroups) const
+Controller :: GroupsGetMax(Model::GroupModel::IdentifierType &aGroups) const
 {
     Status lRetval;
 
@@ -1311,7 +1311,7 @@ done:
  *
  */
 Status
-Controller :: SourcesGetMax(size_t &aSources) const
+Controller :: SourcesGetMax(Model::SourceModel::IdentifierType &aSources) const
 {
     Status lRetval;
 
@@ -1433,7 +1433,7 @@ done:
  *
  */
 Status
-Controller :: ZonesGetMax(size_t &aZones) const
+Controller :: ZonesGetMax(Model::ZoneModel::IdentifierType &aZones) const
 {
     Status lRetval;
 
@@ -2520,7 +2520,7 @@ done:
 void
 Controller :: DeriveGroupState(void)
 {
-    size_t                      lGroupsCount;
+    GroupModel::IdentifierType  lGroupsCount;
     Status                      lStatus;
     GroupModel::IdentifierType  lGroupIdentifierCurrent;
     GroupModel::IdentifierType  lGroupIdentifierEnd;
@@ -2569,7 +2569,7 @@ Controller :: DeriveGroupState(void)
 void
 Controller :: DeriveGroupStateForGroupsIncludingZone(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
 {
-    size_t                      lGroupsCount;
+    GroupModel::IdentifierType  lGroupsCount;
     Status                      lStatus;
     GroupModel::IdentifierType  lGroupIdentifierCurrent;
     GroupModel::IdentifierType  lGroupIdentifierEnd;
@@ -2987,6 +2987,7 @@ void
 Controller :: ConnectionManagerWillResolve(Common::ConnectionManagerBasis &aConnectionManager, const Common::ConnectionManagerBasis::Roles &aRoles, const char *aHost)
 {
     (void)aConnectionManager;
+    (void)aRoles;
 
     if (mDelegate != nullptr)
     {
@@ -3010,6 +3011,7 @@ void
 Controller :: ConnectionManagerIsResolving(Common::ConnectionManagerBasis &aConnectionManager, const Common::ConnectionManagerBasis::Roles &aRoles, const char *aHost)
 {
     (void)aConnectionManager;
+    (void)aRoles;
 
     if (mDelegate != nullptr)
     {
@@ -3041,6 +3043,7 @@ void
 Controller :: ConnectionManagerDidResolve(Common::ConnectionManagerBasis &aConnectionManager, const Common::ConnectionManagerBasis::Roles &aRoles, const char *aHost, const Common::IPAddress &aIPAddress)
 {
     (void)aConnectionManager;
+    (void)aRoles;
 
     if (mDelegate != nullptr)
     {
@@ -3067,6 +3070,7 @@ void
 Controller :: ConnectionManagerDidNotResolve(Common::ConnectionManagerBasis &aConnectionManager, const Common::ConnectionManagerBasis::Roles &aRoles, const char *aHost, const Common::Error &aError)
 {
     (void)aConnectionManager;
+    (void)aRoles;
 
     if (mDelegate != nullptr)
     {
@@ -3185,6 +3189,7 @@ void
 Controller :: ConnectionManagerWillDisconnect(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, CFURLRef aURLRef)
 {
     (void)aConnectionManager;
+    (void)aRoles;
 
     if (mDelegate != nullptr)
     {
@@ -3209,6 +3214,7 @@ void
 Controller :: ConnectionManagerDidDisconnect(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, CFURLRef aURLRef, const Common::Error &aError)
 {
     (void)aConnectionManager;
+    (void)aRoles;
 
     if (mDelegate != nullptr)
     {
@@ -3234,6 +3240,7 @@ void
 Controller :: ConnectionManagerDidNotDisconnect(Common::ConnectionManagerBasis &aConnectionManager, const Common::ConnectionManagerBasis::Roles &aRoles, CFURLRef aURLRef, const Common::Error &aError)
 {
     (void)aConnectionManager;
+    (void)aRoles;
 
     if (mDelegate != nullptr)
     {
@@ -3262,6 +3269,7 @@ void
 Controller :: ConnectionManagerError(Common::ConnectionManagerBasis &aConnectionManager, const Common::ConnectionManagerBasis::Roles &aRoles, const Common::Error &aError)
 {
     (void)aConnectionManager;
+    (void)aRoles;
 
     if (mDelegate != nullptr)
     {
