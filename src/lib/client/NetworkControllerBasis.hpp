@@ -25,6 +25,7 @@
 #ifndef OPENHLXCLIENTNETWORKCONTROLLERBASIS_HPP
 #define OPENHLXCLIENTNETWORKCONTROLLERBASIS_HPP
 
+#include <OpenHLX/Client/ControllerBasis.hpp>
 #include <OpenHLX/Client/NetworkControllerCommands.hpp>
 
 
@@ -42,18 +43,50 @@ namespace Client
  *  @ingroup network
  *
  */
-class NetworkControllerBasis
+class NetworkControllerBasis :
+    public Client::ControllerBasis
 {
 public:
     virtual ~NetworkControllerBasis(void);
 
 protected:
-    NetworkControllerBasis(void);
+    NetworkControllerBasis(Model::NetworkModel &aNetworkModel);
 
-    Common::Status Init(void);
+    // Initializer(s)
+
+    virtual Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout);
+
+    Common::Status Refresh(const Common::Timeout &aTimeout) final;
+
+    // Observer Methods
+
+    Common::Status Query(void);
+
+    // Command Completion Handler Trampolines
+
+    static void QueryCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
+
+    static void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError, void *aContext);
+
+    // Notification Handler Trampolines
 
 private:
+    // Command Completion Handlers
+
+    void QueryCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
+
+    void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError);
+
+    // Notification Handlers
+
+private:
+    // Implementation
+
+    Common::Status DoNotificationHandlers(const bool &aRegister);
     Common::Status ResponseInit(void);
+
+private:
+    Model::NetworkModel & mNetworkModel;
 
 protected:
     static Command::Network::QueryResponse          kQueryResponse;

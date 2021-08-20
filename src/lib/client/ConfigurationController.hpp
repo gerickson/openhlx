@@ -26,9 +26,9 @@
 #ifndef OPENHLXCLIENTCONFIGURATIONCONTROLLER_HPP
 #define OPENHLXCLIENTCONFIGURATIONCONTROLLER_HPP
 
-#include <OpenHLX/Client/ControllerBasis.hpp>
 #include <OpenHLX/Client/ConfigurationControllerBasis.hpp>
 #include <OpenHLX/Client/ConfigurationControllerCommands.hpp>
+#include <OpenHLX/Common/ConfigurationControllerBasis.hpp>
 
 
 namespace HLX
@@ -47,55 +47,22 @@ namespace Client
  *
  */
 class ConfigurationController :
-    public Client::ControllerBasis,
+    public Common::ConfigurationControllerBasis,
     public Client::ConfigurationControllerBasis
 {
 public:
     ConfigurationController(void);
     virtual ~ConfigurationController(void);
 
+    // Initializer(s)
+
     Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
-
-    Common::Status Refresh(const Common::Timeout &aTimeout) final;
-
-    // Observer Methods
-
-    Common::Status QueryCurrent(void);
 
     // Mutator Methods
 
     Common::Status LoadFromBackup(void);
     Common::Status SaveToBackup(void);
     Common::Status ResetToDefaults(void);
-
-    // Command Completion Handler Trampolines
-
-    static void QueryCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void LoadFromBackupCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SaveToBackupCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void ResetToDefaultsCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError, void *aContext);
-
-    // Notification Handler Trampolines
-
-    static void SaveToBackupNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SavingToBackupNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-
-private:
-    Common::Status DoNotificationHandlers(const bool &aRegister);
-
-    // Command Completion Handlers
-
-    void QueryCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void LoadFromBackupCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void SaveToBackupCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void ResetToDefaultsCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError);
-
-    // Notification Handlers
-
-    void SaveToBackupNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void SavingToBackupNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 };
 
 }; // namespace Client

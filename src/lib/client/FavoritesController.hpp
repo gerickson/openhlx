@@ -29,7 +29,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <OpenHLX/Client/ControllerBasis.hpp>
 #include <OpenHLX/Client/FavoritesControllerBasis.hpp>
 #include <OpenHLX/Client/FavoritesControllerCommands.hpp>
 #include <OpenHLX/Common/FavoritesControllerBasis.hpp>
@@ -53,7 +52,6 @@ namespace Client
  *
  */
 class FavoritesController :
-    public Client::ControllerBasis,
     public Common::FavoritesControllerBasis,
     public Client::FavoritesControllerBasis
 {
@@ -61,14 +59,11 @@ public:
     FavoritesController(void);
     virtual ~FavoritesController(void);
 
+    // Initializer(s)
+
     Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
 
-    Common::Status Refresh(const Common::Timeout &aTimeout) final;
-
     // Observer Methods
-
-    Common::Status Query(void);
-    Common::Status Query(const IdentifierType &aFavoriteIdentifier);
 
     Common::Status GetFavorite(const IdentifierType &aIdentifier, const Model::FavoriteModel *&aModel) const;
 
@@ -78,29 +73,6 @@ public:
 
     Common::Status SetName(const IdentifierType &aFavoriteIdentifier, const char *aName);
 
-    // Command Completion Handler Trampolines
-
-    static void QueryCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SetNameCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-
-    static void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError, void *aContext);
-
-    // Notification Handler Trampolines
-
-    static void NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-
-private:
-    Common::Status DoNotificationHandlers(const bool &aRegister);
-
-    // Command Completion Handlers
-
-    void QueryCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void SetNameCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError);
-
-    // Notification Handlers
-
-    void NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 };
 
 }; // namespace Client

@@ -28,7 +28,6 @@
 #define OPENHLXCLIENTINFRAREDCONTROLLER_HPP
 
 #include <OpenHLX/Common/InfraredControllerBasis.hpp>
-#include <OpenHLX/Client/ControllerBasis.hpp>
 #include <OpenHLX/Client/InfraredControllerBasis.hpp>
 #include <OpenHLX/Client/InfraredControllerCommands.hpp>
 #include <OpenHLX/Model/InfraredModel.hpp>
@@ -52,50 +51,20 @@ namespace Client
  */
 class InfraredController :
     public Common::InfraredControllerBasis,
-    public Client::ControllerBasis,
     public Client::InfraredControllerBasis
 {
 public:
     InfraredController(void);
     virtual ~InfraredController(void);
 
+    // Initializer(s)
+
     Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
-
-    Common::Status Refresh(const Common::Timeout &aTimeout) final;
-
-    // Observer Methods
-
-    Common::Status Query(void);
 
     // Mutator Methods
 
     Common::Status SetDisabled(const Model::InfraredModel::DisabledType &aDisabled);
 
-    // Command Completion Handler Trampolines
-
-    static void QueryCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SetDisabledCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-
-    static void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError, void *aContext);
-
-    // Notification Handler Trampolines
-
-    static void DisabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-
-private:
-    Common::Status DoNotificationHandlers(const bool &aRegister);
-
-    // Command Completion Handlers
-
-    void QueryCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void SetDisabledCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-
-    void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError);
-
-    // Notification Handlers
-
-    void BrightnessNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void DisabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 };
 
 }; // namespace Client

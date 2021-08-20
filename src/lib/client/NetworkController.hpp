@@ -27,7 +27,6 @@
 #define OPENHLXCLIENTNETWORKCONTROLLER_HPP
 
 #include <OpenHLX/Common/NetworkControllerBasis.hpp>
-#include <OpenHLX/Client/ControllerBasis.hpp>
 #include <OpenHLX/Client/NetworkControllerBasis.hpp>
 #include <OpenHLX/Client/NetworkControllerCommands.hpp>
 
@@ -49,33 +48,16 @@ namespace Client
  */
 class NetworkController :
     public Common::NetworkControllerBasis,
-    public Client::ControllerBasis,
     public Client::NetworkControllerBasis
 {
 public:
     NetworkController(void);
     virtual ~NetworkController(void);
 
+    // Initializer(s)
+
     Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
 
-    Common::Status Refresh(const Common::Timeout &aTimeout) final;
-
-    // Observer Methods
-
-    Common::Status Query(void);
-
-    // Command Completion Handler Trampolines
-
-    static void QueryCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-
-    static void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError, void *aContext);
-
-private:
-    // Command Completion Handlers
-
-    void QueryCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-
-    void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError);
 };
 
 }; // namespace Client

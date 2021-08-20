@@ -26,11 +26,11 @@
 #ifndef OPENHLXCLIENTFRONTPANELCONTROLLER_HPP
 #define OPENHLXCLIENTFRONTPANELCONTROLLER_HPP
 
-#include <OpenHLX/Common/FrontPanelControllerBasis.hpp>
-#include <OpenHLX/Client/ControllerBasis.hpp>
 #include <OpenHLX/Client/FrontPanelControllerBasis.hpp>
 #include <OpenHLX/Client/FrontPanelControllerCommands.hpp>
+#include <OpenHLX/Common/FrontPanelControllerBasis.hpp>
 #include <OpenHLX/Model/FrontPanelModel.hpp>
+
 
 namespace HLX
 {
@@ -49,54 +49,21 @@ namespace Client
  */
 class FrontPanelController :
     public Common::FrontPanelControllerBasis,
-    public Client::ControllerBasis,
     public Client::FrontPanelControllerBasis
 {
 public:
     FrontPanelController(void);
     virtual ~FrontPanelController(void);
 
+    // Initializer(s)
+
     Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
-
-    Common::Status Refresh(const Common::Timeout &aTimeout) final;
-
-    // Observer Methods
-
-    Common::Status Query(void);
 
     // Mutator Methods
 
     Common::Status SetBrightness(const Model::FrontPanelModel::BrightnessType &aBrightness);
     Common::Status SetLocked(const Model::FrontPanelModel::LockedType &aLocked);
 
-    // Command Completion Handler Trampolines
-
-    static void QueryCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SetBrightnessCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SetLockedCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-
-    static void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError, void *aContext);
-
-    // Notification Handler Trampolines
-
-    static void BrightnessNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void LockedNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-
-private:
-    Common::Status DoNotificationHandlers(const bool &aRegister);
-
-    // Command Completion Handlers
-
-    void QueryCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void SetBrightnessCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void SetLockedCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-
-    void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError);
-
-    // Notification Handlers
-
-    void BrightnessNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void LockedNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 };
 
 }; // namespace Client

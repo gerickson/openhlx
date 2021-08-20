@@ -25,6 +25,7 @@
 #ifndef OPENHLXCLIENTINFRAREDCONTROLLERBASIS_HPP
 #define OPENHLXCLIENTINFRAREDCONTROLLERBASIS_HPP
 
+#include <OpenHLX/Client/ControllerBasis.hpp>
 #include <OpenHLX/Client/InfraredControllerCommands.hpp>
 
 
@@ -42,18 +43,57 @@ namespace Client
  *  @ingroup infrared
  *
  */
-class InfraredControllerBasis
+class InfraredControllerBasis :
+    public Client::ControllerBasis
 {
 public:
     virtual ~InfraredControllerBasis(void);
 
 protected:
-    InfraredControllerBasis(void);
+    InfraredControllerBasis(Model::InfraredModel &aInfraredModel);
 
-    Common::Status Init(void);
+    // Initializer(s)
+
+    virtual Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout);
+
+    Common::Status Refresh(const Common::Timeout &aTimeout) final;
+
+    // Observer Methods
+
+    Common::Status Query(void);
+
+    // Command Completion Handler Trampolines
+
+    static void QueryCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void SetDisabledCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
+
+    static void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError, void *aContext);
+
+    // Notification Handler Trampolines
+
+    static void DisabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
+    // Command Completion Handlers
+
+    void QueryCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
+    void SetDisabledCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
+
+    void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError);
+
+    // Notification Handlers
+
+    void BrightnessNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void DisabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+
+private:
+    // Implementation
+
+    Common::Status DoNotificationHandlers(const bool &aRegister);
     Common::Status ResponseInit(void);
+
+private:
+    Model::InfraredModel & mInfraredModel;
 
 protected:
     static Command::Infrared::DisabledResponse kDisabledResponse;

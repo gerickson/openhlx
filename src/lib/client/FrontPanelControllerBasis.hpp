@@ -25,6 +25,7 @@
 #ifndef OPENHLXCLIENTFRONTPANELCONTROLLERBASIS_HPP
 #define OPENHLXCLIENTFRONTPANELCONTROLLERBASIS_HPP
 
+#include <OpenHLX/Client/ControllerBasis.hpp>
 #include <OpenHLX/Client/FrontPanelControllerCommands.hpp>
 
 
@@ -42,18 +43,59 @@ namespace Client
  *  @ingroup front-panel
  *
  */
-class FrontPanelControllerBasis
+class FrontPanelControllerBasis :
+    public Client::ControllerBasis
 {
 public:
     virtual ~FrontPanelControllerBasis(void);
 
 protected:
-    FrontPanelControllerBasis(void);
+    FrontPanelControllerBasis(Model::FrontPanelModel &aFrontPanelModel);
 
-    Common::Status Init(void);
+    // Initializer(s)
+
+    virtual Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout);
+
+    Common::Status Refresh(const Common::Timeout &aTimeout) final;
+
+    // Observer Methods
+
+    Common::Status Query(void);
+
+    // Command Completion Handler Trampolines
+
+    static void QueryCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void SetBrightnessCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void SetLockedCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
+
+    static void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError, void *aContext);
+
+    // Notification Handler Trampolines
+
+    static void BrightnessNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void LockedNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
+    // Command Completion Handlers
+
+    void QueryCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
+    void SetBrightnessCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
+    void SetLockedCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
+
+    void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError);
+
+    // Notification Handlers
+
+    void BrightnessNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void LockedNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+
+private:
+    // Implementation
+
+    Common::Status DoNotificationHandlers(const bool &aRegister);
     Common::Status ResponseInit(void);
+private:
+    Model::FrontPanelModel & mFrontPanelModel;
 
 protected:
     static Command::FrontPanel::BrightnessResponse kBrightnessResponse;

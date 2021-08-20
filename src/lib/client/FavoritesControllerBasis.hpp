@@ -27,7 +27,10 @@
 
 #include <stddef.h>
 
+#include <OpenHLX/Client/ControllerBasis.hpp>
 #include <OpenHLX/Client/FavoritesControllerCommands.hpp>
+#include <OpenHLX/Model/FavoriteModel.hpp>
+#include <OpenHLX/Model/FavoritesModel.hpp>
 
 
 namespace HLX
@@ -44,21 +47,61 @@ namespace Client
  *  @ingroup favorite
  *
  */
-class FavoritesControllerBasis
+class FavoritesControllerBasis :
+    public Client::ControllerBasis
 {
 public:
     virtual ~FavoritesControllerBasis(void);
 
 protected:
-    FavoritesControllerBasis(void);
+    FavoritesControllerBasis(Model::FavoritesModel &aFavoritesModel,
+                             const Model::FavoriteModel::IdentifierType &aFavoritesMax);
 
-    Common::Status Init(void);
+    // Initializer(s)
+
+    virtual Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout);
+
+    Common::Status Refresh(const Common::Timeout &aTimeout) final;
+
+    // Observer Methods
+
+    Common::Status Query(void);
+    Common::Status Query(const Model::FavoriteModel::IdentifierType &aFavoriteIdentifier);
+
+    // Command Completion Handler Trampolines
+
+    static void QueryCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void SetNameCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
+
+    static void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError, void *aContext);
+
+    // Notification Handler Trampolines
+
+    static void NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
+    // Command Completion Handlers
+
+    void QueryCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
+    void SetNameCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
+    void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError);
+
+    // Notification Handlers
+
+    void NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+
+private:
+    // Implementation
+
+    Common::Status DoNotificationHandlers(const bool &aRegister);
     Common::Status ResponseInit(void);
 
 protected:
-    size_t                                   mFavoritesDidRefreshCount;
+    size_t                                       mFavoritesDidRefreshCount;
+
+private:
+    Model::FavoritesModel &                      mFavoritesModel;
+    const Model::FavoriteModel::IdentifierType & mFavoritesMax;
 
 protected:
     static Command::Favorites::NameResponse  kNameResponse;

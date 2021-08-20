@@ -25,7 +25,12 @@
 #ifndef OPENHLXCLIENTSOURCESCONTROLLERBASIS_HPP
 #define OPENHLXCLIENTSOURCESCONTROLLERBASIS_HPP
 
+#include <stddef.h>
+
+#include <OpenHLX/Client/ControllerBasis.hpp>
 #include <OpenHLX/Client/SourcesControllerCommands.hpp>
+#include <OpenHLX/Model/SourceModel.hpp>
+#include <OpenHLX/Model/SourcesModel.hpp>
 
 
 namespace HLX
@@ -42,18 +47,51 @@ namespace Client
  *  @ingroup source
  *
  */
-class SourcesControllerBasis
+class SourcesControllerBasis :
+    public Client::ControllerBasis
 {
 public:
     virtual ~SourcesControllerBasis(void);
 
 protected:
-    SourcesControllerBasis(void);
+    SourcesControllerBasis(Model::SourcesModel &aSourcesModel,
+                           const Model::SourceModel::IdentifierType &aSourcesMax);
 
-    Common::Status Init(void);
+    // Initializer(s)
+
+    virtual Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout);
+
+    Common::Status Refresh(const Common::Timeout &aTimeout) final;
+
+    // Command Completion Handler Trampolines
+
+    static void SetNameCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
+
+    static void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError, void *aContext);
+
+    // Notification Handler Trampolines
+
+    static void NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
+    // Command Completion Handlers
+
+    void SetNameCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
+    void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError);
+
+    // Notification Handlers
+
+    void NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+
+private:
+    // Implementation
+
+    Common::Status DoNotificationHandlers(const bool &aRegister);
     Common::Status ResponseInit(void);
+
+private:
+    Model::SourcesModel &                      mSourcesModel;
+    const Model::SourceModel::IdentifierType & mSourcesMax;
 
 protected:
     static Command::Sources::NameResponse    kNameResponse;

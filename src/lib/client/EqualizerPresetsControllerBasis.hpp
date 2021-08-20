@@ -27,7 +27,10 @@
 
 #include <stddef.h>
 
+#include <OpenHLX/Client/ControllerBasis.hpp>
 #include <OpenHLX/Client/EqualizerPresetsControllerCommands.hpp>
+#include <OpenHLX/Model/EqualizerPresetModel.hpp>
+#include <OpenHLX/Model/EqualizerPresetsModel.hpp>
 
 
 namespace HLX
@@ -44,21 +47,65 @@ namespace Client
  *  @ingroup equalizer-preset
  *
  */
-class EqualizerPresetsControllerBasis
+class EqualizerPresetsControllerBasis :
+    public Client::ControllerBasis
 {
 public:
     virtual ~EqualizerPresetsControllerBasis(void);
 
 protected:
-    EqualizerPresetsControllerBasis(void);
+    EqualizerPresetsControllerBasis(Model::EqualizerPresetsModel &aEqualizerPresetsModel,
+                                    const Model::EqualizerPresetModel::IdentifierType &aEqualizerPresetsMax);
 
-    Common::Status Init(void);
+    // Initializer(s)
+
+    virtual Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout);
+
+    Common::Status Refresh(const Common::Timeout &aTimeout) final;
+
+    // Observer Methods
+
+    Common::Status Query(void);
+    Common::Status Query(const Model::EqualizerPresetModel::IdentifierType &aEqualizerPresetIdentifier);
+
+    // Command Completion Handler Trampolines
+
+    static void QueryCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void SetEqualizerBandCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void SetNameCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
+
+    static void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError, void *aContext);
+
+    // Notification Handler Trampolines
+
+    static void EqualizerBandNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
+    // Command Completion Handlers
+
+    void QueryCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
+    void SetEqualizerBandCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
+    void SetNameCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
+    void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError);
+
+    // Notification Handlers
+
+    void EqualizerBandNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+
+private:
+    // Implementation
+
+    Common::Status DoNotificationHandlers(const bool &aRegister);
     Common::Status ResponseInit(void);
 
 protected:
     size_t                                                   mEqualizerPresetsDidRefreshCount;
+
+private:
+    Model::EqualizerPresetsModel &                           mEqualizerPresetsModel;
+    const Model::EqualizerPresetModel::IdentifierType &      mEqualizerPresetsMax;
 
 protected:
     static Command::EqualizerPresets::EqualizerBandResponse  kEqualizerBandResponse;
