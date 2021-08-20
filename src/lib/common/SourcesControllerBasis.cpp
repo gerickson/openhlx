@@ -58,7 +58,7 @@ const SourcesControllerBasis::IdentifierType  SourcesControllerBasis::kSourcesMa
  *
  */
 Status
-SourcesControllerBasis :: GetSourcesMax(size_t &aSources)
+SourcesControllerBasis :: GetSourcesMax(IdentifierType &aSources)
 {
     Status  lRetval = kStatus_Success;
 
@@ -75,7 +75,7 @@ SourcesControllerBasis :: GetSourcesMax(size_t &aSources)
  *    The maximum number of supported HLX sources.
  *
  */
-size_t
+SourcesControllerBasis::IdentifierType
 SourcesControllerBasis :: GetSourcesMax(void)
 {
     return (kSourcesMax);

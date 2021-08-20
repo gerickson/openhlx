@@ -58,8 +58,8 @@ public:
 
     // Observer Methods
 
-    static Common::Status GetSourcesMax(size_t &aSources);
-    static size_t         GetSourcesMax(void);
+    static Common::Status GetSourcesMax(IdentifierType &aSources);
+    static IdentifierType GetSourcesMax(void);
 
     static bool           IsValidIdentifier(const IdentifierType &aSourceIdentifier);
     static Common::Status ValidateIdentifier(const IdentifierType &aSourceIdentifier);

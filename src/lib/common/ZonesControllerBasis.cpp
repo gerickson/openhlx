@@ -59,7 +59,7 @@ const ZonesControllerBasis::IdentifierType  ZonesControllerBasis::kZonesMax = 24
  *
  */
 Status
-ZonesControllerBasis :: GetZonesMax(size_t &aZones)
+ZonesControllerBasis :: GetZonesMax(IdentifierType &aZones)
 {
     Status  lRetval = kStatus_Success;
 
@@ -76,7 +76,7 @@ ZonesControllerBasis :: GetZonesMax(size_t &aZones)
  *    The maximum number of supported HLX zones.
  *
  */
-size_t
+ZonesControllerBasis::IdentifierType
 ZonesControllerBasis :: GetZonesMax(void)
 {
     return (kZonesMax);

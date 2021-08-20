@@ -58,8 +58,8 @@ public:
 
     // Observer Methods
 
-    static Common::Status GetGroupsMax(size_t &aGroups);
-    static size_t         GetGroupsMax(void);
+    static Common::Status GetGroupsMax(IdentifierType &aGroups);
+    static IdentifierType GetGroupsMax(void);
 
     static bool           IsValidIdentifier(const IdentifierType &aGroupIdentifier);
     static Common::Status ValidateIdentifier(const IdentifierType &aGroupIdentifier);

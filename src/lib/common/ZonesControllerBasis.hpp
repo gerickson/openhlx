@@ -58,8 +58,8 @@ public:
 
     // Observer Methods
 
-    static Common::Status GetZonesMax(size_t &aZones);
-    static size_t         GetZonesMax(void);
+    static Common::Status GetZonesMax(IdentifierType &aZones);
+    static IdentifierType GetZonesMax(void);
 
     static bool           IsValidIdentifier(const IdentifierType &aZoneIdentifier);
     static Common::Status ValidateIdentifier(const IdentifierType &aZoneIdentifier);

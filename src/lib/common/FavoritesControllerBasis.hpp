@@ -58,8 +58,8 @@ public:
 
     // Observer Methods
 
-    static Common::Status GetFavoritesMax(size_t &aFavorites);
-    static size_t         GetFavoritesMax(void);
+    static Common::Status GetFavoritesMax(IdentifierType &aFavorites);
+    static IdentifierType GetFavoritesMax(void);
 
     static bool           IsValidIdentifier(const IdentifierType &aFavoriteIdentifier);
     static Common::Status ValidateIdentifier(const IdentifierType &aFavoriteIdentifier);

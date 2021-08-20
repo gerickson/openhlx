@@ -60,7 +60,7 @@ const EqualizerPresetsControllerBasis::IdentifierType  EqualizerPresetsControlle
  *
  */
 Status
-EqualizerPresetsControllerBasis :: GetEqualizerPresetsMax(size_t &aEqualizerPresets)
+EqualizerPresetsControllerBasis :: GetEqualizerPresetsMax(IdentifierType &aEqualizerPresets)
 {
     Status  lRetval = kStatus_Success;
 
@@ -77,7 +77,7 @@ EqualizerPresetsControllerBasis :: GetEqualizerPresetsMax(size_t &aEqualizerPres
  *    The maximum number of supported HLX equalizer presets.
  *
  */
-size_t
+EqualizerPresetsControllerBasis::IdentifierType
 EqualizerPresetsControllerBasis :: GetEqualizerPresetsMax(void)
 {
     return (kEqualizerPresetsMax);

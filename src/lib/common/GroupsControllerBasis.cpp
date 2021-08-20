@@ -59,7 +59,7 @@ const GroupsControllerBasis::IdentifierType  GroupsControllerBasis::kGroupsMax =
  *
  */
 Status
-GroupsControllerBasis :: GetGroupsMax(size_t &aGroups)
+GroupsControllerBasis :: GetGroupsMax(IdentifierType &aGroups)
 {
     Status  lRetval = kStatus_Success;
 
@@ -76,7 +76,7 @@ GroupsControllerBasis :: GetGroupsMax(size_t &aGroups)
  *    The maximum number of supported HLX groups.
  *
  */
-size_t
+GroupsControllerBasis::IdentifierType
 GroupsControllerBasis :: GetGroupsMax(void)
 {
     return (kGroupsMax);

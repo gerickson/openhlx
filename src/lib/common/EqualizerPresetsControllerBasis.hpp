@@ -59,8 +59,8 @@ public:
 
     // Observer Methods
 
-    static Common::Status GetEqualizerPresetsMax(size_t &aEqualizerPresets);
-    static size_t         GetEqualizerPresetsMax(void);
+    static Common::Status GetEqualizerPresetsMax(IdentifierType &aEqualizerPresets);
+    static IdentifierType GetEqualizerPresetsMax(void);
 
     static bool           IsValidIdentifier(const IdentifierType &aEqualizerPresetIdentifier);
     static Common::Status ValidateIdentifier(const IdentifierType &aEqualizerPresetIdentifier);

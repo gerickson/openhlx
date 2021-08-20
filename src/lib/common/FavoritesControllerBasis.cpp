@@ -59,7 +59,7 @@ const FavoritesControllerBasis::IdentifierType  FavoritesControllerBasis::kFavor
  *
  */
 Status
-FavoritesControllerBasis :: GetFavoritesMax(size_t &aFavorites)
+FavoritesControllerBasis :: GetFavoritesMax(IdentifierType &aFavorites)
 {
     Status  lRetval = kStatus_Success;
 
@@ -76,7 +76,7 @@ FavoritesControllerBasis :: GetFavoritesMax(size_t &aFavorites)
  *    The maximum number of supported HLX favorites.
  *
  */
-size_t
+FavoritesControllerBasis::IdentifierType
 FavoritesControllerBasis :: GetFavoritesMax(void)
 {
     return (kFavoritesMax);
