@@ -26,13 +26,12 @@
 #ifndef OPENHLXCLIENTCONTROLLERBASIS_HPP
 #define OPENHLXCLIENTCONTROLLERBASIS_HPP
 
-#include <OpenHLX/Common/Errors.hpp>
-#include <OpenHLX/Common/Timeout.hpp>
-
 #include <OpenHLX/Client/CommandExchangeBasis.hpp>
 #include <OpenHLX/Client/CommandManager.hpp>
 #include <OpenHLX/Client/CommandManagerDelegate.hpp>
 #include <OpenHLX/Client/StateChangeNotificationBasis.hpp>
+#include <OpenHLX/Common/Errors.hpp>
+#include <OpenHLX/Common/Timeout.hpp>
 
 
 namespace HLX

@@ -234,7 +234,7 @@ InfraredControllerBasis :: ResponseInit(void)
     Status lRetval = kStatus_Success;
 
 
-    // Initialize static notification response data.
+    // Initialize static notification response regular expression pattern data.
 
     lRetval = kDisabledResponse.Init();
     nlREQUIRE_SUCCESS(lRetval, done);
