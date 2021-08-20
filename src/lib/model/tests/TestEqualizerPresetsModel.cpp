@@ -29,7 +29,7 @@ using namespace HLX;
 using namespace HLX::Common;
 using namespace HLX::Model;
 
-static constexpr size_t kEqualizerPresetsMax = 7;
+static constexpr Model::EqualizerPresetModel::IdentifierType kEqualizerPresetsMax = 7;
 
 static void TestConstruction(nlTestSuite *inSuite __attribute__((unused)),
                              void *inContext __attribute__((unused)))

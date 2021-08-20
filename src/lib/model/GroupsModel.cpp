@@ -87,7 +87,7 @@ GroupsModel :: GroupsModel(const GroupsModel &aGroupsModel) :
  *
  */
 Status
-GroupsModel :: Init(const size_t &aGroupsMax)
+GroupsModel :: Init(const IdentifierType &aGroupsMax)
 {
     GroupModel lGroupModel;
     Status     lRetval = kStatus_Success;

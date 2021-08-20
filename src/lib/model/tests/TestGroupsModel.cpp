@@ -29,7 +29,7 @@ using namespace HLX;
 using namespace HLX::Common;
 using namespace HLX::Model;
 
-static constexpr size_t kGroupsMax = 7;
+static constexpr Model::GroupModel::IdentifierType kGroupsMax = 7;
 
 static void TestConstruction(nlTestSuite *inSuite __attribute__((unused)),
                              void *inContext __attribute__((unused)))

@@ -86,7 +86,7 @@ FavoritesModel :: FavoritesModel(const FavoritesModel &aFavoritesModel) :
  *
  */
 Status
-FavoritesModel :: Init(const size_t &aFavoritesMax)
+FavoritesModel :: Init(const IdentifierType &aFavoritesMax)
 {
     FavoriteModel lFavoriteModel;
     Status        lRetval = kStatus_Success;

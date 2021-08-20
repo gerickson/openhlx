@@ -62,7 +62,7 @@ public:
     FavoritesModel(const FavoritesModel &aFavoritesModel);
     virtual ~FavoritesModel(void) = default;
 
-    Common::Status Init(const size_t &aFavoritesMax);
+    Common::Status Init(const IdentifierType &aFavoritesMax);
     Common::Status Init(const FavoritesModel &aFavoritesModel);
 
     FavoritesModel &operator =(const FavoritesModel &aFavoritesModel);
@@ -81,8 +81,8 @@ private:
 private:
     typedef std::map<IdentifierType, FavoriteModel> Favorites;
 
-    size_t     mFavoritesMax;
-    Favorites  mFavorites;
+    IdentifierType  mFavoritesMax;
+    Favorites       mFavorites;
 };
 
 }; // namespace Model

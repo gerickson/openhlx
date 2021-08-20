@@ -62,7 +62,7 @@ public:
     EqualizerPresetsModel(const EqualizerPresetsModel &aEqualizerPresetsModel);
     virtual ~EqualizerPresetsModel(void) = default;
 
-    Common::Status Init(const size_t &aEqualizerPresetsMax);
+    Common::Status Init(const IdentifierType &aEqualizerPresetsMax);
     Common::Status Init(const EqualizerPresetsModel &aEqualizerPresetsModel);
 
     EqualizerPresetsModel &operator =(const EqualizerPresetsModel &aEqualizerPresetsModel);
@@ -81,7 +81,7 @@ private:
 private:
     typedef std::map<IdentifierType, EqualizerPresetModel> EqualizerPresets;
 
-    size_t            mEqualizerPresetsMax;
+    IdentifierType    mEqualizerPresetsMax;
     EqualizerPresets  mEqualizerPresets;
 };
 

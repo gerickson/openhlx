@@ -62,7 +62,7 @@ public:
     ZonesModel(const ZonesModel &aZonesModel);
     virtual ~ZonesModel(void) = default;
 
-    Common::Status Init(const size_t &aZonesMax);
+    Common::Status Init(const IdentifierType &aZonesMax);
     Common::Status Init(const ZonesModel &aZonesModel);
 
     ZonesModel &operator =(const ZonesModel &aZonesModel);
@@ -81,8 +81,8 @@ private:
 private:
     typedef std::map<IdentifierType, ZoneModel> Zones;
 
-    size_t  mZonesMax;
-    Zones   mZones;
+    IdentifierType  mZonesMax;
+    Zones           mZones;
 };
 
 }; // namespace Model

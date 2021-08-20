@@ -86,7 +86,7 @@ SourcesModel :: SourcesModel(const SourcesModel &aSourcesModel) :
  *
  */
 Status
-SourcesModel :: Init(const size_t &aSourcesMax)
+SourcesModel :: Init(const IdentifierType &aSourcesMax)
 {
     SourceModel  lSourceModel;
     Status       lRetval = kStatus_Success;

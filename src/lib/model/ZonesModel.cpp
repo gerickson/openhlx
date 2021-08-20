@@ -86,7 +86,7 @@ ZonesModel :: ZonesModel(const ZonesModel &aZonesModel) :
  *
  */
 Status
-ZonesModel :: Init(const size_t &aZonesMax)
+ZonesModel :: Init(const IdentifierType &aZonesMax)
 {
     ZoneModel    lZoneModel;
     Status       lRetval = kStatus_Success;
