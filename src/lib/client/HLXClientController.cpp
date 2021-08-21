@@ -3296,11 +3296,12 @@ Controller :: ControllerIsRefreshing(ControllerBasis &aController, const uint8_t
 
     if (lControllerIterator != mControllers.end())
     {
-        static const Percentage kPercentCompletePerController = CalculatePercentage(1,
-                                                                                    static_cast<uint8_t>(mControllers.size()));
-        const Percentage        lControllersPercentComplete   = CalculatePercentage(static_cast<uint8_t>(mControllersDidRefreshCount),
-                                                                                    static_cast<uint8_t>(mControllers.size()));
-        const Percentage        lPercentComplete              = (lControllersPercentComplete + ((kPercentCompletePerController * aPercentComplete) / 100));
+        static const Percentage kPercentCompletePerController    = CalculatePercentage(1,
+                                                                                       static_cast<uint8_t>(mControllers.size()));
+        const Percentage        lOtherControllersPercentComplete = CalculatePercentage(static_cast<uint8_t>(mControllersDidRefreshCount),
+                                                                                       static_cast<uint8_t>(mControllers.size()));
+        const Percentage        lThisControllerPercentComplete   = ((kPercentCompletePerController * aPercentComplete) / 100);
+        const Percentage        lPercentComplete                 = (lOtherControllersPercentComplete + lThisControllerPercentComplete);
 
         if (mDelegate != nullptr)
         {
