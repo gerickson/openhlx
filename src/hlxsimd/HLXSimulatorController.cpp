@@ -590,6 +590,7 @@ void Controller :: ControllerConfigurationIsDirty(Simulator::ControllerBasis &aC
 void Controller :: ConnectionManagerWillResolve(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, const char *aHost)
 {
     (void)aConnectionManager;
+    (void)aRoles;
 
     if (mDelegate != nullptr)
     {
@@ -600,6 +601,7 @@ void Controller :: ConnectionManagerWillResolve(Common::ConnectionManagerBasis &
 void Controller :: ConnectionManagerIsResolving(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, const char *aHost)
 {
     (void)aConnectionManager;
+    (void)aRoles;
 
     if (mDelegate != nullptr)
     {
@@ -610,6 +612,7 @@ void Controller :: ConnectionManagerIsResolving(Common::ConnectionManagerBasis &
 void Controller :: ConnectionManagerDidResolve(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, const char *aHost, const Common::IPAddress &aIPAddress)
 {
     (void)aConnectionManager;
+    (void)aRoles;
 
     if (mDelegate != nullptr)
     {
@@ -620,6 +623,7 @@ void Controller :: ConnectionManagerDidResolve(Common::ConnectionManagerBasis &a
 void Controller :: ConnectionManagerDidNotResolve(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, const char *aHost, const Common::Error &aError)
 {
     (void)aConnectionManager;
+    (void)aRoles;
 
     if (mDelegate != nullptr)
     {
@@ -716,6 +720,7 @@ void Controller :: ConnectionManagerDidNotAccept(ConnectionManager &aConnectionM
 void Controller :: ConnectionManagerWillDisconnect(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, CFURLRef aURLRef)
 {
     (void)aConnectionManager;
+    (void)aRoles;
 
     if (mDelegate != nullptr)
     {
@@ -726,6 +731,7 @@ void Controller :: ConnectionManagerWillDisconnect(Common::ConnectionManagerBasi
 void Controller :: ConnectionManagerDidDisconnect(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, CFURLRef aURLRef, const Common::Error &aError)
 {
     (void)aConnectionManager;
+    (void)aRoles;
 
     if (mDelegate != nullptr)
     {
@@ -736,6 +742,7 @@ void Controller :: ConnectionManagerDidDisconnect(Common::ConnectionManagerBasis
 void Controller :: ConnectionManagerDidNotDisconnect(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, CFURLRef aURLRef, const Common::Error &aError)
 {
     (void)aConnectionManager;
+    (void)aRoles;
 
     if (mDelegate != nullptr)
     {
@@ -748,6 +755,7 @@ void Controller :: ConnectionManagerDidNotDisconnect(Common::ConnectionManagerBa
 void Controller :: ConnectionManagerError(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, const Common::Error &aError)
 {
     (void)aConnectionManager;
+    (void)aRoles;
 
     if (mDelegate != nullptr)
     {
