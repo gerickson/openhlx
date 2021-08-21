@@ -431,7 +431,10 @@ void ConnectionTelnet :: HandleStreamError(const CFStreamEventType &aType, const
         {
             CloseStreams();
 
-            mReceiveBuffer->Flush();
+            if (mReceiveBuffer != nullptr)
+            {
+                mReceiveBuffer->Flush();
+            }
 
             mWaitingForServerConfirmation = true;
 
