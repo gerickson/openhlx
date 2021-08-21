@@ -96,12 +96,10 @@ private:
     Common::Status DoNotificationHandlers(const bool &aRegister);
     Common::Status ResponseInit(void);
 
-protected:
-    size_t                                       mFavoritesDidRefreshCount;
-
 private:
     Model::FavoritesModel &                      mFavoritesModel;
     const Model::FavoriteModel::IdentifierType & mFavoritesMax;
+    size_t                                       mFavoritesDidRefreshCount;
 
 protected:
     static Command::Favorites::NameResponse  kNameResponse;

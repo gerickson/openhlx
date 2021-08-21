@@ -100,12 +100,10 @@ private:
     Common::Status DoNotificationHandlers(const bool &aRegister);
     Common::Status ResponseInit(void);
 
-protected:
-    size_t                                                   mEqualizerPresetsDidRefreshCount;
-
 private:
     Model::EqualizerPresetsModel &                           mEqualizerPresetsModel;
     const Model::EqualizerPresetModel::IdentifierType &      mEqualizerPresetsMax;
+    size_t                                                   mEqualizerPresetsDidRefreshCount;
 
 protected:
     static Command::EqualizerPresets::EqualizerBandResponse  kEqualizerBandResponse;

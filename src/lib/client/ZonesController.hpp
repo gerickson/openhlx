@@ -64,6 +64,8 @@ public:
     ZonesController(void);
     virtual ~ZonesController(void);
 
+    // Initializer(s)
+
     Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
 
     // Observer Methods

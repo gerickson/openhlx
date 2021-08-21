@@ -68,9 +68,9 @@ Command::Groups::ZoneResponse            GroupsControllerBasis::kZoneResponse;
 GroupsControllerBasis :: GroupsControllerBasis(Model::GroupsModel &aGroupsModel,
                                                const Model::GroupsModel::IdentifierType &aGroupsMax) :
     Client::ControllerBasis(),
-    mGroupsDidRefreshCount(0),
     mGroupsModel(aGroupsModel),
-    mGroupsMax(aGroupsMax)
+    mGroupsMax(aGroupsMax),
+    mGroupsDidRefreshCount(0)
 {
     return;
 }

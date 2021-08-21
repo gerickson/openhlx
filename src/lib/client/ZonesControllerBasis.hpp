@@ -157,12 +157,10 @@ private:
     void HandleSourceChange(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const Model::SourceModel::IdentifierType &aSourceIdentifier);
     void HandleVolumeChange(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const Model::VolumeModel::LevelType &aVolume);
 
-protected:
-    size_t                                            mZonesDidRefreshCount;
-
 private:
     Model::ZonesModel &                               mZonesModel;
     const Model::ZoneModel::IdentifierType &          mZonesMax;
+    size_t                                            mZonesDidRefreshCount;
 
 protected:
     static Command::Zones::BalanceResponse            kBalanceResponse;

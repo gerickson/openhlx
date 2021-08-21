@@ -64,9 +64,9 @@ Command::Favorites::QueryResponse     FavoritesControllerBasis::kQueryResponse;
 FavoritesControllerBasis :: FavoritesControllerBasis(Model::FavoritesModel &aFavoritesModel,
                                                      const Model::FavoriteModel::IdentifierType &aFavoritesMax) :
     Client::ControllerBasis(),
-    mFavoritesDidRefreshCount(0),
     mFavoritesModel(aFavoritesModel),
-    mFavoritesMax(aFavoritesMax)
+    mFavoritesMax(aFavoritesMax),
+    mFavoritesDidRefreshCount(0)
 {
     return;
 }

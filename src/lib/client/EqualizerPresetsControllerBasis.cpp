@@ -65,9 +65,9 @@ Command::EqualizerPresets::QueryResponse          EqualizerPresetsControllerBasi
 EqualizerPresetsControllerBasis :: EqualizerPresetsControllerBasis(Model::EqualizerPresetsModel &aEqualizerPresetsModel,
                                                                    const Model::EqualizerPresetModel::IdentifierType &aEqualizerPresetsMax) :
     Client::ControllerBasis(),
-    mEqualizerPresetsDidRefreshCount(0),
     mEqualizerPresetsModel(aEqualizerPresetsModel),
-    mEqualizerPresetsMax(aEqualizerPresetsMax)
+    mEqualizerPresetsMax(aEqualizerPresetsMax),
+    mEqualizerPresetsDidRefreshCount(0)
 {
     return;
 }

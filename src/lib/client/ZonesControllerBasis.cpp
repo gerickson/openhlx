@@ -77,9 +77,9 @@ Command::Zones::VolumeFixedResponse        ZonesControllerBasis::kVolumeFixedRes
 ZonesControllerBasis :: ZonesControllerBasis(Model::ZonesModel &aZonesModel,
                                              const Model::ZoneModel::IdentifierType &aZonesMax) :
     Client::ControllerBasis(),
-    mZonesDidRefreshCount(0),
     mZonesModel(aZonesModel),
-    mZonesMax(aZonesMax)
+    mZonesMax(aZonesMax),
+    mZonesDidRefreshCount(0)
 {
     return;
 }

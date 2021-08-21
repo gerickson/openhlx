@@ -143,12 +143,10 @@ private:
     void HandleVolumeChange(const Model::GroupModel::IdentifierType &aGroupIdentifier, const Model::VolumeModel::LevelType &aVolume, const bool &aHandleUnmute);
     void HandleVolumeChange(const Model::GroupModel::IdentifierType &aGroupIdentifier, Model::GroupModel &aGroupModel, const Model::VolumeModel::LevelType &aVolume, const bool &aHandleUnmute);
 
-protected:
-    size_t                                          mGroupsDidRefreshCount;
-
 private:
     Model::GroupsModel &                            mGroupsModel;
     const Model::GroupModel::IdentifierType &       mGroupsMax;
+    size_t                                          mGroupsDidRefreshCount;
 
 protected:
     static Command::Groups::SetMuteResponse         kSetMuteResponse;
