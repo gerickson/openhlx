@@ -40,7 +40,9 @@ namespace HLX
 namespace Client
 {
 
-class ControllerBasisDelegate;
+class ControllerBasisErrorDelegate;
+class ControllerBasisRefreshDelegate;
+class ControllerBasisStateChangeDelegate;
 
 /**
  *  @brief
@@ -80,8 +82,15 @@ public:
      */
     virtual Common::Status Refresh(const Common::Timeout &aTimeout) = 0;
 
-    Common::Status SetDelegate(ControllerBasisDelegate *aDelegate);
-    ControllerBasisDelegate *GetDelegate(void) const;
+    // Delegate Management
+
+    ControllerBasisErrorDelegate *GetErrorDelegate(void) const;
+    ControllerBasisRefreshDelegate *GetRefreshDelegate(void) const;
+    ControllerBasisStateChangeDelegate *GetStateChangeDelegate(void) const;
+
+    Common::Status SetErrorDelegate(ControllerBasisErrorDelegate *aDelegate);
+    Common::Status SetRefreshDelegate(ControllerBasisRefreshDelegate *aDelegate);
+    Common::Status SetStateChangeDelegate(ControllerBasisStateChangeDelegate *aDelegate);
 
 protected:
     ControllerBasis(void);
@@ -152,10 +161,12 @@ protected:
     void MaybeUpdateRefreshIfRefreshWasRequested(void);
 
 private:
-    ControllerBasisDelegate *  mDelegate;
-    CommandManager *           mCommandManager;
-    Common::Timeout            mTimeout;
-    bool                       mRefreshRequested;
+    ControllerBasisErrorDelegate *        mErrorDelegate;
+    ControllerBasisRefreshDelegate *      mRefreshDelegate;
+    ControllerBasisStateChangeDelegate *  mStateChangeDelegate;
+    CommandManager *                      mCommandManager;
+    Common::Timeout                       mTimeout;
+    bool                                  mRefreshRequested;
 };
 
 }; // namespace Client

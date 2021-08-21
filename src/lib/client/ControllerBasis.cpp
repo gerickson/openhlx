@@ -55,7 +55,9 @@ namespace Client
  *
  */
 ControllerBasis :: ControllerBasis(void) :
-    mDelegate(nullptr),
+    mErrorDelegate(nullptr),
+    mRefreshDelegate(nullptr),
+    mStateChangeDelegate(nullptr),
     mCommandManager(nullptr),
     mTimeout(),
     mRefreshRequested(false)
@@ -220,39 +222,121 @@ ControllerBasis :: Refresh(void)
 
 /**
  *  @brief
- *    Return the delegate for the controller basis.
+ *    Return the error delegate for the controller basis.
  *
  *  @returns
- *    A pointer to the delegate for the controller basis.
+ *    A pointer to the error delegate for the controller basis.
  *
  */
-ControllerBasisDelegate *
-ControllerBasis :: GetDelegate(void) const
+ControllerBasisErrorDelegate *
+ControllerBasis :: GetErrorDelegate(void) const
 {
-    return (mDelegate);
+    return (mErrorDelegate);
 }
 
 /**
  *  @brief
- *    Set the delegate for the controller basis.
+ *    Return the refresh delegate for the controller basis.
  *
- *  This attempts to set a delegate for the controller basis.
+ *  @returns
+ *    A pointer to the refresh delegate for the controller basis.
  *
- *  @param[in]  aDelegate  A pointer to the delegate to set.
+ */
+ControllerBasisRefreshDelegate *
+ControllerBasis :: GetRefreshDelegate(void) const
+{
+    return (mRefreshDelegate);
+}
+
+/**
+ *  @brief
+ *    Return the state change delegate for the controller basis.
+ *
+ *  @returns
+ *    A pointer to the state change delegate for the controller basis.
+ *
+ */
+ControllerBasisStateChangeDelegate *
+ControllerBasis :: GetStateChangeDelegate(void) const
+{
+    return (mStateChangeDelegate);
+}
+
+/**
+ *  @brief
+ *    Set the error delegate for the controller basis.
+ *
+ *  This attempts to set a error delegate for the controller basis.
+ *
+ *  @param[in]  aErrorDelegate  A pointer to the error delegate to set.
  *
  *  @retval  kStatus_Success          If successful.
- *  @retval  kStatus_ValueAlreadySet  If the delegate was already set to
- *                                    the specified value.
+ *  @retval  kStatus_ValueAlreadySet  If the error delegate was already
+ *                                    set to the specified value.
  *
  */
 Status
-ControllerBasis :: SetDelegate(ControllerBasisDelegate *aDelegate)
+ControllerBasis :: SetErrorDelegate(ControllerBasisErrorDelegate *aErrorDelegate)
 {
     Status lRetval = kStatus_Success;
 
-    nlEXPECT_ACTION(aDelegate != mDelegate, done, lRetval = kStatus_ValueAlreadySet);
+    nlEXPECT_ACTION(aErrorDelegate != mErrorDelegate, done, lRetval = kStatus_ValueAlreadySet);
 
-    mDelegate = aDelegate;
+    mErrorDelegate = aErrorDelegate;
+
+done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Set the refresh delegate for the controller basis.
+ *
+ *  This attempts to set a refresh delegate for the controller basis.
+ *
+ *  @param[in]  aRefreshDelegate  A pointer to the refresh delegate to set.
+ *
+ *  @retval  kStatus_Success          If successful.
+ *  @retval  kStatus_ValueAlreadySet  If the refresh delegate was already
+ *                                    set to the specified value.
+ *
+ */
+Status
+ControllerBasis :: SetRefreshDelegate(ControllerBasisRefreshDelegate *aRefreshDelegate)
+{
+    Status lRetval = kStatus_Success;
+
+    nlEXPECT_ACTION(aRefreshDelegate != mRefreshDelegate, done, lRetval = kStatus_ValueAlreadySet);
+
+    mRefreshDelegate = aRefreshDelegate;
+
+done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Set the state change delegate for the controller basis.
+ *
+ *  This attempts to set a state change delegate for the controller
+ *  basis.
+ *
+ *  @param[in]  aStateChangeDelegate  A pointer to the state change
+ *                                    delegate to set.
+ *
+ *  @retval  kStatus_Success          If successful.
+ *  @retval  kStatus_ValueAlreadySet  If the state change delegate was
+ *                                    already set to the specified value.
+ *
+ */
+Status
+ControllerBasis :: SetStateChangeDelegate(ControllerBasisStateChangeDelegate *aStateChangeDelegate)
+{
+    Status lRetval = kStatus_Success;
+
+    nlEXPECT_ACTION(aStateChangeDelegate != mStateChangeDelegate, done, lRetval = kStatus_ValueAlreadySet);
+
+    mStateChangeDelegate = aStateChangeDelegate;
 
 done:
     return (lRetval);
@@ -473,9 +557,9 @@ ControllerBasis :: OnCommandError(const uint8_t *       aCommandBuffer,
                        aCommandBuffer,
                        aError);
 
-    if (mDelegate != nullptr)
+    if (mErrorDelegate != nullptr)
     {
-        mDelegate->ControllerError(*this, aError);
+        mErrorDelegate->ControllerError(*this, aError);
     }
 }
 
@@ -494,9 +578,9 @@ ControllerBasis :: OnCommandError(const uint8_t *       aCommandBuffer,
 void
 ControllerBasis :: OnIsRefreshing(const uint8_t &aPercentComplete)
 {
-    if (mDelegate != nullptr)
+    if (mRefreshDelegate != nullptr)
     {
-        mDelegate->ControllerIsRefreshing(*this, aPercentComplete);
+        mRefreshDelegate->ControllerIsRefreshing(*this, aPercentComplete);
     }
 }
 
@@ -511,9 +595,9 @@ ControllerBasis :: OnIsRefreshing(const uint8_t &aPercentComplete)
 void
 ControllerBasis :: OnDidRefresh(void)
 {
-    if (mDelegate != nullptr)
+    if (mRefreshDelegate != nullptr)
     {
-        mDelegate->ControllerDidRefresh(*this);
+        mRefreshDelegate->ControllerDidRefresh(*this);
     }
 
     SetRefreshRequested(false);
@@ -536,9 +620,9 @@ ControllerBasis :: OnDidRefresh(void)
 void
 ControllerBasis :: OnStateDidChange(const StateChange::NotificationBasis &aStateChangeNotification)
 {
-    if (mDelegate != nullptr)
+    if (mStateChangeDelegate != nullptr)
     {
-        mDelegate->ControllerStateDidChange(*this, aStateChangeNotification);
+        mStateChangeDelegate->ControllerStateDidChange(*this, aStateChangeNotification);
     }
 }
 

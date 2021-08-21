@@ -79,7 +79,9 @@ namespace Client
 class Controller :
     public ConnectionManagerDelegate,
     public CommandManagerDelegate,
-    public ControllerBasisDelegate
+    public ControllerBasisErrorDelegate,
+    public ControllerBasisRefreshDelegate,
+    public ControllerBasisStateChangeDelegate
 {
 public:
     Controller(void);

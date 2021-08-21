@@ -191,7 +191,9 @@ Controller :: DerivedGroupState :: UpdateVolume(const VolumeModel::LevelType &aV
 Controller :: Controller(void) :
     ConnectionManagerDelegate(),
     CommandManagerDelegate(),
-    ControllerBasisDelegate(),
+    ControllerBasisErrorDelegate(),
+    ControllerBasisRefreshDelegate(),
+    ControllerBasisStateChangeDelegate(),
     mConnectionManager(),
     mCommandManager(),
     mConfigurationController(),
@@ -282,7 +284,13 @@ Controller :: Init(const RunLoopParameters &aRunLoopParameters)
         lRetval = begin->second.mController->Init(mCommandManager);
         nlREQUIRE_SUCCESS(lRetval, done);
 
-        lRetval = begin->second.mController->SetDelegate(this);
+        lRetval = begin->second.mController->SetErrorDelegate(this);
+        nlREQUIRE_SUCCESS(lRetval, done);
+
+        lRetval = begin->second.mController->SetRefreshDelegate(this);
+        nlREQUIRE_SUCCESS(lRetval, done);
+
+        lRetval = begin->second.mController->SetStateChangeDelegate(this);
         nlREQUIRE_SUCCESS(lRetval, done);
 
         begin++;
