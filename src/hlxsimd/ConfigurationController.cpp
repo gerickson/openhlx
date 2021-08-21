@@ -61,8 +61,9 @@ namespace Simulator
  *
  */
 ConfigurationController :: ConfigurationController(void) :
-    Simulator::ControllerBasis(),
+    Common::ConfigurationControllerBasis(),
     Server::ConfigurationControllerBasis(),
+    Simulator::ControllerBasis(),
     mDelegate(nullptr)
 {
     return;
@@ -114,17 +115,20 @@ done:
     return (lRetval);
 }
 
-Status ConfigurationController :: Init(CommandManager &aCommandManager)
+// MARK: Initializer(s)
+
+Status
+ConfigurationController :: Init(Server::CommandManager &aCommandManager)
 {
     DeclareScopedFunctionTracer(lTracer);
     constexpr bool  kRegister = true;
     Status          lRetval = kStatus_Success;
 
 
-    lRetval = Server::ConfigurationControllerBasis::Init();
+    lRetval = Common::ConfigurationControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = ControllerBasis::Init(aCommandManager);
+    lRetval = Server::ConfigurationControllerBasis::Init(aCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // This MUST come AFTER the base class initialization due to a

@@ -85,16 +85,26 @@ static const SourceModelDefaults kSourceModelDefaults[8] = {
 static CFStringRef      kSourcesSchemaKey = CFSTR("Sources");
 static CFStringRef      kNameSchemaKey = CFSTR("Name");
 
+/**
+ *  @brief
+ *    This is the class default constructor.
+ *
+ */
 SourcesController :: SourcesController(void) :
-    Simulator::ControllerBasis(),
-    ContainerControllerBasis(),
     Common::SourcesControllerBasis(),
     Server::SourcesControllerBasis(Common::SourcesControllerBasis::mSources,
-                                   Common::SourcesControllerBasis::kSourcesMax)
+                                   Common::SourcesControllerBasis::kSourcesMax),
+    Server::ContainerControllerBasis(),
+    Simulator::ControllerBasis()
 {
     return;
 }
 
+/**
+ *  @brief
+ *    This is the class destructor.
+ *
+ */
 SourcesController :: ~SourcesController(void)
 {
     return;
@@ -121,7 +131,30 @@ done:
     return (lRetval);
 }
 
-Status SourcesController :: Init(Server::CommandManager &aCommandManager, const Timeout &aTimeout)
+// MARK: Initializer(s)
+
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the class with the specified command manager and
+ *  timeout.
+ *
+ *  @param[in]  aCommandManager  A reference to the command manager
+ *                               instance to initialize the controller
+ *                               with.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -EINVAL                      If an internal parameter was
+ *                                        invalid.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_NotInitialized        The base class was not properly
+ *                                        initialized.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+SourcesController :: Init(Server::CommandManager &aCommandManager)
 {
     DeclareScopedFunctionTracer(lTracer);
     const bool  lRegister = true;
@@ -131,10 +164,7 @@ Status SourcesController :: Init(Server::CommandManager &aCommandManager, const 
     lRetval = Common::SourcesControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = Server::SourcesControllerBasis::Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = ControllerBasis::Init(aCommandManager, aTimeout);
+    lRetval = Server::SourcesControllerBasis::Init(aCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // This MUST come AFTER the base class initialization due to a
@@ -143,7 +173,7 @@ Status SourcesController :: Init(Server::CommandManager &aCommandManager, const 
     lRetval = DoRequestHandlers(lRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 

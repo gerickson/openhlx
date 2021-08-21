@@ -57,7 +57,9 @@ public:
     FrontPanelController(void);
     virtual ~FrontPanelController(void);
 
-    Common::Status Init(Server::CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
+    // Initializer(s)
+
+    Common::Status Init(Server::CommandManager &aCommandManager) final;
 
     // Configuration Management Methods
 

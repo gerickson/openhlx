@@ -56,10 +56,10 @@ namespace Simulator
  *
  */
 class ZonesController :
-    public Simulator::ControllerBasis,
-    public Server::ContainerControllerBasis,
     public Common::ZonesControllerBasis,
-    public Server::ZonesControllerBasis
+    public Server::ZonesControllerBasis,
+    public Server::ContainerControllerBasis,
+    public Simulator::ControllerBasis
 {
 public:
     ZonesController(void);
@@ -67,7 +67,7 @@ public:
 
     // Initializer(s)
 
-    Common::Status Init(Server::CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
+    Common::Status Init(Server::CommandManager &aCommandManager) final;
 
     // Configuration Management Methods
 

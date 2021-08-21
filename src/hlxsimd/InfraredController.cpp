@@ -78,6 +78,11 @@ static const InfraredModelDefaults kInfraredModelDefaults =
 static CFStringRef           kInfraredSchemaKey = CFSTR("Infrared");
 static CFStringRef           kDisabledSchemaKey = CFSTR("Disabled");
 
+/**
+ *  @brief
+ *    This is the class default constructor.
+ *
+ */
 InfraredController :: InfraredController(void) :
     Common::InfraredControllerBasis(),
     Server::InfraredControllerBasis(Common::InfraredControllerBasis::mInfraredModel),
@@ -86,6 +91,11 @@ InfraredController :: InfraredController(void) :
     return;
 }
 
+/**
+ *  @brief
+ *    This is the class destructor.
+ *
+ */
 InfraredController :: ~InfraredController(void)
 {
     return;
@@ -117,7 +127,30 @@ done:
     return (lRetval);
 }
 
-Status InfraredController :: Init(Server::CommandManager &aCommandManager, const Timeout &aTimeout)
+// MARK: Initializer(s)
+
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the class with the specified command manager and
+ *  timeout.
+ *
+ *  @param[in]  aCommandManager  A reference to the command manager
+ *                               instance to initialize the controller
+ *                               with.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -EINVAL                      If an internal parameter was
+ *                                        invalid.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_NotInitialized        The base class was not properly
+ *                                        initialized.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+InfraredController :: Init(Server::CommandManager &aCommandManager)
 {
     DeclareScopedFunctionTracer(lTracer);
     constexpr bool  kRegister = true;
@@ -127,10 +160,7 @@ Status InfraredController :: Init(Server::CommandManager &aCommandManager, const
     lRetval = Common::InfraredControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = Server::InfraredControllerBasis::Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = ControllerBasis::Init(aCommandManager, aTimeout);
+    lRetval = Server::InfraredControllerBasis::Init(aCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // This MUST come AFTER the base class initialization due to a

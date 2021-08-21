@@ -26,10 +26,13 @@
 #ifndef OPENHLXSIMULATORCONTROLLERBASIS_HPP
 #define OPENHLXSIMULATORCONTROLLERBASIS_HPP
 
+#include <CoreFoundation/CFDictionary.h>
+
 #include <OpenHLX/Common/ConnectionBuffer.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
-#include <OpenHLX/Server/ControllerBasis.hpp>
+#include <OpenHLX/Server/CommandManager.hpp>
+#include <OpenHLX/Server/ConnectionBasis.hpp>
 
 
 namespace HLX
@@ -47,10 +50,15 @@ class ControllerBasisDelegate;
  *  @ingroup simulator
  *
  */
-class ControllerBasis :
-    public Server::ControllerBasis
+class ControllerBasis
 {
 public:
+    virtual ~ControllerBasis(void);
+
+    // Initializer(s)
+
+    virtual Common::Status Init(Server::CommandManager &aCommandManager) = 0;
+
     Common::Status SetDelegate(ControllerBasisDelegate *aDelegate);
     ControllerBasisDelegate *GetDelegate(void) const;
 
@@ -65,7 +73,6 @@ public:
 
 protected:
     ControllerBasis(void);
-    virtual ~ControllerBasis(void);
 
 private:
     ControllerBasisDelegate *  mDelegate;

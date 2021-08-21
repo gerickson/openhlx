@@ -61,7 +61,9 @@ public:
     SourcesController(void);
     virtual ~SourcesController(void);
 
-    Common::Status Init(Server::CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
+    // Initializer(s)
+
+    Common::Status Init(Server::CommandManager &aCommandManager) final;
 
     // Configuration Management Methods
 

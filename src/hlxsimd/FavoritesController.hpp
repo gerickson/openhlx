@@ -52,16 +52,18 @@ namespace Simulator
  *
  */
 class FavoritesController :
-    public Simulator::ControllerBasis,
-    public Server::ContainerControllerBasis,
     public Common::FavoritesControllerBasis,
-    public Server::FavoritesControllerBasis
+    public Server::FavoritesControllerBasis,
+    public Server::ContainerControllerBasis,
+    public Simulator::ControllerBasis
 {
 public:
     FavoritesController(void);
     virtual ~FavoritesController(void);
 
-    Common::Status Init(Server::CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
+    // Initializer(s)
+
+    Common::Status Init(Server::CommandManager &aCommandManager) final;
 
     // Configuration Management Methods
 

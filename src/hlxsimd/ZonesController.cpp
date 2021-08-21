@@ -138,7 +138,7 @@ struct ZoneModelDefaults
     SoundModelDefaults          mSoundModel;
     SourceModel::IdentifierType mSource;
     VolumeModel::MuteType       mMute;
-    VolumeModel::LevelType     mVolume;
+    VolumeModel::LevelType      mVolume;
     VolumeModel::FixedType      mVolumeFixed;
 };
 
@@ -594,12 +594,17 @@ static CFStringRef kVolumeLockedSchemaKey          = CFSTR("Locked");
 static CFStringRef kVolumeMutedSchemaKey           = CFSTR("Muted");
 static CFStringRef kZonesSchemaKey                 = CFSTR("Zones");
 
+/**
+ *  @brief
+ *    This is the class default constructor.
+ *
+ */
 ZonesController :: ZonesController(void) :
-    Simulator::ControllerBasis(),
-    ContainerControllerBasis(),
     Common::ZonesControllerBasis(),
     Server::ZonesControllerBasis(Common::ZonesControllerBasis::mZones,
-                                 Common::ZonesControllerBasis::kZonesMax)
+                                 Common::ZonesControllerBasis::kZonesMax),
+    Server::ContainerControllerBasis(),
+    Simulator::ControllerBasis()
 {
     return;
 }
@@ -771,8 +776,30 @@ done:
     return (lRetval);
 }
 
+// MARK: Initializer(s)
+
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the class with the specified command manager and
+ *  timeout.
+ *
+ *  @param[in]  aCommandManager  A reference to the command manager
+ *                               instance to initialize the controller
+ *                               with.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -EINVAL                      If an internal parameter was
+ *                                        invalid.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_NotInitialized        The base class was not properly
+ *                                        initialized.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
 Status
-ZonesController :: Init(Server::CommandManager &aCommandManager, const Timeout &aTimeout)
+ZonesController :: Init(Server::CommandManager &aCommandManager)
 {
     DeclareScopedFunctionTracer(lTracer);
     constexpr bool  kRegister = true;
@@ -782,10 +809,7 @@ ZonesController :: Init(Server::CommandManager &aCommandManager, const Timeout &
     lRetval = Common::ZonesControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = Server::ZonesControllerBasis::Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = ControllerBasis::Init(aCommandManager, aTimeout);
+    lRetval = Server::ZonesControllerBasis::Init(aCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // This MUST come AFTER the base class initialization due to a
@@ -938,7 +962,7 @@ ZonesController :: GetEqualizerBand(const Model::ZoneModel::IdentifierType &aZon
     lRetval = lZoneModel->GetEqualizerBand(aEqualizerBandIdentifier, aEqualizerBandModel);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 

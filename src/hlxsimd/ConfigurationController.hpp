@@ -28,6 +28,7 @@
 
 #include <CoreFoundation/CFDictionary.h>
 
+#include <OpenHLX/Common/ConfigurationControllerBasis.hpp>
 #include <OpenHLX/Server/ConfigurationControllerBasis.hpp>
 #include <OpenHLX/Server/ConfigurationControllerCommands.hpp>
 
@@ -52,12 +53,15 @@ class ConfigurationControllerDelegate;
  *
  */
 class ConfigurationController :
-    public Simulator::ControllerBasis,
-    public Server::ConfigurationControllerBasis
+    public Common::ConfigurationControllerBasis,
+    public Server::ConfigurationControllerBasis,
+    public Simulator::ControllerBasis
 {
 public:
     ConfigurationController(void);
     virtual ~ConfigurationController(void);
+
+    // Initializer(s)
 
     Common::Status Init(Server::CommandManager &aCommandManager) final;
 

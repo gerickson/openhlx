@@ -130,12 +130,17 @@ static CFStringRef      kNameSchemaKey   = CFSTR("Name");
 static CFStringRef      kZonesSchemaKey  = CFSTR("Zones");
 
 
+/**
+ *  @brief
+ *    This is the class default constructor.
+ *
+ */
 GroupsController :: GroupsController(void) :
-    Simulator::ControllerBasis(),
-    ContainerControllerBasis(),
     Common::GroupsControllerBasis(),
     Server::GroupsControllerBasis(Common::GroupsControllerBasis::mGroups,
                                   Common::GroupsControllerBasis::kGroupsMax),
+    Server::ContainerControllerBasis(),
+    Simulator::ControllerBasis(),
     mDelegate(nullptr)
 {
     return;
@@ -223,7 +228,30 @@ done:
     return (lRetval);
 }
 
-Status GroupsController :: Init(CommandManager &aCommandManager)
+// MARK: Initializer(s)
+
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the class with the specified command manager and
+ *  timeout.
+ *
+ *  @param[in]  aCommandManager  A reference to the command manager
+ *                               instance to initialize the controller
+ *                               with.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -EINVAL                      If an internal parameter was
+ *                                        invalid.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_NotInitialized        The base class was not properly
+ *                                        initialized.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+GroupsController :: Init(CommandManager &aCommandManager)
 {
     DeclareScopedFunctionTracer(lTracer);
     constexpr bool  kRegister = true;
@@ -233,10 +261,7 @@ Status GroupsController :: Init(CommandManager &aCommandManager)
     lRetval = Common::GroupsControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = Server::GroupsControllerBasis::Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = ControllerBasis::Init(aCommandManager);
+    lRetval = Server::GroupsControllerBasis::Init(aCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // This MUST come AFTER the base class initialization due to a

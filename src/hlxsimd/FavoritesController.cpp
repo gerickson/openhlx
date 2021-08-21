@@ -88,16 +88,26 @@ static const FavoriteModelDefaults kFavoriteModelDefaults[10] = {
 static CFStringRef      kFavoritesSchemaKey = CFSTR("Favorites");
 static CFStringRef      kNameSchemaKey = CFSTR("Name");
 
+/**
+ *  @brief
+ *    This is the class default constructor.
+ *
+ */
 FavoritesController :: FavoritesController(void) :
-    Simulator::ControllerBasis(),
-    Server::ContainerControllerBasis(),
     Common::FavoritesControllerBasis(),
     Server::FavoritesControllerBasis(Common::FavoritesControllerBasis::mFavorites,
-                                     Common::FavoritesControllerBasis::kFavoritesMax)
+                                     Common::FavoritesControllerBasis::kFavoritesMax),
+    Server::ContainerControllerBasis(),
+    Simulator::ControllerBasis()
 {
     return;
 }
 
+/**
+ *  @brief
+ *    This is the class destructor.
+ *
+ */
 FavoritesController :: ~FavoritesController(void)
 {
     return;
@@ -129,7 +139,30 @@ done:
     return (lRetval);
 }
 
-Status FavoritesController :: Init(Server::CommandManager &aCommandManager, const Timeout &aTimeout)
+// MARK: Initializer(s)
+
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the class with the specified command manager and
+ *  timeout.
+ *
+ *  @param[in]  aCommandManager  A reference to the command manager
+ *                               instance to initialize the controller
+ *                               with.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -EINVAL                      If an internal parameter was
+ *                                        invalid.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_NotInitialized        The base class was not properly
+ *                                        initialized.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+FavoritesController :: Init(Server::CommandManager &aCommandManager)
 {
     DeclareScopedFunctionTracer(lTracer);
     constexpr bool  kRegister = true;
@@ -139,10 +172,7 @@ Status FavoritesController :: Init(Server::CommandManager &aCommandManager, cons
     lRetval = Common::FavoritesControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = Server::FavoritesControllerBasis::Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = ControllerBasis::Init(aCommandManager, aTimeout);
+    lRetval = Server::FavoritesControllerBasis::Init(aCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // This MUST come AFTER the base class initialization due to a

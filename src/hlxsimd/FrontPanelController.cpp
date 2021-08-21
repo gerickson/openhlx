@@ -80,6 +80,11 @@ static CFStringRef               kFrontPanelSchemaKey = CFSTR("Front Panel");
 static CFStringRef               kBrightnessSchemaKey = CFSTR("Brightness");
 static CFStringRef               kLockedSchemaKey = CFSTR("Locked");
 
+/**
+ *  @brief
+ *    This is the class default constructor.
+ *
+ */
 FrontPanelController :: FrontPanelController(void) :
     Common::FrontPanelControllerBasis(),
     Server::FrontPanelControllerBasis(Common::FrontPanelControllerBasis::mFrontPanelModel),
@@ -88,6 +93,11 @@ FrontPanelController :: FrontPanelController(void) :
     return;
 }
 
+/**
+ *  @brief
+ *    This is the class destructor.
+ *
+ */
 FrontPanelController :: ~FrontPanelController(void)
 {
     return;
@@ -125,7 +135,30 @@ done:
     return (lRetval);
 }
 
-Status FrontPanelController :: Init(Server::CommandManager &aCommandManager, const Timeout &aTimeout)
+// MARK: Initializer(s)
+
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the class with the specified command manager and
+ *  timeout.
+ *
+ *  @param[in]  aCommandManager  A reference to the command manager
+ *                               instance to initialize the controller
+ *                               with.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -EINVAL                      If an internal parameter was
+ *                                        invalid.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_NotInitialized        The base class was not properly
+ *                                        initialized.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+FrontPanelController :: Init(Server::CommandManager &aCommandManager)
 {
     DeclareScopedFunctionTracer(lTracer);
     constexpr bool  kRegister = true;
@@ -135,10 +168,7 @@ Status FrontPanelController :: Init(Server::CommandManager &aCommandManager, con
     lRetval = Common::FrontPanelControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = Server::FrontPanelControllerBasis::Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = ControllerBasis::Init(aCommandManager, aTimeout);
+    lRetval = Server::FrontPanelControllerBasis::Init(aCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // This MUST come AFTER the base class initialization due to a

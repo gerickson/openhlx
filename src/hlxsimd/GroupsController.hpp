@@ -54,14 +54,16 @@ class GroupsControllerDelegate;
  *
  */
 class GroupsController :
-    public Simulator::ControllerBasis,
-    public Server::ContainerControllerBasis,
     public Common::GroupsControllerBasis,
-    public Server::GroupsControllerBasis
+    public Server::GroupsControllerBasis,
+    public Server::ContainerControllerBasis,
+    public Simulator::ControllerBasis
 {
 public:
     GroupsController(void);
     virtual ~GroupsController(void);
+
+    // Initializer(s)
 
     Common::Status Init(Server::CommandManager &aCommandManager) final;
 
