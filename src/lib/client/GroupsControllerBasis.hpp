@@ -39,6 +39,13 @@ namespace HLX
 namespace Client
 {
 
+namespace Application
+{
+
+    class Controller;
+
+}; // namespace Application
+
 /**
  *  @brief
  *    An object for...
@@ -119,10 +126,11 @@ private:
     Common::Status ResponseInit(void);
     
 private:
-    //!< Ensure the base class can access the Handle*Change methods
-    //!< for cross zone-to-group and group-to-zone state synthesis.
+    //!< Ensure the application controller can access the Handle*Change
+    //!< methods for cross zone-to-group and group-to-zone state
+    //!< synthesis.
 
-    friend class Controller;
+    friend class Application::Controller;
 
     // Parent Controller Group / Zone Interaction Handlers
 

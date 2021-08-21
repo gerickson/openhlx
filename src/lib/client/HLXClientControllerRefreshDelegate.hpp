@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef OPENHLXCLIENTCONTROLLERREFRESHDELEGATE_HPP
-#define OPENHLXCLIENTCONTROLLERREFRESHDELEGATE_HPP
+#ifndef OPENHLXCLIENTAPPLICATIONCONTROLLERREFRESHDELEGATE_HPP
+#define OPENHLXCLIENTAPPLICATIONCONTROLLERREFRESHDELEGATE_HPP
 
 
 #include <OpenHLX/Common/Errors.hpp>
@@ -34,6 +34,9 @@ namespace HLX
 {
 
 namespace Client
+{
+
+namespace Application
 {
 
 class Controller;
@@ -110,8 +113,10 @@ public:
     virtual void ControllerDidNotRefresh(Controller &aController, const Common::Error &aError) = 0;
 };
 
+}; // namespace Application
+
 }; // namespace Client
 
 }; // namespace HLX
 
-#endif // OPENHLXCLIENTCONTROLLERREFRESHDELEGATE_HPP
+#endif // OPENHLXCLIENTAPPLICATIONCONTROLLERREFRESHDELEGATE_HPP

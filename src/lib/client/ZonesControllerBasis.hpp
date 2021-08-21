@@ -37,6 +37,13 @@ namespace HLX
 namespace Client
 {
 
+namespace Application
+{
+
+    class Controller;
+
+}; // namespace Application
+
 /**
  *  @brief
  *    An object for...
@@ -148,10 +155,11 @@ private:
     Common::Status ResponseInit(void);
 
 private:
-    //!< Ensure the base class can access the Handle*Change methods
-    //!< for cross zone-to-group and group-to-zone state synthesis.
+    //!< Ensure the application controller can access the Handle*Change
+    //!< methods for cross zone-to-group and group-to-zone state
+    //!< synthesis.
 
-    friend class Controller;
+    friend class Application::Controller;
 
     void HandleMuteChange(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const Model::VolumeModel::MuteType &aMute);
     void HandleSourceChange(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const Model::SourceModel::IdentifierType &aSourceIdentifier);

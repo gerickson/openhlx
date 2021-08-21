@@ -65,6 +65,7 @@
 
 
 using namespace HLX::Client;
+using namespace HLX::Client::Application;
 using namespace HLX::Common;
 using namespace HLX::Model;
 using namespace HLX::Utilities;
@@ -452,8 +453,8 @@ public:
     Status Stop(void);
     Status Stop(const Status &aStatus);
 
-    const HLX::Client::Controller &GetController(void) const;
-    HLX::Client::Controller &GetController(void);
+    const Controller &GetController(void) const;
+    Controller &GetController(void);
     Status GetStatus(void) const;
     void SetStatus(const Status &aStatus);
 
@@ -496,9 +497,9 @@ private:
     static void OnSignal(int aSignal);
 
 private:
-    RunLoopParameters                mRunLoopParameters;
-    HLX::Client::Controller          mHLXClientController;
-    Status                           mStatus;
+    RunLoopParameters  mRunLoopParameters;
+    Controller         mHLXClientController;
+    Status             mStatus;
 };
 
 Client :: Client(void) :
@@ -568,12 +569,12 @@ Status Client :: Stop(const Status &aStatus)
     return (lStatus);
 }
 
-const HLX::Client::Controller &Client :: GetController(void) const
+const Controller &Client :: GetController(void) const
 {
     return (mHLXClientController);
 }
 
-HLX::Client::Controller &Client :: GetController(void)
+Controller &Client :: GetController(void)
 {
     return (mHLXClientController);
 }

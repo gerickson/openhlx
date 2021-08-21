@@ -24,8 +24,8 @@
  *
  */
 
-#ifndef OPENHLXCLIENTCONTROLLER_HPP
-#define OPENHLXCLIENTCONTROLLER_HPP
+#ifndef OPENHLXCLIENTAPPLICATIONCONTROLLER_HPP
+#define OPENHLXCLIENTAPPLICATIONCONTROLLER_HPP
 
 #include <vector>
 
@@ -65,6 +65,9 @@ namespace Common
 }; // namespace Common
 
 namespace Client
+{
+
+namespace Application
 {
 
 /**
@@ -295,8 +298,10 @@ private:
     bool                            mIsDerivingGroupState;
 };
 
+}; // namespace Application
+
 }; // namespace Client
 
 }; // namespace HLX
 
-#endif // OPENHLXCLIENTCONTROLLER_HPP
+#endif // OPENHLXCLIENTAPPLICATIONCONTROLLER_HPP

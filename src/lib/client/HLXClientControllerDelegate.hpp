@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef OPENHLXCLIENTCONTROLLERDELEGATE_HPP
-#define OPENHLXCLIENTCONTROLLERDELEGATE_HPP
+#ifndef OPENHLXCLIENTAPPLICATIONCONTROLLERDELEGATE_HPP
+#define OPENHLXCLIENTAPPLICATIONCONTROLLERDELEGATE_HPP
 
 #include <CoreFoundation/CFURL.h>
 
@@ -39,6 +39,9 @@ namespace HLX
 {
 
 namespace Client
+{
+
+namespace Application
 {
 
 class Controller;
@@ -270,8 +273,10 @@ public:
     virtual void ControllerError(Controller &aController, const Common::Error &aError) = 0;
 };
 
+}; // namespace Application
+
 }; // namespace Client
 
 }; // namespace HLX
 
-#endif // OPENHLXCLIENTCONTROLLERDELEGATE_HPP
+#endif // OPENHLXCLIENTAPPLICATIONCONTROLLERDELEGATE_HPP

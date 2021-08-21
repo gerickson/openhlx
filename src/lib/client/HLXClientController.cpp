@@ -99,6 +99,9 @@ namespace HLX
 namespace Client
 {
 
+namespace Application
+{
+
 namespace Detail
 {
 
@@ -3448,6 +3451,8 @@ Controller :: ControllerStateDidChange(ControllerBasis &aController,
         }
     }
 }
+
+}; // namespace Application
 
 }; // namespace Client
 
