@@ -91,6 +91,7 @@ libopenhlx_client_a_include_HEADERS                         = \
     GroupsStateChangeNotifications.hpp                        \
     HLXClientController.hpp                                   \
     HLXClientControllerDelegate.hpp                           \
+    HLXClientControllerRefreshDelegate.hpp                    \
     IdentifierStateChangeNotificationBasis.hpp                \
     InfraredController.hpp                                    \
     InfraredControllerBasis.hpp                               \
