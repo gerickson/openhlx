@@ -53,6 +53,7 @@ Server::Command::Favorites::SetNameRequest  FavoritesControllerBasis::kSetNameRe
  */
 FavoritesControllerBasis :: FavoritesControllerBasis(Model::FavoritesModel &aFavoritesModel,
                                                      const Model::FavoriteModel::IdentifierType &aFavoritesMax) :
+    Server::ControllerBasis(),
     mFavoritesModel(aFavoritesModel),
     mFavoritesMax(aFavoritesMax)
 {
@@ -72,13 +73,16 @@ FavoritesControllerBasis :: ~FavoritesControllerBasis(void)
 // MARK: Initializer(s)
 
 Status
-FavoritesControllerBasis :: Init(void)
+FavoritesControllerBasis :: Init(CommandManager &aCommandManager)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 
     lRetval = RequestInit();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = ControllerBasis::Init(aCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -90,6 +94,9 @@ FavoritesControllerBasis :: RequestInit(void)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
+
+
+    // Initialize static command request regular expression pattern data.
 
     lRetval = kQueryRequest.Init();
     nlREQUIRE_SUCCESS(lRetval, done);
@@ -109,6 +116,7 @@ Status
 FavoritesControllerBasis :: HandleQueryReceived(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     Status lRetval = kStatus_Success;
+
 
     for (auto lFavoriteIdentifier = IdentifierModel::kIdentifierMin; lFavoriteIdentifier <= mFavoritesMax; lFavoriteIdentifier++)
     {

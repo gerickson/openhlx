@@ -27,6 +27,7 @@
 
 #include <OpenHLX/Model/EqualizerPresetModel.hpp>
 #include <OpenHLX/Model/EqualizerPresetsModel.hpp>
+#include <OpenHLX/Server/ControllerBasis.hpp>
 #include <OpenHLX/Server/EqualizerPresetsControllerCommands.hpp>
 
 
@@ -44,7 +45,8 @@ namespace Server
  *  @ingroup equalizer-preset
  *
  */
-class EqualizerPresetsControllerBasis
+class EqualizerPresetsControllerBasis :
+    public Server::ControllerBasis
 {
 public:
     virtual ~EqualizerPresetsControllerBasis(void);
@@ -55,14 +57,16 @@ protected:
 
     // Initializer(s)
 
-    Common::Status Init(void);
+    Common::Status Init(CommandManager &aCommandManager);
 
 private:
+    // Implementation
+
     Common::Status RequestInit(void);
 
 private:
-    Model::EqualizerPresetsModel &                      mEqualizerPresetsModel;
-    const Model::EqualizerPresetModel::IdentifierType & mEqualizerPresetsMax;
+    Model::EqualizerPresetsModel &                           mEqualizerPresetsModel;
+    const Model::EqualizerPresetModel::IdentifierType &      mEqualizerPresetsMax;
 
 protected:
     // Observation (Query) Command Request Handlers

@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file implements a base object for....
+ *      This file implements a base object for all server-side HLX
+ *      controllers.
  *
  */
 
@@ -42,17 +43,42 @@ namespace HLX
 namespace Server
 {
 
+/**
+ *  @brief
+ *    This is the class default constructor.
+ *
+ */
 ControllerBasis :: ControllerBasis(void) :
     mCommandManager(nullptr)
 {
     return;
 }
 
+/**
+ *  @brief
+ *    This is the class destructor.
+ *
+ */
 ControllerBasis :: ~ControllerBasis(void)
 {
     return;
 }
 
+/**
+ *  @brief
+ *    This is a class initializer.
+ *
+ *  This initializes the controller basis with a default timeout.
+ *
+ *  @param[in]  aCommandManager  A mutable reference to the command
+ *                               manager to initialize this controller
+ *                               basis with as the controller
+ *                               basis is to be a delegate of the
+ *                               command manager.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
 Status
 ControllerBasis :: Init(CommandManager &aCommandManager)
 {
@@ -60,27 +86,45 @@ ControllerBasis :: Init(CommandManager &aCommandManager)
     Status lRetval = kStatus_Success;
 
 
-    lRetval = Init(aCommandManager, kTimeoutDefault);
-
-    return (lRetval);
-}
-
-Status
-ControllerBasis :: Init(CommandManager &aCommandManager, const Timeout &aTimeout)
-{
-    DeclareScopedFunctionTracer(lTracer);
-    Status lRetval = kStatus_Success;
-
-
-    (void)aTimeout;
-
     mCommandManager = &aCommandManager;
 
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Register or unregister notification handlers.
+ *
+ *  This registers or unregisters the unsolicited server command
+ *  request handlers that this controller is interested in and will
+ *  handle on behalf of the server.
+ *
+ *  @param[in]  aFirstRequestHandler  An iterator to the first
+ *                                    command request handler to
+ *                                    register or unregister.
+ *  @param[in]  aLastRequestHandler   An iterator to the last
+ *                                    comamnd request handler to
+ *                                    register or unregister.
+ *  @param[in]  aRegister             Indicates whether to
+ *                                    register (true) or unregister
+ *                                    (false) the handlers.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -EINVAL                      If either of the handler iterators
+ *                                        was null.
+ *  @retval  -EEXIST                      If a registration already exists.
+ *  @retval  -ENOENT                      If there was no such handler
+ *                                        registration to unregister.
+ *  @retval  kError_NotInitialized        The base class was not properly
+ *                                        initialized.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
 Status
-ControllerBasis :: DoRequestHandlers(const RequestHandlerBasis *aFirstRequestHandler, const RequestHandlerBasis *aLastRequestHandler, void *aContext, const bool &aRegister)
+ControllerBasis :: DoRequestHandlers(const RequestHandlerBasis *aFirstRequestHandler,
+                                     const RequestHandlerBasis *aLastRequestHandler,
+                                     void *aContext,
+                                     const bool &aRegister)
 {
     Status lRetval = kStatus_Success;
 
@@ -105,7 +149,7 @@ ControllerBasis :: DoRequestHandlers(const RequestHandlerBasis *aFirstRequestHan
         ++aFirstRequestHandler;
     }
 
- done:
+done:
     return (lRetval);
 }
 

@@ -25,6 +25,7 @@
 #ifndef OPENHLXSERVERCONFIGURATIONCONTROLLERBASIS_HPP
 #define OPENHLXSERVERCONFIGURATIONCONTROLLERBASIS_HPP
 
+#include <OpenHLX/Server/ControllerBasis.hpp>
 #include <OpenHLX/Server/ConfigurationControllerCommands.hpp>
 
 
@@ -42,7 +43,8 @@ namespace Server
  *  @ingroup configuration
  *
  */
-class ConfigurationControllerBasis
+class ConfigurationControllerBasis :
+    public Server::ControllerBasis
 {
 public:
     virtual ~ConfigurationControllerBasis(void);
@@ -50,9 +52,13 @@ public:
 protected:
     ConfigurationControllerBasis(void);
 
-    Common::Status Init(void);
+    // Initializer(s)
 
-protected:
+    virtual Common::Status Init(CommandManager &aCommandManager);
+
+private:
+    // Implementation
+
     Common::Status RequestInit(void);
 
 protected:

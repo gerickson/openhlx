@@ -26,6 +26,7 @@
 #define OPENHLXSERVERNETWORKCONTROLLERBASIS_HPP
 
 #include <OpenHLX/Model/NetworkModel.hpp>
+#include <OpenHLX/Server/ControllerBasis.hpp>
 #include <OpenHLX/Server/NetworkControllerCommands.hpp>
 
 
@@ -43,7 +44,8 @@ namespace Server
  *  @ingroup network
  *
  */
-class NetworkControllerBasis
+class NetworkControllerBasis :
+    public Server::ControllerBasis
 {
 public:
     virtual ~NetworkControllerBasis(void);
@@ -53,9 +55,11 @@ protected:
 
     // Initializer(s)
 
-    Common::Status Init(void);
+    virtual Common::Status Init(CommandManager &aCommandManager);
 
 private:
+    // Implementation
+
     Common::Status RequestInit(void);
 
 private:

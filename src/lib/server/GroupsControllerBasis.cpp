@@ -69,6 +69,7 @@ Server::Command::Groups::ToggleMuteRequest      GroupsControllerBasis::kToggleMu
  */
 GroupsControllerBasis :: GroupsControllerBasis(Model::GroupsModel &aGroupsModel,
                                                const Model::GroupsModel::IdentifierType &aGroupsMax) :
+    Server::ControllerBasis(),
     mGroupsModel(aGroupsModel),
     mGroupsMax(aGroupsMax)
 {
@@ -88,13 +89,16 @@ GroupsControllerBasis :: ~GroupsControllerBasis(void)
 // MARK: Initializer(s)
 
 Status
-GroupsControllerBasis :: Init(void)
+GroupsControllerBasis :: Init(CommandManager &aCommandManager)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 
     lRetval = RequestInit();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = ControllerBasis::Init(aCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -106,6 +110,9 @@ GroupsControllerBasis :: RequestInit(void)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
+
+
+    // Initialize static command request regular expression pattern data.
 
     lRetval = kAddZoneRequest.Init();
     nlREQUIRE_SUCCESS(lRetval, done);

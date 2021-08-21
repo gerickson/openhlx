@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file defines a base object for....
+ *      This file defines a base object for all server-side HLX
+ *      controllers.
  *
  */
 
@@ -40,7 +41,7 @@ namespace Server
 
 /**
  *  @brief
- *    A base object for....
+ *    A base object for all server-side HLX controllers.
  *
  *  @ingroup server
  *
@@ -51,7 +52,6 @@ public:
     virtual ~ControllerBasis(void);
 
     virtual Common::Status Init(CommandManager &aCommandManager);
-    virtual Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout);
 
 protected:
     ControllerBasis(void);
@@ -66,16 +66,32 @@ protected:
      */
     struct RequestHandlerBasis
     {
+        /**
+         *  A reference to the expected server command request
+         *  regular expression pattern that, when matched, should
+         *  trigger invocation of the associated handler.
+         *
+         */
         Command::RequestBasis &                mRequest;
+        /**
+         *  The handler to invoke when the request pattern is matched
+         *  on receipt of an unsolicited command request.
+         *
+         */
         CommandManager::OnRequestReceivedFunc  mOnRequestReceivedHandler;
     };
 
-    Common::Status DoRequestHandlers(const RequestHandlerBasis *aFirst, const RequestHandlerBasis *aLast, void *aContext, const bool &aRegister);
+    Common::Status DoRequestHandlers(const RequestHandlerBasis *aFirst,
+                                     const RequestHandlerBasis *aLast,
+                                     void *aContext,
+                                     const bool &aRegister);
 
-    Common::Status SendResponse(ConnectionBasis &aConnection, Common::ConnectionBuffer::ImmutableCountedPointer aBuffer) const;
+    Common::Status SendResponse(ConnectionBasis &aConnection,
+                                Common::ConnectionBuffer::ImmutableCountedPointer aBuffer) const;
 
     Common::Status SendErrorResponse(ConnectionBasis &aConnection) const;
-    Common::Status SendErrorResponse(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
+    Common::Status SendErrorResponse(ConnectionBasis &aConnection,
+                                     Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
 
 private:
     CommandManager *           mCommandManager;

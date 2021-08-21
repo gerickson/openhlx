@@ -30,6 +30,7 @@
 #include <OpenHLX/Model/SoundModel.hpp>
 #include <OpenHLX/Model/ZoneModel.hpp>
 #include <OpenHLX/Model/ZonesModel.hpp>
+#include <OpenHLX/Server/ControllerBasis.hpp>
 #include <OpenHLX/Server/ZonesControllerCommands.hpp>
 
 
@@ -47,7 +48,8 @@ namespace Server
  *  @ingroup zones
  *
  */
-class ZonesControllerBasis
+class ZonesControllerBasis :
+    public Server::ControllerBasis
 {
 public:
     virtual ~ZonesControllerBasis(void);
@@ -58,9 +60,11 @@ protected:
 
     // Initializer(s)
 
-    Common::Status Init(void);
+    virtual Common::Status Init(CommandManager &aCommandManager);
 
 private:
+    // Implementation
+
     Common::Status RequestInit(void);
 
 protected:
@@ -150,8 +154,8 @@ protected:
                                                Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
 
 private:
-    Model::ZonesModel &                      mZonesModel;
-    const Model::ZoneModel::IdentifierType & mZonesMax;
+    Model::ZonesModel &                               mZonesModel;
+    const Model::ZoneModel::IdentifierType &          mZonesMax;
 
 protected:
     static Server::Command::Zones::AdjustBalanceRequest          kAdjustBalanceRequest;

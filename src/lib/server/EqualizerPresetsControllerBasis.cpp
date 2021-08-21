@@ -56,6 +56,7 @@ Server::Command::EqualizerPresets::SetNameRequest       EqualizerPresetsControll
  */
 EqualizerPresetsControllerBasis :: EqualizerPresetsControllerBasis(Model::EqualizerPresetsModel &aEqualizerPresetsModel,
                                                                    const Model::EqualizerPresetModel::IdentifierType &aEqualizerPresetsMax) :
+    Server::ControllerBasis(),
     mEqualizerPresetsModel(aEqualizerPresetsModel),
     mEqualizerPresetsMax(aEqualizerPresetsMax)
 {
@@ -75,13 +76,16 @@ EqualizerPresetsControllerBasis :: ~EqualizerPresetsControllerBasis(void)
 // MARK: Initializer(s)
 
 Status
-EqualizerPresetsControllerBasis :: Init(void)
+EqualizerPresetsControllerBasis :: Init(CommandManager &aCommandManager)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 
     lRetval = RequestInit();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = ControllerBasis::Init(aCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -93,6 +97,9 @@ EqualizerPresetsControllerBasis :: RequestInit(void)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
+
+
+    // Initialize static command request regular expression pattern data.
 
     lRetval = kDecreaseBandRequest.Init();
     nlREQUIRE_SUCCESS(lRetval, done);
@@ -121,6 +128,7 @@ Status
 EqualizerPresetsControllerBasis :: HandleQueryReceived(ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     Status lRetval = kStatus_Success;
+
 
     for (auto lEqualizerPresetIdentifier = IdentifierModel::kIdentifierMin; lEqualizerPresetIdentifier <= mEqualizerPresetsMax; lEqualizerPresetIdentifier++)
     {

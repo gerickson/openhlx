@@ -26,6 +26,7 @@
 #define OPENHLXSERVERINFRAREDCONTROLLERBASIS_HPP
 
 #include <OpenHLX/Model/InfraredModel.hpp>
+#include <OpenHLX/Server/ControllerBasis.hpp>
 #include <OpenHLX/Server/InfraredControllerCommands.hpp>
 
 
@@ -43,7 +44,8 @@ namespace Server
  *  @ingroup infrared
  *
  */
-class InfraredControllerBasis
+class InfraredControllerBasis :
+    public Server::ControllerBasis
 {
 public:
     virtual ~InfraredControllerBasis(void);
@@ -53,9 +55,11 @@ protected:
 
     // Initializer(s)
 
-    Common::Status Init(void);
+    virtual Common::Status Init(CommandManager &aCommandManager);
 
 private:
+    // Implementation
+
     Common::Status RequestInit(void);
 
 private:

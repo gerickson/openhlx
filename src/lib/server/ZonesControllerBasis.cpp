@@ -79,6 +79,7 @@ Server::Command::Zones::ToggleMuteRequest             ZonesControllerBasis::kTog
  */
 ZonesControllerBasis :: ZonesControllerBasis(Model::ZonesModel &aZonesModel,
                                              const Model::ZoneModel::IdentifierType &aZonesMax) :
+    Server::ControllerBasis(),
     mZonesModel(aZonesModel),
     mZonesMax(aZonesMax)
 {
@@ -98,13 +99,16 @@ ZonesControllerBasis :: ~ZonesControllerBasis(void)
 // MARK: Initializer(s)
 
 Status
-ZonesControllerBasis :: Init(void)
+ZonesControllerBasis :: Init(CommandManager &aCommandManager)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 
     lRetval = RequestInit();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = ControllerBasis::Init(aCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -117,6 +121,8 @@ ZonesControllerBasis :: RequestInit(void)
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
+
+    // Initialize static command request regular expression pattern data.
 
     lRetval = kAdjustBalanceRequest.Init();
     nlREQUIRE_SUCCESS(lRetval, done);

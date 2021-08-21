@@ -27,6 +27,7 @@
 
 #include <OpenHLX/Model/GroupModel.hpp>
 #include <OpenHLX/Model/GroupsModel.hpp>
+#include <OpenHLX/Server/ControllerBasis.hpp>
 #include <OpenHLX/Server/GroupsControllerCommands.hpp>
 
 
@@ -44,7 +45,8 @@ namespace Server
  *  @ingroup groups
  *
  */
-class GroupsControllerBasis
+class GroupsControllerBasis :
+    public Server::ControllerBasis
 {
 public:
     virtual ~GroupsControllerBasis(void);
@@ -55,14 +57,16 @@ protected:
 
     // Initializer(s)
 
-    Common::Status Init(void);
+    virtual Common::Status Init(CommandManager &aCommandManager);
 
 private:
+    // Implementation
+
     Common::Status RequestInit(void);
 
 private:
-    Model::GroupsModel &                      mGroupsModel;
-    const Model::GroupModel::IdentifierType & mGroupsMax;
+    Model::GroupsModel &                            mGroupsModel;
+    const Model::GroupModel::IdentifierType &       mGroupsMax;
 
 protected:
     // Observation (Query) Command Request Handlers

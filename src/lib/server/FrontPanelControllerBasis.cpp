@@ -53,6 +53,7 @@ Server::Command::FrontPanel::SetLockedRequest      FrontPanelControllerBasis::kS
  *
  */
 FrontPanelControllerBasis :: FrontPanelControllerBasis(Model::FrontPanelModel &aFrontPanelModel) :
+    Server::ControllerBasis(),
     mFrontPanelModel(aFrontPanelModel)
 {
     return;
@@ -71,13 +72,16 @@ FrontPanelControllerBasis :: ~FrontPanelControllerBasis(void)
 // MARK: Initializer(s)
 
 Status
-FrontPanelControllerBasis :: Init(void)
+FrontPanelControllerBasis :: Init(CommandManager &aCommandManager)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 
     lRetval = RequestInit();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = ControllerBasis::Init(aCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -89,6 +93,9 @@ FrontPanelControllerBasis :: RequestInit(void)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
+
+
+    // Initialize static command request regular expression pattern data.
 
     lRetval = kQueryRequest.Init();
     nlREQUIRE_SUCCESS(lRetval, done);

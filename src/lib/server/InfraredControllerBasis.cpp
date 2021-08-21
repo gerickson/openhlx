@@ -52,6 +52,7 @@ Server::Command::Infrared::SetDisabledRequest  InfraredControllerBasis::kSetDisa
  *
  */
 InfraredControllerBasis :: InfraredControllerBasis(Model::InfraredModel &aInfraredModel) :
+    Server::ControllerBasis(),
     mInfraredModel(aInfraredModel)
 {
     return;
@@ -70,13 +71,16 @@ InfraredControllerBasis :: ~InfraredControllerBasis(void)
 // MARK: Initializer(s)
 
 Status
-InfraredControllerBasis :: Init(void)
+InfraredControllerBasis :: Init(CommandManager &aCommandManager)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 
     lRetval = RequestInit();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = ControllerBasis::Init(aCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -88,6 +92,9 @@ InfraredControllerBasis :: RequestInit(void)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
+
+
+    // Initialize static command request regular expression pattern data.
 
     lRetval = kQueryRequest.Init();
     nlREQUIRE_SUCCESS(lRetval, done);

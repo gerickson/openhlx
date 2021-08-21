@@ -27,6 +27,7 @@
 
 #include <OpenHLX/Model/FavoriteModel.hpp>
 #include <OpenHLX/Model/FavoritesModel.hpp>
+#include <OpenHLX/Server/ControllerBasis.hpp>
 #include <OpenHLX/Server/FavoritesControllerCommands.hpp>
 
 
@@ -44,7 +45,8 @@ namespace Server
  *  @ingroup favorites
  *
  */
-class FavoritesControllerBasis
+class FavoritesControllerBasis :
+    public Server::ControllerBasis
 {
 public:
     virtual ~FavoritesControllerBasis(void);
@@ -55,9 +57,11 @@ protected:
 
     // Initializer(s)
 
-    Common::Status Init(void);
+    virtual Common::Status Init(CommandManager &aCommandManager);
 
 private:
+    // Implementation
+
     Common::Status RequestInit(void);
 
 private:

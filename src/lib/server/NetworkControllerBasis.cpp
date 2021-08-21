@@ -32,6 +32,7 @@
 
 
 using namespace HLX::Common;
+using namespace HLX::Model;
 using namespace HLX::Utilities;
 using namespace Nuovations;
 
@@ -52,6 +53,7 @@ Server::Command::Network::QueryRequest  NetworkControllerBasis::kQueryRequest;
  *
  */
 NetworkControllerBasis :: NetworkControllerBasis(Model::NetworkModel &aNetworkModel) :
+    Server::ControllerBasis(),
     mNetworkModel(aNetworkModel)
 {
     return;
@@ -70,13 +72,16 @@ NetworkControllerBasis :: ~NetworkControllerBasis(void)
 // MARK: Initializer(s)
 
 Status
-NetworkControllerBasis :: Init(void)
+NetworkControllerBasis :: Init(CommandManager &aCommandManager)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 
     lRetval = RequestInit();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = ControllerBasis::Init(aCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -89,6 +94,8 @@ NetworkControllerBasis :: RequestInit(void)
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
+
+    // Initialize static command request regular expression pattern data.
 
     lRetval = kQueryRequest.Init();
     nlREQUIRE_SUCCESS(lRetval, done);

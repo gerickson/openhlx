@@ -26,6 +26,7 @@
 #define OPENHLXSERVERFRONTPANELCONTROLLERBASIS_HPP
 
 #include <OpenHLX/Model/FrontPanelModel.hpp>
+#include <OpenHLX/Server/ControllerBasis.hpp>
 #include <OpenHLX/Server/FrontPanelControllerCommands.hpp>
 
 
@@ -43,7 +44,8 @@ namespace Server
  *  @ingroup frontpanel
  *
  */
-class FrontPanelControllerBasis
+class FrontPanelControllerBasis :
+    public Server::ControllerBasis
 {
 public:
     virtual ~FrontPanelControllerBasis(void);
@@ -53,9 +55,11 @@ protected:
 
     // Initializer(s)
 
-    Common::Status Init(void);
+    virtual Common::Status Init(CommandManager &aCommandManager);
 
 private:
+    // Implementation
+
     Common::Status RequestInit(void);
 
 private:

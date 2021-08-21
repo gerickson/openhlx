@@ -27,6 +27,7 @@
 
 #include <OpenHLX/Model/SourceModel.hpp>
 #include <OpenHLX/Model/SourcesModel.hpp>
+#include <OpenHLX/Server/ControllerBasis.hpp>
 #include <OpenHLX/Server/SourcesControllerCommands.hpp>
 
 
@@ -44,7 +45,8 @@ namespace Server
  *  @ingroup sources
  *
  */
-class SourcesControllerBasis
+class SourcesControllerBasis :
+    public Server::ControllerBasis
 {
 public:
     virtual ~SourcesControllerBasis(void);
@@ -55,9 +57,11 @@ protected:
 
     // Initializer(s)
 
-    Common::Status Init(void);
+    virtual Common::Status Init(CommandManager &aCommandManager);
 
 private:
+    // Implementation
+
     Common::Status RequestInit(void);
 
 private:

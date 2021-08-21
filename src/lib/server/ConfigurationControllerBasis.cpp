@@ -52,7 +52,8 @@ Server::Command::Configuration::SaveToBackupRequest     ConfigurationControllerB
  *    This is the class default constructor.
  *
  */
-ConfigurationControllerBasis :: ConfigurationControllerBasis(void)
+ConfigurationControllerBasis :: ConfigurationControllerBasis(void) :
+    Server::ControllerBasis()
 {
     return;
 }
@@ -67,14 +68,19 @@ ConfigurationControllerBasis :: ~ConfigurationControllerBasis(void)
     return;
 }
 
+// MARK: Initializer(s)
+
 Status
-ConfigurationControllerBasis :: Init(void)
+ConfigurationControllerBasis :: Init(CommandManager &aCommandManager)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 
     lRetval = RequestInit();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = ControllerBasis::Init(aCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -86,6 +92,9 @@ ConfigurationControllerBasis :: RequestInit(void)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
+
+
+    // Initialize static command request regular expression pattern data.
 
     lRetval = kLoadFromBackupRequest.Init();
     nlREQUIRE_SUCCESS(lRetval, done);
