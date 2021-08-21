@@ -69,6 +69,9 @@ libopenhlx_client_a_include_HEADERS                         = \
     ConnectionTelnet.hpp                                      \
     ControllerBasis.hpp                                       \
     ControllerBasisDelegate.hpp                               \
+    ControllerBasisErrorDelegate.hpp                          \
+    ControllerBasisRefreshDelegate.hpp                        \
+    ControllerBasisStateChangeDelegate.hpp                    \
     EqualizerBandStateChangeNotificationBasis.hpp             \
     EqualizerPresetsController.hpp                            \
     EqualizerPresetsControllerBasis.hpp                       \
