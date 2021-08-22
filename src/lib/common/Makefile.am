@@ -91,6 +91,7 @@ libopenhlx_common_a_include_HEADERS                         = \
     FavoritesControllerBasis.hpp                              \
     FrontPanelControllerBasis.hpp                             \
     GroupsControllerBasis.hpp                                 \
+    HLXCommonControllerBasis.hpp                              \
     HostURL.hpp                                               \
     HostURLAddress.hpp                                        \
     InfraredControllerBasis.hpp                               \
