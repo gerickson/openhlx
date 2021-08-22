@@ -50,6 +50,9 @@ namespace HLX
 namespace Simulator
 {
 
+namespace Application
+{
+
 namespace Detail
 {
 
@@ -989,6 +992,8 @@ void Controller :: TimerCallBack(CFRunLoopTimerRef aTimerRef, void *aContext)
         lController->TimerCallBack(aTimerRef);
     }
 }
+
+}; // namespace Application
 
 }; // namespace Simulator
 

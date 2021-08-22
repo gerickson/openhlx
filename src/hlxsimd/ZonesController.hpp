@@ -46,6 +46,13 @@ namespace HLX
 namespace Simulator
 {
 
+namespace Application
+{
+
+    class Controller;
+
+}; // namespace Application
+
 /**
  *  @brief
  *    An object for managing the server-side observation and mutation
@@ -110,11 +117,11 @@ public:
 private:
     // Data Model State Mutation Methods
     //
-    // Exposed to the parent controller for group zone membership
-    // delegation for requests to decrease, increase, or set the
-    // volume; set or toggle the muting; or set the source.
+    // Exposed to the parent application controller for group zone
+    // membership delegation for requests to decrease, increase, or
+    // set the volume; set or toggle the muting; or set the source.
 
-    friend class Controller;
+    friend class Application::Controller;
 
     Common::Status AdjustVolume(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const Model::VolumeModel::LevelType &aAdjustment, Model::VolumeModel::LevelType &aVolume);
     Common::Status SetMute(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const Model::VolumeModel::MuteType &aMute);

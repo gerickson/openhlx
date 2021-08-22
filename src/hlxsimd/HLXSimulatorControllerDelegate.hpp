@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef OPENHLXSIMULATORCONTROLLERDELEGATE_HPP
-#define OPENHLXSIMULATORCONTROLLERDELEGATE_HPP
+#ifndef OPENHLXSIMULATORAPPLICATIONCONTROLLERDELEGATE_HPP
+#define OPENHLXSIMULATORAPPLICATIONCONTROLLERDELEGATE_HPP
 
 #include <CoreFoundation/CFURL.h>
 
@@ -36,6 +36,9 @@ namespace HLX
 {
 
 namespace Simulator
+{
+
+namespace Application
 {
 
 class Controller;
@@ -206,8 +209,10 @@ public:
     virtual void ControllerError(Controller &aController, const Common::Error &aError) = 0;
 };
 
+}; // namespace Application
+
 }; // namespace Simulator
 
 }; // namespace HLX
 
-#endif // OPENHLXSIMULATORCONTROLLERDELEGATE_HPP
+#endif // OPENHLXSIMULATORAPPLICATIONCONTROLLERDELEGATE_HPP

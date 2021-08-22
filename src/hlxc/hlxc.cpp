@@ -449,7 +449,10 @@ public:
 
     Status Init(void);
 
-    Status Start(const char *aMaybeURL, const bool &aUseIPv6, const bool &aUseIPv4, const Timeout &aTimeout);
+    Status Start(const char *aMaybeURL,
+                 const bool &aUseIPv6,
+                 const bool &aUseIPv4,
+                 const Timeout &aTimeout);
     Status Stop(void);
     Status Stop(const Status &aStatus);
 

@@ -82,6 +82,7 @@ using namespace HLX::Common;
 using namespace HLX::Model;
 using namespace HLX::Server;
 using namespace HLX::Simulator;
+using namespace HLX::Simulator::Application;
 using namespace HLX::Utilities;
 using namespace Nuovations;
 using namespace boost::filesystem;
@@ -183,7 +184,7 @@ static const char * const   sLongUsageString =
  *
  */
 class HLXSimulator :
-    public Simulator::ControllerDelegate
+    public ControllerDelegate
 {
 public:
     HLXSimulator(void);
@@ -199,8 +200,8 @@ public:
     Status Stop(void);
     Status Stop(const Status &aStatus);
 
-    const HLX::Simulator::Controller &GetController(void) const;
-    HLX::Simulator::Controller &GetController(void);
+    const Controller &GetController(void) const;
+    Controller &GetController(void);
     Status GetStatus(void) const;
     void SetStatus(const Status &aStatus);
 
@@ -239,9 +240,9 @@ private:
     static void OnSignal(int aSignal);
 
 private:
-    RunLoopParameters                mRunLoopParameters;
-    HLX::Simulator::Controller       mHLXSimulatorController;
-    Status                           mStatus;
+    RunLoopParameters  mRunLoopParameters;
+    Controller         mHLXSimulatorController;
+    Status             mStatus;
 };
 
 HLXSimulator :: HLXSimulator(void) :
@@ -318,12 +319,14 @@ Status HLXSimulator :: Stop(const Status &aStatus)
     return (lStatus);
 }
 
-const HLX::Simulator::Controller &HLXSimulator :: GetController(void) const
+const Controller &
+HLXSimulator :: GetController(void) const
 {
     return (mHLXSimulatorController);
 }
 
-HLX::Simulator::Controller &HLXSimulator :: GetController(void)
+Controller &
+HLXSimulator :: GetController(void)
 {
     return (mHLXSimulatorController);
 }

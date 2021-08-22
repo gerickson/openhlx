@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef OPENHLXSIMULATORCONTROLLER_HPP
-#define OPENHLXSIMULATORCONTROLLER_HPP
+#ifndef OPENHLXSIMULATORAPPLICATIONCONTROLLER_HPP
+#define OPENHLXSIMULATORAPPLICATIONCONTROLLER_HPP
 
 #include <map>
 
@@ -57,6 +57,9 @@ namespace HLX
 {
 
 namespace Simulator
+{
+
+namespace Application
 {
 
 /**
@@ -261,8 +264,10 @@ private:
     bool                            mConfigurationIsDirty;
 };
 
+}; // namespace Application
+
 }; // namespace Simulator
 
 }; // namespace HLX
 
-#endif // OPENHLXSIMULATORCONTROLLER_HPP
+#endif // OPENHLXSIMULATORAPPLICATIONCONTROLLER_HPP
