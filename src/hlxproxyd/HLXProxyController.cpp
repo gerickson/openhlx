@@ -41,6 +41,9 @@ namespace HLX
 namespace Proxy
 {
 
+namespace Application
+{
+
 Controller :: Controller(void) :
     Client::ConnectionManagerDelegate(),
     Server::ConnectionManagerDelegate(),
@@ -1128,6 +1131,8 @@ Controller :: QueryCurrentConfiguration(ConfigurationController &aController, Se
 done:
     return (lRetval);
 }
+
+}; // namespace Application
 
 }; // namespace Proxy
 

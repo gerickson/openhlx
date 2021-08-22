@@ -58,6 +58,7 @@ using namespace HLX;
 using namespace HLX::Client;
 using namespace HLX::Common;
 using namespace HLX::Proxy;
+using namespace HLX::Proxy::Application;
 using namespace HLX::Utilities;
 using namespace Nuovations;
 using namespace boost::filesystem;
@@ -174,8 +175,8 @@ public:
     Status Stop(void);
     Status Stop(const Status &aStatus);
 
-    const HLX::Proxy::Controller &GetController(void) const;
-    HLX::Proxy::Controller &GetController(void);
+    const Controller &GetController(void) const;
+    Controller &GetController(void);
     Status GetStatus(void) const;
     void SetStatus(const Status &aStatus);
 
@@ -236,9 +237,9 @@ private:
     static void OnSignal(int aSignal);
 
 private:
-    RunLoopParameters                mRunLoopParameters;
-    HLX::Proxy::Controller           mHLXProxyController;
-    Status                           mStatus;
+    RunLoopParameters  mRunLoopParameters;
+    Controller         mHLXProxyController;
+    Status             mStatus;
 };
 
 static const char *
@@ -361,12 +362,14 @@ Status HLXProxy :: Stop(const Status &aStatus)
     return (lStatus);
 }
 
-const HLX::Proxy::Controller &HLXProxy :: GetController(void) const
+const Controller &
+HLXProxy :: GetController(void) const
 {
     return (mHLXProxyController);
 }
 
-HLX::Proxy::Controller &HLXProxy :: GetController(void)
+Controller &
+HLXProxy :: GetController(void)
 {
     return (mHLXProxyController);
 }

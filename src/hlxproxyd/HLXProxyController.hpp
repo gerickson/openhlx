@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef OPENHLXPROXYCONTROLLER_HPP
-#define OPENHLXPROXYCONTROLLER_HPP
+#ifndef OPENHLXPROXYAPPLICATIONCONTROLLER_HPP
+#define OPENHLXPROXYAPPLICATIONCONTROLLER_HPP
 
 #include <map>
 
@@ -58,6 +58,9 @@ namespace HLX
 {
 
 namespace Proxy
+{
+
+namespace Application
 {
 
 /**
@@ -199,8 +202,10 @@ private:
     ControllerDelegate *            mDelegate;
 };
 
+}; // namespace Application
+
 }; // namespace Proxy
 
 }; // namespace HLX
 
-#endif // OPENHLXPROXYCONTROLLER_HPP
+#endif // OPENHLXPROXYAPPLICATIONCONTROLLER_HPP
