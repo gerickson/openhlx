@@ -27,8 +27,6 @@
 #ifndef OPENHLXCLIENTAPPLICATIONCONTROLLER_HPP
 #define OPENHLXCLIENTAPPLICATIONCONTROLLER_HPP
 
-#include <vector>
-
 #include <CoreFoundation/CFURL.h>
 
 #include <OpenHLX/Client/CommandManager.hpp>
@@ -48,6 +46,7 @@
 #include <OpenHLX/Client/SourcesController.hpp>
 #include <OpenHLX/Client/ZonesController.hpp>
 #include <OpenHLX/Common/Errors.hpp>
+#include <OpenHLX/Common/HLXCommonControllerBasis.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
 #include <OpenHLX/Model/GroupModel.hpp>
 #include <OpenHLX/Model/SourceModel.hpp>
@@ -80,6 +79,7 @@ namespace Application
  *
  */
 class Controller :
+    public Common::Application::Foo<Client::ControllerBasis>,
     public ConnectionManagerDelegate,
     public CommandManagerDelegate,
     public ControllerBasisErrorDelegate,
@@ -88,7 +88,7 @@ class Controller :
 {
 public:
     Controller(void);
-    ~Controller(void);
+    virtual ~Controller(void);
 
     Common::Status Init(const Common::RunLoopParameters &aRunLoopParameters);
 
@@ -234,8 +234,6 @@ public:
     void ControllerStateDidChange(ControllerBasis &aController, const StateChange::NotificationBasis &aStateChangeNotification) final;
 
 private:
-    void AddController(ControllerBasis &aController);
-
     bool IsRefreshing(void) const;
 
     void DeriveGroupState(void);
@@ -274,13 +272,6 @@ private:
     void HandleGroupZoneStateChangeInteractions(const StateChange::GroupsNotificationBasis &aGroupStateChangeNotification, const StateChange::Type &aType, DerivedGroupState &aDerivedGroupState, const Model::ZoneModel::IdentifierType &aZoneIdentifier);
 
 private:
-    struct ControllerState
-    {
-        ControllerBasis * mController;
-    };
-
-    typedef std::map<ControllerBasis *, ControllerState> Controllers;
-
     ConnectionManager               mConnectionManager;
     CommandManager                  mCommandManager;
     ConfigurationController         mConfigurationController;
@@ -292,7 +283,6 @@ private:
     NetworkController               mNetworkController;
     SourcesController               mSourcesController;
     ZonesController                 mZonesController;
-    Controllers                     mControllers;
     size_t                          mControllersDidRefreshCount;
     ControllerDelegate *            mDelegate;
     bool                            mIsDerivingGroupState;

@@ -61,6 +61,7 @@ typedef std::vector<ZoneModel::IdentifierType>   ZoneIdentifiers;
 };
 
 Controller :: Controller(void) :
+    FooType(),
     ConnectionManagerDelegate(),
     CommandManagerDelegate(),
     ConfigurationControllerDelegate(),
@@ -79,7 +80,6 @@ Controller :: Controller(void) :
     mEqualizerPresetsController(),
     mSourcesController(),
     mZonesController(),
-    mControllers(),
     mDelegate(nullptr),
     mConfigurationAutoSaveTimer(nullptr),
     mConfigurationIsDirty(false)
@@ -112,6 +112,9 @@ Controller :: Init(const RunLoopParameters &aRunLoopParameters, const boost::fil
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
+
+    lRetval = FooType::Init();
+    nlREQUIRE_SUCCESS(lRetval, done);
 
     // Initialize the connection manager
 
@@ -221,8 +224,8 @@ Controller :: InitControllers(const RunLoopParameters &aRunLoopParameters)
     // Intialize the controllers (skipping the configuration
     // controller as we just handled that).
 
-    lCurrent = mControllers.begin();
-    lEnd     = mControllers.end();
+    lCurrent = GetControllers().begin();
+    lEnd     = GetControllers().end();
 
     while (lCurrent != lEnd)
     {
@@ -312,17 +315,6 @@ Controller :: InitConfiguration(const RunLoopParameters &aRunLoopParameters, con
 
  done:
     return (lRetval);
-}
-
-void
-Controller :: AddController(Simulator::ControllerBasis &aController)
-{
-    const ControllerState lControllerState = { &aController };
-
-
-    mControllers[&aController] = lControllerState;
-
-    return;
 }
 
 Status Controller :: Listen(void)
@@ -418,8 +410,8 @@ Status Controller :: LoadFromBackupConfiguration(ConfigurationController &aContr
 
     nlREQUIRE_ACTION(aBackupDictionary != nullptr, done, lRetval = -EINVAL);
 
-    lCurrent = mControllers.begin();
-    lLast = mControllers.end();
+    lCurrent = GetControllers().begin();
+    lLast = GetControllers().end();
 
     while (lCurrent != lLast)
     {
@@ -487,8 +479,8 @@ void Controller :: QueryCurrentConfiguration(ConfigurationController &aControlle
 
     (void)aController;
 
-    lCurrent = mControllers.begin();
-    lLast = mControllers.end();
+    lCurrent = GetControllers().begin();
+    lLast = GetControllers().end();
 
     while (lCurrent != lLast)
     {
@@ -506,8 +498,8 @@ void Controller :: ResetToDefaultConfiguration(ConfigurationController &aControl
 
     (void)aController;
 
-    lCurrent = mControllers.begin();
-    lLast = mControllers.end();
+    lCurrent = GetControllers().begin();
+    lLast = GetControllers().end();
 
     while (lCurrent != lLast)
     {
@@ -529,8 +521,8 @@ void Controller :: SaveToBackupConfiguration(ConfigurationController &aControlle
     // First, allow all controllers to serialize their configuration
     // into the back-up dictionary.
 
-    lCurrent = mControllers.begin();
-    lLast = mControllers.end();
+    lCurrent = GetControllers().begin();
+    lLast = GetControllers().end();
 
     while (lCurrent != lLast)
     {

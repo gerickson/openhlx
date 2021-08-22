@@ -26,14 +26,13 @@
 #ifndef OPENHLXPROXYAPPLICATIONCONTROLLER_HPP
 #define OPENHLXPROXYAPPLICATIONCONTROLLER_HPP
 
-#include <map>
-
 #include <OpenHLX/Client/CommandManager.hpp>
 #include <OpenHLX/Client/CommandManagerDelegate.hpp>
 #include <OpenHLX/Client/ConnectionManager.hpp>
 #include <OpenHLX/Client/ConnectionManagerDelegate.hpp>
 #include <OpenHLX/Client/ControllerBasisDelegate.hpp>
 #include <OpenHLX/Common/Errors.hpp>
+#include <OpenHLX/Common/HLXCommonControllerBasis.hpp>
 #include <OpenHLX/Common/RunLoopParameters.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
 #include <OpenHLX/Server/CommandManager.hpp>
@@ -71,6 +70,7 @@ namespace Application
  *
  */
 class Controller :
+    public Common::Application::Foo<Proxy::ControllerBasis>,
     public Client::ConnectionManagerDelegate,
     public Server::ConnectionManagerDelegate,
     public Client::CommandManagerDelegate,
@@ -167,18 +167,9 @@ private:
     Common::Status InitServerCommandManager(const Common::RunLoopParameters &aRunLoopParameters);
     Common::Status InitControllers(const Common::RunLoopParameters &aRunLoopParameters);
 
-    void AddController(ControllerBasis &aController);
-
     bool IsRefreshing(void) const;
 
 private:
-    struct ControllerState
-    {
-        ControllerBasis * mController;
-    };
-
-    typedef std::map<ControllerBasis *, ControllerState> Controllers;
-
     // Sub-controller order is important since 1) this is the order that
     // most closely matches the order in which the actual HLX hardware
     // responds to for the 'query current configuration' command and 2) ...
@@ -197,7 +188,6 @@ private:
     EqualizerPresetsController      mEqualizerPresetsController;
     SourcesController               mSourcesController;
     ZonesController                 mZonesController;
-    Controllers                     mControllers;
     size_t                          mControllersDidRefreshCount;
     ControllerDelegate *            mDelegate;
 };

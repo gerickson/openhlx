@@ -45,6 +45,7 @@ namespace Application
 {
 
 Controller :: Controller(void) :
+    FooType(),
     Client::ConnectionManagerDelegate(),
     Server::ConnectionManagerDelegate(),
     Client::CommandManagerDelegate(),
@@ -64,7 +65,6 @@ Controller :: Controller(void) :
     mEqualizerPresetsController(),
     mSourcesController(),
     mZonesController(),
-    mControllers(),
     mControllersDidRefreshCount(0),
     mDelegate(nullptr)
 {
@@ -105,6 +105,10 @@ Controller :: Init(const RunLoopParameters &aRunLoopParameters)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
+
+
+    lRetval = FooType::Init();
+    nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = InitClient(aRunLoopParameters);
     nlREQUIRE_SUCCESS(lRetval, done);
@@ -261,8 +265,8 @@ Controller :: InitControllers(const RunLoopParameters &aRunLoopParameters)
     // Intialize the controllers (skipping the configuration
     // controller as we just handled that).
 
-    lCurrent = mControllers.begin();
-    lEnd     = mControllers.end();
+    lCurrent = GetControllers().begin();
+    lEnd     = GetControllers().end();
 
     while (lCurrent != lEnd)
     {
@@ -282,18 +286,6 @@ Controller :: InitControllers(const RunLoopParameters &aRunLoopParameters)
 
  done:
     return (lRetval);
-}
-
-void
-Controller :: AddController(ControllerBasis &aController)
-{
-    DeclareScopedFunctionTracer(lTracer);
-    const ControllerState lControllerState = { &aController };
-
-
-    mControllers[&aController] = lControllerState;
-
-    return;
 }
 
 /**
@@ -513,8 +505,8 @@ Controller :: Refresh(void)
 
     // Begin refreshing each controller.
 
-    lCurrent = mControllers.begin();
-    lEnd     = mControllers.end();
+    lCurrent = GetControllers().begin();
+    lEnd     = GetControllers().end();
 
     while (lCurrent != lEnd)
     {
@@ -543,7 +535,7 @@ Controller :: Refresh(void)
 bool
 Controller :: IsRefreshing(void) const
 {
-    return (mControllersDidRefreshCount != mControllers.size());
+    return (mControllersDidRefreshCount != GetControllers().size());
 }
 
 /**
@@ -994,14 +986,14 @@ Controller :: ControllerIsRefreshing(Client::ControllerBasis &aController, const
     Proxy::ControllerBasis *    lController = static_cast<Proxy::ControllerBasis *>(&aController);
     Controllers::const_iterator lControllerIterator;
 
-    lControllerIterator = mControllers.find(lController);
+    lControllerIterator = GetControllers().find(lController);
 
-    if (lControllerIterator != mControllers.end())
+    if (lControllerIterator != GetControllers().end())
     {
         static const Percentage kPercentCompletePerController = CalculatePercentage(1,
-                                                                                    static_cast<uint8_t>(mControllers.size()));
+                                                                                    static_cast<uint8_t>(GetControllers().size()));
         const Percentage        lControllersPercentComplete   = CalculatePercentage(static_cast<uint8_t>(mControllersDidRefreshCount),
-                                                                                    static_cast<uint8_t>(mControllers.size()));
+                                                                                    static_cast<uint8_t>(GetControllers().size()));
         const Percentage        lPercentComplete              = (lControllersPercentComplete + ((kPercentCompletePerController * aPercentComplete) / 100));
 
         if (mDelegate != nullptr)
@@ -1029,21 +1021,21 @@ Controller :: ControllerDidRefresh(Client::ControllerBasis &aController)
     Proxy::ControllerBasis *    lController = static_cast<Proxy::ControllerBasis *>(&aController);
     Controllers::const_iterator lControllerIterator;
 
-    lControllerIterator = mControllers.find(lController);
+    lControllerIterator = GetControllers().find(lController);
 
-    if (lControllerIterator != mControllers.end())
+    if (lControllerIterator != GetControllers().end())
     {
         mControllersDidRefreshCount++;
 
         if (mDelegate != nullptr)
         {
             const Percentage lPercentComplete = CalculatePercentage(static_cast<uint8_t>(mControllersDidRefreshCount),
-                                                                    static_cast<uint8_t>(mControllers.size()));
+                                                                    static_cast<uint8_t>(GetControllers().size()));
 
             mDelegate->ControllerIsRefreshing(*this, lPercentComplete);
         }
 
-        if (mControllersDidRefreshCount == mControllers.size())
+        if (mControllersDidRefreshCount == GetControllers().size())
         {
             if (mDelegate != nullptr)
             {
@@ -1116,8 +1108,8 @@ Controller :: QueryCurrentConfiguration(ConfigurationController &aController, Se
 
     if (&aController == &mConfigurationController)
     {
-        lCurrent = mControllers.begin();
-        lLast    = mControllers.end();
+        lCurrent = GetControllers().begin();
+        lLast    = GetControllers().end();
 
         while (lCurrent != lLast)
         {

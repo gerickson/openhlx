@@ -33,6 +33,7 @@
 #include <CoreFoundation/CFRunLoop.h>
 
 #include <OpenHLX/Common/Errors.hpp>
+#include <OpenHLX/Common/HLXCommonControllerBasis.hpp>
 #include <OpenHLX/Common/RunLoopParameters.hpp>
 #include <OpenHLX/Server/CommandManager.hpp>
 #include <OpenHLX/Server/CommandManagerDelegate.hpp>
@@ -70,6 +71,7 @@ namespace Application
  *
  */
 class Controller :
+    public Common::Application::Foo<Simulator::ControllerBasis>,
     public Server::ConnectionManagerDelegate,
     public Server::CommandManagerDelegate,
     public ConfigurationControllerDelegate,
@@ -229,18 +231,9 @@ private:
     Common::Status InitControllers(const Common::RunLoopParameters &aRunLoopParameters);
     Common::Status InitConfiguration(const Common::RunLoopParameters &aRunLoopParameters, const boost::filesystem::path &aPath);
 
-    void AddController(Simulator::ControllerBasis &aController);
-
     void TimerCallBack(CFRunLoopTimerRef aTimerRef);
 
 private:
-    struct ControllerState
-    {
-        Simulator::ControllerBasis * mController;
-    };
-
-    typedef std::map<Simulator::ControllerBasis *, ControllerState> Controllers;
-
     // Sub-controller order is important since this is the order that
     // most closely matches the order in which the actual HLX hardware
     // responds to for the 'query current configuration' command.
@@ -258,7 +251,6 @@ private:
     EqualizerPresetsController      mEqualizerPresetsController;
     SourcesController               mSourcesController;
     ZonesController                 mZonesController;
-    Controllers                     mControllers;
     ControllerDelegate *            mDelegate;
     CFRunLoopTimerRef               mConfigurationAutoSaveTimer;
     bool                            mConfigurationIsDirty;

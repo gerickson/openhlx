@@ -192,6 +192,7 @@ Controller :: DerivedGroupState :: UpdateVolume(const VolumeModel::LevelType &aV
  *
  */
 Controller :: Controller(void) :
+    FooType(),
     ConnectionManagerDelegate(),
     CommandManagerDelegate(),
     ControllerBasisErrorDelegate(),
@@ -208,7 +209,6 @@ Controller :: Controller(void) :
     mNetworkController(),
     mSourcesController(),
     mZonesController(),
-    mControllers(),
     mControllersDidRefreshCount(0),
     mDelegate(nullptr),
     mIsDerivingGroupState(false)
@@ -251,6 +251,9 @@ Controller :: Init(const RunLoopParameters &aRunLoopParameters)
     Status lRetval = kStatus_Success;
     Controllers::iterator begin, end;
 
+    lRetval = FooType::Init();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
     lRetval = mConnectionManager.Init(aRunLoopParameters);
     nlREQUIRE_SUCCESS(lRetval, done);
 
@@ -279,8 +282,8 @@ Controller :: Init(const RunLoopParameters &aRunLoopParameters)
 
     // Intialize the controllers.
 
-    begin = mControllers.begin();
-    end = mControllers.end();
+    begin = GetControllers().begin();
+    end = GetControllers().end();
 
     while (begin != end)
     {
@@ -301,17 +304,6 @@ Controller :: Init(const RunLoopParameters &aRunLoopParameters)
 
  done:
     return (lRetval);
-}
-
-void
-Controller :: AddController(ControllerBasis &aController)
-{
-    const ControllerState lControllerState = { &aController };
-
-
-    mControllers[&aController] = lControllerState;
-
-    return;
 }
 
 /**
@@ -479,8 +471,8 @@ Controller :: Refresh(void)
 
     // Begin refreshing each controller.
 
-    begin = mControllers.begin();
-    end = mControllers.end();
+    begin = GetControllers().begin();
+    end = GetControllers().end();
 
     while (begin != end)
     {
@@ -525,7 +517,7 @@ Controller :: IsConnected(void) const
 bool
 Controller :: IsRefreshing(void) const
 {
-    return (mControllersDidRefreshCount != mControllers.size());
+    return (mControllersDidRefreshCount != GetControllers().size());
 }
 
 /**
@@ -3295,14 +3287,14 @@ Controller :: ControllerIsRefreshing(ControllerBasis &aController, const uint8_t
 {
     Controllers::const_iterator lControllerIterator;
 
-    lControllerIterator = mControllers.find(&aController);
+    lControllerIterator = GetControllers().find(&aController);
 
-    if (lControllerIterator != mControllers.end())
+    if (lControllerIterator != GetControllers().end())
     {
         static const Percentage kPercentCompletePerController    = CalculatePercentage(1,
-                                                                                       static_cast<uint8_t>(mControllers.size()));
+                                                                                       static_cast<uint8_t>(GetControllers().size()));
         const Percentage        lOtherControllersPercentComplete = CalculatePercentage(static_cast<uint8_t>(mControllersDidRefreshCount),
-                                                                                       static_cast<uint8_t>(mControllers.size()));
+                                                                                       static_cast<uint8_t>(GetControllers().size()));
         const Percentage        lThisControllerPercentComplete   = ((kPercentCompletePerController * aPercentComplete) / 100);
         const Percentage        lPercentComplete                 = (lOtherControllersPercentComplete + lThisControllerPercentComplete);
 
@@ -3330,21 +3322,21 @@ Controller :: ControllerDidRefresh(ControllerBasis &aController)
 {
     Controllers::const_iterator lControllerIterator;
 
-    lControllerIterator = mControllers.find(&aController);
+    lControllerIterator = GetControllers().find(&aController);
 
-    if (lControllerIterator != mControllers.end())
+    if (lControllerIterator != GetControllers().end())
     {
         mControllersDidRefreshCount++;
 
         if (mDelegate != nullptr)
         {
             const Percentage lPercentComplete = CalculatePercentage(static_cast<uint8_t>(mControllersDidRefreshCount),
-                                                                    static_cast<uint8_t>(mControllers.size()));
+                                                                    static_cast<uint8_t>(GetControllers().size()));
 
             mDelegate->ControllerIsRefreshing(*this, lPercentComplete);
         }
 
-        if (mControllersDidRefreshCount == mControllers.size())
+        if (mControllersDidRefreshCount == GetControllers().size())
         {
             // At this point, all controllers have asynchronously
             // completed their refresh requests. Before notifying the
