@@ -67,8 +67,9 @@ namespace Detail
 }
 
 ControllerBasis :: ControllerBasis(void) :
-    Client::ControllerBasis(),
-    Server::ControllerBasis()
+    mClientCommandManager(nullptr),
+    mServerCommandManager(nullptr),
+    mTimeout()
 {
     return;
 }
@@ -81,30 +82,16 @@ ControllerBasis :: ~ControllerBasis(void)
 // MARK: Initializer(s)
 
 Status
-ControllerBasis :: Init(Client::CommandManager &aClientCommandManager, Server::CommandManager &aServerCommandManager)
-{
-    DeclareScopedFunctionTracer(lTracer);
-    Status lRetval = kStatus_Success;
-
-
-    lRetval = Init(aClientCommandManager, aServerCommandManager, kTimeoutDefault);
-
-    return (lRetval);
-}
-
-Status
 ControllerBasis :: Init(Client::CommandManager &aClientCommandManager, Server::CommandManager &aServerCommandManager, const Common::Timeout &aTimeout)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
-    lRetval = Client::ControllerBasis::Init(aClientCommandManager, aTimeout);
-    nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = Server::ControllerBasis::Init(aServerCommandManager, aTimeout);
-    nlREQUIRE_SUCCESS(lRetval, done);
+    mClientCommandManager = &aClientCommandManager;
+    mServerCommandManager = &aServerCommandManager;
+    mTimeout              = aTimeout;
 
-done:
     return (lRetval);
 }
 
@@ -163,10 +150,11 @@ ControllerBasis :: ProxyObservationCommand(Server::ConnectionBasis &aClientConne
     lRetval = std::static_pointer_cast<Proxy::Command::Proxy>(lCommand)->Init(aRequestBuffer, aRequestSize, aExpectedResponse);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = SendCommand(lCommand,
-                          ControllerBasis::ProxyObservationCompleteHandler,
-                          ControllerBasis::ProxyErrorHandler,
-                          lProxyContext.release());
+    lRetval = mClientCommandManager->SendCommand(lCommand,
+                                                 mTimeout,
+                                                 ControllerBasis::ProxyObservationCompleteHandler,
+                                                 ControllerBasis::ProxyErrorHandler,
+                                                 lProxyContext.release());
     nlREQUIRE_SUCCESS(lRetval, done);
 
  done:
@@ -213,10 +201,11 @@ ControllerBasis :: ProxyMutationCommand(Server::ConnectionBasis &aClientConnecti
     lRetval = std::static_pointer_cast<Proxy::Command::Proxy>(lCommand)->Init(aRequestBuffer, aRequestSize, aExpectedResponse);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = SendCommand(lCommand,
-                          ControllerBasis::ProxyMutationCompleteHandler,
-                          ControllerBasis::ProxyErrorHandler,
-                          lProxyContext.release());
+    lRetval = mClientCommandManager->SendCommand(lCommand,
+                                                 mTimeout,
+                                                 ControllerBasis::ProxyMutationCompleteHandler,
+                                                 ControllerBasis::ProxyErrorHandler,
+                                                 lProxyContext.release());
     nlREQUIRE_SUCCESS(lRetval, done);
 
  done:
@@ -237,7 +226,7 @@ ControllerBasis :: ProxyErrorHandler(Client::Command::ExchangeBasis::MutableCoun
 
     aOnCommandErrorHandler(aClientExchange, aClientError, aContext);
 
-    lStatus = SendErrorResponse(aClientConnection);
+    lStatus = mServerCommandManager->SendErrorResponse(aClientConnection);
     nlVERIFY_SUCCESS(lStatus);
 }
 
@@ -302,13 +291,13 @@ ControllerBasis :: ProxyMutationCompleteHandler(Client::Command::ExchangeBasis::
     nlREQUIRE_ACTION(lResult != nullptr, done, lStatus = -ENOSPC);
 
  done:
-    lStatus = SendResponse(aClientConnection, lProxyResponseBuffer);
+    lStatus = mServerCommandManager->SendResponse(aClientConnection, lProxyResponseBuffer);
     nlREQUIRE_SUCCESS(lStatus, exit);
 
  exit:
     if (lStatus < kStatus_Success)
     {
-        lStatus = SendErrorResponse(aClientConnection);
+        lStatus = mServerCommandManager->SendErrorResponse(aClientConnection);
         nlVERIFY_SUCCESS(lStatus);
     }
 
