@@ -1,0 +1,100 @@
+/*
+ *    Copyright (c) 2018-2021 Grant Erickson
+ *    All rights reserved.
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing,
+ *    software distributed under the License is distributed on an "AS
+ *    IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *    express or implied.  See the License for the specific language
+ *    governing permissions and limitations under the License.
+ *
+ */
+
+/**
+ *    @file
+ *      This file defines an object for...
+ *
+ */
+
+#ifndef OPENHLXCLIENTAPPLICATIONCONTROLLERBASIS_HPP
+#define OPENHLXCLIENTAPPLICATIONCONTROLLERBASIS_HPP
+
+
+#include <map>
+
+#include <OpenHLX/Client/ControllerBasis.hpp>
+#include <OpenHLX/Client/ControllerBasisRefreshDelegate.hpp>
+#include <OpenHLX/Common/Errors.hpp>
+#include <OpenHLX/Common/HLXCommonControllerBasis.hpp>
+
+namespace HLX
+{
+
+namespace Client
+{
+
+class Controller;
+
+namespace Application
+{
+
+class Controller;
+class ControllerRefreshDelegate;
+
+/**
+ *  @brief
+ *    An object for effecting an HLX client controller for any HLX
+ *    client application, whether a command line utility or a mobile
+ *    app.
+ *
+ *  @ingroup client
+ *
+ */
+class ControllerBasis :
+    public Common::Application::Foo<Client::ControllerBasis>,
+    public ControllerBasisRefreshDelegate
+{
+public:
+    virtual ~ControllerBasis(void);
+
+    Common::Status Init(void);
+
+    Client::Application::ControllerRefreshDelegate *GetRefreshDelegate(void) const;
+
+    Common::Status SetRefreshDelegate(Client::Application::ControllerRefreshDelegate *aRefreshDelegate);
+
+    Common::Status Refresh(void);
+
+    // Controller Delegate Methods
+
+    void ControllerIsRefreshing(Client::ControllerBasis &aController, const uint8_t &aPercentComplete) final;
+    void ControllerDidRefresh(Client::ControllerBasis &aController) final;
+
+protected:
+    ControllerBasis(Client::Application::Controller &aController);
+
+    bool IsRefreshing(void) const;
+
+
+private:
+    virtual void DeriveGroupState(void) = 0;
+
+private:
+    Controller &                                      mController;
+    size_t                                            mControllersDidRefreshCount;
+    Client::Application::ControllerRefreshDelegate *  mRefreshDelegate;
+};
+
+}; // namespace Application
+
+}; // namespace Client
+
+}; // namespace HLX
+
+#endif // OPENHLXCLIENTAPPLICATIONCONTROLLERBASIS_HPP
