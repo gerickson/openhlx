@@ -61,7 +61,8 @@ namespace Detail
         Client::CommandManager::OnCommandCompleteFunc mOnCommandCompleteHandler;
         Client::CommandManager::OnCommandErrorFunc    mOnCommandErrorHandler;
         Server::CommandManager::OnRequestReceivedFunc mOnRequestReceivedHandler;
-        void *                                        mTheirContext;
+        void *                                        mTheirClientContext;
+        void *                                        mTheirServerContext;
         void *                                        mOurContext;
     };
 }
@@ -117,7 +118,8 @@ ControllerBasis :: ProxyObservationCommand(Server::ConnectionBasis &aClientConne
                                            Client::CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
                                            Client::CommandManager::OnCommandErrorFunc aOnCommandErrorHandler,
                                            Server::CommandManager::OnRequestReceivedFunc aOnRequestReceivedHandler,
-                                           void *aContext)
+                                           void *aClientContext,
+                                           void *aServerContext)
 {
     DeclareScopedFunctionTracer(lTracer);
     Client::Command::ExchangeBasis::MutableCountedPointer lCommand;
@@ -129,7 +131,8 @@ ControllerBasis :: ProxyObservationCommand(Server::ConnectionBasis &aClientConne
     nlREQUIRE_ACTION(aOnCommandCompleteHandler != nullptr, done, lRetval = -EINVAL);
     nlREQUIRE_ACTION(aOnCommandErrorHandler != nullptr, done, lRetval = -EINVAL);
     nlREQUIRE_ACTION(aOnRequestReceivedHandler != nullptr, done, lRetval = -EINVAL);
-    nlREQUIRE_ACTION(aContext != nullptr, done, lRetval = -EINVAL);
+    nlREQUIRE_ACTION(aClientContext != nullptr, done, lRetval = -EINVAL);
+    nlREQUIRE_ACTION(aServerContext != nullptr, done, lRetval = -EINVAL);
 
     lProxyContext.reset(new Detail::ProxyContext());
     nlREQUIRE_ACTION(lProxyContext, done, lRetval = -ENOMEM);
@@ -141,7 +144,8 @@ ControllerBasis :: ProxyObservationCommand(Server::ConnectionBasis &aClientConne
     lProxyContext->mOnCommandCompleteHandler = aOnCommandCompleteHandler;
     lProxyContext->mOnCommandErrorHandler    = aOnCommandErrorHandler;
     lProxyContext->mOnRequestReceivedHandler = aOnRequestReceivedHandler;
-    lProxyContext->mTheirContext             = aContext;
+    lProxyContext->mTheirClientContext       = aClientContext;
+    lProxyContext->mTheirServerContext       = aServerContext;
     lProxyContext->mOurContext               = this;
 
     lCommand.reset(new Proxy::Command::Proxy());
@@ -192,7 +196,8 @@ ControllerBasis :: ProxyMutationCommand(Server::ConnectionBasis &aClientConnecti
     lProxyContext->mOnCommandCompleteHandler = aOnCommandCompleteHandler;
     lProxyContext->mOnCommandErrorHandler    = aOnCommandErrorHandler;
     lProxyContext->mOnRequestReceivedHandler = nullptr;
-    lProxyContext->mTheirContext             = aContext;
+    lProxyContext->mTheirClientContext       = aContext;
+    lProxyContext->mTheirServerContext       = nullptr;
     lProxyContext->mOurContext               = this;
 
     lCommand.reset(new Proxy::Command::Proxy());
@@ -239,19 +244,20 @@ ControllerBasis :: ProxyObservationCompleteHandler(Client::Command::ExchangeBasi
                                                    const Common::RegularExpression::Matches &aServerMatches,
                                                    Client::CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
                                                    Server::CommandManager::OnRequestReceivedFunc aOnRequestReceivedHandler,
-                                                   void * aContext)
+                                                   void * aClientContext,
+                                                   void * aServerContext)
 {
     DeclareScopedFunctionTracer(lTracer);
 
     aOnCommandCompleteHandler(aClientExchange,
                               aClientMatches,
-                              aContext);
+                              aClientContext);
 
     aOnRequestReceivedHandler(aClientConnection,
                               aRequestBuffer,
                               aRequestSize,
                               aServerMatches,
-                              aContext);
+                              aServerContext);
 }
 
 void
@@ -324,7 +330,7 @@ ControllerBasis :: ProxyErrorHandler(Client::Command::ExchangeBasis::MutableCoun
                                            aClientError,
                                            *lContext->mClientConnection,
                                            lContext->mOnCommandErrorHandler,
-                                           lContext->mTheirContext);
+                                           lContext->mTheirClientContext);
         }
 
         delete lContext;
@@ -352,7 +358,8 @@ ControllerBasis :: ProxyObservationCompleteHandler(Client::Command::ExchangeBasi
                                                          lContext->mServerMatches,
                                                          lContext->mOnCommandCompleteHandler,
                                                          lContext->mOnRequestReceivedHandler,
-                                                         lContext->mTheirContext);
+                                                         lContext->mTheirClientContext,
+                                                         lContext->mTheirServerContext);
         }
 
         delete lContext;
@@ -380,7 +387,7 @@ ControllerBasis :: ProxyMutationCompleteHandler(Client::Command::ExchangeBasis::
                                                       lContext->mRequestSize,
                                                       lContext->mServerMatches,
                                                       lContext->mOnCommandCompleteHandler,
-                                                      lContext->mTheirContext);
+                                                      lContext->mTheirClientContext);
         }
 
         delete lContext;

@@ -65,7 +65,8 @@ public:
                                            Client::CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
                                            Client::CommandManager::OnCommandErrorFunc aOnCommandErrorHandler,
                                            Server::CommandManager::OnRequestReceivedFunc aOnRequestReceivedHandler,
-                                           void *aContext);
+                                           void *aClientContext,
+                                           void *aServerContext);
     Common::Status ProxyMutationCommand(Server::ConnectionBasis &aClientConnection,
                                         const uint8_t *aRequestBuffer,
                                         const size_t &aRequestSize,
@@ -73,7 +74,7 @@ public:
                                         const Client::Command::ResponseBasis &aExpectedResponse,
                                         Client::CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
                                         Client::CommandManager::OnCommandErrorFunc aOnCommandErrorHandler,
-                                        void *aContext);
+                                        void *aClientContext);
 
 protected:
     ControllerBasis(void);
@@ -94,7 +95,8 @@ private:
                                          const Common::RegularExpression::Matches &aServerMatches,
                                          Client::CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
                                          Server::CommandManager::OnRequestReceivedFunc aOnRequestReceivedHandler,
-                                         void * aContext);
+                                         void * aClientContext,
+                                         void * aServerContext);
     void ProxyMutationCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aClientExchange,
                                       const Common::RegularExpression::Matches &aClientMatches,
                                       Server::ConnectionBasis &aClientConnection,
