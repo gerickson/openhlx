@@ -40,13 +40,13 @@
 #include <OpenHLX/Client/FrontPanelController.hpp>
 #include <OpenHLX/Client/GroupsController.hpp>
 #include <OpenHLX/Client/GroupsStateChangeNotifications.hpp>
+#include <OpenHLX/Client/HLXClientControllerBasis.hpp>
 #include <OpenHLX/Client/HLXClientControllerDelegate.hpp>
 #include <OpenHLX/Client/InfraredController.hpp>
 #include <OpenHLX/Client/NetworkController.hpp>
 #include <OpenHLX/Client/SourcesController.hpp>
 #include <OpenHLX/Client/ZonesController.hpp>
 #include <OpenHLX/Common/Errors.hpp>
-#include <OpenHLX/Common/HLXCommonControllerBasis.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
 #include <OpenHLX/Model/GroupModel.hpp>
 #include <OpenHLX/Model/SourceModel.hpp>
@@ -79,11 +79,10 @@ namespace Application
  *
  */
 class Controller :
-    public Common::Application::Foo<Client::ControllerBasis>,
+    public Client::Application::ControllerBasis,
     public ConnectionManagerDelegate,
     public CommandManagerDelegate,
     public ControllerBasisErrorDelegate,
-    public ControllerBasisRefreshDelegate,
     public ControllerBasisStateChangeDelegate
 {
 public:
@@ -101,8 +100,6 @@ public:
     Common::Status Connect(const char *aMaybeURL, const ConnectionManager::Versions &aVersions, const Common::Timeout &aTimeout);
 
     bool   IsConnected(void) const;
-
-    Common::Status Refresh(void);
 
     Common::Status Disconnect(void);
 
@@ -228,15 +225,11 @@ public:
 
     // Controller Delegate Methods
 
-    void ControllerIsRefreshing(ControllerBasis &aController, const uint8_t &aPercentComplete) final;
-    void ControllerDidRefresh(ControllerBasis &aController) final;
-    void ControllerError(ControllerBasis &aController, const Common::Error &aError) final;
-    void ControllerStateDidChange(ControllerBasis &aController, const StateChange::NotificationBasis &aStateChangeNotification) final;
+    void ControllerError(Client::ControllerBasis &aController, const Common::Error &aError) final;
+    void ControllerStateDidChange(Client::ControllerBasis &aController, const StateChange::NotificationBasis &aStateChangeNotification) final;
 
 private:
-    bool IsRefreshing(void) const;
-
-    void DeriveGroupState(void);
+    void DeriveGroupState(void) final;
     void DeriveGroupStateForGroupsIncludingZone(const Model::ZoneModel::IdentifierType &aZoneIdentifier);
     void DeriveGroupStateForGroupIncludingZone(const Model::GroupModel::IdentifierType &aGroupIdentifier,
                                                const Model::GroupModel &aGroupModel,
@@ -244,7 +237,7 @@ private:
     void DeriveGroupStateForGroup(const Model::GroupModel::IdentifierType &aGroupIdentifier,
                                   const Model::GroupModel &aGroupModel);
 
-    void MaybeHandleGroupZoneStateChangeInteractions(ControllerBasis &aController, const StateChange::NotificationBasis &aStateChangeNotification);
+    void MaybeHandleGroupZoneStateChangeInteractions(Client::ControllerBasis &aController, const StateChange::NotificationBasis &aStateChangeNotification);
     void HandleGroupZoneStateChangeInteractions(const StateChange::GroupsNotificationBasis &aGroupStateChangeNotification, const StateChange::Type &aType);
 
     struct DerivedGroupState
@@ -283,7 +276,6 @@ private:
     NetworkController               mNetworkController;
     SourcesController               mSourcesController;
     ZonesController                 mZonesController;
-    size_t                          mControllersDidRefreshCount;
     ControllerDelegate *            mDelegate;
     bool                            mIsDerivingGroupState;
 };

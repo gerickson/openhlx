@@ -192,11 +192,10 @@ Controller :: DerivedGroupState :: UpdateVolume(const VolumeModel::LevelType &aV
  *
  */
 Controller :: Controller(void) :
-    FooType(),
+    Client::Application::ControllerBasis(*this),
     ConnectionManagerDelegate(),
     CommandManagerDelegate(),
     ControllerBasisErrorDelegate(),
-    ControllerBasisRefreshDelegate(),
     ControllerBasisStateChangeDelegate(),
     mConnectionManager(),
     mCommandManager(),
@@ -209,7 +208,6 @@ Controller :: Controller(void) :
     mNetworkController(),
     mSourcesController(),
     mZonesController(),
-    mControllersDidRefreshCount(0),
     mDelegate(nullptr),
     mIsDerivingGroupState(false)
 {
@@ -251,7 +249,7 @@ Controller :: Init(const RunLoopParameters &aRunLoopParameters)
     Status lRetval = kStatus_Success;
     Controllers::iterator begin, end;
 
-    lRetval = FooType::Init();
+    lRetval = Client::Application::ControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mConnectionManager.Init(aRunLoopParameters);
@@ -439,55 +437,6 @@ done:
 
 /**
  *  @brief
- *    Refresh the state of the client controller.
- *
- *  This should be called on first-time client start-up or whenever
- *  the client controller state needs to be forcibly refreshed.
- *
- *  This iterates through each of the sub-controllers, tasking each
- *  with taking care of the refresh activity appropriate for its scope
- *  of concern.
- *
- *  @retval  kStatus_Success              If successful.
- *  @retval  -ENOMEM                      If memory could not be allocated
- *                                        by a controller to perform the
- *                                        refresh.
- *
- */
-Status
-Controller :: Refresh(void)
-{
-    Status                lRetval = kStatus_Success;
-    Controllers::iterator begin, end;
-
-    if (mDelegate != nullptr)
-    {
-        mDelegate->ControllerWillRefresh(*this);
-    }
-
-    // Reset the overall refresh count.
-
-    mControllersDidRefreshCount = 0;
-
-    // Begin refreshing each controller.
-
-    begin = GetControllers().begin();
-    end = GetControllers().end();
-
-    while (begin != end)
-    {
-        lRetval = begin->second.mController->Refresh();
-        nlREQUIRE_SUCCESS(lRetval, done);
-
-        begin++;
-    }
-
- done:
-    return (lRetval);
-}
-
-/**
- *  @brief
  *    Returns whether or not the client controller is connected to a
  *    peer.
  *
@@ -500,24 +449,6 @@ bool
 Controller :: IsConnected(void) const
 {
     return (mConnectionManager.IsConnected());
-}
-
-/**
- *  @brief
- *    Returns whether or not the controller is in the middle of a refresh.
- *
- *  This returns a Boolean indicating whether (true) or not (false)
- *  the controller is in the middle of a refresh operation with the
- *  peer server controller for up-to-date state.
- *
- *  @returns
- *    True if the controller is refreshing; otherwise, false.
- *
- */
-bool
-Controller :: IsRefreshing(void) const
-{
-    return (mControllersDidRefreshCount != GetControllers().size());
 }
 
 /**
@@ -555,7 +486,7 @@ Controller :: Disconnect(void)
  *    A pointer to the delegate for the client controller.
  *
  */
-ControllerDelegate *
+Client::Application::ControllerDelegate *
 Controller :: GetDelegate(void) const
 {
     return (mDelegate);
@@ -575,7 +506,7 @@ Controller :: GetDelegate(void) const
  *
  */
 Status
-Controller :: SetDelegate(ControllerDelegate *aDelegate)
+Controller :: SetDelegate(Client::Application::ControllerDelegate *aDelegate)
 {
     Status lRetval = kStatus_Success;
 
@@ -584,6 +515,9 @@ Controller :: SetDelegate(ControllerDelegate *aDelegate)
         lRetval = kStatus_ValueAlreadySet;
         goto done;
     }
+
+    lRetval = Client::Application::ControllerBasis::SetRefreshDelegate(aDelegate);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
     mDelegate        = aDelegate;
 
@@ -2724,7 +2658,7 @@ Controller :: DeriveGroupStateForGroup(const Model::GroupModel::IdentifierType &
 }
 
 void
-Controller :: MaybeHandleGroupZoneStateChangeInteractions(ControllerBasis &aController, const StateChange::NotificationBasis &aStateChangeNotification)
+Controller :: MaybeHandleGroupZoneStateChangeInteractions(Client::ControllerBasis &aController, const StateChange::NotificationBasis &aStateChangeNotification)
 {
     const StateChange::Type lType = aStateChangeNotification.GetType();
 
@@ -3280,90 +3214,12 @@ Controller :: ConnectionManagerError(Common::ConnectionManagerBasis &aConnection
     }
 }
 
-// MARK: Controller Basis Delegate Methods
+// MARK: Object Controller Basis Delegate Methods
+
+// MARK: Object Controller Basis Error Delegate Methods
 
 void
-Controller :: ControllerIsRefreshing(ControllerBasis &aController, const uint8_t &aPercentComplete)
-{
-    Controllers::const_iterator lControllerIterator;
-
-    lControllerIterator = GetControllers().find(&aController);
-
-    if (lControllerIterator != GetControllers().end())
-    {
-        static const Percentage kPercentCompletePerController    = CalculatePercentage(1,
-                                                                                       static_cast<uint8_t>(GetControllers().size()));
-        const Percentage        lOtherControllersPercentComplete = CalculatePercentage(static_cast<uint8_t>(mControllersDidRefreshCount),
-                                                                                       static_cast<uint8_t>(GetControllers().size()));
-        const Percentage        lThisControllerPercentComplete   = ((kPercentCompletePerController * aPercentComplete) / 100);
-        const Percentage        lPercentComplete                 = (lOtherControllersPercentComplete + lThisControllerPercentComplete);
-
-        if (mDelegate != nullptr)
-        {
-            mDelegate->ControllerIsRefreshing(*this, lPercentComplete);
-        }
-    }
-}
-
-/**
- *  @brief
- *    Delegation from a controller that the specified controller is
- *    done refreshing.
- *
- *  On the refresh completion of any one controller, this refreshes
- *  the overall refresh state of the parent client controller.
- *
- *  @param[in]  aController       A reference to the controller
- *                                that issued the delegation.
- *
- */
-void
-Controller :: ControllerDidRefresh(ControllerBasis &aController)
-{
-    Controllers::const_iterator lControllerIterator;
-
-    lControllerIterator = GetControllers().find(&aController);
-
-    if (lControllerIterator != GetControllers().end())
-    {
-        mControllersDidRefreshCount++;
-
-        if (mDelegate != nullptr)
-        {
-            const Percentage lPercentComplete = CalculatePercentage(static_cast<uint8_t>(mControllersDidRefreshCount),
-                                                                    static_cast<uint8_t>(GetControllers().size()));
-
-            mDelegate->ControllerIsRefreshing(*this, lPercentComplete);
-        }
-
-        if (mControllersDidRefreshCount == GetControllers().size())
-        {
-            // At this point, all controllers have asynchronously
-            // completed their refresh requests. Before notifying the
-            // delegate of that fact, derive any necessary group
-            // state, dispatching state change notifications in the
-            // process such that it appears to the delegate as though
-            // that group state came with and was bookended by the
-            // overall refresh request.
-
-            DeriveGroupState();
-
-            // Now that group state has been derived and state change
-            // notifications dispatched, notify the client that the
-            // refresh request is complete.
-
-            if (mDelegate != nullptr)
-            {
-                mDelegate->ControllerDidRefresh(*this);
-            }
-        }
-    }
-
-    return;
-}
-
-void
-Controller :: ControllerError(ControllerBasis &aController, const Common::Error &aError)
+Controller :: ControllerError(Client::ControllerBasis &aController, const Common::Error &aError)
 {
     (void)aController;
 
@@ -3372,6 +3228,8 @@ Controller :: ControllerError(ControllerBasis &aController, const Common::Error 
         mDelegate->ControllerError(*this, aError);
     }
 }
+
+// MARK: Object Controller Basis State Change Delegate Methods
 
 /**
  *  Delegation callback for individual sub-controller state change
@@ -3410,7 +3268,7 @@ Controller :: ControllerError(ControllerBasis &aController, const Common::Error 
  *
  */
 void
-Controller :: ControllerStateDidChange(ControllerBasis &aController,
+Controller :: ControllerStateDidChange(Client::ControllerBasis &aController,
                                        const StateChange::NotificationBasis &aStateChangeNotification)
 {
     MaybeHandleGroupZoneStateChangeInteractions(aController, aStateChangeNotification);
