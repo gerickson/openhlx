@@ -90,6 +90,7 @@ libopenhlx_client_a_include_HEADERS                         = \
     GroupsControllerCommands.hpp                              \
     GroupsStateChangeNotifications.hpp                        \
     HLXClientController.hpp                                   \
+    HLXClientControllerBasis.hpp                              \
     HLXClientControllerDelegate.hpp                           \
     HLXClientControllerRefreshDelegate.hpp                    \
     IdentifierStateChangeNotificationBasis.hpp                \
@@ -164,6 +165,7 @@ libopenhlx_client_a_SOURCES                                 = \
     GroupsControllerCommands.cpp                              \
     GroupsStateChangeNotifications.cpp                        \
     HLXClientController.cpp                                   \
+    HLXClientControllerBasis.cpp                              \
     IdentifierStateChangeNotificationBasis.cpp                \
     InfraredController.cpp                                    \
     InfraredControllerBasis.cpp                               \
