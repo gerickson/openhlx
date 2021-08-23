@@ -161,10 +161,12 @@ static const char * const   sLongUsageString =
 "  -6, --ipv6-only             Force hlxproxyd to use IPv6 addresses only.\n"
 "  -c, --connect=HOST          TBD.\n"
 "  -l, --listen=HOST           TBD.\n"
+"  -t, --timeout=MILLISECONDS  Set a connection timeout of MILLISECONDS \n"
+"                              milliseconds.\n"
 "\n";
 
 class HLXProxy :
-    public ControllerDelegate
+    public Proxy::Application::ControllerDelegate
 {
 public:
     HLXProxy(void);
@@ -182,8 +184,8 @@ public:
     Status Stop(void);
     Status Stop(const Status &aStatus);
 
-    const Controller &GetController(void) const;
-    Controller &GetController(void);
+    const Proxy::Application::Controller &GetController(void) const;
+    Proxy::Application::Controller &GetController(void);
     Status GetStatus(void) const;
     void SetStatus(const Status &aStatus);
 
@@ -194,63 +196,63 @@ public:
 private:
     // Resolve
 
-    void ControllerWillResolve(Controller &aController, const char *aHost) final;
-    void ControllerIsResolving(Controller &aController, const char *aHost) final;
-    void ControllerDidResolve(Controller &aController, const char *aHost, const IPAddress &aIPAddress) final;
-    void ControllerDidNotResolve(Controller &aController, const char *aHost, const Error &aError) final;
+    void ControllerWillResolve(Proxy::Application::Controller &aController, const char *aHost) final;
+    void ControllerIsResolving(Proxy::Application::Controller &aController, const char *aHost) final;
+    void ControllerDidResolve(Proxy::Application::Controller &aController, const char *aHost, const IPAddress &aIPAddress) final;
+    void ControllerDidNotResolve(Proxy::Application::Controller &aController, const char *aHost, const Error &aError) final;
 
     // Client-facing Server Listen
 
-    void ControllerWillListen(Controller &aController, CFURLRef aURLRef) final;
-    void ControllerIsListening(Controller &aController, CFURLRef aURLRef) final;
-    void ControllerDidListen(Controller &aController, CFURLRef aURLRef) final;
-    void ControllerDidNotListen(Controller &aController, CFURLRef aURLRef, const Common::Error &aError) final;
+    void ControllerWillListen(Proxy::Application::Controller &aController, CFURLRef aURLRef) final;
+    void ControllerIsListening(Proxy::Application::Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidListen(Proxy::Application::Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidNotListen(Proxy::Application::Controller &aController, CFURLRef aURLRef, const Common::Error &aError) final;
 
     // Client-facing Server Accept
 
-    void ControllerWillAccept(Controller &aController, CFURLRef aURLRef) final;
-    void ControllerIsAccepting(Controller &aController, CFURLRef aURLRef) final;
-    void ControllerDidAccept(Controller &aController, CFURLRef aURLRef) final;
-    void ControllerDidNotAccept(Controller &aController, CFURLRef aURLRef, const Error &aError) final;
+    void ControllerWillAccept(Proxy::Application::Controller &aController, CFURLRef aURLRef) final;
+    void ControllerIsAccepting(Proxy::Application::Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidAccept(Proxy::Application::Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidNotAccept(Proxy::Application::Controller &aController, CFURLRef aURLRef, const Error &aError) final;
 
     // Server-facing Client Connect
 
-    void ControllerWillConnect(Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout) final;
-    void ControllerIsConnecting(Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout) final;
-    void ControllerDidConnect(Controller &aController, CFURLRef aURLRef) final;
-    void ControllerDidNotConnect(Controller &aController, CFURLRef aURLRef, const Error &aError) final;
+    void ControllerWillConnect(Proxy::Application::Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout) final;
+    void ControllerIsConnecting(Proxy::Application::Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout) final;
+    void ControllerDidConnect(Proxy::Application::Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidNotConnect(Proxy::Application::Controller &aController, CFURLRef aURLRef, const Error &aError) final;
 
     // Disconnect
 
-    void ControllerWillDisconnect(Controller &aController, const Roles &aRoles, CFURLRef aURLRef) final;
-    void ControllerDidDisconnect(Controller &aController, const Roles &aRoles, CFURLRef aURLRef, const Error &aError) final;
-    void ControllerDidNotDisconnect(Controller &aController, const Roles &aRoles, CFURLRef aURLRef, const Error &aError) final;
+    void ControllerWillDisconnect(Proxy::Application::Controller &aController, const Roles &aRoles, CFURLRef aURLRef) final;
+    void ControllerDidDisconnect(Proxy::Application::Controller &aController, const Roles &aRoles, CFURLRef aURLRef, const Error &aError) final;
+    void ControllerDidNotDisconnect(Proxy::Application::Controller &aController, const Roles &aRoles, CFURLRef aURLRef, const Error &aError) final;
 
     // Server-facing Client Refresh / Reload
 
-    void ControllerWillRefresh(Controller &aController) final;
-    void ControllerIsRefreshing(Controller &aController, const uint8_t &aPercentComplete) final;
-    void ControllerDidRefresh(Controller &aController) final;
-    void ControllerDidNotRefresh(Controller &aController, const Error &aError) final;
+    void ControllerWillRefresh(Proxy::Application::Controller &aController) final;
+    void ControllerIsRefreshing(Proxy::Application::Controller &aController, const uint8_t &aPercentComplete) final;
+    void ControllerDidRefresh(Proxy::Application::Controller &aController) final;
+    void ControllerDidNotRefresh(Proxy::Application::Controller &aController, const Error &aError) final;
 
     // Server-facing Client State Change
 
-    void ControllerStateDidChange(Controller &aController, const StateChange::NotificationBasis &aStateChangeNotification) final;
+    void ControllerStateDidChange(Proxy::Application::Controller &aController, const StateChange::NotificationBasis &aStateChangeNotification) final;
 
     // Error
 
-    void ControllerError(Controller &aController, const Roles &aRoles, const Error &aError) final;
+    void ControllerError(Proxy::Application::Controller &aController, const Roles &aRoles, const Error &aError) final;
 
     static void OnSignal(int aSignal);
 
 private:
-    RunLoopParameters  mRunLoopParameters;
-    Controller         mHLXProxyController;
-    Status             mStatus;
+    RunLoopParameters                mRunLoopParameters;
+    Proxy::Application::Controller   mHLXProxyController;
+    Status                           mStatus;
 };
 
 static const char *
-GetString(const HLX::Proxy::ControllerDelegate::Roles &aRoles, const bool &aTitleCase)
+GetString(const Proxy::Application::ControllerDelegate::Roles &aRoles, const bool &aTitleCase)
 {
     constexpr auto kRoleClient = HLX::Common::ConnectionManagerBasis::kRoleClient;
     constexpr auto kRoleServer = HLX::Common::ConnectionManagerBasis::kRoleServer;
@@ -270,7 +272,7 @@ GetString(const HLX::Proxy::ControllerDelegate::Roles &aRoles, const bool &aTitl
 }
 
 static const char *
-GetString(const HLX::Proxy::ControllerDelegate::Roles &aRoles)
+GetString(const Proxy::Application::ControllerDelegate::Roles &aRoles)
 {
     static const bool kTitleCase = true;
 
@@ -369,13 +371,13 @@ Status HLXProxy :: Stop(const Status &aStatus)
     return (lStatus);
 }
 
-const Controller &
+const Proxy::Application::Controller &
 HLXProxy :: GetController(void) const
 {
     return (mHLXProxyController);
 }
 
-Controller &
+Proxy::Application::Controller &
 HLXProxy :: GetController(void)
 {
     return (mHLXProxyController);
@@ -417,21 +419,21 @@ HLXProxy :: IsServer(const Roles &aRole)
 
 // Resolve
 
-void HLXProxy :: ControllerWillResolve(Controller &aController, const char *aHost)
+void HLXProxy :: ControllerWillResolve(Proxy::Application::Controller &aController, const char *aHost)
 {
     (void)aController;
 
     Log::Info().Write("Will resolve \"%s\".\n", aHost);
 }
 
-void HLXProxy :: ControllerIsResolving(Controller &aController, const char *aHost)
+void HLXProxy :: ControllerIsResolving(Proxy::Application::Controller &aController, const char *aHost)
 {
     (void)aController;
 
     Log::Info().Write("Is resolving \"%s\".\n", aHost);
 }
 
-void HLXProxy :: ControllerDidResolve(Controller &aController, const char *aHost, const IPAddress &aIPAddress)
+void HLXProxy :: ControllerDidResolve(Proxy::Application::Controller &aController, const char *aHost, const IPAddress &aIPAddress)
 {
     char   lBuffer[INET6_ADDRSTRLEN];
     Status lStatus;
@@ -447,7 +449,7 @@ void HLXProxy :: ControllerDidResolve(Controller &aController, const char *aHost
     return;
 }
 
-void HLXProxy :: ControllerDidNotResolve(Controller &aController, const char *aHost, const Error &aError)
+void HLXProxy :: ControllerDidNotResolve(Proxy::Application::Controller &aController, const char *aHost, const Error &aError)
 {
     (void)aController;
 
@@ -456,28 +458,28 @@ void HLXProxy :: ControllerDidNotResolve(Controller &aController, const char *aH
 
 // Client-facing Server Listen
 
-void HLXProxy :: ControllerWillListen(Controller &aController, CFURLRef aURLRef)
+void HLXProxy :: ControllerWillListen(Proxy::Application::Controller &aController, CFURLRef aURLRef)
 {
     (void)aController;
 
     Log::Info().Write("Will listen at %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
 }
 
-void HLXProxy :: ControllerIsListening(Controller &aController, CFURLRef aURLRef)
+void HLXProxy :: ControllerIsListening(Proxy::Application::Controller &aController, CFURLRef aURLRef)
 {
     (void)aController;
 
     Log::Info().Write("Listening at %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
 }
 
-void HLXProxy :: ControllerDidListen(Controller &aController, CFURLRef aURLRef)
+void HLXProxy :: ControllerDidListen(Proxy::Application::Controller &aController, CFURLRef aURLRef)
 {
     (void)aController;
 
     Log::Info().Write("Listened at %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
 }
 
-void HLXProxy :: ControllerDidNotListen(Controller &aController, CFURLRef aURLRef, const Common::Error &aError)
+void HLXProxy :: ControllerDidNotListen(Proxy::Application::Controller &aController, CFURLRef aURLRef, const Common::Error &aError)
 {
     (void)aController;
 
@@ -486,28 +488,28 @@ void HLXProxy :: ControllerDidNotListen(Controller &aController, CFURLRef aURLRe
 
 // Client-facing Server Accept
 
-void HLXProxy :: ControllerWillAccept(Controller &aController, CFURLRef aURLRef)
+void HLXProxy :: ControllerWillAccept(Proxy::Application::Controller &aController, CFURLRef aURLRef)
 {
     (void)aController;
 
     Log::Info().Write("Will accept from %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
 }
 
-void HLXProxy :: ControllerIsAccepting(Controller &aController, CFURLRef aURLRef)
+void HLXProxy :: ControllerIsAccepting(Proxy::Application::Controller &aController, CFURLRef aURLRef)
 {
     (void)aController;
 
     Log::Info().Write("Accepting from %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
 }
 
-void HLXProxy :: ControllerDidAccept(Controller &aController, CFURLRef aURLRef)
+void HLXProxy :: ControllerDidAccept(Proxy::Application::Controller &aController, CFURLRef aURLRef)
 {
     (void)aController;
 
     Log::Info().Write("Accepted from %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
 }
 
-void HLXProxy :: ControllerDidNotAccept(Controller &aController, CFURLRef aURLRef, const Error &aError)
+void HLXProxy :: ControllerDidNotAccept(Proxy::Application::Controller &aController, CFURLRef aURLRef, const Error &aError)
 {
     (void)aController;
 
@@ -516,21 +518,21 @@ void HLXProxy :: ControllerDidNotAccept(Controller &aController, CFURLRef aURLRe
 
 // Server-facing Client Connect
 
-void HLXProxy :: ControllerWillConnect(Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout)
+void HLXProxy :: ControllerWillConnect(Proxy::Application::Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout)
 {
     (void)aController;
 
     Log::Info().Write("Will connect to %s with %u ms timeout.\n", CFString(CFURLGetString(aURLRef)).GetCString(), aTimeout.GetMilliseconds());
 }
 
-void HLXProxy :: ControllerIsConnecting(Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout)
+void HLXProxy :: ControllerIsConnecting(Proxy::Application::Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout)
 {
     (void)aController;
 
     Log::Info().Write("Connecting to %s with %u ms timeout.\n", CFString(CFURLGetString(aURLRef)).GetCString(), aTimeout.GetMilliseconds());
 }
 
-void HLXProxy :: ControllerDidConnect(Controller &aController, CFURLRef aURLRef)
+void HLXProxy :: ControllerDidConnect(Proxy::Application::Controller &aController, CFURLRef aURLRef)
 {
     Status lStatus;
 
@@ -548,7 +550,7 @@ void HLXProxy :: ControllerDidConnect(Controller &aController, CFURLRef aURLRef)
     return;
 }
 
-void HLXProxy :: ControllerDidNotConnect(Controller &aController, CFURLRef aURLRef, const Error &aError)
+void HLXProxy :: ControllerDidNotConnect(Proxy::Application::Controller &aController, CFURLRef aURLRef, const Error &aError)
 {
     (void)aController;
 
@@ -559,14 +561,14 @@ void HLXProxy :: ControllerDidNotConnect(Controller &aController, CFURLRef aURLR
 
 // Disconnect
 
-void HLXProxy :: ControllerWillDisconnect(Controller &aController, const Roles &aRoles, CFURLRef aURLRef)
+void HLXProxy :: ControllerWillDisconnect(Proxy::Application::Controller &aController, const Roles &aRoles, CFURLRef aURLRef)
 {
     (void)aController;
 
     Log::Info().Write("Will disconnect %s from %s.\n", GetString(aRoles), CFString(CFURLGetString(aURLRef)).GetCString());
 }
 
-void HLXProxy :: ControllerDidDisconnect(Controller &aController, const Roles &aRoles, CFURLRef aURLRef, const Error &aError)
+void HLXProxy :: ControllerDidDisconnect(Proxy::Application::Controller &aController, const Roles &aRoles, CFURLRef aURLRef, const Error &aError)
 {
     (void)aController;
 
@@ -602,11 +604,10 @@ void HLXProxy :: ControllerDidDisconnect(Controller &aController, const Roles &a
 
     }
 
- done:
     return;
 }
 
-void HLXProxy :: ControllerDidNotDisconnect(Controller &aController, const Roles &aRoles, CFURLRef aURLRef, const Error &aError)
+void HLXProxy :: ControllerDidNotDisconnect(Proxy::Application::Controller &aController, const Roles &aRoles, CFURLRef aURLRef, const Error &aError)
 {
     (void)aController;
 
@@ -615,7 +616,7 @@ void HLXProxy :: ControllerDidNotDisconnect(Controller &aController, const Roles
 
 // Server-facing Client Refresh / Reload
 
-void HLXProxy :: ControllerWillRefresh(Controller &aController)
+void HLXProxy :: ControllerWillRefresh(Proxy::Application::Controller &aController)
 {
     (void)aController;
 
@@ -624,14 +625,14 @@ void HLXProxy :: ControllerWillRefresh(Controller &aController)
     return;
 }
 
-void HLXProxy :: ControllerIsRefreshing(Controller &aController, const uint8_t &aPercentComplete)
+void HLXProxy :: ControllerIsRefreshing(Proxy::Application::Controller &aController, const uint8_t &aPercentComplete)
 {
     (void)aController;
 
     Log::Info().Write("%u%% of client data received.\n", aPercentComplete);
 }
 
-void HLXProxy :: ControllerDidRefresh(Controller &aController)
+void HLXProxy :: ControllerDidRefresh(Proxy::Application::Controller &aController)
 {
     (void)aController;
 
@@ -640,7 +641,7 @@ void HLXProxy :: ControllerDidRefresh(Controller &aController)
     return;
 }
 
-void HLXProxy :: ControllerDidNotRefresh(Controller &aController, const Error &aError)
+void HLXProxy :: ControllerDidNotRefresh(Proxy::Application::Controller &aController, const Error &aError)
 {
     (void)aController;
 
@@ -649,7 +650,7 @@ void HLXProxy :: ControllerDidNotRefresh(Controller &aController, const Error &a
 
 // Server-facing Client State Change
 
-void HLXProxy :: ControllerStateDidChange(Controller &aController, const Client::StateChange::NotificationBasis &aStateChangeNotification)
+void HLXProxy :: ControllerStateDidChange(Proxy::Application::Controller &aController, const Client::StateChange::NotificationBasis &aStateChangeNotification)
 {
     const StateChange::Type lType = aStateChangeNotification.GetType();
 
@@ -667,7 +668,7 @@ void HLXProxy :: ControllerStateDidChange(Controller &aController, const Client:
 
 // Error
 
-void HLXProxy :: ControllerError(Controller &aController, const Roles &aRoles, const Error &aError)
+void HLXProxy :: ControllerError(Proxy::Application::Controller &aController, const Roles &aRoles, const Error &aError)
 {
     (void)aController;
 
