@@ -210,9 +210,10 @@ void InfraredController :: QueryRequestReceivedHandler(Server::ConnectionBasis &
                                           aSize,
                                           aMatches,
                                           kQueryResponse,
-                                          InfraredController::QueryCompleteHandler,
-                                          InfraredController::CommandErrorHandler,
+                                          Client::InfraredControllerBasis::QueryCompleteHandler,
+                                          Client::InfraredControllerBasis::CommandErrorHandler,
                                           InfraredController::QueryRequestReceivedHandler,
+                                          static_cast<Client::InfraredControllerBasis *>(this),
                                           this);
         nlREQUIRE_SUCCESS(lStatus, exit);
     }

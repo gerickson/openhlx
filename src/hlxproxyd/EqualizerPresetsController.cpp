@@ -332,9 +332,10 @@ void EqualizerPresetsController :: QueryRequestReceivedHandler(Server::Connectio
                                           aSize,
                                           aMatches,
                                           kQueryResponse,
-                                          EqualizerPresetsController::QueryCompleteHandler,
-                                          EqualizerPresetsController::CommandErrorHandler,
+                                          Client::EqualizerPresetsControllerBasis::QueryCompleteHandler,
+                                          Client::EqualizerPresetsControllerBasis::CommandErrorHandler,
                                           EqualizerPresetsController::QueryRequestReceivedHandler,
+                                          static_cast<Client::EqualizerPresetsControllerBasis *>(this),
                                           this);
         nlREQUIRE_SUCCESS(lStatus, exit);
     }

@@ -219,9 +219,10 @@ void FrontPanelController :: QueryRequestReceivedHandler(Server::ConnectionBasis
                                           aSize,
                                           aMatches,
                                           kQueryResponse,
-                                          FrontPanelController::QueryCompleteHandler,
-                                          FrontPanelController::CommandErrorHandler,
+                                          Client::FrontPanelControllerBasis::QueryCompleteHandler,
+                                          Client::FrontPanelControllerBasis::CommandErrorHandler,
                                           FrontPanelController::QueryRequestReceivedHandler,
+                                          static_cast<Client::FrontPanelControllerBasis *>(this),
                                           this);
         nlREQUIRE_SUCCESS(lStatus, exit);
     }

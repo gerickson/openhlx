@@ -238,9 +238,10 @@ void FavoritesController :: QueryRequestReceivedHandler(Server::ConnectionBasis 
                                           aSize,
                                           aMatches,
                                           kQueryResponse,
-                                          FavoritesController::QueryCompleteHandler,
-                                          FavoritesController::CommandErrorHandler,
+                                          Client::FavoritesControllerBasis::QueryCompleteHandler,
+                                          Client::FavoritesControllerBasis::CommandErrorHandler,
                                           FavoritesController::QueryRequestReceivedHandler,
+                                          static_cast<Client::FavoritesControllerBasis *>(this),
                                           this);
         nlREQUIRE_SUCCESS(lStatus, exit);
     }

@@ -973,9 +973,10 @@ void ZonesController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aCo
                                           aSize,
                                           aMatches,
                                           kQueryResponse,
-                                          ZonesController::QueryCompleteHandler,
-                                          ZonesController::CommandErrorHandler,
+                                          Client::ZonesControllerBasis::QueryCompleteHandler,
+                                          Client::ZonesControllerBasis::CommandErrorHandler,
                                           ZonesController::QueryRequestReceivedHandler,
+                                          static_cast<Client::ZonesControllerBasis *>(this),
                                           this);
         nlREQUIRE_SUCCESS(lStatus, exit);
     }
@@ -1035,9 +1036,10 @@ void ZonesController :: QueryMuteRequestReceivedHandler(Server::ConnectionBasis 
                                           aSize,
                                           aMatches,
                                           kMuteResponse,
-                                          ZonesController::SetMuteCompleteHandler,
-                                          ZonesController::CommandErrorHandler,
+                                          Client::ZonesControllerBasis::SetMuteCompleteHandler,
+                                          Client::ZonesControllerBasis::CommandErrorHandler,
                                           ZonesController::QueryMuteRequestReceivedHandler,
+                                          static_cast<Client::ZonesControllerBasis *>(this),
                                           this);
         nlREQUIRE_SUCCESS(lStatus, exit);
     }
@@ -1097,9 +1099,10 @@ void ZonesController :: QuerySourceRequestReceivedHandler(Server::ConnectionBasi
                                           aSize,
                                           aMatches,
                                           kSourceResponse,
-                                          ZonesController::SetSourceCompleteHandler,
-                                          ZonesController::CommandErrorHandler,
+                                          Client::ZonesControllerBasis::SetSourceCompleteHandler,
+                                          Client::ZonesControllerBasis::CommandErrorHandler,
                                           ZonesController::QuerySourceRequestReceivedHandler,
+                                          static_cast<Client::ZonesControllerBasis *>(this),
                                           this);
         nlREQUIRE_SUCCESS(lStatus, exit);
     }
@@ -1171,9 +1174,10 @@ void ZonesController :: QueryVolumeRequestReceivedHandler(Server::ConnectionBasi
                                           aSize,
                                           aMatches,
                                           kVolumeResponse,
-                                          ZonesController::SetVolumeCompleteHandler,
-                                          ZonesController::CommandErrorHandler,
+                                          Client::ZonesControllerBasis::SetVolumeCompleteHandler,
+                                          Client::ZonesControllerBasis::CommandErrorHandler,
                                           ZonesController::QueryVolumeRequestReceivedHandler,
+                                          static_cast<Client::ZonesControllerBasis *>(this),
                                           this);
         nlREQUIRE_SUCCESS(lStatus, exit);
     }

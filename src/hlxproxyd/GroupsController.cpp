@@ -639,9 +639,10 @@ void GroupsController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aC
                                           aSize,
                                           aMatches,
                                           kQueryResponse,
-                                          GroupsController::QueryCompleteHandler,
-                                          GroupsController::CommandErrorHandler,
+                                          Client::GroupsControllerBasis::QueryCompleteHandler,
+                                          Client::GroupsControllerBasis::CommandErrorHandler,
                                           GroupsController::QueryRequestReceivedHandler,
+                                          static_cast<Client::GroupsControllerBasis *>(this),
                                           this);
         nlREQUIRE_SUCCESS(lStatus, exit);
     }

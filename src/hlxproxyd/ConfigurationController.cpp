@@ -269,9 +269,10 @@ void ConfigurationController :: QueryCurrentRequestReceivedHandler(Server::Conne
                                           aSize,
                                           aMatches,
                                           lQueryCurrentResponse,
-                                          ConfigurationController::QueryCompleteHandler,
-                                          ConfigurationController::CommandErrorHandler,
+                                          Client::ConfigurationControllerBasis::QueryCompleteHandler,
+                                          Client::ConfigurationControllerBasis::CommandErrorHandler,
                                           ConfigurationController::QueryCurrentRequestReceivedHandler,
+                                          static_cast<Client::ConfigurationControllerBasis *>(this),
                                           this);
         nlREQUIRE_SUCCESS(lStatus, exit);
     }
