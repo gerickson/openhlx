@@ -79,6 +79,7 @@ using namespace std;
 #define OPT_NO_INITIAL_REFRESH       (OPT_BASE + 2)
 #define OPT_QUIET                    'q'
 #define OPT_SYSLOG                   's'
+#define OPT_TIMEOUT                  't'
 #define OPT_VERBOSE                  'v'
 #define OPT_VERSION                  'V'
 
@@ -91,7 +92,10 @@ enum OptFlags {
     kOptPriority         = 0x00000004,
     kOptQuiet            = 0x00000008,
     kOptSyslog           = 0x00000010,
-    kOptNoInitialRefresh = 0x00000020
+
+    kOptTimeout          = 0x00000080,
+
+    kOptNoInitialRefresh = 0x00000100
 };
 
 class HLXProxy;
@@ -106,6 +110,8 @@ static Log::Level           sError               = 0;
 static Log::Level           sVerbose             = 0;
 
 static const char *         sProgram             = nullptr;
+
+static Timeout              sTimeout;
 
 static const char *         sConnectMaybeURL     = nullptr;
 static const char *         sListenMaybeURL      = nullptr;
@@ -122,6 +128,7 @@ static const struct option  sOptions[] = {
     { "listen",                  required_argument,  nullptr,   OPT_LISTEN                  },
     { "no-initial-refresh",      no_argument,        nullptr,   OPT_NO_INITIAL_REFRESH      },
     { "quiet",                   no_argument,        nullptr,   OPT_QUIET                   },
+    { "timeout",                 required_argument,  nullptr,   OPT_TIMEOUT                 },
     { "verbose",                 optional_argument,  nullptr,   OPT_VERBOSE                 },
     { "version",                 no_argument,        nullptr,   OPT_VERSION                 },
 
@@ -850,6 +857,7 @@ DecodeOptions(const char *inProgram,
     int             c;
     unsigned int    error = 0;
     string          shortOptions;
+    Timeout::Value  timeoutMilliseconds;
 
     // Generate a list of those single-character options available as
     // a subset of the long option list.
@@ -926,6 +934,13 @@ DecodeOptions(const char *inProgram,
 
         case OPT_SYSLOG:
             sOptFlags |= kOptSyslog;
+            break;
+
+        case OPT_TIMEOUT:
+            {
+                sOptFlags |= kOptTimeout;
+                timeoutMilliseconds = static_cast<Timeout::Value>(atoi(optarg));
+            }
             break;
 
         case OPT_VERBOSE:
