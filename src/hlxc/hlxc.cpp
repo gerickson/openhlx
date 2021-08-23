@@ -64,6 +64,7 @@
 #include <OpenHLX/Utilities/Utilities.hpp>
 
 
+using namespace HLX;
 using namespace HLX::Client;
 using namespace HLX::Client::Application;
 using namespace HLX::Common;
@@ -229,7 +230,7 @@ class HLXClient;
 
 // Function Prototypes
 
-static Status DispatchCommand(Controller &aController, ClientArgument &aClientArgument, const uint32_t &aOptFlags, const Timeout &aTimeout);
+static Status DispatchCommand(Client::Application::Controller &aController, ClientArgument &aClientArgument, const uint32_t &aOptFlags, const Timeout &aTimeout);
 
 // Global Variables
 
@@ -456,53 +457,53 @@ public:
     Status Stop(void);
     Status Stop(const Status &aStatus);
 
-    const Controller &GetController(void) const;
-    Controller &GetController(void);
+    const Client::Application::Controller &GetController(void) const;
+    Client::Application::Controller &GetController(void);
     Status GetStatus(void) const;
     void SetStatus(const Status &aStatus);
 
 private:
     // Resolve
 
-    void ControllerWillResolve(Controller &aController, const char *aHost) final;
-    void ControllerIsResolving(Controller &aController, const char *aHost) final;
-    void ControllerDidResolve(Controller &aController, const char *aHost, const IPAddress &aIPAddress) final;
-    void ControllerDidNotResolve(Controller &aController, const char *aHost, const Error &aError) final;
+    void ControllerWillResolve(Client::Application::Controller &aController, const char *aHost) final;
+    void ControllerIsResolving(Client::Application::Controller &aController, const char *aHost) final;
+    void ControllerDidResolve(Client::Application::Controller &aController, const char *aHost, const IPAddress &aIPAddress) final;
+    void ControllerDidNotResolve(Client::Application::Controller &aController, const char *aHost, const Error &aError) final;
 
     // Connect
 
-    void ControllerWillConnect(Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout) final;
-    void ControllerIsConnecting(Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout) final;
-    void ControllerDidConnect(Controller &aController, CFURLRef aURLRef) final;
-    void ControllerDidNotConnect(Controller &aController, CFURLRef aURLRef, const Error &aError) final;
+    void ControllerWillConnect(Client::Application::Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout) final;
+    void ControllerIsConnecting(Client::Application::Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout) final;
+    void ControllerDidConnect(Client::Application::Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidNotConnect(Client::Application::Controller &aController, CFURLRef aURLRef, const Error &aError) final;
 
     // Disconnect
 
-    void ControllerWillDisconnect(Controller &aController, CFURLRef aURLRef) final;
-    void ControllerDidDisconnect(Controller &aController, CFURLRef aURLRef, const Error &aError) final;
-    void ControllerDidNotDisconnect(Controller &aController, CFURLRef aURLRef, const Error &aError) final;
+    void ControllerWillDisconnect(Client::Application::Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidDisconnect(Client::Application::Controller &aController, CFURLRef aURLRef, const Error &aError) final;
+    void ControllerDidNotDisconnect(Client::Application::Controller &aController, CFURLRef aURLRef, const Error &aError) final;
 
     // Refresh / Reload
 
-    void ControllerWillRefresh(Controller &aController) final;
-    void ControllerIsRefreshing(Controller &aController, const uint8_t &aPercentComplete) final;
-    void ControllerDidRefresh(Controller &aController) final;
-    void ControllerDidNotRefresh(Controller &aController, const Error &aError) final;
+    void ControllerWillRefresh(Client::Application::Controller &aController) final;
+    void ControllerIsRefreshing(Client::Application::Controller &aController, const uint8_t &aPercentComplete) final;
+    void ControllerDidRefresh(Client::Application::Controller &aController) final;
+    void ControllerDidNotRefresh(Client::Application::Controller &aController, const Error &aError) final;
 
     // State Change
 
-    void ControllerStateDidChange(Controller &aController, const StateChange::NotificationBasis &aStateChangeNotification) final;
+    void ControllerStateDidChange(Client::Application::Controller &aController, const StateChange::NotificationBasis &aStateChangeNotification) final;
 
     // Error
 
-    void ControllerError(Controller &aController, const Error &aError) final;
+    void ControllerError(Client::Application::Controller &aController, const Error &aError) final;
 
     static void OnSignal(int aSignal);
 
 private:
-    RunLoopParameters  mRunLoopParameters;
-    Controller         mHLXClientController;
-    Status             mStatus;
+    RunLoopParameters                mRunLoopParameters;
+    Client::Application::Controller  mHLXClientController;
+    Status                           mStatus;
 };
 
 HLXClient :: HLXClient(void) :
@@ -572,12 +573,14 @@ Status HLXClient :: Stop(const Status &aStatus)
     return (lStatus);
 }
 
-const Controller &HLXClient :: GetController(void) const
+const Client::Application::Controller &
+HLXClient :: GetController(void) const
 {
     return (mHLXClientController);
 }
 
-Controller &HLXClient :: GetController(void)
+Client::Application::Controller &
+HLXClient :: GetController(void)
 {
     return (mHLXClientController);
 }
@@ -596,21 +599,21 @@ void HLXClient :: SetStatus(const Status &aStatus)
 
 // Resolve
 
-void HLXClient :: ControllerWillResolve(Controller &aController, const char *aHost)
+void HLXClient :: ControllerWillResolve(Client::Application::Controller &aController, const char *aHost)
 {
     (void)aController;
 
     Log::Info().Write("Will resolve \"%s\".\n", aHost);
 }
 
-void HLXClient :: ControllerIsResolving(Controller &aController, const char *aHost)
+void HLXClient :: ControllerIsResolving(Client::Application::Controller &aController, const char *aHost)
 {
     (void)aController;
 
     Log::Info().Write("Is resolving \"%s\".\n", aHost);
 }
 
-void HLXClient :: ControllerDidResolve(Controller &aController, const char *aHost, const IPAddress &aIPAddress)
+void HLXClient :: ControllerDidResolve(Client::Application::Controller &aController, const char *aHost, const IPAddress &aIPAddress)
 {
     char   lBuffer[INET6_ADDRSTRLEN];
     Status lStatus;
@@ -626,7 +629,7 @@ void HLXClient :: ControllerDidResolve(Controller &aController, const char *aHos
     return;
 }
 
-void HLXClient :: ControllerDidNotResolve(Controller &aController, const char *aHost, const Error &aError)
+void HLXClient :: ControllerDidNotResolve(Client::Application::Controller &aController, const char *aHost, const Error &aError)
 {
     (void)aController;
 
@@ -635,21 +638,21 @@ void HLXClient :: ControllerDidNotResolve(Controller &aController, const char *a
 
 // Connect
 
-void HLXClient :: ControllerWillConnect(Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout)
+void HLXClient :: ControllerWillConnect(Client::Application::Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout)
 {
     (void)aController;
 
     Log::Info().Write("Will connect to %s with %u ms timeout.\n", CFString(CFURLGetString(aURLRef)).GetCString(), aTimeout.GetMilliseconds());
 }
 
-void HLXClient :: ControllerIsConnecting(Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout)
+void HLXClient :: ControllerIsConnecting(Client::Application::Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout)
 {
     (void)aController;
 
     Log::Info().Write("Connecting to %s with %u ms timeout.\n", CFString(CFURLGetString(aURLRef)).GetCString(), aTimeout.GetMilliseconds());
 }
 
-void HLXClient :: ControllerDidConnect(Controller &aController, CFURLRef aURLRef)
+void HLXClient :: ControllerDidConnect(Client::Application::Controller &aController, CFURLRef aURLRef)
 {
     Status lStatus;
 
@@ -664,7 +667,7 @@ void HLXClient :: ControllerDidConnect(Controller &aController, CFURLRef aURLRef
     return;
 }
 
-void HLXClient :: ControllerDidNotConnect(Controller &aController, CFURLRef aURLRef, const Error &aError)
+void HLXClient :: ControllerDidNotConnect(Client::Application::Controller &aController, CFURLRef aURLRef, const Error &aError)
 {
     (void)aController;
 
@@ -675,14 +678,14 @@ void HLXClient :: ControllerDidNotConnect(Controller &aController, CFURLRef aURL
 
 // Disconnect
 
-void HLXClient :: ControllerWillDisconnect(Controller &aController, CFURLRef aURLRef)
+void HLXClient :: ControllerWillDisconnect(Client::Application::Controller &aController, CFURLRef aURLRef)
 {
     (void)aController;
 
     Log::Info().Write("Will disconnect from %s.\n", CFString(CFURLGetString(aURLRef)).GetCString());
 }
 
-void HLXClient :: ControllerDidDisconnect(Controller &aController, CFURLRef aURLRef, const Error &aError)
+void HLXClient :: ControllerDidDisconnect(Client::Application::Controller &aController, CFURLRef aURLRef, const Error &aError)
 {
     Status lStatus;
 
@@ -714,7 +717,7 @@ void HLXClient :: ControllerDidDisconnect(Controller &aController, CFURLRef aURL
     return;
 }
 
-void HLXClient :: ControllerDidNotDisconnect(Controller &aController, CFURLRef aURLRef, const Error &aError)
+void HLXClient :: ControllerDidNotDisconnect(Client::Application::Controller &aController, CFURLRef aURLRef, const Error &aError)
 {
     (void)aController;
 
@@ -723,7 +726,7 @@ void HLXClient :: ControllerDidNotDisconnect(Controller &aController, CFURLRef a
 
 // Refresh / Reload
 
-void HLXClient :: ControllerWillRefresh(Controller &aController)
+void HLXClient :: ControllerWillRefresh(Client::Application::Controller &aController)
 {
     (void)aController;
 
@@ -732,14 +735,14 @@ void HLXClient :: ControllerWillRefresh(Controller &aController)
     return;
 }
 
-void HLXClient :: ControllerIsRefreshing(Controller &aController, const uint8_t &aPercentComplete)
+void HLXClient :: ControllerIsRefreshing(Client::Application::Controller &aController, const uint8_t &aPercentComplete)
 {
     (void)aController;
 
     Log::Info().Write("%u%% of client data received.\n", aPercentComplete);
 }
 
-void HLXClient :: ControllerDidRefresh(Controller &aController)
+void HLXClient :: ControllerDidRefresh(Client::Application::Controller &aController)
 {
     Status lStatus;
 
@@ -769,7 +772,7 @@ void HLXClient :: ControllerDidRefresh(Controller &aController)
     return;
 }
 
-void HLXClient :: ControllerDidNotRefresh(Controller &aController, const Error &aError)
+void HLXClient :: ControllerDidNotRefresh(Client::Application::Controller &aController, const Error &aError)
 {
     (void)aController;
 
@@ -778,7 +781,7 @@ void HLXClient :: ControllerDidNotRefresh(Controller &aController, const Error &
 
 // State Change
 
-void HLXClient :: ControllerStateDidChange(Controller &aController, const StateChange::NotificationBasis &aStateChangeNotification)
+void HLXClient :: ControllerStateDidChange(Client::Application::Controller &aController, const StateChange::NotificationBasis &aStateChangeNotification)
 {
     const StateChange::Type lType = aStateChangeNotification.GetType();
 
@@ -1064,7 +1067,7 @@ void HLXClient :: ControllerStateDidChange(Controller &aController, const StateC
 
 // Error
 
-void HLXClient :: ControllerError(Controller &aController, const Error &aError)
+void HLXClient :: ControllerError(Client::Application::Controller &aController, const Error &aError)
 {
     (void)aController;
 
@@ -1750,7 +1753,7 @@ static Status ParseZoneIdentifier(const char *aString, IdentifierModel::Identifi
     return (ParseIdentifier(kObjectDescription, aString, aIdentifier));
 }
 
-static Status ParseObjectOption(Controller &aController, ClientArgument &aClientArgument)
+static Status ParseObjectOption(Client::Application::Controller &aController, ClientArgument &aClientArgument)
 {
     Status  lRetval = kStatus_Success;
 
@@ -1812,7 +1815,7 @@ static Status ParseObjectOption(Controller &aController, ClientArgument &aClient
     return (lRetval);
 }
 
-static Status ParseSubobjectOption(Controller &aController, ClientArgument &aClientArgument)
+static Status ParseSubobjectOption(Client::Application::Controller &aController, ClientArgument &aClientArgument)
 {
     Status  lRetval = kStatus_Success;
 
@@ -1839,7 +1842,7 @@ static Status ParseSubobjectOption(Controller &aController, ClientArgument &aCli
     return (lRetval);
 }
 
-static Status ParseOperationOption(Controller &aController, ClientArgument &aClientArgument)
+static Status ParseOperationOption(Client::Application::Controller &aController, ClientArgument &aClientArgument)
 {
     Status  lRetval = kStatus_Success;
 
@@ -2022,7 +2025,7 @@ static Status ParseOperationOption(Controller &aController, ClientArgument &aCli
     return (lRetval);
 }
 
-static Status DispatchCommand(Controller &aController, ClientArgument &aClientArgument, const Timeout &aTimeout)
+static Status DispatchCommand(Client::Application::Controller &aController, ClientArgument &aClientArgument, const Timeout &aTimeout)
 {
     Status  lRetval = kStatus_Success;
 
@@ -2271,7 +2274,7 @@ static Status DispatchCommand(Controller &aController, ClientArgument &aClientAr
     return (lRetval);
 }
 
-static Status DispatchCommand(Controller &aController, ClientArgument &aClientArgument, const uint32_t &aOptFlags, const Timeout &aTimeout)
+static Status DispatchCommand(Client::Application::Controller &aController, ClientArgument &aClientArgument, const uint32_t &aOptFlags, const Timeout &aTimeout)
 {
     Status  lRetval = kStatus_Success;
 
