@@ -31,6 +31,7 @@
 #include <OpenHLX/Client/ConnectionManager.hpp>
 #include <OpenHLX/Client/ConnectionManagerDelegate.hpp>
 #include <OpenHLX/Client/ControllerBasisDelegate.hpp>
+#include <OpenHLX/Client/HLXClientControllerBasis.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/HLXCommonControllerBasis.hpp>
 #include <OpenHLX/Common/RunLoopParameters.hpp>
@@ -70,17 +71,20 @@ namespace Application
  *
  */
 class Controller :
-    public Common::Application::Foo<Proxy::ControllerBasis>,
+    public Common::Application::Foo<Server::ControllerBasis>,
+    public Client::Application::ControllerBasis,
     public Client::ConnectionManagerDelegate,
     public Server::ConnectionManagerDelegate,
     public Client::CommandManagerDelegate,
     public Server::CommandManagerDelegate,
-    public Client::ControllerBasisDelegate,
+    public Client::ControllerBasisErrorDelegate,
+    public Client::ControllerBasisStateChangeDelegate,
+    public Common::Application::Foo<Proxy::ControllerBasis>,
     public ConfigurationControllerDelegate
 {
 public:
     Controller(void);
-    ~Controller(void);
+    virtual ~Controller(void);
 
     Common::Status Init(const Common::RunLoopParameters &aRunLoopParameters);
 
@@ -97,7 +101,6 @@ public:
     Common::Status Listen(const char *aMaybeURL);
     Common::Status Listen(const char *aMaybeURL, const Common::ConnectionManagerBasis::Versions &aVersions);
 
-    Common::Status Refresh(void);
 
     // Server-facing Client Command Manager Delegate Methods
 
@@ -145,10 +148,8 @@ public:
 
     void ConnectionManagerError(Common::ConnectionManagerBasis &aConnectionManager, const Common::ConnectionManagerBasis::Roles &aRoles, const Common::Error &aError) final;
 
-    // Server-facing Client Controller Basis Delegate Methods
+    // Server-facing Client Object Controller Basis Delegate Methods
 
-    void ControllerIsRefreshing(Client::ControllerBasis &aController, const uint8_t &aPercentComplete) final;
-    void ControllerDidRefresh(Client::ControllerBasis &aController) final;
     void ControllerError(Client::ControllerBasis &aController, const Common::Error &aError) final;
     void ControllerStateDidChange(Client::ControllerBasis &aController, const Client::StateChange::NotificationBasis &aStateChangeNotification) final;
 
@@ -166,8 +167,11 @@ private:
     Common::Status InitServerConnectionManager(const Common::RunLoopParameters &aRunLoopParameters);
     Common::Status InitServerCommandManager(const Common::RunLoopParameters &aRunLoopParameters);
     Common::Status InitControllers(const Common::RunLoopParameters &aRunLoopParameters);
+    Common::Status InitClientControllers(const Common::RunLoopParameters &aRunLoopParameters);
+    Common::Status InitServerControllers(const Common::RunLoopParameters &aRunLoopParameters);
+    Common::Status InitProxyControllers(const Common::RunLoopParameters &aRunLoopParameters);
 
-    bool IsRefreshing(void) const;
+    void DeriveGroupState(void) final { return; }
 
 private:
     // Sub-controller order is important since 1) this is the order that
@@ -188,7 +192,6 @@ private:
     EqualizerPresetsController      mEqualizerPresetsController;
     SourcesController               mSourcesController;
     ZonesController                 mZonesController;
-    size_t                          mControllersDidRefreshCount;
     ControllerDelegate *            mDelegate;
 };
 

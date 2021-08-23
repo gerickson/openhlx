@@ -45,12 +45,15 @@ namespace Application
 {
 
 Controller :: Controller(void) :
-    FooType(),
+    Common::Application::Foo<Server::ControllerBasis>(),
+    Client::Application::ControllerBasis(*this),
     Client::ConnectionManagerDelegate(),
     Server::ConnectionManagerDelegate(),
     Client::CommandManagerDelegate(),
     Server::CommandManagerDelegate(),
-    Client::ControllerBasisDelegate(),
+    Client::ControllerBasisErrorDelegate(),
+    Client::ControllerBasisStateChangeDelegate(),
+    Common::Application::Foo<Proxy::ControllerBasis>(),
     ConfigurationControllerDelegate(),
     mClientConnectionManager(),
     mClientCommandManager(),
@@ -65,7 +68,6 @@ Controller :: Controller(void) :
     mEqualizerPresetsController(),
     mSourcesController(),
     mZonesController(),
-    mControllersDidRefreshCount(0),
     mDelegate(nullptr)
 {
     DeclareScopedFunctionTracer(lTracer);
@@ -107,7 +109,10 @@ Controller :: Init(const RunLoopParameters &aRunLoopParameters)
     Status lRetval = kStatus_Success;
 
 
-    lRetval = FooType::Init();
+    lRetval = Common::Application::Foo<Server::ControllerBasis>::Init();
+    nlREQUIRE_SUCCESS(lRetval, done);
+    
+    lRetval = Client::Application::ControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = InitClient(aRunLoopParameters);
@@ -230,58 +235,164 @@ Controller :: InitServerCommandManager(const RunLoopParameters &aRunLoopParamete
 Status
 Controller :: InitControllers(const RunLoopParameters &aRunLoopParameters)
 {
+    Status lRetval;
+
+    lRetval = InitClientControllers(aRunLoopParameters);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = InitServerControllers(aRunLoopParameters);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = InitProxyControllers(aRunLoopParameters);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+Controller :: InitClientControllers(const RunLoopParameters &aRunLoopParameters)
+{
     DeclareScopedFunctionTracer(lTracer);
-    Controllers::iterator  lCurrent, lEnd;
+    Status  lRetval = kStatus_Success;
+
+
+    (void)aRunLoopParameters;
+
+    // Place the various controllers into the client controller
+    // container. Order is important since this is the priority we
+    // want to run client operations like refresh.
+
+    Client::Application::ControllerBasis::AddController(mConfigurationController);
+    Client::Application::ControllerBasis::AddController(mSourcesController);
+    Client::Application::ControllerBasis::AddController(mZonesController);
+    Client::Application::ControllerBasis::AddController(mGroupsController);
+    Client::Application::ControllerBasis::AddController(mFavoritesController);
+    Client::Application::ControllerBasis::AddController(mEqualizerPresetsController);
+    Client::Application::ControllerBasis::AddController(mInfraredController);
+    Client::Application::ControllerBasis::AddController(mFrontPanelController);
+    Client::Application::ControllerBasis::AddController(mNetworkController);
+
+#if 0
+    // Intialize the client side of the controllers.
+
+    lCurrent = Client::Application::ControllerBasis::GetControllers().begin();
+    lEnd     = Client::Application::ControllerBasis::GetControllers().end();
+
+    while (lCurrent != lEnd)
+    {
+        //lRetval = lCurrent->second.mController->Init(mClientCommandManager);
+        //nlREQUIRE_SUCCESS(lRetval, done);
+
+        lRetval = lCurrent->second.mController->SetErrorDelegate(this);
+        nlREQUIRE_SUCCESS(lRetval, done);
+
+        lRetval = lCurrent->second.mController->SetRefreshDelegate(this);
+        nlREQUIRE_SUCCESS(lRetval, done);
+
+        lRetval = lCurrent->second.mController->SetStateChangeDelegate(this);
+        nlREQUIRE_SUCCESS(lRetval, done);
+
+        lCurrent++;
+    }
+
+done:
+#endif
+
+    return (lRetval);
+}
+
+Status
+Controller :: InitServerControllers(const RunLoopParameters &aRunLoopParameters)
+{
+    DeclareScopedFunctionTracer(lTracer);
+    Status  lRetval = kStatus_Success;
+
+
+    (void)aRunLoopParameters;
+
+    // Place the various controllers into the server controller
+    // container. Order is important since this is the order that most
+    // closely matches the order in which the actual HLX hardware
+    // responds to for the 'query current configuration' command.
+
+    Common::Application::Foo<Server::ControllerBasis>::AddController(mConfigurationController);
+    Common::Application::Foo<Server::ControllerBasis>::AddController(mNetworkController);
+    Common::Application::Foo<Server::ControllerBasis>::AddController(mFavoritesController);
+    Common::Application::Foo<Server::ControllerBasis>::AddController(mGroupsController);
+    Common::Application::Foo<Server::ControllerBasis>::AddController(mFrontPanelController);
+    Common::Application::Foo<Server::ControllerBasis>::AddController(mInfraredController);
+    Common::Application::Foo<Server::ControllerBasis>::AddController(mEqualizerPresetsController);
+    Common::Application::Foo<Server::ControllerBasis>::AddController(mSourcesController);
+    Common::Application::Foo<Server::ControllerBasis>::AddController(mZonesController);
+
+ done:
+    return (lRetval);
+}
+
+Status
+Controller :: InitProxyControllers(const RunLoopParameters &aRunLoopParameters)
+{
+    DeclareScopedFunctionTracer(lTracer);
     Status                 lRetval;
 
 
     (void)aRunLoopParameters;
 
-    // Place the various controllers into the controller
-    // container. Order is important since:
-    //
-    // 1) this is the order that most closely matches the order in
-    //    which the actual HLX hardware responds to for the 'query
-    //    current configuration' command.
-    //
-    // 2) this is the priority we want to run operations like refresh.
+    // Place the various controllers into the server controller
+    // container. Order is important since this is the order that most
+    // closely matches the order in which the actual HLX hardware
+    // responds to for the 'query current configuration' command.
 
-    AddController(mConfigurationController);
-    AddController(mNetworkController);
-    AddController(mFavoritesController);
-    AddController(mGroupsController);
-    AddController(mFrontPanelController);
-    AddController(mInfraredController);
-    AddController(mEqualizerPresetsController);
-    AddController(mSourcesController);
-    AddController(mZonesController);
+    Common::Application::Foo<Proxy::ControllerBasis>::AddController(mConfigurationController);
+    Common::Application::Foo<Proxy::ControllerBasis>::AddController(mNetworkController);
+    Common::Application::Foo<Proxy::ControllerBasis>::AddController(mFavoritesController);
+    Common::Application::Foo<Proxy::ControllerBasis>::AddController(mGroupsController);
+    Common::Application::Foo<Proxy::ControllerBasis>::AddController(mFrontPanelController);
+    Common::Application::Foo<Proxy::ControllerBasis>::AddController(mInfraredController);
+    Common::Application::Foo<Proxy::ControllerBasis>::AddController(mEqualizerPresetsController);
+    Common::Application::Foo<Proxy::ControllerBasis>::AddController(mSourcesController);
+    Common::Application::Foo<Proxy::ControllerBasis>::AddController(mZonesController);
 
-    // Explicitly set this parent controller to be the delegate for
-    // fanout of any configuration controller delegations.
-
-    lRetval = mConfigurationController.SetDelegate(this);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    // Intialize the controllers (skipping the configuration
-    // controller as we just handled that).
-
-    lCurrent = GetControllers().begin();
-    lEnd     = GetControllers().end();
-
-    while (lCurrent != lEnd)
     {
-        lRetval = lCurrent->second.mController->Init(mClientCommandManager,
-                                                     mServerCommandManager);
+        Common::Application::Foo<Proxy::ControllerBasis>::Controllers::iterator  lCurrent = Common::Application::Foo<Proxy::ControllerBasis>::GetControllers().begin();
+        Common::Application::Foo<Proxy::ControllerBasis>::Controllers::iterator  lEnd = Common::Application::Foo<Proxy::ControllerBasis>::GetControllers().end();
+
+        // Intialize the controllers, using the top-down proxy initializer.
+
+        while (lCurrent != lEnd)
+        {
+            lRetval = lCurrent->second.mController->Init(mClientCommandManager, mServerCommandManager, kTimeoutDefault);
+            nlREQUIRE_SUCCESS(lRetval, done);
+
+            lCurrent++;
+        }
+
+        // Explicitly set this parent controller to be the delegate
+        // for fanout of any proxy configuration controller
+        // delegations.
+
+        mConfigurationController.SetDelegate(this);
         nlREQUIRE_SUCCESS(lRetval, done);
+    }
 
-        // Unconditionally set the delegate (including the
-        // configuration controller since here, we are
-        // handling its upcast class).
+    {
+        Common::Application::Foo<Client::ControllerBasis>::Controllers::iterator  lCurrent = Common::Application::Foo<Client::ControllerBasis>::GetControllers().begin();
+        Common::Application::Foo<Client::ControllerBasis>::Controllers::iterator  lEnd = Common::Application::Foo<Client::ControllerBasis>::GetControllers().end();
 
-        lRetval = static_cast<Client::ControllerBasis *>(lCurrent->second.mController)->SetDelegate(this);
-        nlREQUIRE_SUCCESS(lRetval, done);
+        while (lCurrent != lEnd)
+        {
+            lRetval = lCurrent->second.mController->SetErrorDelegate(this);
+            nlREQUIRE_SUCCESS(lRetval, done);
 
-        lCurrent++;
+            lRetval = lCurrent->second.mController->SetRefreshDelegate(this);
+            nlREQUIRE_SUCCESS(lRetval, done);
+
+            lRetval = lCurrent->second.mController->SetStateChangeDelegate(this);
+            nlREQUIRE_SUCCESS(lRetval, done);
+
+            lCurrent++;
+        }
     }
 
  done:
@@ -415,7 +526,7 @@ Controller :: Connect(const char *aMaybeURL,
     lRetval = mClientConnectionManager.Connect(aMaybeURL, aVersions, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
@@ -469,73 +580,6 @@ Controller :: Listen(const char *aMaybeURL, const Common::ConnectionManagerBasis
 
 done:
     return (lRetval);
-}
-
-/**
- *  @brief
- *    Refresh the state of the client controller.
- *
- *  This should be called on first-time client start-up or whenever
- *  the client controller state needs to be forcibly refreshed.
- *
- *  This iterates through each of the sub-controllers, tasking each
- *  with taking care of the refresh activity appropriate for its scope
- *  of concern.
- *
- *  @retval  kStatus_Success              If successful.
- *  @retval  -ENOMEM                      If memory could not be allocated
- *                                        by a controller to perform the
- *                                        refresh.
- *
- */
-Status
-Controller :: Refresh(void)
-{
-    Status                 lRetval = kStatus_Success;
-    Controllers::iterator  lCurrent, lEnd;
-
-    if (mDelegate != nullptr)
-    {
-        mDelegate->ControllerWillRefresh(*this);
-    }
-
-    // Reset the overall refresh count.
-
-    mControllersDidRefreshCount = 0;
-
-    // Begin refreshing each controller.
-
-    lCurrent = GetControllers().begin();
-    lEnd     = GetControllers().end();
-
-    while (lCurrent != lEnd)
-    {
-        lRetval = static_cast<Client::ControllerBasis *>(lCurrent->second.mController)->Refresh();
-        nlREQUIRE_SUCCESS(lRetval, done);
-
-        lCurrent++;
-    }
-
- done:
-    return (lRetval);
-}
-
-/**
- *  @brief
- *    Returns whether or not the controller is in the middle of a refresh.
- *
- *  This returns a Boolean indicating whether (true) or not (false)
- *  the controller is in the middle of a refresh operation with the
- *  peer server controller for up-to-date state.
- *
- *  @returns
- *    True if the controller is refreshing; otherwise, false.
- *
- */
-bool
-Controller :: IsRefreshing(void) const
-{
-    return (mControllersDidRefreshCount != GetControllers().size());
 }
 
 /**
@@ -978,74 +1022,17 @@ Controller :: ConnectionManagerError(Common::ConnectionManagerBasis &aConnection
     }
 }
 
-// MARK: Server-facing Client Controller Basis Delegate Methods
+// MARK: Server-facing Client Object Controller Basis Delegate Methods
+
+// MARK: Server-facing Client Object Controller Basis Error Delegate Methods
 
 void
-Controller :: ControllerIsRefreshing(Client::ControllerBasis &aController, const uint8_t &aPercentComplete)
+Controller :: ControllerError(Client::ControllerBasis &aController, const Common::Error &aError)
 {
-    Proxy::ControllerBasis *    lController = static_cast<Proxy::ControllerBasis *>(&aController);
-    Controllers::const_iterator lControllerIterator;
-
-    lControllerIterator = GetControllers().find(lController);
-
-    if (lControllerIterator != GetControllers().end())
-    {
-        static const Percentage kPercentCompletePerController = CalculatePercentage(1,
-                                                                                    static_cast<uint8_t>(GetControllers().size()));
-        const Percentage        lControllersPercentComplete   = CalculatePercentage(static_cast<uint8_t>(mControllersDidRefreshCount),
-                                                                                    static_cast<uint8_t>(GetControllers().size()));
-        const Percentage        lPercentComplete              = (lControllersPercentComplete + ((kPercentCompletePerController * aPercentComplete) / 100));
-
-        if (mDelegate != nullptr)
-        {
-            mDelegate->ControllerIsRefreshing(*this, lPercentComplete);
-        }
-    }
-}
-
-/**
- *  @brief
- *    Delegation from a controller that the specified controller is
- *    done refreshing.
- *
- *  On the refresh completion of any one controller, this refreshes
- *  the overall refresh state of the parent client controller.
- *
- *  @param[in]  aController       A reference to the controller
- *                                that issued the delegation.
- *
- */
-void
-Controller :: ControllerDidRefresh(Client::ControllerBasis &aController)
-{
-    Proxy::ControllerBasis *    lController = static_cast<Proxy::ControllerBasis *>(&aController);
-    Controllers::const_iterator lControllerIterator;
-
-    lControllerIterator = GetControllers().find(lController);
-
-    if (lControllerIterator != GetControllers().end())
-    {
-        mControllersDidRefreshCount++;
-
-        if (mDelegate != nullptr)
-        {
-            const Percentage lPercentComplete = CalculatePercentage(static_cast<uint8_t>(mControllersDidRefreshCount),
-                                                                    static_cast<uint8_t>(GetControllers().size()));
-
-            mDelegate->ControllerIsRefreshing(*this, lPercentComplete);
-        }
-
-        if (mControllersDidRefreshCount == GetControllers().size())
-        {
-            if (mDelegate != nullptr)
-            {
-                mDelegate->ControllerDidRefresh(*this);
-            }
-        }
-    }
-
     return;
 }
+
+// MARK: Server-facing Client Object Controller Basis State Change Delegate Methods
 
 /**
  *  Delegation callback for individual sub-controller state change
@@ -1090,34 +1077,25 @@ Controller :: ControllerStateDidChange(Client::ControllerBasis &aController,
     return;
 }
 
-void
-Controller :: ControllerError(Client::ControllerBasis &aController, const Common::Error &aError)
-{
-    return;
-}
-
 // MARK: Client-facing Server Configuration Controller Delegate Methods
 
 Status
 Controller :: QueryCurrentConfiguration(ConfigurationController &aController, Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    Controllers::iterator lCurrent;
-    Controllers::iterator lLast;
-    Status                lRetval = kStatus_Success;
+    DeclareScopedFunctionTracer(lTracer);
+    Common::Application::Foo<Proxy::ControllerBasis>::Controllers::iterator  lCurrent, lEnd;
+    Status                 lRetval;
 
 
-    if (&aController == &mConfigurationController)
+    lCurrent = Common::Application::Foo<Proxy::ControllerBasis>::GetControllers().begin();
+    lEnd     = Common::Application::Foo<Proxy::ControllerBasis>::GetControllers().end();
+
+    while (lCurrent != lEnd)
     {
-        lCurrent = GetControllers().begin();
-        lLast    = GetControllers().end();
+        lRetval = lCurrent->second.mController->QueryCurrentConfiguration(aConnection, aBuffer);
+        nlREQUIRE_SUCCESS(lRetval, done);
 
-        while (lCurrent != lLast)
-        {
-            lRetval = lCurrent->second.mController->QueryCurrentConfiguration(aConnection, aBuffer);
-            nlREQUIRE_SUCCESS(lRetval, done);
-
-            lCurrent++;
-        }
+        lCurrent++;
     }
 
 done:
