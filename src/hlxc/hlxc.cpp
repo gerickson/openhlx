@@ -147,18 +147,18 @@ using namespace std;
 // Type Declarations
 
 enum OptFlags {
-    kOptNone            = 0x00000000,
-    kOptIPv4Only        = 0x00000001,
-    kOptIPv6Only        = 0x00000002,
-    kOptPriority        = 0x00000004,
-    kOptQuiet           = 0x00000008,
-    kOptSyslog          = 0x00000010,
+    kOptNone             = 0x00000000,
+    kOptIPv4Only         = 0x00000001,
+    kOptIPv6Only         = 0x00000002,
+    kOptPriority         = 0x00000004,
+    kOptQuiet            = 0x00000008,
+    kOptSyslog           = 0x00000010,
 
-    kOptTimeout         = 0x00000080,
+    kOptTimeout          = 0x00000080,
 
-    kOptHasObjectArg    = 0x00000100,
-    kOptHasSubobjectArg = 0x00000200,
-    kOptHasOperationArg = 0x00000400
+    kOptHasObjectArg     = 0x00000100,
+    kOptHasSubobjectArg  = 0x00000200,
+    kOptHasOperationArg  = 0x00000400
 };
 
 /**
@@ -442,7 +442,7 @@ namespace Detail
  *
  */
 class HLXClient :
-    public ControllerDelegate
+    public Client::Application::ControllerDelegate
 {
 public:
     HLXClient(void);
@@ -2329,10 +2329,10 @@ static Status DispatchCommand(Client::Application::Controller &aController, Clie
 
 int main(int argc, char * const argv[])
 {
-    HLXClient   lHLXClient;
-    Status      lStatus;
-    size_t      n = 0;
-    const char *lMaybeURL = nullptr;
+    HLXClient    lHLXClient;
+    Status       lStatus;
+    size_t       n = 0;
+    const char * lMaybeURL = nullptr;
 
     // Cache the program invocation name for later use
 
