@@ -223,7 +223,7 @@ public:
 
     void ConnectionManagerError(Common::ConnectionManagerBasis &aConnectionManager, const Common::ConnectionManagerBasis::Roles &aRoles, const Common::Error &aError) final;
 
-    // Controller Delegate Methods
+    // Object Controller Basis Delegate Methods
 
     void ControllerError(Client::ControllerBasis &aController, const Common::Error &aError) final;
     void ControllerStateDidChange(Client::ControllerBasis &aController, const StateChange::NotificationBasis &aStateChangeNotification) final;

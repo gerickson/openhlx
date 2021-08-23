@@ -246,8 +246,8 @@ Controller :: ~Controller(void)
 Status
 Controller :: Init(const RunLoopParameters &aRunLoopParameters)
 {
-    Status lRetval = kStatus_Success;
-    Controllers::iterator begin, end;
+    Controllers::iterator  lCurrent, lEnd;
+    Status                 lRetval;
 
     lRetval = Client::Application::ControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
@@ -280,24 +280,24 @@ Controller :: Init(const RunLoopParameters &aRunLoopParameters)
 
     // Intialize the controllers.
 
-    begin = GetControllers().begin();
-    end = GetControllers().end();
+    lCurrent = GetControllers().begin();
+    lEnd     = GetControllers().end();
 
-    while (begin != end)
+    while (lCurrent != lEnd)
     {
-        lRetval = begin->second.mController->Init(mCommandManager);
+        lRetval = lCurrent->second.mController->Init(mCommandManager);
         nlREQUIRE_SUCCESS(lRetval, done);
 
-        lRetval = begin->second.mController->SetErrorDelegate(this);
+        lRetval = lCurrent->second.mController->SetErrorDelegate(this);
         nlREQUIRE_SUCCESS(lRetval, done);
 
-        lRetval = begin->second.mController->SetRefreshDelegate(this);
+        lRetval = lCurrent->second.mController->SetRefreshDelegate(this);
         nlREQUIRE_SUCCESS(lRetval, done);
 
-        lRetval = begin->second.mController->SetStateChangeDelegate(this);
+        lRetval = lCurrent->second.mController->SetStateChangeDelegate(this);
         nlREQUIRE_SUCCESS(lRetval, done);
 
-        begin++;
+        lCurrent++;
     }
 
  done:
@@ -521,7 +521,7 @@ Controller :: SetDelegate(Client::Application::ControllerDelegate *aDelegate)
 
     mDelegate        = aDelegate;
 
- done:
+done:
     return (lRetval);
 }
 
@@ -575,7 +575,7 @@ Controller :: EqualizerPresetGet(const EqualizerPresetModel::IdentifierType &aEq
     lRetval = mEqualizerPresetsController.GetEqualizerPreset(aEqualizerPresetIdentifier, aModel);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
