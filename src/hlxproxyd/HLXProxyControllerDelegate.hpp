@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef OPENHLXPROXYCONTROLLERDELEGATE_HPP
-#define OPENHLXPROXYCONTROLLERDELEGATE_HPP
+#ifndef OPENHLXPROXYAPPLICATIONCONTROLLERDELEGATE_HPP
+#define OPENHLXPROXYAPPLICATIONCONTROLLERDELEGATE_HPP
 
 #include <CoreFoundation/CFURL.h>
 
@@ -38,6 +38,9 @@ namespace HLX
 {
 
 namespace Proxy
+{
+
+namespace Application
 {
 
 class Controller;
@@ -333,8 +336,10 @@ public:
     virtual void ControllerError(Controller &aController, const Roles &aRoles, const Common::Error &aError) = 0;
 };
 
+}; // namespace Application
+
 }; // namespace Proxy
 
 }; // namespace HLX
 
-#endif // OPENHLXPROXYCONTROLLERDELEGATE_HPP
+#endif // OPENHLXPROXYAPPLICATIONCONTROLLERDELEGATE_HPP
