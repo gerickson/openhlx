@@ -61,14 +61,16 @@ class ConfigurationControllerDelegate;
  *
  */
 class ConfigurationController :
-    public Proxy::ControllerBasis,
     public Common::ConfigurationControllerBasis,
     public Client::ConfigurationControllerBasis,
-    public Server::ConfigurationControllerBasis
+    public Server::ConfigurationControllerBasis,
+    public Proxy::ControllerBasis
 {
 public:
     ConfigurationController(void);
     virtual ~ConfigurationController(void);
+
+    // Initializer(s)
 
     Common::Status Init(Client::CommandManager &aCommandManager, Server::CommandManager &aServerCommandManager, const Common::Timeout &aTimeout) final;
 
@@ -76,25 +78,6 @@ public:
 
     Common::Status SetDelegate(ConfigurationControllerDelegate *aDelegate);
     ConfigurationControllerDelegate *GetDelegate(void) const;
-
-    Common::Status Refresh(const Common::Timeout &aTimeout) final;
-
-    // Observer Methods
-
-    Common::Status QueryCurrent(void);
-
-    // Server-facing Client Command Completion Handler Trampolines
-
-    static void QueryCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void LoadFromBackupCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SaveToBackupCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void ResetToDefaultsCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void CommandErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError, void *aContext);
-
-    // Server-facing Client Notification Handler Trampolines
-
-    static void SaveToBackupNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SavingToBackupNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
     // Client-facing Server Command Request Handler Trampolines
 
@@ -104,21 +87,7 @@ public:
     static void SaveToBackupRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
-    Common::Status DoNotificationHandlers(const bool &aRegister);
     Common::Status DoRequestHandlers(const bool &aRegister);
-
-    // Server-facing Client Command Completion Handlers
-
-    void QueryCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void LoadFromBackupCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void SaveToBackupCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void ResetToDefaultsCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void CommandErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError);
-
-    // Server-facing Client Notification Handlers
-
-    void SaveToBackupNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void SavingToBackupNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 
     // Client-facing Server Command Completion Handlers
 
@@ -133,6 +102,12 @@ private:
 
 private:
     ConfigurationControllerDelegate *                      mDelegate;
+
+private:
+    // Explicitly hide base class initializers
+
+    using Client::ConfigurationControllerBasis::Init;
+    using Server::ConfigurationControllerBasis::Init;
 };
 
 }; // namespace Proxy

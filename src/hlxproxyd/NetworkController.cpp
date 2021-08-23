@@ -76,10 +76,10 @@ static const char * const kQueryCurrentResponseBuffer = \
  *
  */
 NetworkController :: NetworkController(void) :
-    Proxy::ControllerBasis(),
     Common::NetworkControllerBasis(),
-    Client::NetworkControllerBasis(),
-    Server::NetworkControllerBasis(Common::NetworkControllerBasis::mNetworkModel)
+    Client::NetworkControllerBasis(Common::NetworkControllerBasis::mNetworkModel),
+    Server::NetworkControllerBasis(Common::NetworkControllerBasis::mNetworkModel),
+    Proxy::ControllerBasis()
 {
     return;
 }
@@ -94,39 +94,10 @@ NetworkController :: ~NetworkController(void)
     return;
 }
 
-/**
- *  @brief
- *    Register or unregister notification handlers.
- *
- *  This registers or unregisters the solicited and unsolicited client
- *  command response notification handlers that this controller is
- *  interested in and will handle on behalf of the client.
- *
- *  @param[in]  aRegister  Indicates whether to register (true) or
- *                         unregister (false) the handlers.
- *
- *  @retval  kStatus_Success              If successful.
- *  @retval  -EINVAL                      If either of the handler iterators
- *                                        was null.
- *  @retval  -EEXIST                      If a registration already exists.
- *  @retval  -ENOENT                      If there was no such handler
- *                                        registration to unregister.
- *  @retval  kError_NotInitialized        The base class was not properly
- *                                        initialized.
- *  @retval  kError_InitializationFailed  If initialization otherwise failed.
- *
- */
-Status
-NetworkController :: DoNotificationHandlers(const bool &aRegister)
-{
-    Status                   lRetval = kStatus_Success;
-
-    return (lRetval);
-}
-
 Status
 NetworkController :: DoRequestHandlers(const bool &aRegister)
 {
+    DeclareScopedFunctionTracer(lTracer);
     static const RequestHandlerBasis  lRequestHandlers[] = {
         {
             kQueryRequest,
@@ -158,7 +129,7 @@ done:
  *                               with.
  *  @param[in]  aTimeout         The timeout to initialize the controller
  *                               with that will serve as the timeout for
- *                               future operations with the peer server.
+ *                               future operations with the peer client.
  *
  *  @retval  kStatus_Success              If successful.
  *  @retval  -EINVAL                      If an internal parameter was
@@ -180,11 +151,13 @@ NetworkController :: Init(Client::CommandManager &aClientCommandManager, Server:
     lRetval = Common::NetworkControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = Client::NetworkControllerBasis::Init();
+#if 1
+    lRetval = Client::NetworkControllerBasis::Init(aClientCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = Server::NetworkControllerBasis::Init();
+    lRetval = Server::NetworkControllerBasis::Init(aServerCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
+#endif
 
     lRetval = Proxy::ControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
@@ -192,50 +165,7 @@ NetworkController :: Init(Client::CommandManager &aClientCommandManager, Server:
     // These MUST come AFTER the base class initialization due to a
     // dependency on the command manager instance.
 
-    lRetval = DoNotificationHandlers(kRegister);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
     lRetval = DoRequestHandlers(kRegister);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-done:
-    return (lRetval);
-}
-
-/**
- *  @brief
- *    Refresh or obtain an up-to-date view of the server peer state.
- *
- *  This attempts to refresh or obtain an up-to-date view of the
- *  server peer state with the specified timeout.
- *
- *  Presently, this controller does so by executing a "query
- *  network [QE]" command with the peer server.
- *
- *  @param[in]  aTimeout  The timeout to use for the refresh operation
- *                        with the peer server.
- *
- *  @retval  kStatus_Success              If successful.
- *  @retval  -ENOMEM                      If memory could not be allocated
- *                                        for the command exchange or
- *                                        exchange state.
- *  @retval  kError_InitializationFailed  If initialization otherwise failed.
- *
- */
-Status
-NetworkController :: Refresh(const Timeout &aTimeout)
-{
-    Status lRetval = kStatus_Success;
-
-
-    (void)aTimeout;
-
-    // Notify the base controller that we have begun a refresh
-    // operation.
-
-    SetRefreshRequested(true);
-
-    lRetval = Query();
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -259,177 +189,6 @@ NetworkController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnect
 done:
     return (lRetval);
 }
-
-// MARK: Server-facing Client Observer Methods
-
-/**
- *  @brief
- *    Query the Ethernet network interface state.
- *
- *  This queries the current HLX server Ethernet network interface state.
- *
- *  @retval  kStatus_Success              If successful.
- *  @retval  -ENOMEM                      If memory could not be allocated
- *                                        for the command exchange or
- *                                        exchange state.
- *  @retval  kError_InitializationFailed  If initialization otherwise failed.
- *
- */
-Status
-NetworkController :: Query(void)
-{
-    Client::Command::ExchangeBasis::MutableCountedPointer  lCommand;
-    Status                                         lRetval = kStatus_Success;
-
-
-    lCommand.reset(new Client::Command::Network::Query());
-    nlREQUIRE_ACTION(lCommand, done, lRetval = -ENOMEM);
-
-    lRetval = std::static_pointer_cast<Client::Command::Network::Query>(lCommand)->Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = SendCommand(lCommand,
-                          NetworkController::QueryCompleteHandler,
-                          NetworkController::CommandErrorHandler,
-                          this);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-// MARK: Server-facing Client Command Completion Handlers
-
-/**
- *  @brief
- *    Asynchronous query Ethernet network interface client command
- *    response completion handler.
- *
- *  This handles an asynchronous client command response for the query
- *  Ethernet network interface command request.
- *
- *  @param[in]  aExchange  A mutable shared pointer to the exchange
- *                         associated with the client command response
- *                         and its original request.
- *  @param[in]  aMatches   An immutable reference to the regular
- *                         expression substring matches associated
- *                         with the client command response that
- *                         triggered this handler.
- *
- */
-void
-NetworkController :: QueryCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange,
-                                          const RegularExpression::Matches &aMatches)
-{
-    const Client::Command::ResponseBasis * lResponse = aExchange->GetResponse();
-    const size_t                   lExpectedMatchCount = lResponse->GetRegularExpression().GetExpectedMatchCount();
-
-
-    nlREQUIRE(aMatches.size() == lExpectedMatchCount, done);
-
-    MaybeUpdateRefreshIfRefreshWasRequested();
-
- done:
-    return;
-}
-
-/**
- *  @brief
- *    Asynchronous network controller client command request
- *    error handler.
- *
- *  This handles any asynchronous client network controller
- *  command request that results in an error response from the HLX
- *  peer server.
- *
- *  @param[in]  aExchange  A mutable shared pointer to the exchange
- *                         associated with the client command error
- *                         and its original request.
- *  @param[in]  aError     An immutable reference to the error
- *                         associated with the failed client command
- *                         request.
- *
- */
-void
-NetworkController :: CommandErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError)
-{
-    const Client::Command::RequestBasis *  lRequest    = aExchange->GetRequest();
-    const uint8_t *                lBuffer     = lRequest->GetBuffer();
-    const size_t                   lBufferSize = lRequest->GetSize();
-
-    OnCommandError(lBuffer, lBufferSize, "Network Command", aError);
-}
-
-// MARK: Server-facing Client Command Completion Handler Trampolines
-
-/**
- *  @brief
- *    Asynchronous query Ethernet network interface client command
- *    response completion handler trampoline.
- *
- *  This invokes the handler for an asynchronous client command
- *  response for the query Ethernet network interface command request.
- *
- *  @param[in]      aExchange  A mutable shared pointer to the exchange
- *                             associated with the client command
- *                             response and its original request.
- *  @param[in]      aMatches   An immutable reference to the regular
- *                             expression substring matches associated
- *                             with the client command response that
- *                             triggered this handler.
- *  @param[in,out]  aContext   A pointer to the controller class
- *                             instance that registered this
- *                             trampoline to call back into from
- *                             the trampoline.
- *
- */
-void
-NetworkController :: QueryCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const RegularExpression::Matches &aMatches, void *aContext)
-{
-    NetworkController *lController = static_cast<NetworkController *>(aContext);
-
-    if (lController != nullptr)
-    {
-        lController->QueryCompleteHandler(aExchange, aMatches);
-    }
-}
-
-/**
- *  @brief
- *    Asynchronous network controller client command request error
- *    handler trampoline.
- *
- *  This invokes the handler for any asynchronous client network
- *  controller command request that results in an error response from
- *  the HLX peer server.
- *
- *  @param[in]      aExchange  A mutable shared pointer to the exchange
- *                             associated with the client command
- *                             error response and its original
- *                             request.
- *  @param[in]      aError     An immutable reference to the error
- *                             associated with the failed command
- *                             request.
- *  @param[in,out]  aContext   A pointer to the controller class
- *                             instance that registered this
- *                             trampoline to call back into from
- *                             the trampoline.
- *
- */
-void
-NetworkController :: CommandErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError, void *aContext)
-{
-    NetworkController *lController = static_cast<NetworkController *>(aContext);
-
-    if (lController != nullptr)
-    {
-        lController->CommandErrorHandler(aExchange, aError);
-    }
-}
-
-// MARK: Server-facing Client Unsolicited Notification Handlers
-
-// MARK: Server-facing Client Unsolicited Notification Handler Trampolines
 
 // MARK: Client-facing Server Command Request Completion Handlers
 

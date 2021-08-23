@@ -59,37 +59,22 @@ namespace Proxy
  *
  */
 class InfraredController :
-    public Proxy::ControllerBasis,
     public Common::InfraredControllerBasis,
     public Client::InfraredControllerBasis,
-    public Server::InfraredControllerBasis
+    public Server::InfraredControllerBasis,
+    public Proxy::ControllerBasis
 {
 public:
     InfraredController(void);
     virtual ~InfraredController(void);
 
-    Common::Status Init(Client::CommandManager &aCommandManager, Server::CommandManager &aServerCommandManager, const Common::Timeout &aTimeout) final;
+    // Initializer(s)
 
-    Common::Status Refresh(const Common::Timeout &aTimeout) final;
+    Common::Status Init(Client::CommandManager &aCommandManager, Server::CommandManager &aServerCommandManager, const Common::Timeout &aTimeout) final;
 
     // Configuration Management Methods
 
     Common::Status QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) final;
-
-    // Observer Methods
-
-    Common::Status Query(void);
-
-    // Server-facing Client Command Completion Handler Trampolines
-
-    static void QueryCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SetDisabledCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-
-    static void CommandErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError, void *aContext);
-
-    // Server-facing Client Notification Handler Trampolines
-
-    static void DisabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
     // Client-facing Server Command Request Handler Trampolines
 
@@ -97,36 +82,17 @@ public:
     static void SetDisabledRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
-    // Proxy Handlers
-
-public:
-    // Proxy Handler Trampolines
-
-private:
-    Common::Status DoNotificationHandlers(const bool &aRegister);
     Common::Status DoRequestHandlers(const bool &aRegister);
-
-    // Server-facing Client Command Completion Handlers
-
-    void QueryCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void SetDisabledCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-
-    void CommandErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError);
-
-    // Server-facing Client Notification Handlers
-
-    void BrightnessNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void DisabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 
     // Client-facing Server Command Completion Handlers
     void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
     void SetDisabledRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 
 private:
-    // Server-facing Client Implementation
+    // Explicitly hide base class initializers
 
-private:
-    // Client-facing Server Implementation
+    using Client::InfraredControllerBasis::Init;
+    using Server::InfraredControllerBasis::Init;
 };
 
 }; // namespace Proxy

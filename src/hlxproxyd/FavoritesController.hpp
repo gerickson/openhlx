@@ -59,38 +59,22 @@ namespace Proxy
  *
  */
 class FavoritesController :
-    public Proxy::ControllerBasis,
     public Common::FavoritesControllerBasis,
     public Client::FavoritesControllerBasis,
-    public Server::FavoritesControllerBasis
+    public Server::FavoritesControllerBasis,
+    public Proxy::ControllerBasis
 {
 public:
     FavoritesController(void);
     virtual ~FavoritesController(void);
 
-    Common::Status Init(Client::CommandManager &aCommandManager, Server::CommandManager &aServerCommandManager, const Common::Timeout &aTimeout) final;
+    // Initializer(s)
 
-    Common::Status Refresh(const Common::Timeout &aTimeout) final;
+    Common::Status Init(Client::CommandManager &aCommandManager, Server::CommandManager &aServerCommandManager, const Common::Timeout &aTimeout) final;
 
     // Configuration Management Methods
 
     Common::Status QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) final;
-
-    // Observer Methods
-
-    Common::Status Query(void);
-    Common::Status Query(const IdentifierType &aFavoriteIdentifier);
-
-    // Server-facing Client Command Completion Handler Trampolines
-
-    static void QueryCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SetNameCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-
-    static void CommandErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError, void *aContext);
-
-    // Server-facing Client Notification Handler Trampolines
-
-    static void NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
     // Client-facing Server Command Request Handler Trampolines
 
@@ -98,24 +82,7 @@ public:
     static void SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
-    // Proxy Handlers
-
-public:
-    // Proxy Handler Trampolines
-
-private:
-    Common::Status DoNotificationHandlers(const bool &aRegister);
     Common::Status DoRequestHandlers(const bool &aRegister);
-
-    // Server-facing Client Command Completion Handlers
-
-    void QueryCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void SetNameCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void CommandErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError);
-
-    // Server-facing Client Notification Handlers
-
-    void NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 
     // Client-facing Server Command Completion Handlers
 
@@ -123,10 +90,10 @@ private:
     void SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 
 private:
-    // Server-facing Client Implementation
+    // Explicitly hide base class initializers
 
-private:
-    // Client-facing Server Implementation
+    using Client::FavoritesControllerBasis::Init;
+    using Server::FavoritesControllerBasis::Init;
 };
 
 }; // namespace Proxy
