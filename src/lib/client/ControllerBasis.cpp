@@ -168,6 +168,7 @@ ControllerBasis :: DoNotificationHandlers(const NotificationHandlerBasis *aFirst
                                           void *aContext,
                                           const bool &aRegister)
 {
+    DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
     nlREQUIRE_ACTION(mCommandManager != nullptr,      done, lRetval = kError_NotInitialized);
