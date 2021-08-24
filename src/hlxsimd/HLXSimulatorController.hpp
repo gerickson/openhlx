@@ -94,11 +94,6 @@ public:
 
     Common::Status SetDelegate(ControllerDelegate *aDelegate);
 
-    Common::Status Listen(void);
-    Common::Status Listen(const Common::ConnectionManagerBasis::Versions &aVersions);
-    Common::Status Listen(const char *aMaybeURL);
-    Common::Status Listen(const char *aMaybeURL, const Common::ConnectionManagerBasis::Versions &aVersions);
-
     Common::Status RegisterRequestHandler(Server::Command::RequestBasis &aRequest, void *aContext, Server::CommandManager::OnRequestReceivedFunc aOnRequestReceivedHandler);
 
     // Configuration Controller Delegate Methods

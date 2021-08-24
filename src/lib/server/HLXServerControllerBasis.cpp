@@ -133,6 +133,55 @@ ControllerBasis :: GetConnectionManager(void)
     return (mConnectionManager);
 }
 
+// MARK: Listen
+
+Status ControllerBasis :: Listen(void)
+{
+    Status lRetval = kStatus_Success;
+
+    lRetval = GetConnectionManager().Listen();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
+Status
+ControllerBasis :: Listen(const Common::ConnectionManagerBasis::Versions &aVersions)
+{
+    Status lRetval = kStatus_Success;
+
+    lRetval = GetConnectionManager().Listen(aVersions);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
+Status
+ControllerBasis :: Listen(const char *aMaybeURL)
+{
+    Status lRetval = kStatus_Success;
+
+    lRetval = GetConnectionManager().Listen(aMaybeURL);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+ControllerBasis :: Listen(const char *aMaybeURL, const Common::ConnectionManagerBasis::Versions &aVersions)
+{
+    Status lRetval = kStatus_Success;
+
+    lRetval = GetConnectionManager().Listen(aMaybeURL, aVersions);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
 }; // namespace Application
 
 }; // namespace Server

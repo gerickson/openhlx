@@ -28,6 +28,7 @@
 
 #include <map>
 
+#include <OpenHLX/Common/ConnectionManagerBasis.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/HLXCommonControllerContainerTemplate.hpp>
 #include <OpenHLX/Common/RunLoopParameters.hpp>
@@ -73,6 +74,13 @@ public:
     Server::CommandManager &           GetCommandManager(void);
     const Server::ConnectionManager &  GetConnectionManager(void) const;
     Server::ConnectionManager &        GetConnectionManager(void);
+
+    // Listen
+
+    Common::Status Listen(void);
+    Common::Status Listen(const Common::ConnectionManagerBasis::Versions &aVersions);
+    Common::Status Listen(const char *aMaybeURL);
+    Common::Status Listen(const char *aMaybeURL, const Common::ConnectionManagerBasis::Versions &aVersions);
 
 protected:
     typedef Common::Application::ControllerContainerTemplate<Server::ControllerBasis> ServerControllerContainer;

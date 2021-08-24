@@ -302,57 +302,6 @@ Controller :: InitConfiguration(const RunLoopParameters &aRunLoopParameters, con
     return (lRetval);
 }
 
-Status Controller :: Listen(void)
-{
-    DeclareScopedFunctionTracer(lTracer);
-    Status lRetval = kStatus_Success;
-
-    lRetval = GetConnectionManager().Listen();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-done:
-    return (lRetval);
-}
-
-Status
-Controller :: Listen(const Common::ConnectionManagerBasis::Versions &aVersions)
-{
-    DeclareScopedFunctionTracer(lTracer);
-    Status lRetval = kStatus_Success;
-
-    lRetval = GetConnectionManager().Listen(aVersions);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-done:
-    return (lRetval);
-}
-
-Status
-Controller :: Listen(const char *aMaybeURL)
-{
-    DeclareScopedFunctionTracer(lTracer);
-    Status lRetval = kStatus_Success;
-
-    lRetval = GetConnectionManager().Listen(aMaybeURL);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-Controller :: Listen(const char *aMaybeURL, const Common::ConnectionManagerBasis::Versions &aVersions)
-{
-    DeclareScopedFunctionTracer(lTracer);
-    Status lRetval = kStatus_Success;
-
-    lRetval = GetConnectionManager().Listen(aMaybeURL, aVersions);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-done:
-    return (lRetval);
-}
-
 ControllerDelegate *
 Controller :: GetDelegate(void) const
 {

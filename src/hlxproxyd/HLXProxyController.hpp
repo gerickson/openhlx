@@ -103,12 +103,6 @@ public:
     Common::Status Connect(const char *aMaybeURL, const Common::Timeout &aTimeout);
     Common::Status Connect(const char *aMaybeURL, const Common::ConnectionManagerBasis::Versions &aVersions, const Common::Timeout &aTimeout);
 
-    Common::Status Listen(void);
-    Common::Status Listen(const Common::ConnectionManagerBasis::Versions &aVersions);
-    Common::Status Listen(const char *aMaybeURL);
-    Common::Status Listen(const char *aMaybeURL, const Common::ConnectionManagerBasis::Versions &aVersions);
-
-
     // Server-facing Client Command Manager Delegate Methods
 
     // Server-facing Client Connection Manager Delegate Methods
