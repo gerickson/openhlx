@@ -172,22 +172,25 @@ public:
     HLXProxy(void);
     ~HLXProxy(void);
 
-    Status Init(void);
+    Status Init(const char *aConnectMaybeURL,
+                const char *aListenMaybeURL,
+                const bool &aUseIPv6,
+                const bool &aUseIPv4);
 
-    Status Start(const char *aConnectMaybeURL,
-                 const bool &aUseIPv6,
-                 const bool &aUseIPv4);
-    Status Start(const char *aConnectMaybeURL,
-                 const char *aListenMaybeURL,
-                 const bool &aUseIPv6,
-                 const bool &aUseIPv4);
+    Status Start(void);
+    Status Listen(void);
     Status Stop(void);
     Status Stop(const Status &aStatus);
 
     const Proxy::Application::Controller &GetController(void) const;
     Proxy::Application::Controller &GetController(void);
+
     Status GetStatus(void) const;
     void SetStatus(const Status &aStatus);
+
+    void SetVersions(const bool &aUseIPv6,
+                     const bool &aUseIPv4);
+    const ConnectionManagerBasis::Versions &GetVersions(void) const;
 
     static bool IsRole(const Roles &aFirst, const Roles &aSecond);
     static bool IsClient(const Roles &aRole);
@@ -249,6 +252,9 @@ private:
     RunLoopParameters                mRunLoopParameters;
     Proxy::Application::Controller   mHLXProxyController;
     Status                           mStatus;
+    const char *                     mConnectMaybeURL;
+    const char *                     mListenMaybeURL;
+    ConnectionManagerBasis::Versions mVersions;
 };
 
 static const char *
@@ -283,7 +289,10 @@ HLXProxy :: HLXProxy(void) :
     ControllerDelegate(),
     mRunLoopParameters(),
     mHLXProxyController(),
-    mStatus(kStatus_Success)
+    mStatus(kStatus_Success),
+    mConnectMaybeURL(nullptr),
+    mListenMaybeURL(nullptr),
+    mVersions(0)
 {
     return;
 }
@@ -293,7 +302,10 @@ HLXProxy :: ~HLXProxy(void)
     return;
 }
 
-Status HLXProxy :: Init(void)
+Status HLXProxy :: Init(const char *aConnectMaybeURL,
+                        const char *aListenMaybeURL,
+                        const bool &aUseIPv6,
+                        const bool &aUseIPv4)
 {
     Status lRetval = kStatus_Success;
 
@@ -306,50 +318,49 @@ Status HLXProxy :: Init(void)
     lRetval = mHLXProxyController.SetDelegate(this);
     nlREQUIRE_SUCCESS(lRetval, done);
 
+    mConnectMaybeURL = aConnectMaybeURL;
+    mListenMaybeURL  = aListenMaybeURL;
+
+    SetVersions(aUseIPv6, aUseIPv4);
+
  done:
     return (lRetval);
 }
 
 Status
-HLXProxy :: Start(const char *aConnectMaybeURL,
-                  const bool &aUseIPv6,
-                  const bool &aUseIPv4)
+HLXProxy :: Start(void)
 {
-    using Common::Utilities::GetVersions;
-
     Status lRetval = kStatus_Success;
 
-    lRetval = mHLXProxyController.Connect(aConnectMaybeURL, GetVersions(aUseIPv4, aUseIPv6));
+    lRetval = mHLXProxyController.Connect(mConnectMaybeURL, GetVersions());
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    // XXX - At some point, Listen should be move to and triggered by
-    //       the first successful ControllerDidRefresh event /
-    //       callback. However, this would / should only be the case
-    //       if '--initial-refresh' is asserted or, conversely, if
-    //       '--no-initial-refresh' is not asserted.
-
-    lRetval = mHLXProxyController.Listen(GetVersions(aUseIPv6, aUseIPv4));
-    nlREQUIRE_SUCCESS(lRetval, done);
+    if ((sOptFlags & kOptNoInitialRefresh) == kOptNoInitialRefresh)
+    {
+        lRetval = Listen();
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
 
 done:
     return (lRetval);
 }
 
 Status
-HLXProxy :: Start(const char *aConnectMaybeURL,
-                  const char *aListenMaybeURL,
-                  const bool &aUseIPv6,
-                  const bool &aUseIPv4)
+HLXProxy :: Listen(void)
 {
-    using Common::Utilities::GetVersions;
-
     Status lRetval = kStatus_Success;
 
-    lRetval = mHLXProxyController.Connect(aConnectMaybeURL, GetVersions(aUseIPv6, aUseIPv4));
-    nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mHLXProxyController.Listen(aListenMaybeURL, GetVersions(aUseIPv6, aUseIPv4));
-    nlREQUIRE_SUCCESS(lRetval, done);
+    if (mListenMaybeURL == nullptr)
+    {
+        lRetval = mHLXProxyController.Listen(GetVersions());
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
+    else
+    {
+        lRetval = mHLXProxyController.Listen(mListenMaybeURL, GetVersions());
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
 
 done:
     return (lRetval);
@@ -391,6 +402,21 @@ Status HLXProxy :: GetStatus(void) const
 void HLXProxy :: SetStatus(const Status &aStatus)
 {
     mStatus = aStatus;
+}
+
+void
+HLXProxy :: SetVersions(const bool &aUseIPv6,
+                        const bool &aUseIPv4)
+{
+    using Common::Utilities::GetVersions;
+
+    mVersions = GetVersions(aUseIPv6, aUseIPv4);
+}
+
+const ConnectionManagerBasis::Versions &
+HLXProxy :: GetVersions(void) const
+{
+    return (mVersions);
 }
 
 bool
@@ -634,10 +660,20 @@ void HLXProxy :: ControllerIsRefreshing(Proxy::Application::Controller &aControl
 
 void HLXProxy :: ControllerDidRefresh(Proxy::Application::Controller &aController)
 {
+    Status lStatus;
+
+
     (void)aController;
 
     Log::Info().Write("Client data received.\n");
 
+    if ((sOptFlags & kOptNoInitialRefresh) != kOptNoInitialRefresh)
+    {
+        lStatus = Listen();
+        nlREQUIRE_SUCCESS_ACTION(lStatus, done, SetStatus(lStatus));
+    }
+
+ done:
     return;
 }
 
@@ -1127,19 +1163,14 @@ int main(int argc, char * const argv[])
 
         sHLXProxy = &lHLXProxy;
 
-        lStatus = lHLXProxy.Init();
+        lStatus = lHLXProxy.Init(sConnectMaybeURL,
+                                 sListenMaybeURL,
+                                 lUseIPv6,
+                                 lUseIPv4);
         nlREQUIRE_SUCCESS_ACTION(lStatus, done, lHLXProxy.SetStatus(lStatus));
 
-        if (sListenMaybeURL != nullptr)
-        {
-            lStatus = lHLXProxy.Start(sConnectMaybeURL, sListenMaybeURL, lUseIPv6, lUseIPv4);
-            nlREQUIRE_SUCCESS_ACTION(lStatus, done, lHLXProxy.SetStatus(lStatus));
-        }
-        else
-        {
-            lStatus = lHLXProxy.Start(sConnectMaybeURL, lUseIPv6, lUseIPv4);
-            nlREQUIRE_SUCCESS_ACTION(lStatus, done, lHLXProxy.SetStatus(lStatus));
-        }
+        lStatus = lHLXProxy.Start();
+        nlREQUIRE_SUCCESS_ACTION(lStatus, done, lHLXProxy.SetStatus(lStatus));
 
         Log::Debug().Write("Proxy started with status %d\n", lStatus);
     }
