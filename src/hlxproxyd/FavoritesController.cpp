@@ -104,6 +104,8 @@ done:
     return (lRetval);
 }
 
+// MARK: Initializer(s)
+
 /**
  *  @brief
  *    This is the class initializer.
@@ -256,80 +258,23 @@ void FavoritesController :: QueryRequestReceivedHandler(Server::ConnectionBasis 
     return;
 }
 
-void FavoritesController :: SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void
+FavoritesController :: SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    IdentifierType                            lFavoriteIdentifier;
-    const char *                              lName;
-    size_t                                    lNameSize;
-    FavoriteModel *                           lFavoriteModel;
-    Server::Command::Favorites::NameResponse  lNameResponse;
-    ConnectionBuffer::MutableCountedPointer   lResponseBuffer;
-    Status                                    lStatus;
-    const uint8_t *                           lBuffer;
-    size_t                                    lSize;
+    Status lStatus;
 
-
-    (void)aSize;
-
-    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Favorites::SetNameRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
-
-    // Match 2/3: Favorite Identifier
-    //
-    // The validity of the favorite identifier will be range checked at
-    // GetFavorite below.
-
-    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
-                                                Common::Utilities::Distance(aMatches.at(1)),
-                                                lFavoriteIdentifier);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    // Match 3/3: Name
-
-    lName = (reinterpret_cast<const char *>(aBuffer) + aMatches.at(2).rm_so);
-    lNameSize = Common::Utilities::Distance(aMatches.at(2));
-
-    lResponseBuffer.reset(new ConnectionBuffer);
-    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
-
-    lStatus = lResponseBuffer->Init();
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    // Get the favorite model associated with the parsed favorite
-    // identifier. This will include a range check on the favorite
-    // identifier.
-
-    lStatus = mFavorites.GetFavorite(lFavoriteIdentifier, lFavoriteModel);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    // Attempt to set the parsed name. This will include range check
-    // on the name length. If the set name is the same as the current
-    // name, that should still be regarded as a success with a
-    // success, rather than error, response sent.
-
-    lStatus = lFavoriteModel->SetName(lName, lNameSize);
-    nlREQUIRE(lStatus >= kStatus_Success, done);
-
-    if (lStatus == kStatus_Success)
-    {
-        ;
-    }
-
-    lStatus = lNameResponse.Init(lFavoriteIdentifier, lName, lNameSize);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lBuffer = lNameResponse.GetBuffer();
-    lSize = lNameResponse.GetSize();
-
-    lStatus = Common::Utilities::Put(*lResponseBuffer.get(), lBuffer, lSize);
+    lStatus = ProxyMutationCommand(aConnection,
+                                   aBuffer,
+                                   aSize,
+                                   aMatches,
+                                   kNameResponse,
+                                   Client::FavoritesControllerBasis::SetNameCompleteHandler,
+                                   Client::FavoritesControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::FavoritesControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
-    if (lStatus >= kStatus_Success)
-    {
-        lStatus = SendResponse(aConnection, lResponseBuffer);
-        nlVERIFY_SUCCESS(lStatus);
-    }
-    else
+    if (lStatus < kStatus_Success)
     {
         lStatus = SendErrorResponse(aConnection);
         nlVERIFY_SUCCESS(lStatus);
@@ -359,14 +304,6 @@ void FavoritesController :: SetNameRequestReceivedHandler(Server::ConnectionBasi
         lController->SetNameRequestReceivedHandler(aConnection, aBuffer, aSize, aMatches);
     }
 }
-
-// MARK: Proxy Handlers
-
-// MARK: Proxy Handler Trampolines
-
-// MARK: Server-facing Client Implementation
-
-// MARK: Client-facing Server Implementation
 
 }; // namespace Proxy
 

@@ -160,6 +160,8 @@ done:
     return (lRetval);
 }
 
+// MARK: Initializer(s)
+
 /**
  *  @brief
  *    This is the class initializer.

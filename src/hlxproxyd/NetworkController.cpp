@@ -117,6 +117,8 @@ done:
     return (lRetval);
 }
 
+// MARK: Initializer(s)
+
 /**
  *  @brief
  *    This is the class initializer.
@@ -254,14 +256,6 @@ void NetworkController :: QueryRequestReceivedHandler(Server::ConnectionBasis &a
         lController->QueryRequestReceivedHandler(aConnection, aBuffer, aSize, aMatches);
     }
 }
-
-// MARK: Proxy Handlers
-
-// MARK: Proxy Handler Trampolines
-
-// MARK: Server-facing Client Implementation
-
-// MARK: Client-facing Server Implementation
 
 }; // namespace Proxy
 

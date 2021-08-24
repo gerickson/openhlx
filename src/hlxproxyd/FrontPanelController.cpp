@@ -107,6 +107,8 @@ done:
     return (lRetval);
 }
 
+// MARK: Initializer(s)
+
 /**
  *  @brief
  *    This is the class initializer.
@@ -152,7 +154,7 @@ FrontPanelController :: Init(Client::CommandManager &aClientCommandManager, Serv
     lRetval = Proxy::ControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    // These MUST come AFTER the base class initialization due to a
+    // This MUST come AFTER the base class initialization due to a
     // dependency on the command manager instance.
 
     lRetval = DoRequestHandlers(kRegister);
@@ -239,46 +241,20 @@ void FrontPanelController :: QueryRequestReceivedHandler(Server::ConnectionBasis
 
 void FrontPanelController :: SetBrightnessRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    FrontPanelModel::BrightnessType          lBrightness;
-    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
-    Status                                   lStatus;
+    Status lStatus;
 
-
-    (void)aSize;
-
-    nlREQUIRE_ACTION(aMatches.size() == Server::Command::FrontPanel::SetBrightnessRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
-
-    // Match 2/2: Brightness
-
-    lStatus = Utilities::Parse(aBuffer + aMatches.at(1).rm_so,
-                               Common::Utilities::Distance(aMatches.at(1)),
-                               lBrightness);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lResponseBuffer.reset(new ConnectionBuffer);
-    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
-
-    lStatus = lResponseBuffer->Init();
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lStatus = GetModel().SetBrightness(lBrightness);
-    nlREQUIRE(lStatus >= kStatus_Success, done);
-
-    if (lStatus == kStatus_Success)
-    {
-        ;
-    }
-
-    lStatus = HandleBrightnessResponse(lBrightness, lResponseBuffer);
+    lStatus = ProxyMutationCommand(aConnection,
+                                   aBuffer,
+                                   aSize,
+                                   aMatches,
+                                   kBrightnessResponse,
+                                   Client::FrontPanelControllerBasis::SetBrightnessCompleteHandler,
+                                   Client::FrontPanelControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::FrontPanelControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
-    if (lStatus >= kStatus_Success)
-    {
-        lStatus = SendResponse(aConnection, lResponseBuffer);
-        nlVERIFY_SUCCESS(lStatus);
-    }
-    else
+    if (lStatus < kStatus_Success)
     {
         lStatus = SendErrorResponse(aConnection);
         nlVERIFY_SUCCESS(lStatus);
@@ -289,47 +265,20 @@ void FrontPanelController :: SetBrightnessRequestReceivedHandler(Server::Connect
 
 void FrontPanelController :: SetLockedRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    FrontPanelModel::LockedType                  lLocked;
-    Server::Command::FrontPanel::LockedResponse  lLockedResponse;
-    ConnectionBuffer::MutableCountedPointer      lResponseBuffer;
-    Status                                       lStatus;
+    Status lStatus;
 
-
-    (void)aSize;
-
-    nlREQUIRE_ACTION(aMatches.size() == Server::Command::FrontPanel::SetLockedRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
-
-    // Match 2/2: Locked
-
-    lStatus = Utilities::Parse(aBuffer + aMatches.at(1).rm_so,
-                               Common::Utilities::Distance(aMatches.at(1)),
-                               lLocked);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lResponseBuffer.reset(new ConnectionBuffer);
-    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
-
-    lStatus = lResponseBuffer->Init();
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lStatus = GetModel().SetLocked(lLocked);
-    nlREQUIRE(lStatus >= kStatus_Success, done);
-
-    if (lStatus == kStatus_Success)
-    {
-        ;
-    }
-
-    lStatus = HandleLockedResponse(lLocked, lResponseBuffer);
+    lStatus = ProxyMutationCommand(aConnection,
+                                   aBuffer,
+                                   aSize,
+                                   aMatches,
+                                   kLockedResponse,
+                                   Client::FrontPanelControllerBasis::SetLockedCompleteHandler,
+                                   Client::FrontPanelControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::FrontPanelControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
-    if (lStatus >= kStatus_Success)
-    {
-        lStatus = SendResponse(aConnection, lResponseBuffer);
-        nlVERIFY_SUCCESS(lStatus);
-    }
-    else
+    if (lStatus < kStatus_Success)
     {
         lStatus = SendErrorResponse(aConnection);
         nlVERIFY_SUCCESS(lStatus);
@@ -369,12 +318,6 @@ void FrontPanelController :: SetLockedRequestReceivedHandler(Server::ConnectionB
         lController->SetLockedRequestReceivedHandler(aConnection, aBuffer, aSize, aMatches);
     }
 }
-
-// MARK: Proxy Handlers
-
-// MARK: Proxy Handler Trampolines
-
-// MARK: Server-facing Client Implementation
 
 // MARK: Client-facing Server Implementation
 

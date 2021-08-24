@@ -610,7 +610,7 @@ Controller :: GetDelegate(void) const
  *
  */
 Status
-Controller :: SetDelegate(ControllerDelegate *aDelegate)
+Controller :: SetDelegate(Proxy::Application::ControllerDelegate *aDelegate)
 {
     Status lRetval = kStatus_Success;
 
@@ -620,9 +620,12 @@ Controller :: SetDelegate(ControllerDelegate *aDelegate)
         goto done;
     }
 
+    //lRetval = Client::Application::ControllerBasis::SetRefreshDelegate(aDelegate);
+    //nlREQUIRE_SUCCESS(lRetval, done);
+
     mDelegate        = aDelegate;
 
- done:
+done:
     return (lRetval);
 }
 

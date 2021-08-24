@@ -118,6 +118,8 @@ done:
     return (lRetval);
 }
 
+// MARK: Initializer(s)
+
 /**
  *  @brief
  *    This is the class initializer.
@@ -193,83 +195,53 @@ done:
 
 // MARK: Client-facing Server Command Request Completion Handlers
 
-void EqualizerPresetsController :: DecreaseBandRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+void
+EqualizerPresetsController :: DecreaseBandRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    static const EqualizerBandModel::LevelType  kAdjustment = -1;
-    IdentifierType                              lEqualizerPresetIdentifier;
-    EqualizerBandModel::IdentifierType          lEqualizerBandIdentifier;
-    ConnectionBuffer::MutableCountedPointer     lResponseBuffer;
-    Status                                      lStatus;
+    Status lStatus;
 
-
-    (void)aSize;
-
-    nlREQUIRE_ACTION(aMatches.size() == Server::Command::EqualizerPresets::DecreaseBandRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
-
-    // Match 2/4: Equalizer Preset Identifier
-    //
-    // The validity of the equalizer preset identifier will be range
-    // checked at HandleAdjustBandReceived below.
-
-    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
-                                                Common::Utilities::Distance(aMatches.at(1)),
-                                                lEqualizerPresetIdentifier);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    // Match 3/4: Equalizer Band Identifier
-    //
-    // The validity of the equalizer band identifier will be range
-    // checked at HandleAdjustBandReceived below.
-
-    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(2).rm_so,
-                                                Common::Utilities::Distance(aMatches.at(2)),
-                                                lEqualizerBandIdentifier);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lStatus = HandleAdjustBandReceived(aConnection, lEqualizerPresetIdentifier, lEqualizerBandIdentifier, kAdjustment);
+    lStatus = ProxyMutationCommand(aConnection,
+                                   aBuffer,
+                                   aSize,
+                                   aMatches,
+                                   kEqualizerBandResponse,
+                                   Client::EqualizerPresetsControllerBasis::SetEqualizerBandCompleteHandler,
+                                   Client::EqualizerPresetsControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::EqualizerPresetsControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
+    if (lStatus < kStatus_Success)
+    {
+        lStatus = SendErrorResponse(aConnection);
+        nlVERIFY_SUCCESS(lStatus);
+    }
+
     return;
 }
 
-void EqualizerPresetsController :: IncreaseBandRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+void
+EqualizerPresetsController :: IncreaseBandRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    static const EqualizerBandModel::LevelType  kAdjustment = 1;
-    IdentifierType                              lEqualizerPresetIdentifier;
-    EqualizerBandModel::IdentifierType          lEqualizerBandIdentifier;
-    ConnectionBuffer::MutableCountedPointer     lResponseBuffer;
-    Status                                      lStatus;
+    Status lStatus;
 
-
-    (void)aSize;
-
-    nlREQUIRE_ACTION(aMatches.size() == Server::Command::EqualizerPresets::IncreaseBandRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
-
-    // Match 2/4: Equalizer Preset Identifier
-    //
-    // The validity of the equalizer preset identifier will be range
-    // checked at HandleAdjustBandReceived below.
-
-    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
-                                                Common::Utilities::Distance(aMatches.at(1)),
-                                                lEqualizerPresetIdentifier);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    // Match 3/4: Equalizer Band Identifier
-    //
-    // The validity of the equalizer band identifier will be range
-    // checked at HandleAdjustBandReceived below.
-
-    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(2).rm_so,
-                                                Common::Utilities::Distance(aMatches.at(2)),
-                                                lEqualizerBandIdentifier);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lStatus = HandleAdjustBandReceived(aConnection, lEqualizerPresetIdentifier, lEqualizerBandIdentifier, kAdjustment);
+    lStatus = ProxyMutationCommand(aConnection,
+                                   aBuffer,
+                                   aSize,
+                                   aMatches,
+                                   kEqualizerBandResponse,
+                                   Client::EqualizerPresetsControllerBasis::SetEqualizerBandCompleteHandler,
+                                   Client::EqualizerPresetsControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::EqualizerPresetsControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
+    if (lStatus < kStatus_Success)
+    {
+        lStatus = SendErrorResponse(aConnection);
+        nlVERIFY_SUCCESS(lStatus);
+    }
+
     return;
 }
 
@@ -352,63 +324,20 @@ void EqualizerPresetsController :: QueryRequestReceivedHandler(Server::Connectio
 
 void EqualizerPresetsController :: SetBandRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    IdentifierType                           lEqualizerPresetIdentifier;
-    EqualizerBandModel::IdentifierType       lEqualizerBandIdentifier;
-    EqualizerBandModel::LevelType            lBandLevel;
-    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
-    Status                                   lStatus;
+    Status lStatus;
 
-
-    (void)aSize;
-
-    nlREQUIRE_ACTION(aMatches.size() == Server::Command::EqualizerPresets::SetBandRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
-
-    // Match 2/4: Equalizer Preset Identifier
-    //
-    // The validity of the equalizer preset identifier will be range
-    // checked at HandleSetBandReceived below.
-
-    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
-                                                Common::Utilities::Distance(aMatches.at(1)),
-                                                lEqualizerPresetIdentifier);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    // Match 3/4: Equalizer Band Identifier
-    //
-    // The validity of the equalizer band identifier will be range
-    // checked at HandleSetBandReceived below.
-
-    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(2).rm_so,
-                                                Common::Utilities::Distance(aMatches.at(2)),
-                                                lEqualizerBandIdentifier);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    // Match 4/4: Equalizer Band Level
-    //
-    // The validity of the equalizer band level will be range checked
-    // at HandleSetBandReceived below.
-
-    lStatus = ::HLX::Utilities::Parse(aBuffer + aMatches.at(3).rm_so,
-                                      Common::Utilities::Distance(aMatches.at(3)),
-                                      lBandLevel);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lResponseBuffer.reset(new ConnectionBuffer);
-    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
-
-    lStatus = lResponseBuffer->Init();
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lStatus = HandleSetBandReceived(lEqualizerPresetIdentifier, lEqualizerBandIdentifier, lBandLevel, lResponseBuffer);
+    lStatus = ProxyMutationCommand(aConnection,
+                                   aBuffer,
+                                   aSize,
+                                   aMatches,
+                                   kEqualizerBandResponse,
+                                   Client::EqualizerPresetsControllerBasis::SetEqualizerBandCompleteHandler,
+                                   Client::EqualizerPresetsControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::EqualizerPresetsControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
-    if (lStatus >= kStatus_Success)
-    {
-        lStatus = SendResponse(aConnection, lResponseBuffer);
-        nlVERIFY_SUCCESS(lStatus);
-    }
-    else
+    if (lStatus < kStatus_Success)
     {
         lStatus = SendErrorResponse(aConnection);
         nlVERIFY_SUCCESS(lStatus);
@@ -417,80 +346,23 @@ void EqualizerPresetsController :: SetBandRequestReceivedHandler(Server::Connect
     return;
 }
 
-void EqualizerPresetsController :: SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+void
+EqualizerPresetsController :: SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    IdentifierType                                   lEqualizerPresetIdentifier;
-    const char *                                     lName;
-    size_t                                           lNameSize;
-    EqualizerPresetModel *                           lEqualizerPresetModel;
-    Server::Command::EqualizerPresets::NameResponse  lNameResponse;
-    ConnectionBuffer::MutableCountedPointer          lResponseBuffer;
-    Status                                           lStatus;
-    const uint8_t *                                  lBuffer;
-    size_t                                           lSize;
+    Status lStatus;
 
-
-    (void)aSize;
-
-    nlREQUIRE_ACTION(aMatches.size() == Server::Command::EqualizerPresets::SetNameRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
-
-    // Match 2/3: Equalizer Preset Identifier
-    //
-    // The validity of the equalizer preset identifier will be range checked at
-    // GetEqualizerPreset below.
-
-    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
-                                                Common::Utilities::Distance(aMatches.at(1)),
-                                                lEqualizerPresetIdentifier);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    // Match 3/3: Name
-
-    lName = (reinterpret_cast<const char *>(aBuffer) + aMatches.at(2).rm_so);
-    lNameSize = Common::Utilities::Distance(aMatches.at(2));
-
-    lResponseBuffer.reset(new ConnectionBuffer);
-    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
-
-    lStatus = lResponseBuffer->Init();
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    // Get the equalizer preset model associated with the parsed
-    // equalizer preset identifier. This will include a range check on
-    // the equalizer preset identifier.
-
-    lStatus = mEqualizerPresets.GetEqualizerPreset(lEqualizerPresetIdentifier, lEqualizerPresetModel);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    // Attempt to set the parsed name. This will include range check
-    // on the name length. If the set name is the same as the current
-    // name, that should still be regarded as a success with a
-    // success, rather than error, response sent.
-
-    lStatus = lEqualizerPresetModel->SetName(lName, lNameSize);
-    nlREQUIRE(lStatus >= kStatus_Success, done);
-
-    if (lStatus == kStatus_Success)
-    {
-        ;
-    }
-
-    lStatus = lNameResponse.Init(lEqualizerPresetIdentifier, lName, lNameSize);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lBuffer = lNameResponse.GetBuffer();
-    lSize = lNameResponse.GetSize();
-
-    lStatus = Common::Utilities::Put(*lResponseBuffer.get(), lBuffer, lSize);
+    lStatus = ProxyMutationCommand(aConnection,
+                                   aBuffer,
+                                   aSize,
+                                   aMatches,
+                                   kNameResponse,
+                                   Client::EqualizerPresetsControllerBasis::SetNameCompleteHandler,
+                                   Client::EqualizerPresetsControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::EqualizerPresetsControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
-    if (lStatus >= kStatus_Success)
-    {
-        lStatus = SendResponse(aConnection, lResponseBuffer);
-        nlVERIFY_SUCCESS(lStatus);
-    }
-    else
+    if (lStatus < kStatus_Success)
     {
         lStatus = SendErrorResponse(aConnection);
         nlVERIFY_SUCCESS(lStatus);
@@ -550,12 +422,6 @@ void EqualizerPresetsController :: SetNameRequestReceivedHandler(Server::Connect
         lController->SetNameRequestReceivedHandler(aConnection, aBuffer, aSize, aMatches);
     }
 }
-
-// MARK: Proxy Handlers
-
-// MARK: Proxy Handler Trampolines
-
-// MARK: Server-facing Client Implementation
 
 // MARK: Client-facing Server Implementation
 

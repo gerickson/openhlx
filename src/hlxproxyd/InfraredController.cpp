@@ -102,6 +102,8 @@ done:
     return (lRetval);
 }
 
+// MARK: Initializer(s)
+
 /**
  *  @brief
  *    This is the class initializer.
@@ -147,7 +149,7 @@ InfraredController :: Init(Client::CommandManager &aClientCommandManager, Server
     lRetval = Proxy::ControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    // These MUST come AFTER the base class initialization due to a
+    // This MUST come AFTER the base class initialization due to a
     // dependency on the command manager instance.
 
     lRetval = DoRequestHandlers(kRegister);
@@ -163,7 +165,7 @@ Status
 InfraredController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     DeclareScopedFunctionTracer(lTracer);
-    Status                                lRetval = kStatus_Success;
+    Status  lRetval = kStatus_Success;
 
 
     (void)aConnection;
@@ -224,51 +226,26 @@ void InfraredController :: QueryRequestReceivedHandler(Server::ConnectionBasis &
         lStatus = SendErrorResponse(aConnection);
         nlVERIFY_SUCCESS(lStatus);
     }
+
+    return;
 }
 
 void InfraredController :: SetDisabledRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    InfraredModel::DisabledType                  lDisabled;
-    Server::Command::Infrared::DisabledResponse  lResponse;
-    ConnectionBuffer::MutableCountedPointer      lResponseBuffer;
-    Status                                       lStatus;
+    Status lStatus;
 
-
-    (void)aSize;
-
-    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Infrared::SetDisabledRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
-
-    // Match 2/2: Disabled
-
-    lStatus = Utilities::Parse(aBuffer + aMatches.at(1).rm_so,
-                               Common::Utilities::Distance(aMatches.at(1)),
-                               lDisabled);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lResponseBuffer.reset(new ConnectionBuffer);
-    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
-
-    lStatus = lResponseBuffer->Init();
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lStatus = GetModel().SetDisabled(lDisabled);
-    nlREQUIRE(lStatus >= kStatus_Success, done);
-
-    if (lStatus == kStatus_Success)
-    {
-        ;
-    }
-
-    lStatus = HandleDisabledResponse(lDisabled, lResponseBuffer);
+    lStatus = ProxyMutationCommand(aConnection,
+                                   aBuffer,
+                                   aSize,
+                                   aMatches,
+                                   kDisabledResponse,
+                                   Client::InfraredControllerBasis::SetDisabledCompleteHandler,
+                                   Client::InfraredControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::InfraredControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
-    if (lStatus >= kStatus_Success)
-    {
-        lStatus = SendResponse(aConnection, lResponseBuffer);
-        nlVERIFY_SUCCESS(lStatus);
-    }
-    else
+    if (lStatus < kStatus_Success)
     {
         lStatus = SendErrorResponse(aConnection);
         nlVERIFY_SUCCESS(lStatus);
@@ -298,14 +275,6 @@ void InfraredController :: SetDisabledRequestReceivedHandler(Server::ConnectionB
         lController->SetDisabledRequestReceivedHandler(aConnection, aBuffer, aSize, aMatches);
     }
 }
-
-// MARK: Proxy Handlers
-
-// MARK: Proxy Handler Trampolines
-
-// MARK: Server-facing Client Implementation
-
-// MARK: Client-facing Server Implementation
 
 }; // namespace Proxy
 

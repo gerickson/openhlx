@@ -112,6 +112,8 @@ done:
     return (lRetval);
 }
 
+// MARK: Initializer(s)
+
 /**
  *  @brief
  *    This is the class initializer.
@@ -192,21 +194,33 @@ ConfigurationController :: SetDelegate(ConfigurationControllerDelegate *aDelegat
 
 void ConfigurationController :: LoadFromBackupRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    DeclareScopedFunctionTracer(lTracer);
-    Server::Command::Configuration::LoadFromBackupResponse  lResponse;
-    ConnectionBuffer::MutableCountedPointer                 lResponseBuffer;
-    const uint8_t *                                         lBuffer;
-    size_t                                                  lSize;
-    Status                                                  lStatus;
+    // There is no static load from backup configuration response, so
+    // we instantiate and initialize one on the stack.
+
+    Client::Command::Configuration::LoadFromBackupResponse lLoadFromBackupResponse;
+    Status lStatus;
 
 
-    (void)aBuffer;
-    (void)aSize;
+    lStatus = lLoadFromBackupResponse.Init();
+    nlREQUIRE_SUCCESS(lStatus, done);
 
-    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Configuration::LoadFromBackupRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    lStatus = ProxyMutationCommand(aConnection,
+                                   aBuffer,
+                                   aSize,
+                                   aMatches,
+                                   lLoadFromBackupResponse,
+                                   Client::ConfigurationControllerBasis::LoadFromBackupCompleteHandler,
+                                   Client::ConfigurationControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::ConfigurationControllerBasis *>(this));
+    nlREQUIRE_SUCCESS(lStatus, done);
 
+ done:
+    if (lStatus < kStatus_Success)
+    {
+        lStatus = SendErrorResponse(aConnection);
+        nlVERIFY_SUCCESS(lStatus);
+    }
 
-done:
     return;
 }
 
@@ -289,38 +303,54 @@ void ConfigurationController :: QueryCurrentRequestReceivedHandler(Server::Conne
 
 void ConfigurationController :: ResetToDefaultsRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    Server::Command::Configuration::ResetToDefaultsResponse  lResponse;
-    ConnectionBuffer::MutableCountedPointer                  lResponseBuffer;
-    const uint8_t *                                          lBuffer;
-    size_t                                                   lSize;
-    Status                                                   lStatus;
+    // There is no static reset to defaults configuration response, so
+    // we instantiate and initialize one on the stack.
+
+    Client::Command::Configuration::ResetToDefaultsResponse lResetToDefaultsResponse;
+    Status lStatus;
 
 
-    (void)aBuffer;
-    (void)aSize;
+    lStatus = ProxyMutationCommand(aConnection,
+                                   aBuffer,
+                                   aSize,
+                                   aMatches,
+                                   lResetToDefaultsResponse,
+                                   Client::ConfigurationControllerBasis::ResetToDefaultsCompleteHandler,
+                                   Client::ConfigurationControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::ConfigurationControllerBasis *>(this));
+    nlREQUIRE_SUCCESS(lStatus, done);
 
-    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Configuration::ResetToDefaultsRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+ done:
+    if (lStatus < kStatus_Success)
+    {
+        lStatus = SendErrorResponse(aConnection);
+        nlVERIFY_SUCCESS(lStatus);
+    }
 
-done:
     return;
 }
 
 void ConfigurationController :: SaveToBackupRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    Server::Command::Configuration::SavingToBackupResponse  lSavingToBackupNotification;
-    Server::Command::Configuration::SaveToBackupResponse    lSaveToBackupResponse;
-    ConnectionBuffer::MutableCountedPointer                 lResponseBuffer;
-    const uint8_t *                                         lBuffer;
-    size_t                                                  lSize;
-    Status                                                  lStatus;
+    Status lStatus;
 
+    lStatus = ProxyMutationCommand(aConnection,
+                                   aBuffer,
+                                   aSize,
+                                   aMatches,
+                                   kSaveToBackupResponse,
+                                   Client::ConfigurationControllerBasis::SaveToBackupCompleteHandler,
+                                   Client::ConfigurationControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::ConfigurationControllerBasis *>(this));
+    nlREQUIRE_SUCCESS(lStatus, done);
 
-    (void)aBuffer;
-    (void)aSize;
+ done:
+    if (lStatus < kStatus_Success)
+    {
+        lStatus = SendErrorResponse(aConnection);
+        nlVERIFY_SUCCESS(lStatus);
+    }
 
-    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Configuration::SaveToBackupRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
-
-done:
     return;
 }
 
@@ -382,10 +412,6 @@ ConfigurationController :: OnQueryCurrentConfiguration(Server::ConnectionBasis &
 done:
     return (lRetval);
 }
-
-// MARK: Server-facing Client Implementation
-
-// MARK: Client-facing Server Implementation
 
 }; // namespace Proxy
 

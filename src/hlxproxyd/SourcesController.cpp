@@ -99,6 +99,8 @@ done:
     return (lRetval);
 }
 
+// MARK: Initializer(s)
+
 /**
  *  @brief
  *    This is the class initializer.
@@ -144,7 +146,7 @@ SourcesController :: Init(Client::CommandManager &aClientCommandManager, Server:
     lRetval = Proxy::ControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    // These MUST come AFTER the base class initialization due to a
+    // This MUST come AFTER the base class initialization due to a
     // dependency on the command manager instance.
 
     lRetval = DoRequestHandlers(kRegister);
@@ -209,14 +211,6 @@ void SourcesController :: SetNameRequestReceivedHandler(Server::ConnectionBasis 
         lController->SetNameRequestReceivedHandler(aConnection, aBuffer, aSize, aMatches);
     }
 }
-
-// MARK: Proxy Handlers
-
-// MARK: Proxy Handler Trampolines
-
-// MARK: Server-facing Client Implementation
-
-// MARK: Client-facing Server Implementation
 
 }; // namespace Proxy
 
