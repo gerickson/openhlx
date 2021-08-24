@@ -346,13 +346,14 @@ Status GroupsController :: HandleSetVolumeReceived(const IdentifierType &aGroupI
     lRetval = HandleSetVolumeResponse(aGroupIdentifier, aVolume, aBuffer);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
 // MARK: Configuration Management Methods
 
-void GroupsController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+void
+GroupsController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     Status          lStatus;
 

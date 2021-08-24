@@ -244,12 +244,18 @@ EqualizerPresetsController :: EqualizerPresetsController(void) :
     return;
 }
 
+/**
+ *  @brief
+ *    This is the class destructor.
+ *
+ */
 EqualizerPresetsController :: ~EqualizerPresetsController(void)
 {
     return;
 }
 
-Status EqualizerPresetsController :: DoRequestHandlers(const bool &aRegister)
+Status
+EqualizerPresetsController :: DoRequestHandlers(const bool &aRegister)
 {
     static const RequestHandlerBasis  lRequestHandlers[] = {
         {
@@ -316,8 +322,8 @@ Status
 EqualizerPresetsController :: Init(Server::CommandManager &aCommandManager)
 {
     DeclareScopedFunctionTracer(lTracer);
-    const bool  lRegister = true;
-    Status      lRetval = kStatus_Success;
+    constexpr bool  kRegister = true;
+    Status          lRetval = kStatus_Success;
 
 
     lRetval = Common::EqualizerPresetsControllerBasis::Init();
@@ -329,7 +335,7 @@ EqualizerPresetsController :: Init(Server::CommandManager &aCommandManager)
     // This MUST come AFTER the base class initialization due to a
     // dependency on the command manager instance.
 
-    lRetval = DoRequestHandlers(lRegister);
+    lRetval = DoRequestHandlers(kRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:

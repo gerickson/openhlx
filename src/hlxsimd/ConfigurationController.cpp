@@ -471,7 +471,7 @@ void ConfigurationController :: SaveToBackupRequestReceivedHandler(Server::Conne
     return;
 }
 
-// MARK: Delegate Fanout Methods
+// MARK: Configuration Delegation Fanout Methods
 
 Status ConfigurationController :: OnLoadFromBackupConfiguration(CFDictionaryRef aBackupDictionary)
 {

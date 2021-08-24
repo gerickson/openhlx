@@ -18,7 +18,7 @@
 
 /**
  *    @file
- *      This file...
+ *      This file implements an object for....
  *
  */
 
@@ -110,7 +110,8 @@ SourcesController :: ~SourcesController(void)
     return;
 }
 
-Status SourcesController :: DoRequestHandlers(const bool &aRegister)
+Status
+SourcesController :: DoRequestHandlers(const bool &aRegister)
 {
     static const RequestHandlerBasis  lRequestHandlers[] = {
         {
@@ -157,8 +158,8 @@ Status
 SourcesController :: Init(Server::CommandManager &aCommandManager)
 {
     DeclareScopedFunctionTracer(lTracer);
-    const bool  lRegister = true;
-    Status      lRetval = kStatus_Success;
+    constexpr bool  kRegister = true;
+    Status          lRetval = kStatus_Success;
 
 
     lRetval = Common::SourcesControllerBasis::Init();
@@ -170,7 +171,7 @@ SourcesController :: Init(Server::CommandManager &aCommandManager)
     // This MUST come AFTER the base class initialization due to a
     // dependency on the command manager instance.
 
-    lRetval = DoRequestHandlers(lRegister);
+    lRetval = DoRequestHandlers(kRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -179,7 +180,8 @@ done:
 
 // MARK: Configuration Management Methods
 
-void SourcesController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+void
+SourcesController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     Status lStatus = kStatus_Success;
 
