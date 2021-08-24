@@ -183,9 +183,9 @@ void SourcesController :: SetNameRequestReceivedHandler(Server::ConnectionBasis 
                                    aSize,
                                    aMatches,
                                    kNameResponse,
-                                   SourcesController::SetNameCompleteHandler,
-                                   SourcesController::CommandErrorHandler,
-                                   this);
+                                   Client::SourcesControllerBasis::SetNameCompleteHandler,
+                                   Client::SourcesControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::SourcesControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:

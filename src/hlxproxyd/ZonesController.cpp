@@ -351,9 +351,9 @@ void ZonesController :: AdjustBalanceRequestReceivedHandler(Server::ConnectionBa
                                    aSize,
                                    aMatches,
                                    kBalanceResponse,
-                                   ZonesController::SetBalanceCompleteHandler,
-                                   ZonesController::CommandErrorHandler,
-                                   this);
+                                   Client::ZonesControllerBasis::SetBalanceCompleteHandler,
+                                   Client::ZonesControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::ZonesControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
@@ -415,9 +415,9 @@ void ZonesController :: DecreaseBassRequestReceivedHandler(Server::ConnectionBas
                                    aSize,
                                    aMatches,
                                    kToneResponse,
-                                   ZonesController::SetToneCompleteHandler,
-                                   ZonesController::CommandErrorHandler,
-                                   this);
+                                   Client::ZonesControllerBasis::SetToneCompleteHandler,
+                                   Client::ZonesControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::ZonesControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 #else // USE_PROXY
 #endif // USE_PROXY
@@ -461,9 +461,9 @@ void ZonesController :: IncreaseBassRequestReceivedHandler(Server::ConnectionBas
                                    aSize,
                                    aMatches,
                                    kToneResponse,
-                                   ZonesController::SetToneCompleteHandler,
-                                   ZonesController::CommandErrorHandler,
-                                   this);
+                                   Client::ZonesControllerBasis::SetToneCompleteHandler,
+                                   Client::ZonesControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::ZonesControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 #else // USE_PROXY
 #endif // USE_PROXY
@@ -507,9 +507,9 @@ void ZonesController :: DecreaseTrebleRequestReceivedHandler(Server::ConnectionB
                                    aSize,
                                    aMatches,
                                    kToneResponse,
-                                   ZonesController::SetToneCompleteHandler,
-                                   ZonesController::CommandErrorHandler,
-                                   this);
+                                   Client::ZonesControllerBasis::SetToneCompleteHandler,
+                                   Client::ZonesControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::ZonesControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 #else // USE_PROXY
 #endif // USE_PROXY
@@ -553,9 +553,9 @@ void ZonesController :: IncreaseTrebleRequestReceivedHandler(Server::ConnectionB
                                    aSize,
                                    aMatches,
                                    kToneResponse,
-                                   ZonesController::SetToneCompleteHandler,
-                                   ZonesController::CommandErrorHandler,
-                                   this);
+                                   Client::ZonesControllerBasis::SetToneCompleteHandler,
+                                   Client::ZonesControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::ZonesControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 #else // USE_PROXY
 #endif // USE_PROXY
@@ -611,9 +611,9 @@ void ZonesController :: DecreaseEqualizerBandRequestReceivedHandler(Server::Conn
                                    aSize,
                                    aMatches,
                                    kEqualizerBandResponse,
-                                   ZonesController::SetEqualizerBandCompleteHandler,
-                                   ZonesController::CommandErrorHandler,
-                                   this);
+                                   Client::ZonesControllerBasis::SetEqualizerBandCompleteHandler,
+                                   Client::ZonesControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::ZonesControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 #else // USE_PROXY
 #endif // USE_PROXY
@@ -669,9 +669,9 @@ void ZonesController :: IncreaseEqualizerBandRequestReceivedHandler(Server::Conn
                                    aSize,
                                    aMatches,
                                    kEqualizerBandResponse,
-                                   ZonesController::SetEqualizerBandCompleteHandler,
-                                   ZonesController::CommandErrorHandler,
-                                   this);
+                                   Client::ZonesControllerBasis::SetEqualizerBandCompleteHandler,
+                                   Client::ZonesControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::ZonesControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 #else // USE_PROXY
 #endif // USE_PROXY
@@ -718,9 +718,9 @@ void ZonesController :: DecreaseVolumeRequestReceivedHandler(Server::ConnectionB
                                    aSize,
                                    aMatches,
                                    kVolumeResponse,
-                                   ZonesController::SetVolumeCompleteHandler,
-                                   ZonesController::CommandErrorHandler,
-                                   this);
+                                   Client::ZonesControllerBasis::SetVolumeCompleteHandler,
+                                   Client::ZonesControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::ZonesControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
@@ -795,9 +795,9 @@ void ZonesController :: IncreaseVolumeRequestReceivedHandler(Server::ConnectionB
                                    aSize,
                                    aMatches,
                                    kVolumeResponse,
-                                   ZonesController::SetVolumeCompleteHandler,
-                                   ZonesController::CommandErrorHandler,
-                                   this);
+                                   Client::ZonesControllerBasis::SetVolumeCompleteHandler,
+                                   Client::ZonesControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::ZonesControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
@@ -876,9 +876,9 @@ void ZonesController :: MuteRequestReceivedHandler(Server::ConnectionBasis &aCon
                                    aSize,
                                    aMatches,
                                    kMuteResponse,
-                                   ZonesController::SetMuteCompleteHandler,
-                                   ZonesController::CommandErrorHandler,
-                                   this);
+                                   Client::ZonesControllerBasis::SetMuteCompleteHandler,
+                                   Client::ZonesControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::ZonesControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
@@ -1240,9 +1240,9 @@ void ZonesController :: SetBalanceRequestReceivedHandler(Server::ConnectionBasis
                                    aSize,
                                    aMatches,
                                    kBalanceResponse,
-                                   ZonesController::SetBalanceCompleteHandler,
-                                   ZonesController::CommandErrorHandler,
-                                   this);
+                                   Client::ZonesControllerBasis::SetBalanceCompleteHandler,
+                                   Client::ZonesControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::ZonesControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
@@ -1335,9 +1335,9 @@ void ZonesController :: SetEqualizerBandRequestReceivedHandler(Server::Connectio
                                    aSize,
                                    aMatches,
                                    kEqualizerBandResponse,
-                                   ZonesController::SetEqualizerBandCompleteHandler,
-                                   ZonesController::CommandErrorHandler,
-                                   this);
+                                   Client::ZonesControllerBasis::SetEqualizerBandCompleteHandler,
+                                   Client::ZonesControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::ZonesControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
@@ -1423,9 +1423,9 @@ void ZonesController :: SetEqualizerPresetRequestReceivedHandler(Server::Connect
                                    aSize,
                                    aMatches,
                                    kEqualizerPresetResponse,
-                                   ZonesController::SetEqualizerPresetCompleteHandler,
-                                   ZonesController::CommandErrorHandler,
-                                   this);
+                                   Client::ZonesControllerBasis::SetEqualizerPresetCompleteHandler,
+                                   Client::ZonesControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::ZonesControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
@@ -1520,9 +1520,9 @@ void ZonesController :: SetHighpassCrossoverRequestReceivedHandler(Server::Conne
                                    aSize,
                                    aMatches,
                                    kHighpassCrossoverResponse,
-                                   ZonesController::SetHighpassCrossoverCompleteHandler,
-                                   ZonesController::CommandErrorHandler,
-                                   this);
+                                   Client::ZonesControllerBasis::SetHighpassCrossoverCompleteHandler,
+                                   Client::ZonesControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::ZonesControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
@@ -1617,9 +1617,9 @@ void ZonesController :: SetLowpassCrossoverRequestReceivedHandler(Server::Connec
                                    aSize,
                                    aMatches,
                                    kLowpassCrossoverResponse,
-                                   ZonesController::SetLowpassCrossoverCompleteHandler,
-                                   ZonesController::CommandErrorHandler,
-                                   this);
+                                   Client::ZonesControllerBasis::SetLowpassCrossoverCompleteHandler,
+                                   Client::ZonesControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::ZonesControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
@@ -1713,9 +1713,9 @@ void ZonesController :: SetNameRequestReceivedHandler(Server::ConnectionBasis &a
                                    aSize,
                                    aMatches,
                                    kNameResponse,
-                                   ZonesController::SetNameCompleteHandler,
-                                   ZonesController::CommandErrorHandler,
-                                   this);
+                                   Client::ZonesControllerBasis::SetNameCompleteHandler,
+                                   Client::ZonesControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::ZonesControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
@@ -1814,9 +1814,9 @@ void ZonesController :: SetSoundModeRequestReceivedHandler(Server::ConnectionBas
                                    aSize,
                                    aMatches,
                                    kSoundModeResponse,
-                                   ZonesController::SetSoundModeCompleteHandler,
-                                   ZonesController::CommandErrorHandler,
-                                   this);
+                                   Client::ZonesControllerBasis::SetSoundModeCompleteHandler,
+                                   Client::ZonesControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::ZonesControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
@@ -1894,9 +1894,9 @@ void ZonesController :: SetSourceRequestReceivedHandler(Server::ConnectionBasis 
                                    aSize,
                                    aMatches,
                                    kSourceResponse,
-                                   ZonesController::SetSourceCompleteHandler,
-                                   ZonesController::CommandErrorHandler,
-                                   this);
+                                   Client::ZonesControllerBasis::SetSourceCompleteHandler,
+                                   Client::ZonesControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::ZonesControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
@@ -1974,9 +1974,9 @@ void ZonesController :: SetSourceAllRequestReceivedHandler(Server::ConnectionBas
                                    aSize,
                                    aMatches,
                                    kSourceAllResponse,
-                                   ZonesController::SetSourceAllCompleteHandler,
-                                   ZonesController::CommandErrorHandler,
-                                   this);
+                                   Client::ZonesControllerBasis::SetSourceAllCompleteHandler,
+                                   Client::ZonesControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::ZonesControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
@@ -2073,9 +2073,9 @@ void ZonesController :: SetToneRequestReceivedHandler(Server::ConnectionBasis &a
                                    aSize,
                                    aMatches,
                                    kToneResponse,
-                                   ZonesController::SetToneCompleteHandler,
-                                   ZonesController::CommandErrorHandler,
-                                   this);
+                                   Client::ZonesControllerBasis::SetToneCompleteHandler,
+                                   Client::ZonesControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::ZonesControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
@@ -2182,9 +2182,9 @@ void ZonesController :: SetVolumeRequestReceivedHandler(Server::ConnectionBasis 
                                    aSize,
                                    aMatches,
                                    kVolumeResponse,
-                                   ZonesController::SetVolumeCompleteHandler,
-                                   ZonesController::CommandErrorHandler,
-                                   this);
+                                   Client::ZonesControllerBasis::SetVolumeCompleteHandler,
+                                   Client::ZonesControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::ZonesControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
@@ -2261,9 +2261,9 @@ void ZonesController :: SetVolumeAllRequestReceivedHandler(Server::ConnectionBas
                                    aSize,
                                    aMatches,
                                    kVolumeAllResponse,
-                                   ZonesController::SetVolumeAllCompleteHandler,
-                                   ZonesController::CommandErrorHandler,
-                                   this);
+                                   Client::ZonesControllerBasis::SetVolumeAllCompleteHandler,
+                                   Client::ZonesControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::ZonesControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
@@ -2359,9 +2359,9 @@ void ZonesController :: SetVolumeFixedRequestReceivedHandler(Server::ConnectionB
                                    aSize,
                                    aMatches,
                                    kVolumeFixedResponse,
-                                   ZonesController::SetVolumeFixedCompleteHandler,
-                                   ZonesController::CommandErrorHandler,
-                                   this);
+                                   Client::ZonesControllerBasis::SetVolumeFixedCompleteHandler,
+                                   Client::ZonesControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::ZonesControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
@@ -2435,9 +2435,9 @@ void ZonesController :: ToggleMuteRequestReceivedHandler(Server::ConnectionBasis
                                    aSize,
                                    aMatches,
                                    kMuteResponse,
-                                   ZonesController::SetMuteCompleteHandler,
-                                   ZonesController::CommandErrorHandler,
-                                   this);
+                                   Client::ZonesControllerBasis::SetMuteCompleteHandler,
+                                   Client::ZonesControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::ZonesControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
