@@ -99,14 +99,6 @@ public:
 
     Common::Status SetDelegate(ControllerDelegate *aDelegate);
 
-    Common::Status Connect(const char *aMaybeURL);
-    Common::Status Connect(const char *aMaybeURL, const Common::Timeout &aTimeout);
-    Common::Status Connect(const char *aMaybeURL, const ConnectionManager::Versions &aVersions, const Common::Timeout &aTimeout);
-
-    bool   IsConnected(void) const;
-
-    Common::Status Disconnect(void);
-
     // Equalizer Preset Commands
 
     Common::Status EqualizerPresetsGetMax(Model::EqualizerPresetModel::IdentifierType &aEqualizerPresets) const;

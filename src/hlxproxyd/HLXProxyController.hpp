@@ -99,10 +99,6 @@ public:
 
     Common::Status SetDelegate(ControllerDelegate *aDelegate);
 
-    Common::Status Connect(const char *aMaybeURL);
-    Common::Status Connect(const char *aMaybeURL, const Common::Timeout &aTimeout);
-    Common::Status Connect(const char *aMaybeURL, const Common::ConnectionManagerBasis::Versions &aVersions, const Common::Timeout &aTimeout);
-
     // Server-facing Client Command Manager Delegate Methods
 
     // Server-facing Client Connection Manager Delegate Methods

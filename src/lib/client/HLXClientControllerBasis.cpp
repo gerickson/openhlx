@@ -250,6 +250,182 @@ ControllerBasis :: SetRefreshDelegate(Client::Application::ControllerRefreshDele
     return (lRetval);
 }
 
+// MARK: Connection Management
+
+/**
+ *  @brief
+ *    Connect to a HLX server peer.
+ *
+ *  This attempts to asynchronously connect to the HLX server peer at
+ *  the specified URL with the default timeout.
+ *
+ *  @param[in]  aMaybeURL  A pointer to a null-terminated C string
+ *                         containing the URL, host name, or host name
+ *                         and port of the HLX server peer to connect
+ *                         to. The URL or host name may be a name to
+ *                         be resolved or a literal IP address.
+ *                         HLX server peer to connect to.
+ *
+ *  @retval  kStatus_Success          If successful.
+ *  @retval  -EALREADY                The client connection is already
+ *                                    connected.
+ *  @retval  -EINPROGRESS             The client connection is in
+ *                                    progress.
+ *  @retval  -EINVAL                  The port number for the URL was
+ *                                    invalid.
+ *  @retval  -EPROTONOSUPPORT         The protocol scheme associated
+ *                                    with the specified URL is not
+ *                                    supported.
+ *  @retval  kStatus_ValueAlreadySet  This manager is already the delegate
+ *                                    for the connection.
+ *
+ */
+Status
+ControllerBasis :: Connect(const char *aMaybeURL)
+{
+    Status lRetval = kStatus_Success;
+
+    lRetval = Connect(aMaybeURL, kTimeoutDefault);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Connect to a HLX server peer.
+ *
+ *  This attempts to asynchronously connect to the HLX server peer at
+ *  the specified URL with the provided timeout.
+ *
+ *  @param[in]  aMaybeURL  A pointer to a null-terminated C string
+ *                         containing the URL, host name, or host name
+ *                         and port of the HLX server peer to connect
+ *                         to. The URL or host name may be a name to
+ *                         be resolved or a literal IP address.
+ *                         HLX server peer to connect to.
+ *  @param[in]  aTimeout   An immutable reference to the timeout by
+ *                         which the connection should complete.
+ *
+ *  @retval  kStatus_Success          If successful.
+ *  @retval  -EALREADY                The client connection is already
+ *                                    connected.
+ *  @retval  -EINPROGRESS             The client connection is in
+ *                                    progress.
+ *  @retval  -EINVAL                  The port number for the URL was
+ *                                    invalid.
+ *  @retval  -EPROTONOSUPPORT         The protocol scheme associated
+ *                                    with the specified URL is not
+ *                                    supported.
+ *  @retval  kStatus_ValueAlreadySet  This manager is already the delegate
+ *                                    for the connection.
+ *
+ */
+Status
+ControllerBasis :: Connect(const char *aMaybeURL, const Timeout &aTimeout)
+{
+    Status lRetval = kStatus_Success;
+
+    lRetval = GetConnectionManager().Connect(aMaybeURL, aTimeout);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Connect to a HLX server peer.
+ *
+ *  This attempts to asynchronously connect to the HLX server peer at
+ *  the specified URL, host name, or host name and port with the
+ *  provided timeout using IPv4 or IPv6 resolved addresses as
+ *  specified.
+ *
+ *  @param[in]  aMaybeURL  A pointer to a null-terminated C string
+ *                         containing the URL, host name, or host name
+ *                         and port of the HLX server peer to connect
+ *                         to. The URL or host name may be a name to
+ *                         be resolved or a literal IP address.
+ *                         HLX server peer to connect to.
+ *  @param[in]  aVersions  An immutable references to those IP address
+ *                         versions that should be used for resolving
+ *                         the host name.
+ *  @param[in]  aTimeout   An immutable reference to the timeout by
+ *                         which the connection should complete.
+ *
+ *  @retval  kStatus_Success          If successful.
+ *  @retval  -EALREADY                The client connection is already
+ *                                    connected.
+ *  @retval  -EINPROGRESS             The client connection is in
+ *                                    progress.
+ *  @retval  -EINVAL                  The port number for the URL was
+ *                                    invalid.
+ *  @retval  -EPROTONOSUPPORT         The protocol scheme associated
+ *                                    with the specified URL is not
+ *                                    supported.
+ *  @retval  kStatus_ValueAlreadySet  This manager is already the delegate
+ *                                    for the connection.
+ *
+ */
+Status
+ControllerBasis :: Connect(const char *aMaybeURL,
+                      const ConnectionManager::Versions &aVersions,
+                      const Timeout &aTimeout)
+{
+    Status lRetval = kStatus_Success;
+
+    lRetval = GetConnectionManager().Connect(aMaybeURL, aVersions, aTimeout);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Returns whether or not the client controller is connected to a
+ *    peer.
+ *
+ *  @returns
+ *    True if the client controller is connected to a peer; otherwise,
+ *    false.
+ *
+ */
+bool
+ControllerBasis :: IsConnected(void) const
+{
+    return (GetConnectionManager().IsConnected());
+}
+
+/**
+ *  @brief
+ *    Disconnect from the HLX server peer.
+ *
+ *  This attempts to disconnect from the connected HLX server peer, if
+ *  any.
+ *
+ *  @retval  kStatus_Success          If successful.
+ *  @retval  -ENXIO                   If there is no allocated connection.
+ *  @retval  -EALREADY                If the connection is already
+ *                                    disconnected.
+ *  @retval  -EINPROGRESS             If the connection is already in
+ *                                    the process of disconnecting.
+ *
+ */
+Status
+ControllerBasis :: Disconnect(void)
+{
+    Status lRetval = kStatus_Success;
+
+    lRetval = GetConnectionManager().Disconnect();
+    nlEXPECT_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
 // MARK: Controller Basis Refresh Delegate Methods
 
 void

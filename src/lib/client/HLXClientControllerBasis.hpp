@@ -82,6 +82,18 @@ public:
 
     Common::Status SetRefreshDelegate(Client::Application::ControllerRefreshDelegate *aRefreshDelegate);
 
+    // Connection Management
+
+    Common::Status Connect(const char *aMaybeURL);
+    Common::Status Connect(const char *aMaybeURL, const Common::Timeout &aTimeout);
+    Common::Status Connect(const char *aMaybeURL, const Common::ConnectionManagerBasis::Versions &aVersions, const Common::Timeout &aTimeout);
+
+    bool           IsConnected(void) const;
+
+    Common::Status Disconnect(void);
+
+    // Refresh
+
     Common::Status Refresh(void);
 
     // Controller Delegate Methods
