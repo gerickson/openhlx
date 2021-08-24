@@ -45,8 +45,8 @@ namespace Application
 {
 
 Controller :: Controller(void) :
-    Common::Application::Foo<Server::ControllerBasis>(),
     Client::Application::ControllerBasis(*this),
+    Server::Application::ControllerBasis(*this),
     Client::ConnectionManagerDelegate(),
     Server::ConnectionManagerDelegate(),
     Client::CommandManagerDelegate(),
@@ -109,10 +109,10 @@ Controller :: Init(const RunLoopParameters &aRunLoopParameters)
     Status lRetval = kStatus_Success;
 
 
-    lRetval = Common::Application::Foo<Server::ControllerBasis>::Init();
+    lRetval = Client::Application::ControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = Client::Application::ControllerBasis::Init();
+    lRetval = Server::Application::ControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = InitClient(aRunLoopParameters);
@@ -290,15 +290,15 @@ Controller :: InitServerControllers(const RunLoopParameters &aRunLoopParameters)
     // closely matches the order in which the actual HLX hardware
     // responds to for the 'query current configuration' command.
 
-    Common::Application::Foo<Server::ControllerBasis>::AddController(mConfigurationController);
-    Common::Application::Foo<Server::ControllerBasis>::AddController(mNetworkController);
-    Common::Application::Foo<Server::ControllerBasis>::AddController(mFavoritesController);
-    Common::Application::Foo<Server::ControllerBasis>::AddController(mGroupsController);
-    Common::Application::Foo<Server::ControllerBasis>::AddController(mFrontPanelController);
-    Common::Application::Foo<Server::ControllerBasis>::AddController(mInfraredController);
-    Common::Application::Foo<Server::ControllerBasis>::AddController(mEqualizerPresetsController);
-    Common::Application::Foo<Server::ControllerBasis>::AddController(mSourcesController);
-    Common::Application::Foo<Server::ControllerBasis>::AddController(mZonesController);
+    Server::Application::ControllerBasis::AddController(mConfigurationController);
+    Server::Application::ControllerBasis::AddController(mNetworkController);
+    Server::Application::ControllerBasis::AddController(mFavoritesController);
+    Server::Application::ControllerBasis::AddController(mGroupsController);
+    Server::Application::ControllerBasis::AddController(mFrontPanelController);
+    Server::Application::ControllerBasis::AddController(mInfraredController);
+    Server::Application::ControllerBasis::AddController(mEqualizerPresetsController);
+    Server::Application::ControllerBasis::AddController(mSourcesController);
+    Server::Application::ControllerBasis::AddController(mZonesController);
 
  done:
     return (lRetval);

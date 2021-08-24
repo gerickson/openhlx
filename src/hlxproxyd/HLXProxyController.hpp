@@ -40,6 +40,8 @@
 #include <OpenHLX/Server/CommandManagerDelegate.hpp>
 #include <OpenHLX/Server/ConnectionManager.hpp>
 #include <OpenHLX/Server/ConnectionManagerDelegate.hpp>
+#include <OpenHLX/Server/HLXServerControllerBasis.hpp>
+
 
 #include "ConfigurationController.hpp"
 #include "ConfigurationControllerDelegate.hpp"
@@ -71,8 +73,8 @@ namespace Application
  *
  */
 class Controller :
-    public Common::Application::Foo<Server::ControllerBasis>,
     public Client::Application::ControllerBasis,
+    public Server::Application::ControllerBasis,
     public Client::ConnectionManagerDelegate,
     public Server::ConnectionManagerDelegate,
     public Client::CommandManagerDelegate,
