@@ -153,13 +153,11 @@ NetworkController :: Init(Client::CommandManager &aClientCommandManager, Server:
     lRetval = Common::NetworkControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-#if 1
     lRetval = Client::NetworkControllerBasis::Init(aClientCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = Server::NetworkControllerBasis::Init(aServerCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
-#endif
 
     lRetval = Proxy::ControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);

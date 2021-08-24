@@ -124,7 +124,7 @@ private:
 
     Common::Status DoNotificationHandlers(const bool &aRegister);
     Common::Status ResponseInit(void);
-    
+
 private:
     //!< Ensure the application controller can access the Handle*Change
     //!< methods for cross zone-to-group and group-to-zone state

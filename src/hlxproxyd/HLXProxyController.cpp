@@ -111,7 +111,7 @@ Controller :: Init(const RunLoopParameters &aRunLoopParameters)
 
     lRetval = Common::Application::Foo<Server::ControllerBasis>::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
-    
+
     lRetval = Client::Application::ControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
@@ -272,32 +272,6 @@ Controller :: InitClientControllers(const RunLoopParameters &aRunLoopParameters)
     Client::Application::ControllerBasis::AddController(mInfraredController);
     Client::Application::ControllerBasis::AddController(mFrontPanelController);
     Client::Application::ControllerBasis::AddController(mNetworkController);
-
-#if 0
-    // Intialize the client side of the controllers.
-
-    lCurrent = Client::Application::ControllerBasis::GetControllers().begin();
-    lEnd     = Client::Application::ControllerBasis::GetControllers().end();
-
-    while (lCurrent != lEnd)
-    {
-        //lRetval = lCurrent->second.mController->Init(mClientCommandManager);
-        //nlREQUIRE_SUCCESS(lRetval, done);
-
-        lRetval = lCurrent->second.mController->SetErrorDelegate(this);
-        nlREQUIRE_SUCCESS(lRetval, done);
-
-        lRetval = lCurrent->second.mController->SetRefreshDelegate(this);
-        nlREQUIRE_SUCCESS(lRetval, done);
-
-        lRetval = lCurrent->second.mController->SetStateChangeDelegate(this);
-        nlREQUIRE_SUCCESS(lRetval, done);
-
-        lCurrent++;
-    }
-
-done:
-#endif
 
     return (lRetval);
 }

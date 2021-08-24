@@ -154,13 +154,11 @@ EqualizerPresetsController :: Init(Client::CommandManager &aClientCommandManager
     lRetval = Common::EqualizerPresetsControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-#if 1
     lRetval = Client::EqualizerPresetsControllerBasis::Init(aClientCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = Server::EqualizerPresetsControllerBasis::Init(aServerCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
-#endif
 
     lRetval = Proxy::ControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);

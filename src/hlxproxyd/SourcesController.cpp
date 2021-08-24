@@ -135,13 +135,11 @@ SourcesController :: Init(Client::CommandManager &aClientCommandManager, Server:
     lRetval = Common::SourcesControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-#if 1
     lRetval = Client::SourcesControllerBasis::Init(aClientCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = Server::SourcesControllerBasis::Init(aServerCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
-#endif
 
     lRetval = Proxy::ControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);

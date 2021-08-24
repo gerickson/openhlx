@@ -196,13 +196,11 @@ GroupsController :: Init(Client::CommandManager &aClientCommandManager, Server::
     lRetval = Common::GroupsControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-#if 1
     lRetval = Client::GroupsControllerBasis::Init(aClientCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = Server::GroupsControllerBasis::Init(aServerCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
-#endif
 
     lRetval = Proxy::ControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);

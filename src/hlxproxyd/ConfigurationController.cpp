@@ -148,13 +148,11 @@ ConfigurationController :: Init(Client::CommandManager &aClientCommandManager, S
     lRetval = Common::ConfigurationControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-#if 1
     lRetval = Client::ConfigurationControllerBasis::Init(aClientCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = Server::ConfigurationControllerBasis::Init(aServerCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
-#endif
 
     lRetval = Proxy::ControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
