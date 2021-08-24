@@ -73,6 +73,7 @@ libopenhlx_server_a_include_HEADERS                         = \
     FrontPanelControllerCommands.hpp                          \
     GroupsControllerBasis.hpp                                 \
     GroupsControllerCommands.hpp                              \
+    HLXServerControllerBasis.hpp                              \
     InfraredControllerBasis.hpp                               \
     InfraredControllerCommands.hpp                            \
     ListenerBasis.hpp                                         \
@@ -123,6 +124,7 @@ libopenhlx_server_a_SOURCES                                 = \
     FrontPanelControllerCommands.cpp                          \
     GroupsControllerBasis.cpp                                 \
     GroupsControllerCommands.cpp                              \
+    HLXServerControllerBasis.cpp                              \
     InfraredControllerBasis.cpp                               \
     InfraredControllerCommands.cpp                            \
     ListenerBasis.cpp                                         \
