@@ -485,10 +485,10 @@ private:
 
     // Refresh / Reload
 
-    void ControllerWillRefresh(Client::Application::Controller &aController) final;
-    void ControllerIsRefreshing(Client::Application::Controller &aController, const uint8_t &aPercentComplete) final;
-    void ControllerDidRefresh(Client::Application::Controller &aController) final;
-    void ControllerDidNotRefresh(Client::Application::Controller &aController, const Error &aError) final;
+    void ControllerWillRefresh(Client::Application::ControllerBasis &aController) final;
+    void ControllerIsRefreshing(Client::Application::ControllerBasis &aController, const uint8_t &aPercentComplete) final;
+    void ControllerDidRefresh(Client::Application::ControllerBasis &aController) final;
+    void ControllerDidNotRefresh(Client::Application::ControllerBasis &aController, const Error &aError) final;
 
     // State Change
 
@@ -496,7 +496,7 @@ private:
 
     // Error
 
-    void ControllerError(Client::Application::Controller &aController, const Error &aError) final;
+    void ControllerError(Common::Application::ControllerBasis &aController, const Error &aError) final;
 
     static void OnSignal(int aSignal);
 
@@ -726,7 +726,7 @@ void HLXClient :: ControllerDidNotDisconnect(Client::Application::Controller &aC
 
 // Refresh / Reload
 
-void HLXClient :: ControllerWillRefresh(Client::Application::Controller &aController)
+void HLXClient :: ControllerWillRefresh(Client::Application::ControllerBasis &aController)
 {
     (void)aController;
 
@@ -735,16 +735,16 @@ void HLXClient :: ControllerWillRefresh(Client::Application::Controller &aContro
     return;
 }
 
-void HLXClient :: ControllerIsRefreshing(Client::Application::Controller &aController, const uint8_t &aPercentComplete)
+void HLXClient :: ControllerIsRefreshing(Client::Application::ControllerBasis &aController, const uint8_t &aPercentComplete)
 {
     (void)aController;
 
     Log::Info().Write("%u%% of client data received.\n", aPercentComplete);
 }
 
-void HLXClient :: ControllerDidRefresh(Client::Application::Controller &aController)
+void HLXClient :: ControllerDidRefresh(Client::Application::ControllerBasis &aController)
 {
-    Status lStatus;
+    Status lStatus = kStatus_Success;
 
     (void)aController;
 
@@ -757,7 +757,9 @@ void HLXClient :: ControllerDidRefresh(Client::Application::Controller &aControl
 
     if (sOptFlags & (kOptHasObjectArg | kOptHasOperationArg))
     {
-        lStatus = DispatchCommand(aController, sClientArgument, sOptFlags, sTimeout);
+        Client::Application::Controller &lController = static_cast<Client::Application::Controller &>(aController);
+
+        lStatus = DispatchCommand(lController, sClientArgument, sOptFlags, sTimeout);
 
         if (lStatus != kStatus_Success)
         {
@@ -772,7 +774,7 @@ void HLXClient :: ControllerDidRefresh(Client::Application::Controller &aControl
     return;
 }
 
-void HLXClient :: ControllerDidNotRefresh(Client::Application::Controller &aController, const Error &aError)
+void HLXClient :: ControllerDidNotRefresh(Client::Application::ControllerBasis &aController, const Error &aError)
 {
     (void)aController;
 
@@ -1067,7 +1069,7 @@ void HLXClient :: ControllerStateDidChange(Client::Application::Controller &aCon
 
 // Error
 
-void HLXClient :: ControllerError(Client::Application::Controller &aController, const Error &aError)
+void HLXClient :: ControllerError(Common::Application::ControllerBasis &aController, const Error &aError)
 {
     (void)aController;
 

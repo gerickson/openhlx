@@ -233,10 +233,10 @@ private:
 
     // Server-facing Client Refresh / Reload
 
-    void ControllerWillRefresh(Proxy::Application::Controller &aController) final;
-    void ControllerIsRefreshing(Proxy::Application::Controller &aController, const uint8_t &aPercentComplete) final;
-    void ControllerDidRefresh(Proxy::Application::Controller &aController) final;
-    void ControllerDidNotRefresh(Proxy::Application::Controller &aController, const Error &aError) final;
+    void ControllerWillRefresh(Client::Application::ControllerBasis &aController) final;
+    void ControllerIsRefreshing(Client::Application::ControllerBasis &aController, const uint8_t &aPercentComplete) final;
+    void ControllerDidRefresh(Client::Application::ControllerBasis &aController) final;
+    void ControllerDidNotRefresh(Client::Application::ControllerBasis &aController, const Error &aError) final;
 
     // Server-facing Client State Change
 
@@ -294,7 +294,7 @@ HLXProxy :: HLXProxy(void) :
     mListenMaybeURL(nullptr),
     mVersions(0)
 {
-    return;
+    DeclareScopedFunctionTracer(lTracer);
 }
 
 HLXProxy :: ~HLXProxy(void)
@@ -642,7 +642,7 @@ void HLXProxy :: ControllerDidNotDisconnect(Proxy::Application::Controller &aCon
 
 // Server-facing Client Refresh / Reload
 
-void HLXProxy :: ControllerWillRefresh(Proxy::Application::Controller &aController)
+void HLXProxy :: ControllerWillRefresh(Client::Application::ControllerBasis &aController)
 {
     (void)aController;
 
@@ -651,14 +651,14 @@ void HLXProxy :: ControllerWillRefresh(Proxy::Application::Controller &aControll
     return;
 }
 
-void HLXProxy :: ControllerIsRefreshing(Proxy::Application::Controller &aController, const uint8_t &aPercentComplete)
+void HLXProxy :: ControllerIsRefreshing(Client::Application::ControllerBasis &aController, const uint8_t &aPercentComplete)
 {
     (void)aController;
 
     Log::Info().Write("%u%% of client data received.\n", aPercentComplete);
 }
 
-void HLXProxy :: ControllerDidRefresh(Proxy::Application::Controller &aController)
+void HLXProxy :: ControllerDidRefresh(Client::Application::ControllerBasis &aController)
 {
     Status lStatus;
 
@@ -677,7 +677,7 @@ void HLXProxy :: ControllerDidRefresh(Proxy::Application::Controller &aControlle
     return;
 }
 
-void HLXProxy :: ControllerDidNotRefresh(Proxy::Application::Controller &aController, const Error &aError)
+void HLXProxy :: ControllerDidNotRefresh(Client::Application::ControllerBasis &aController, const Error &aError)
 {
     (void)aController;
 
