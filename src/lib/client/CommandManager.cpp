@@ -248,11 +248,16 @@ CommandManager :: CommandManager(void) :
  */
 CommandManager :: ~CommandManager(void)
 {
-    CFRunLoopRemoveSource(mRunLoopParameters.GetRunLoop(),
-                          mRunLoopSourceRef,
-                          mRunLoopParameters.GetRunLoopMode());
+    if (mRunLoopSourceRef != nullptr)
+    {
+        CFRunLoopRemoveSource(mRunLoopParameters.GetRunLoop(),
+                              mRunLoopSourceRef,
+                              mRunLoopParameters.GetRunLoopMode());
 
-    CFURelease(mRunLoopSourceRef);
+        CFURelease(mRunLoopSourceRef);
+
+        mRunLoopSourceRef = nullptr;
+    }
 }
 
 /**
