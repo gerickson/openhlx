@@ -75,7 +75,7 @@ class ConnectionManager :
 {
 public:
     ConnectionManager(void);
-    ~ConnectionManager(void) = default;
+    virtual ~ConnectionManager(void) = default;
 
     Common::Status Init(const Common::RunLoopParameters &aRunLoopParameters);
     Common::Status Listen(void);
