@@ -209,11 +209,11 @@ private:
                       const Common::Timeout &aTimeout, OnCommandCompleteFunc aOnCommandCompleteHandler, OnCommandErrorFunc aOnCommandErrorHandler, void *aContext);
         ~ExchangeState(void);
 
-        Command::ExchangeBasis::MutableCountedPointer mExchange;
-        const Common::Timeout         mTimeout;
-        OnCommandCompleteFunc         mOnCommandCompleteHandler;
-        OnCommandErrorFunc            mOnCommandErrorHandler;
-        void *                        mContext;
+        Command::ExchangeBasis::MutableCountedPointer  mExchange;
+        const Common::Timeout                          mTimeout;
+        OnCommandCompleteFunc                          mOnCommandCompleteHandler;
+        OnCommandErrorFunc                             mOnCommandErrorHandler;
+        void *                                         mContext;
     };
 
     class NotificationHandlerState
