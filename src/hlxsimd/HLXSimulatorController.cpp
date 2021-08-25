@@ -134,12 +134,12 @@ Controller :: Init(const RunLoopParameters &aRunLoopParameters, const boost::fil
 
     // Initialize the connection manager
 
-    lRetval = InitConnectionManager(aRunLoopParameters);
+    lRetval = GetConnectionManager().AddDelegate(this);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // Initialize the command manager
 
-    lRetval = InitCommandManager(aRunLoopParameters);
+    lRetval = GetCommandManager().SetDelegate(this);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // Initialize the controllers
@@ -155,37 +155,6 @@ Controller :: Init(const RunLoopParameters &aRunLoopParameters, const boost::fil
     mRunLoopParameters = aRunLoopParameters;
 
 done:
-    return (lRetval);
-}
-
-Status
-Controller :: InitConnectionManager(const RunLoopParameters &aRunLoopParameters)
-{
-    Status  lRetval;
-
-
-    lRetval = GetConnectionManager().Init(aRunLoopParameters);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = GetConnectionManager().AddDelegate(this);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status Controller :: InitCommandManager(const RunLoopParameters &aRunLoopParameters)
-{
-    Status  lRetval;
-
-
-    lRetval = GetCommandManager().Init(GetConnectionManager(), aRunLoopParameters);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = GetCommandManager().SetDelegate(this);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
     return (lRetval);
 }
 

@@ -172,12 +172,8 @@ public:
     Common::Status QueryCurrentConfiguration(ConfigurationController &aController, Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) final;
 
 private:
-    Common::Status InitClient(const Common::RunLoopParameters &aRunLoopParameters);
-    Common::Status InitClientConnectionManager(const Common::RunLoopParameters &aRunLoopParameters);
-    Common::Status InitClientCommandManager(const Common::RunLoopParameters &aRunLoopParameters);
-    Common::Status InitServer(const Common::RunLoopParameters &aRunLoopParameters);
-    Common::Status InitServerConnectionManager(const Common::RunLoopParameters &aRunLoopParameters);
-    Common::Status InitServerCommandManager(const Common::RunLoopParameters &aRunLoopParameters);
+    Common::Status InitClient(void);
+    Common::Status InitServer(void);
     Common::Status InitControllers(const Common::RunLoopParameters &aRunLoopParameters);
     Common::Status InitClientControllers(const Common::RunLoopParameters &aRunLoopParameters);
     Common::Status InitServerControllers(const Common::RunLoopParameters &aRunLoopParameters);

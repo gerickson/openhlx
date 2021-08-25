@@ -235,8 +235,6 @@ private:
     Common::Status ShouldDoForGroupZones(const Model::GroupModel::IdentifierType &aGroupIdentifier, const Model::GroupModel &aGroupModel, ShouldDoForGroupZonesFunctorBasis &aFunctorBasis);
 
 private:
-    Common::Status InitConnectionManager(const Common::RunLoopParameters &aRunLoopParameters);
-    Common::Status InitCommandManager(const Common::RunLoopParameters &aRunLoopParameters);
     Common::Status InitControllers(const Common::RunLoopParameters &aRunLoopParameters);
     Common::Status InitConfiguration(const Common::RunLoopParameters &aRunLoopParameters, const boost::filesystem::path &aPath);
 

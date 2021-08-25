@@ -118,10 +118,10 @@ Controller :: Init(const RunLoopParameters &aRunLoopParameters)
     lRetval = ProxyControllerContainer::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = InitClient(aRunLoopParameters);
+    lRetval = InitClient();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = InitServer(aRunLoopParameters);
+    lRetval = InitServer();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = InitControllers(aRunLoopParameters);
@@ -134,48 +134,13 @@ done:
 }
 
 Status
-Controller :: InitClient(const RunLoopParameters &aRunLoopParameters)
+Controller :: InitClient(void)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status  lRetval;
 
-
-    lRetval = InitClientConnectionManager(aRunLoopParameters);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = InitClientCommandManager(aRunLoopParameters);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-Controller :: InitClientConnectionManager(const RunLoopParameters &aRunLoopParameters)
-{
-    DeclareScopedFunctionTracer(lTracer);
-    Status  lRetval;
-
-
-    lRetval = Client::Application::ControllerBasis::GetConnectionManager().Init(aRunLoopParameters);
-    nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = Client::Application::ControllerBasis::GetConnectionManager().AddDelegate(this);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-Controller :: InitClientCommandManager(const RunLoopParameters &aRunLoopParameters)
-{
-    DeclareScopedFunctionTracer(lTracer);
-    Client::ConnectionManager & lConnectionManager = Client::Application::ControllerBasis::GetConnectionManager();
-    Status                      lRetval;
-
-
-    lRetval = Client::Application::ControllerBasis::GetCommandManager().Init(lConnectionManager, aRunLoopParameters);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = Client::Application::ControllerBasis::GetCommandManager().SetDelegate(this);
@@ -185,49 +150,15 @@ Controller :: InitClientCommandManager(const RunLoopParameters &aRunLoopParamete
     return (lRetval);
 }
 
+
 Status
-Controller :: InitServer(const RunLoopParameters &aRunLoopParameters)
+Controller :: InitServer(void)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status  lRetval;
 
-
-    lRetval = InitServerConnectionManager(aRunLoopParameters);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = InitServerCommandManager(aRunLoopParameters);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-Controller :: InitServerConnectionManager(const RunLoopParameters &aRunLoopParameters)
-{
-    DeclareScopedFunctionTracer(lTracer);
-    Status  lRetval;
-
-
-    lRetval = Server::Application::ControllerBasis::GetConnectionManager().Init(aRunLoopParameters);
-    nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = Server::Application::ControllerBasis::GetConnectionManager().AddDelegate(this);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status
-Controller :: InitServerCommandManager(const RunLoopParameters &aRunLoopParameters)
-{
-    DeclareScopedFunctionTracer(lTracer);
-    Server::ConnectionManager & lConnectionManager = Server::Application::ControllerBasis::GetConnectionManager();
-    Status                      lRetval;
-
-
-    lRetval = Server::Application::ControllerBasis::GetCommandManager().Init(lConnectionManager, aRunLoopParameters);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = Server::Application::ControllerBasis::GetCommandManager().SetDelegate(this);

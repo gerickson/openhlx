@@ -94,9 +94,13 @@ ControllerBasis :: Init(const Common::RunLoopParameters &aRunLoopParameters)
     Status lRetval = kStatus_Success;
 
 
-    (void)aRunLoopParameters;
-
     lRetval = ServerControllerContainer::Init();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = mConnectionManager.Init(aRunLoopParameters);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = mCommandManager.Init(mConnectionManager, aRunLoopParameters);
     nlREQUIRE_SUCCESS(lRetval, done);
 
  done:

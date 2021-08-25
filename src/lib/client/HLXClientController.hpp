@@ -91,6 +91,8 @@ public:
     Controller(void);
     virtual ~Controller(void);
 
+    // Initializer(s)
+
     Common::Status Init(const Common::RunLoopParameters &aRunLoopParameters);
 
     ControllerDelegate *GetDelegate(void) const;
@@ -267,8 +269,6 @@ private:
     void HandleGroupZoneStateChangeInteractions(const StateChange::GroupsNotificationBasis &aGroupStateChangeNotification, const StateChange::Type &aType, DerivedGroupState &aDerivedGroupState, const Model::ZoneModel::IdentifierType &aZoneIdentifier);
 
 private:
-    ConnectionManager               mConnectionManager;
-    CommandManager                  mCommandManager;
     ConfigurationController         mConfigurationController;
     EqualizerPresetsController      mEqualizerPresetsController;
     FavoritesController             mFavoritesController;

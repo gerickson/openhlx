@@ -198,8 +198,6 @@ Controller :: Controller(void) :
     CommandManagerDelegate(),
     ControllerBasisErrorDelegate(),
     ControllerBasisStateChangeDelegate(),
-    mConnectionManager(),
-    mCommandManager(),
     mConfigurationController(),
     mEqualizerPresetsController(),
     mFavoritesController(),
@@ -258,16 +256,10 @@ Controller :: Init(const RunLoopParameters &aRunLoopParameters)
     lRetval = Client::Application::ControllerBasis::Init(aRunLoopParameters);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mConnectionManager.Init(aRunLoopParameters);
+    lRetval = GetConnectionManager().AddDelegate(this);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mConnectionManager.AddDelegate(this);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = mCommandManager.Init(mConnectionManager, aRunLoopParameters);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = mCommandManager.SetDelegate(this);
+    lRetval = GetCommandManager().SetDelegate(this);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // Place the various controllers into the controller
@@ -291,7 +283,7 @@ Controller :: Init(const RunLoopParameters &aRunLoopParameters)
 
     while (lCurrent != lEnd)
     {
-        lRetval = lCurrent->second.mController->Init(mCommandManager);
+        lRetval = lCurrent->second.mController->Init(GetCommandManager());
         nlREQUIRE_SUCCESS(lRetval, done);
 
         lRetval = lCurrent->second.mController->SetErrorDelegate(this);
@@ -385,7 +377,7 @@ Controller :: Connect(const char *aMaybeURL, const Timeout &aTimeout)
 {
     Status lRetval = kStatus_Success;
 
-    lRetval = mConnectionManager.Connect(aMaybeURL, aTimeout);
+    lRetval = GetConnectionManager().Connect(aMaybeURL, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
  done:
@@ -434,7 +426,7 @@ Controller :: Connect(const char *aMaybeURL,
 {
     Status lRetval = kStatus_Success;
 
-    lRetval = mConnectionManager.Connect(aMaybeURL, aVersions, aTimeout);
+    lRetval = GetConnectionManager().Connect(aMaybeURL, aVersions, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -454,7 +446,7 @@ done:
 bool
 Controller :: IsConnected(void) const
 {
-    return (mConnectionManager.IsConnected());
+    return (GetConnectionManager().IsConnected());
 }
 
 /**
@@ -477,7 +469,7 @@ Controller :: Disconnect(void)
 {
     Status lRetval = kStatus_Success;
 
-    lRetval = mConnectionManager.Disconnect();
+    lRetval = GetConnectionManager().Disconnect();
     nlEXPECT_SUCCESS(lRetval, done);
 
  done:
