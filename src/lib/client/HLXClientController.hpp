@@ -47,6 +47,7 @@
 #include <OpenHLX/Client/SourcesController.hpp>
 #include <OpenHLX/Client/ZonesController.hpp>
 #include <OpenHLX/Common/Errors.hpp>
+#include <OpenHLX/Common/HLXCommonControllerBasis.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
 #include <OpenHLX/Model/GroupModel.hpp>
 #include <OpenHLX/Model/SourceModel.hpp>
@@ -79,6 +80,7 @@ namespace Application
  *
  */
 class Controller :
+    public Common::Application::ControllerBasis,
     public Client::Application::ControllerBasis,
     public ConnectionManagerDelegate,
     public CommandManagerDelegate,

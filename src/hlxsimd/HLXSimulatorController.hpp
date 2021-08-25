@@ -34,11 +34,13 @@
 
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/HLXCommonControllerBasis.hpp>
+#include <OpenHLX/Common/HLXCommonControllerContainerTemplate.hpp>
 #include <OpenHLX/Common/RunLoopParameters.hpp>
 #include <OpenHLX/Server/CommandManager.hpp>
 #include <OpenHLX/Server/CommandManagerDelegate.hpp>
 #include <OpenHLX/Server/ConnectionManager.hpp>
 #include <OpenHLX/Server/ConnectionManagerDelegate.hpp>
+#include <OpenHLX/Server/HLXServerControllerBasis.hpp>
 
 #include "ConfigurationController.hpp"
 #include "ConfigurationControllerDelegate.hpp"
@@ -71,16 +73,20 @@ namespace Application
  *
  */
 class Controller :
-    public Common::Application::Foo<Simulator::ControllerBasis>,
+    public Common::Application::ControllerBasis,
+    public Server::Application::ControllerBasis,
+    public Common::Application::ControllerContainerTemplate<Simulator::ControllerBasis>,
     public Server::ConnectionManagerDelegate,
     public Server::CommandManagerDelegate,
-    public ConfigurationControllerDelegate,
     public Simulator::ControllerBasisDelegate,
+    public ConfigurationControllerDelegate,
     public GroupsControllerDelegate
 {
 public:
     Controller(void);
-    ~Controller(void);
+    virtual ~Controller(void);
+
+    // Initializer(s)
 
     Common::Status Init(const Common::RunLoopParameters &aRunLoopParameters, const boost::filesystem::path &aConfigurationPath);
 
@@ -152,6 +158,9 @@ public:
     // Timer Trampoline
 
     static void TimerCallBack(CFRunLoopTimerRef aTimerRef, void *aContext);
+
+private:
+    typedef Common::Application::ControllerContainerTemplate<Simulator::ControllerBasis> SimulatorControllerContainer;
 
 private:
     class ShouldDoForGroupZonesFunctorBasis
@@ -240,8 +249,6 @@ private:
 
     Common::RunLoopParameters       mRunLoopParameters;
     boost::filesystem::path         mConfigurationPath;
-    Server::ConnectionManager       mConnectionManager;
-    Server::CommandManager          mCommandManager;
     ConfigurationController         mConfigurationController;
     NetworkController               mNetworkController;
     FavoritesController             mFavoritesController;

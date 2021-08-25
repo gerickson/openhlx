@@ -45,20 +45,17 @@ namespace Application
 {
 
 Controller :: Controller(void) :
-    Client::Application::ControllerBasis(*this),
-    Server::Application::ControllerBasis(*this),
+    Common::Application::ControllerBasis(),
+    Client::Application::ControllerBasis(),
+    Server::Application::ControllerBasis(),
+    Common::Application::ControllerContainerTemplate<Proxy::ControllerBasis>(),
     Client::ConnectionManagerDelegate(),
     Server::ConnectionManagerDelegate(),
     Client::CommandManagerDelegate(),
     Server::CommandManagerDelegate(),
     Client::ControllerBasisErrorDelegate(),
     Client::ControllerBasisStateChangeDelegate(),
-    Common::Application::Foo<Proxy::ControllerBasis>(),
     ConfigurationControllerDelegate(),
-    mClientConnectionManager(),
-    mClientCommandManager(),
-    mServerConnectionManager(),
-    mServerCommandManager(),
     mConfigurationController(),
     mNetworkController(),
     mFavoritesController(),
@@ -109,10 +106,16 @@ Controller :: Init(const RunLoopParameters &aRunLoopParameters)
     Status lRetval = kStatus_Success;
 
 
+    lRetval = Common::Application::ControllerBasis::Init();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
     lRetval = Client::Application::ControllerBasis::Init(aRunLoopParameters);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = Server::Application::ControllerBasis::Init(aRunLoopParameters);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = ProxyControllerContainer::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = InitClient(aRunLoopParameters);
@@ -154,10 +157,10 @@ Controller :: InitClientConnectionManager(const RunLoopParameters &aRunLoopParam
     Status  lRetval;
 
 
-    lRetval = mClientConnectionManager.Init(aRunLoopParameters);
+    lRetval = Client::Application::ControllerBasis::GetConnectionManager().Init(aRunLoopParameters);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mClientConnectionManager.AddDelegate(this);
+    lRetval = Client::Application::ControllerBasis::GetConnectionManager().AddDelegate(this);
     nlREQUIRE_SUCCESS(lRetval, done);
 
  done:
@@ -168,13 +171,14 @@ Status
 Controller :: InitClientCommandManager(const RunLoopParameters &aRunLoopParameters)
 {
     DeclareScopedFunctionTracer(lTracer);
-    Status  lRetval;
+    Client::ConnectionManager & lConnectionManager = Client::Application::ControllerBasis::GetConnectionManager();
+    Status                      lRetval;
 
 
-    lRetval = mClientCommandManager.Init(mClientConnectionManager, aRunLoopParameters);
+    lRetval = Client::Application::ControllerBasis::GetCommandManager().Init(lConnectionManager, aRunLoopParameters);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mClientCommandManager.SetDelegate(this);
+    lRetval = Client::Application::ControllerBasis::GetCommandManager().SetDelegate(this);
     nlREQUIRE_SUCCESS(lRetval, done);
 
  done:
@@ -205,10 +209,10 @@ Controller :: InitServerConnectionManager(const RunLoopParameters &aRunLoopParam
     Status  lRetval;
 
 
-    lRetval = mServerConnectionManager.Init(aRunLoopParameters);
+    lRetval = Server::Application::ControllerBasis::GetConnectionManager().Init(aRunLoopParameters);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mServerConnectionManager.AddDelegate(this);
+    lRetval = Server::Application::ControllerBasis::GetConnectionManager().AddDelegate(this);
     nlREQUIRE_SUCCESS(lRetval, done);
 
  done:
@@ -219,13 +223,14 @@ Status
 Controller :: InitServerCommandManager(const RunLoopParameters &aRunLoopParameters)
 {
     DeclareScopedFunctionTracer(lTracer);
-    Status  lRetval;
+    Server::ConnectionManager & lConnectionManager = Server::Application::ControllerBasis::GetConnectionManager();
+    Status                      lRetval;
 
 
-    lRetval = mServerCommandManager.Init(mServerConnectionManager, aRunLoopParameters);
+    lRetval = Server::Application::ControllerBasis::GetCommandManager().Init(lConnectionManager, aRunLoopParameters);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mServerCommandManager.SetDelegate(this);
+    lRetval = Server::Application::ControllerBasis::GetCommandManager().SetDelegate(this);
     nlREQUIRE_SUCCESS(lRetval, done);
 
  done:
@@ -300,7 +305,6 @@ Controller :: InitServerControllers(const RunLoopParameters &aRunLoopParameters)
     Server::Application::ControllerBasis::AddController(mSourcesController);
     Server::Application::ControllerBasis::AddController(mZonesController);
 
- done:
     return (lRetval);
 }
 
@@ -318,25 +322,27 @@ Controller :: InitProxyControllers(const RunLoopParameters &aRunLoopParameters)
     // closely matches the order in which the actual HLX hardware
     // responds to for the 'query current configuration' command.
 
-    Common::Application::Foo<Proxy::ControllerBasis>::AddController(mConfigurationController);
-    Common::Application::Foo<Proxy::ControllerBasis>::AddController(mNetworkController);
-    Common::Application::Foo<Proxy::ControllerBasis>::AddController(mFavoritesController);
-    Common::Application::Foo<Proxy::ControllerBasis>::AddController(mGroupsController);
-    Common::Application::Foo<Proxy::ControllerBasis>::AddController(mFrontPanelController);
-    Common::Application::Foo<Proxy::ControllerBasis>::AddController(mInfraredController);
-    Common::Application::Foo<Proxy::ControllerBasis>::AddController(mEqualizerPresetsController);
-    Common::Application::Foo<Proxy::ControllerBasis>::AddController(mSourcesController);
-    Common::Application::Foo<Proxy::ControllerBasis>::AddController(mZonesController);
+    ProxyControllerContainer::AddController(mConfigurationController);
+    ProxyControllerContainer::AddController(mNetworkController);
+    ProxyControllerContainer::AddController(mFavoritesController);
+    ProxyControllerContainer::AddController(mGroupsController);
+    ProxyControllerContainer::AddController(mFrontPanelController);
+    ProxyControllerContainer::AddController(mInfraredController);
+    ProxyControllerContainer::AddController(mEqualizerPresetsController);
+    ProxyControllerContainer::AddController(mSourcesController);
+    ProxyControllerContainer::AddController(mZonesController);
 
     {
-        Common::Application::Foo<Proxy::ControllerBasis>::Controllers::iterator  lCurrent = Common::Application::Foo<Proxy::ControllerBasis>::GetControllers().begin();
-        Common::Application::Foo<Proxy::ControllerBasis>::Controllers::iterator  lEnd = Common::Application::Foo<Proxy::ControllerBasis>::GetControllers().end();
+        ProxyControllerContainer::Controllers::iterator  lCurrent = ProxyControllerContainer::GetControllers().begin();
+        ProxyControllerContainer::Controllers::iterator  lEnd = ProxyControllerContainer::GetControllers().end();
 
         // Intialize the controllers, using the top-down proxy initializer.
 
         while (lCurrent != lEnd)
         {
-            lRetval = lCurrent->second.mController->Init(mClientCommandManager, mServerCommandManager, kTimeoutDefault);
+            lRetval = lCurrent->second.mController->Init(Client::Application::ControllerBasis::GetCommandManager(),
+                                                         Server::Application::ControllerBasis::GetCommandManager(),
+                                                         kTimeoutDefault);
             nlREQUIRE_SUCCESS(lRetval, done);
 
             lCurrent++;
@@ -351,8 +357,8 @@ Controller :: InitProxyControllers(const RunLoopParameters &aRunLoopParameters)
     }
 
     {
-        Common::Application::Foo<Client::ControllerBasis>::Controllers::iterator  lCurrent = Common::Application::Foo<Client::ControllerBasis>::GetControllers().begin();
-        Common::Application::Foo<Client::ControllerBasis>::Controllers::iterator  lEnd = Common::Application::Foo<Client::ControllerBasis>::GetControllers().end();
+        ClientControllerContainer::Controllers::iterator  lCurrent = ClientControllerContainer::GetControllers().begin();
+        ClientControllerContainer::Controllers::iterator  lEnd = ClientControllerContainer::GetControllers().end();
 
         while (lCurrent != lEnd)
         {
@@ -448,7 +454,7 @@ Controller :: Connect(const char *aMaybeURL, const Timeout &aTimeout)
 {
     Status lRetval = kStatus_Success;
 
-    lRetval = mClientConnectionManager.Connect(aMaybeURL, aTimeout);
+    lRetval = Client::Application::ControllerBasis::GetConnectionManager().Connect(aMaybeURL, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
  done:
@@ -497,7 +503,7 @@ Controller :: Connect(const char *aMaybeURL,
 {
     Status lRetval = kStatus_Success;
 
-    lRetval = mClientConnectionManager.Connect(aMaybeURL, aVersions, aTimeout);
+    lRetval = Client::Application::ControllerBasis::GetConnectionManager().Connect(aMaybeURL, aVersions, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -510,7 +516,7 @@ Controller :: Listen(void)
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
-    lRetval = mServerConnectionManager.Listen();
+    lRetval = Server::Application::ControllerBasis::GetConnectionManager().Listen();
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -523,7 +529,7 @@ Controller :: Listen(const Common::ConnectionManagerBasis::Versions &aVersions)
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
-    lRetval = mServerConnectionManager.Listen(aVersions);
+    lRetval = Server::Application::ControllerBasis::GetConnectionManager().Listen(aVersions);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -536,7 +542,7 @@ Controller :: Listen(const char *aMaybeURL)
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
-    lRetval = mServerConnectionManager.Listen(aMaybeURL);
+    lRetval = Server::Application::ControllerBasis::GetConnectionManager().Listen(aMaybeURL);
     nlREQUIRE_SUCCESS(lRetval, done);
 
  done:
@@ -549,7 +555,7 @@ Controller :: Listen(const char *aMaybeURL, const Common::ConnectionManagerBasis
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
-    lRetval = mServerConnectionManager.Listen(aMaybeURL, aVersions);
+    lRetval = Server::Application::ControllerBasis::GetConnectionManager().Listen(aMaybeURL, aVersions);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -594,8 +600,8 @@ Controller :: SetDelegate(Proxy::Application::ControllerDelegate *aDelegate)
         goto done;
     }
 
-    //lRetval = Client::Application::ControllerBasis::SetRefreshDelegate(aDelegate);
-    //nlREQUIRE_SUCCESS(lRetval, done);
+    lRetval = Client::Application::ControllerBasis::SetRefreshDelegate(aDelegate);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
     mDelegate        = aDelegate;
 
@@ -1006,6 +1012,9 @@ Controller :: ConnectionManagerError(Common::ConnectionManagerBasis &aConnection
 void
 Controller :: ControllerError(Client::ControllerBasis &aController, const Common::Error &aError)
 {
+    (void)aController;
+    (void)aError;
+
     return;
 }
 
@@ -1051,6 +1060,9 @@ void
 Controller :: ControllerStateDidChange(Client::ControllerBasis &aController,
                                        const Client::StateChange::NotificationBasis &aStateChangeNotification)
 {
+    (void)aController;
+    (void)aStateChangeNotification;
+
     return;
 }
 
@@ -1060,12 +1072,14 @@ Status
 Controller :: QueryCurrentConfiguration(ConfigurationController &aController, Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     DeclareScopedFunctionTracer(lTracer);
-    Common::Application::Foo<Proxy::ControllerBasis>::Controllers::iterator  lCurrent, lEnd;
+    ProxyControllerContainer::Controllers::iterator  lCurrent, lEnd;
     Status                 lRetval;
 
 
-    lCurrent = Common::Application::Foo<Proxy::ControllerBasis>::GetControllers().begin();
-    lEnd     = Common::Application::Foo<Proxy::ControllerBasis>::GetControllers().end();
+    (void)aController;
+
+    lCurrent = ProxyControllerContainer::GetControllers().begin();
+    lEnd     = ProxyControllerContainer::GetControllers().end();
 
     while (lCurrent != lEnd)
     {

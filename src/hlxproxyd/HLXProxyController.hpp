@@ -32,8 +32,10 @@
 #include <OpenHLX/Client/ConnectionManagerDelegate.hpp>
 #include <OpenHLX/Client/ControllerBasisDelegate.hpp>
 #include <OpenHLX/Client/HLXClientControllerBasis.hpp>
+#include <OpenHLX/Client/HLXClientControllerRefreshDelegate.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/HLXCommonControllerBasis.hpp>
+#include <OpenHLX/Common/HLXCommonControllerContainerTemplate.hpp>
 #include <OpenHLX/Common/RunLoopParameters.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
 #include <OpenHLX/Server/CommandManager.hpp>
@@ -73,20 +75,23 @@ namespace Application
  *
  */
 class Controller :
+    public Common::Application::ControllerBasis,
     public Client::Application::ControllerBasis,
     public Server::Application::ControllerBasis,
+    public Common::Application::ControllerContainerTemplate<Proxy::ControllerBasis>,
     public Client::ConnectionManagerDelegate,
     public Server::ConnectionManagerDelegate,
     public Client::CommandManagerDelegate,
     public Server::CommandManagerDelegate,
     public Client::ControllerBasisErrorDelegate,
     public Client::ControllerBasisStateChangeDelegate,
-    public Common::Application::Foo<Proxy::ControllerBasis>,
     public ConfigurationControllerDelegate
 {
 public:
     Controller(void);
     virtual ~Controller(void);
+
+    // Initializer(s)
 
     Common::Status Init(const Common::RunLoopParameters &aRunLoopParameters);
 
@@ -152,7 +157,12 @@ public:
 
     // Server-facing Client Object Controller Basis Delegate Methods
 
+    // Server-facing Client Object Controller Basis Error Delegate Method
+
     void ControllerError(Client::ControllerBasis &aController, const Common::Error &aError) final;
+
+    // Server-facing Client Object Controller Basis State Change Delegate Method
+
     void ControllerStateDidChange(Client::ControllerBasis &aController, const Client::StateChange::NotificationBasis &aStateChangeNotification) final;
 
     // Client-facing Server Controller Basis Delegate Methods
@@ -176,15 +186,14 @@ private:
     void DeriveGroupState(void) final { return; }
 
 private:
+    typedef Common::Application::ControllerContainerTemplate<Proxy::ControllerBasis> ProxyControllerContainer;
+
+private:
     // Sub-controller order is important since 1) this is the order that
     // most closely matches the order in which the actual HLX hardware
     // responds to for the 'query current configuration' command and 2) ...
 
     Common::RunLoopParameters       mRunLoopParameters;
-    Client::ConnectionManager       mClientConnectionManager;
-    Client::CommandManager          mClientCommandManager;
-    Server::ConnectionManager       mServerConnectionManager;
-    Server::CommandManager          mServerCommandManager;
     ConfigurationController         mConfigurationController;
     NetworkController               mNetworkController;
     FavoritesController             mFavoritesController;

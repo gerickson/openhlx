@@ -192,7 +192,8 @@ Controller :: DerivedGroupState :: UpdateVolume(const VolumeModel::LevelType &aV
  *
  */
 Controller :: Controller(void) :
-    Client::Application::ControllerBasis(*this),
+    Common::Application::ControllerBasis(),
+    Client::Application::ControllerBasis(),
     ConnectionManagerDelegate(),
     CommandManagerDelegate(),
     ControllerBasisErrorDelegate(),
@@ -246,8 +247,13 @@ Controller :: ~Controller(void)
 Status
 Controller :: Init(const RunLoopParameters &aRunLoopParameters)
 {
-    Controllers::iterator  lCurrent, lEnd;
+    Controllers::iterator  lCurrent;
+    Controllers::iterator  lEnd;
     Status                 lRetval;
+
+
+    lRetval = Common::Application::ControllerBasis::Init();
+    nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = Client::Application::ControllerBasis::Init(aRunLoopParameters);
     nlREQUIRE_SUCCESS(lRetval, done);
