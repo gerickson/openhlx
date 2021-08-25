@@ -842,70 +842,21 @@ void GroupsController :: SetNameRequestReceivedHandler(Server::ConnectionBasis &
  */
 void GroupsController :: SetSourceRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    IdentifierType                           lGroupIdentifier;
-    SourceModel::IdentifierType              lSourceIdentifier;
-    GroupModel *                             lGroupModel;
-    Server::Command::Groups::SourceResponse  lSourceResponse;
-    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
-    const uint8_t *                          lBuffer;
-    size_t                                   lSize;
 
 
-    (void)aSize;
-
-    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Groups::SetSourceRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
-
-    // Match 2/3: Group Identifier
-    //
-    // The validity of the group identifier will be range checked at
-    // GetGroup below.
-
-    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
-                                                Common::Utilities::Distance(aMatches.at(1)),
-                                                lGroupIdentifier);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    // Match 3/3: Source Identifier
-    //
-    // Parse and validate the identifier
-
-    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(2).rm_so,
-                                                Common::Utilities::Distance(aMatches.at(2)),
-                                                lSourceIdentifier);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lStatus = SourcesController::ValidateIdentifier(lSourceIdentifier);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lResponseBuffer.reset(new ConnectionBuffer);
-    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
-
-    lStatus = lResponseBuffer->Init();
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lStatus = mGroups.GetGroup(lGroupIdentifier, lGroupModel);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    // XXX - lStatus = OnSetSource(lGroupIdentifier, *lGroupModel, lSourceIdentifier);
-    // XXX - nlREQUIRE_SUCCESS(lStatus, done);
-
-    lStatus = lSourceResponse.Init(lGroupIdentifier, lSourceIdentifier);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lBuffer = lSourceResponse.GetBuffer();
-    lSize = lSourceResponse.GetSize();
-
-    lStatus = Common::Utilities::Put(*lResponseBuffer.get(), lBuffer, lSize);
+    lStatus = ProxyMutationCommand(aConnection,
+                                   aBuffer,
+                                   aSize,
+                                   aMatches,
+                                   kSourceResponse,
+                                   Client::GroupsControllerBasis::SetSourceCompleteHandler,
+                                   Client::GroupsControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::GroupsControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
-    if (lStatus >= kStatus_Success)
-    {
-        lStatus = SendResponse(aConnection, lResponseBuffer);
-        nlVERIFY_SUCCESS(lStatus);
-    }
-    else
+    if (lStatus < kStatus_Success)
     {
         lStatus = SendErrorResponse(aConnection);
         nlVERIFY_SUCCESS(lStatus);
