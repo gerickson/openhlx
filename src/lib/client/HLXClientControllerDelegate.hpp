@@ -31,6 +31,7 @@
 #include <OpenHLX/Client/HLXClientControllerRefreshDelegate.hpp>
 #include <OpenHLX/Client/StateChangeNotificationBasis.hpp>
 #include <OpenHLX/Common/Errors.hpp>
+#include <OpenHLX/Common/HLXCommonControllerErrorDelegate.hpp>
 #include <OpenHLX/Common/IPAddress.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
 
@@ -62,7 +63,8 @@ class Controller;
  *
  */
 class ControllerDelegate :
-    public ControllerRefreshDelegate
+    public ControllerRefreshDelegate,
+    public Common::Application::ControllerErrorDelegate
 {
 public:
     ControllerDelegate(void) = default;
@@ -252,25 +254,6 @@ public:
      *
      */
     virtual void ControllerStateDidChange(Controller &aController, const StateChange::NotificationBasis &aStateChangeNotification) = 0;
-
-    // Error Delegation Method
-
-    /**
-     *  @brief
-     *    Delegation from the client controller that the experienced
-     *    an error.
-     *
-     *  @note
-     *    This delegation may occur along with other delegations with
-     *    respect to the same underlying event or cause.
-     *
-     *  @param[in]  aController  A reference to the client controller that
-     *                           issued the delegation.
-     *  @param[in]  aError       An immutable reference to the error
-     *                           associated with the event.
-     *
-     */
-    virtual void ControllerError(Controller &aController, const Common::Error &aError) = 0;
 };
 
 }; // namespace Application
