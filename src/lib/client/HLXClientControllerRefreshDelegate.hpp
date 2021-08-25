@@ -27,6 +27,7 @@
 #define OPENHLXCLIENTAPPLICATIONCONTROLLERREFRESHDELEGATE_HPP
 
 
+#include <OpenHLX/Client/HLXClientControllerBasis.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 
 
@@ -72,7 +73,7 @@ public:
      *                           issued the delegation.
      *
      */
-    virtual void ControllerWillRefresh(Controller &aController) = 0;
+    virtual void ControllerWillRefresh(Client::Application::ControllerBasis &aController) = 0;
 
     /**
      *  @brief
@@ -86,7 +87,7 @@ public:
      *                                that has completed.
      *
      */
-    virtual void ControllerIsRefreshing(Controller &aController, const uint8_t &aPercentComplete) = 0;
+    virtual void ControllerIsRefreshing(Client::Application::ControllerBasis &aController, const uint8_t &aPercentComplete) = 0;
 
     /**
      *  @brief
@@ -97,7 +98,7 @@ public:
      *                           issued the delegation.
      *
      */
-    virtual void ControllerDidRefresh(Controller &aController) = 0;
+    virtual void ControllerDidRefresh(Client::Application::ControllerBasis &aController) = 0;
 
     /**
      *  @brief
@@ -110,7 +111,7 @@ public:
      *                           associated with the failure to refresh.
      *
      */
-    virtual void ControllerDidNotRefresh(Controller &aController, const Common::Error &aError) = 0;
+    virtual void ControllerDidNotRefresh(Client::Application::ControllerBasis &aController, const Common::Error &aError) = 0;
 };
 
 }; // namespace Application
