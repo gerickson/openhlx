@@ -28,6 +28,7 @@
 
 #include <CoreFoundation/CFURL.h>
 
+#include <OpenHLX/Client/HLXClientControllerRefreshDelegate.hpp>
 #include <OpenHLX/Client/StateChangeNotificationBasis.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/IPAddress.hpp>
@@ -57,7 +58,8 @@ class Controller;
  *  @ingroup proxy
  *
  */
-class ControllerDelegate
+class ControllerDelegate :
+    public Client::Application::ControllerRefreshDelegate
 {
 public:
     typedef Common::ConnectionManagerBasis::Roles Roles;
@@ -245,57 +247,6 @@ public:
      *
      */
     virtual void ControllerDidNotDisconnect(Controller &aController, const Roles &aRoles, CFURLRef aURLRef, const Common::Error &aError) = 0;
-
-    // Server-facing Client Refresh Delegation Methods
-
-    /**
-     *  @brief
-     *    Delegation from the proxy controller that a state refresh
-     *    with the peer server is about to begin.
-     *
-     *  @param[in]  aController  A reference to the proxy controller that
-     *                           issued the delegation.
-     *
-     */
-    virtual void ControllerWillRefresh(Controller &aController) = 0;
-
-    /**
-     *  @brief
-     *    Delegation from the proxy controller that a state refresh
-     *    with the peer server is in progress.
-     *
-     *  @param[in]  aController       A reference to the proxy controller
-     *                                that issued the delegation.
-     *  @param[in]  aPercentComplete  A reference to the percentage
-     *                                (0-100) of the refresh operation
-     *                                that has completed.
-     *
-     */
-    virtual void ControllerIsRefreshing(Controller &aController, const uint8_t &aPercentComplete) = 0;
-
-    /**
-     *  @brief
-     *    Delegation from the proxy controller that a state refresh
-     *    with the peer server did complete successfully.
-     *
-     *  @param[in]  aController  A reference to the proxy controller that
-     *                           issued the delegation.
-     *
-     */
-    virtual void ControllerDidRefresh(Controller &aController) = 0;
-
-    /**
-     *  @brief
-     *    Delegation from the proxy controller that a state refresh
-     *    with the peer server did not complete successfully.
-     *
-     *  @param[in]  aController  A reference to the proxy controller that
-     *                           issued the delegation.
-     *  @param[in]  aError       An immutable reference to the error
-     *                           associated with the failure to refresh.
-     *
-     */
-    virtual void ControllerDidNotRefresh(Controller &aController, const Common::Error &aError) = 0;
 
     // State Change Delegation Method
 
