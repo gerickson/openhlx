@@ -29,6 +29,7 @@
 #include <CoreFoundation/CFURL.h>
 
 #include <OpenHLX/Common/Errors.hpp>
+#include <OpenHLX/Common/HLXCommonControllerErrorDelegate.hpp>
 #include <OpenHLX/Common/IPAddress.hpp>
 
 
@@ -57,7 +58,8 @@ class Controller;
  *  @ingroup server
  *
  */
-class ControllerDelegate
+class ControllerDelegate :
+    public Common::Application::ControllerErrorDelegate
 {
 public:
     ControllerDelegate(void) = default;
@@ -188,25 +190,6 @@ public:
      *
      */
     virtual void ControllerDidNotDisconnect(Controller &aController, CFURLRef aURLRef, const Common::Error &aError) = 0;
-
-    // Error Delegation Method
-
-    /**
-     *  @brief
-     *    Delegation from the server controller that the experienced
-     *    an error.
-     *
-     *  @note
-     *    This delegation may occur along with other delegations with
-     *    respect to the same underlying event or cause.
-     *
-     *  @param[in]  aController  A reference to the server controller that
-     *                           issued the delegation.
-     *  @param[in]  aError       An immutable reference to the error
-     *                           associated with the event.
-     *
-     */
-    virtual void ControllerError(Controller &aController, const Common::Error &aError) = 0;
 };
 
 }; // namespace Application
