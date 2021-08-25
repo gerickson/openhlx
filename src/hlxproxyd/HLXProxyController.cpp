@@ -109,10 +109,10 @@ Controller :: Init(const RunLoopParameters &aRunLoopParameters)
     Status lRetval = kStatus_Success;
 
 
-    lRetval = Client::Application::ControllerBasis::Init();
+    lRetval = Client::Application::ControllerBasis::Init(aRunLoopParameters);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = Server::Application::ControllerBasis::Init();
+    lRetval = Server::Application::ControllerBasis::Init(aRunLoopParameters);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = InitClient(aRunLoopParameters);

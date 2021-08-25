@@ -32,6 +32,8 @@
 #include <OpenHLX/Client/ControllerBasisRefreshDelegate.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/HLXCommonControllerBasis.hpp>
+#include <OpenHLX/Common/RunLoopParameters.hpp>
+
 
 namespace HLX
 {
@@ -63,7 +65,9 @@ class ControllerBasis :
 public:
     virtual ~ControllerBasis(void);
 
-    Common::Status Init(void);
+    // Initializer(s)
+
+    Common::Status Init(const Common::RunLoopParameters &aRunLoopParameters);
 
     Client::Application::ControllerRefreshDelegate *GetRefreshDelegate(void) const;
 

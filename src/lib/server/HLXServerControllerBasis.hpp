@@ -30,6 +30,7 @@
 
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/HLXCommonControllerBasis.hpp>
+#include <OpenHLX/Common/RunLoopParameters.hpp>
 #include <OpenHLX/Server/ControllerBasis.hpp>
 
 
@@ -60,7 +61,9 @@ class ControllerBasis :
 public:
     virtual ~ControllerBasis(void);
 
-    Common::Status Init(void);
+    // Initializer(s)
+
+    Common::Status Init(const Common::RunLoopParameters &aRunLoopParameters);
 
 protected:
     ControllerBasis(Server::Application::Controller &aController);

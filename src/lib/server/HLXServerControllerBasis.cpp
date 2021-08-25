@@ -88,7 +88,7 @@ ControllerBasis :: ~ControllerBasis(void)
  *
  */
 Status
-ControllerBasis :: Init(void)
+ControllerBasis :: Init(const Common::RunLoopParameters &aRunLoopParameters)
 {
     Status lRetval = kStatus_Success;
     Controllers::iterator begin, end;

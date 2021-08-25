@@ -249,7 +249,7 @@ Controller :: Init(const RunLoopParameters &aRunLoopParameters)
     Controllers::iterator  lCurrent, lEnd;
     Status                 lRetval;
 
-    lRetval = Client::Application::ControllerBasis::Init();
+    lRetval = Client::Application::ControllerBasis::Init(aRunLoopParameters);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mConnectionManager.Init(aRunLoopParameters);
