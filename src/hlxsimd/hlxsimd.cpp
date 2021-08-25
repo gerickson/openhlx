@@ -184,7 +184,7 @@ static const char * const   sLongUsageString =
  *
  */
 class HLXSimulator :
-    public ControllerDelegate
+    public Simulator::Application::ControllerDelegate
 {
 public:
     HLXSimulator(void);
@@ -200,49 +200,49 @@ public:
     Status Stop(void);
     Status Stop(const Status &aStatus);
 
-    const Controller &GetController(void) const;
-    Controller &GetController(void);
+    const Simulator::Application::Controller &GetController(void) const;
+    Simulator::Application::Controller &GetController(void);
     Status GetStatus(void) const;
     void SetStatus(const Status &aStatus);
 
 private:
     // Resolve
 
-    void ControllerWillResolve(Controller &aController, const char *aHost) final;
-    void ControllerIsResolving(Controller &aController, const char *aHost) final;
-    void ControllerDidResolve(Controller &aController, const char *aHost, const Common::IPAddress &aIPAddress) final;
-    void ControllerDidNotResolve(Controller &aController, const char *aHost, const Common::Error &aError) final;
+    void ControllerWillResolve(Simulator::Application::Controller &aController, const char *aHost) final;
+    void ControllerIsResolving(Simulator::Application::Controller &aController, const char *aHost) final;
+    void ControllerDidResolve(Simulator::Application::Controller &aController, const char *aHost, const Common::IPAddress &aIPAddress) final;
+    void ControllerDidNotResolve(Simulator::Application::Controller &aController, const char *aHost, const Common::Error &aError) final;
 
     // Listen
 
-    void ControllerWillListen(Controller &aController, CFURLRef aURLRef) final;
-    void ControllerIsListening(Controller &aController, CFURLRef aURLRef) final;
-    void ControllerDidListen(Controller &aController, CFURLRef aURLRef) final;
-    void ControllerDidNotListen(Controller &aController, CFURLRef aURLRef, const Common::Error &aError) final;
+    void ControllerWillListen(Simulator::Application::Controller &aController, CFURLRef aURLRef) final;
+    void ControllerIsListening(Simulator::Application::Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidListen(Simulator::Application::Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidNotListen(Simulator::Application::Controller &aController, CFURLRef aURLRef, const Common::Error &aError) final;
 
     // Accept
 
-    void ControllerWillAccept(Controller &aController, CFURLRef aURLRef) final;
-    void ControllerIsAccepting(Controller &aController, CFURLRef aURLRef) final;
-    void ControllerDidAccept(Controller &aController, CFURLRef aURLRef) final;
-    void ControllerDidNotAccept(Controller &aController, CFURLRef aURLRef, const Error &aError) final;
+    void ControllerWillAccept(Simulator::Application::Controller &aController, CFURLRef aURLRef) final;
+    void ControllerIsAccepting(Simulator::Application::Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidAccept(Simulator::Application::Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidNotAccept(Simulator::Application::Controller &aController, CFURLRef aURLRef, const Error &aError) final;
 
     // Disconnect
 
-    void ControllerWillDisconnect(Controller &aController, CFURLRef aURLRef) final;
-    void ControllerDidDisconnect(Controller &aController, CFURLRef aURLRef, const Error &aError) final;
-    void ControllerDidNotDisconnect(Controller &aController, CFURLRef aURLRef, const Error &aError) final;
+    void ControllerWillDisconnect(Simulator::Application::Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidDisconnect(Simulator::Application::Controller &aController, CFURLRef aURLRef, const Error &aError) final;
+    void ControllerDidNotDisconnect(Simulator::Application::Controller &aController, CFURLRef aURLRef, const Error &aError) final;
 
     // Error
 
-    void ControllerError(Controller &aController, const Error &aError) final;
+    void ControllerError(Common::Application::ControllerBasis &aController, const Error &aError) final;
 
     static void OnSignal(int aSignal);
 
 private:
-    RunLoopParameters  mRunLoopParameters;
-    Controller         mHLXSimulatorController;
-    Status             mStatus;
+    RunLoopParameters                   mRunLoopParameters;
+    Simulator::Application::Controller  mHLXSimulatorController;
+    Status                              mStatus;
 };
 
 HLXSimulator :: HLXSimulator(void) :
@@ -319,13 +319,13 @@ Status HLXSimulator :: Stop(const Status &aStatus)
     return (lStatus);
 }
 
-const Controller &
+const Simulator::Application::Controller &
 HLXSimulator :: GetController(void) const
 {
     return (mHLXSimulatorController);
 }
 
-Controller &
+Simulator::Application::Controller &
 HLXSimulator :: GetController(void)
 {
     return (mHLXSimulatorController);
@@ -345,21 +345,21 @@ void HLXSimulator :: SetStatus(const Status &aStatus)
 
 // Resolve
 
-void HLXSimulator :: ControllerWillResolve(Controller &aController, const char *aHost)
+void HLXSimulator :: ControllerWillResolve(Simulator::Application::Controller &aController, const char *aHost)
 {
     (void)aController;
 
     Log::Info().Write("Will resolve \"%s\".\n", aHost);
 }
 
-void HLXSimulator :: ControllerIsResolving(Controller &aController, const char *aHost)
+void HLXSimulator :: ControllerIsResolving(Simulator::Application::Controller &aController, const char *aHost)
 {
     (void)aController;
 
     Log::Info().Write("Is resolving \"%s\".\n", aHost);
 }
 
-void HLXSimulator :: ControllerDidResolve(Controller &aController, const char *aHost, const IPAddress &aIPAddress)
+void HLXSimulator :: ControllerDidResolve(Simulator::Application::Controller &aController, const char *aHost, const IPAddress &aIPAddress)
 {
     char   lBuffer[INET6_ADDRSTRLEN];
     Status lStatus;
@@ -375,7 +375,7 @@ void HLXSimulator :: ControllerDidResolve(Controller &aController, const char *a
     return;
 }
 
-void HLXSimulator :: ControllerDidNotResolve(Controller &aController, const char *aHost, const Common::Error &aError)
+void HLXSimulator :: ControllerDidNotResolve(Simulator::Application::Controller &aController, const char *aHost, const Common::Error &aError)
 {
     (void)aController;
 
@@ -384,28 +384,28 @@ void HLXSimulator :: ControllerDidNotResolve(Controller &aController, const char
 
 // Listen
 
-void HLXSimulator :: ControllerWillListen(Controller &aController, CFURLRef aURLRef)
+void HLXSimulator :: ControllerWillListen(Simulator::Application::Controller &aController, CFURLRef aURLRef)
 {
     (void)aController;
 
     Log::Info().Write("Will listen at %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
 }
 
-void HLXSimulator :: ControllerIsListening(Controller &aController, CFURLRef aURLRef)
+void HLXSimulator :: ControllerIsListening(Simulator::Application::Controller &aController, CFURLRef aURLRef)
 {
     (void)aController;
 
     Log::Info().Write("Listening at %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
 }
 
-void HLXSimulator :: ControllerDidListen(Controller &aController, CFURLRef aURLRef)
+void HLXSimulator :: ControllerDidListen(Simulator::Application::Controller &aController, CFURLRef aURLRef)
 {
     (void)aController;
 
     Log::Info().Write("Listened at %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
 }
 
-void HLXSimulator :: ControllerDidNotListen(Controller &aController, CFURLRef aURLRef, const Common::Error &aError)
+void HLXSimulator :: ControllerDidNotListen(Simulator::Application::Controller &aController, CFURLRef aURLRef, const Common::Error &aError)
 {
     (void)aController;
 
@@ -414,28 +414,28 @@ void HLXSimulator :: ControllerDidNotListen(Controller &aController, CFURLRef aU
 
 // Accept
 
-void HLXSimulator :: ControllerWillAccept(Controller &aController, CFURLRef aURLRef)
+void HLXSimulator :: ControllerWillAccept(Simulator::Application::Controller &aController, CFURLRef aURLRef)
 {
     (void)aController;
 
     Log::Info().Write("Will accept from %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
 }
 
-void HLXSimulator :: ControllerIsAccepting(Controller &aController, CFURLRef aURLRef)
+void HLXSimulator :: ControllerIsAccepting(Simulator::Application::Controller &aController, CFURLRef aURLRef)
 {
     (void)aController;
 
     Log::Info().Write("Accepting from %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
 }
 
-void HLXSimulator :: ControllerDidAccept(Controller &aController, CFURLRef aURLRef)
+void HLXSimulator :: ControllerDidAccept(Simulator::Application::Controller &aController, CFURLRef aURLRef)
 {
     (void)aController;
 
     Log::Info().Write("Accepted from %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
 }
 
-void HLXSimulator :: ControllerDidNotAccept(Controller &aController, CFURLRef aURLRef, const Error &aError)
+void HLXSimulator :: ControllerDidNotAccept(Simulator::Application::Controller &aController, CFURLRef aURLRef, const Error &aError)
 {
     (void)aController;
 
@@ -444,21 +444,21 @@ void HLXSimulator :: ControllerDidNotAccept(Controller &aController, CFURLRef aU
 
 // Disconnect
 
-void HLXSimulator :: ControllerWillDisconnect(Controller &aController, CFURLRef aURLRef)
+void HLXSimulator :: ControllerWillDisconnect(Simulator::Application::Controller &aController, CFURLRef aURLRef)
 {
     (void)aController;
 
     Log::Info().Write("Will disconnect from %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
 }
 
-void HLXSimulator :: ControllerDidDisconnect(Controller &aController, CFURLRef aURLRef, const Error &aError)
+void HLXSimulator :: ControllerDidDisconnect(Simulator::Application::Controller &aController, CFURLRef aURLRef, const Error &aError)
 {
     (void)aController;
 
     Log::Info().Write("Disconnected from %s: %d (%s).\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString(), aError, strerror(-aError));
 }
 
-void HLXSimulator :: ControllerDidNotDisconnect(Controller &aController, CFURLRef aURLRef, const Error &aError)
+void HLXSimulator :: ControllerDidNotDisconnect(Simulator::Application::Controller &aController, CFURLRef aURLRef, const Error &aError)
 {
     (void)aController;
 
@@ -467,7 +467,7 @@ void HLXSimulator :: ControllerDidNotDisconnect(Controller &aController, CFURLRe
 
 // Error
 
-void HLXSimulator :: ControllerError(Controller &aController, const Error &aError)
+void HLXSimulator :: ControllerError(Common::Application::ControllerBasis &aController, const Error &aError)
 {
     (void)aController;
 
