@@ -22,13 +22,10 @@
  *
  */
 
-#ifndef OPENHLXCOMMONAPPLICATIONCONTROLLERBASIS_HPP
-#define OPENHLXCOMMONAPPLICATIONCONTROLLERBASIS_HPP
+#include "HLXCommonControllerBasis.hpp"
 
 
-#include <map>
-
-#include <OpenHLX/Common/Errors.hpp>
+using namespace HLX::Common;
 
 
 namespace HLX
@@ -40,24 +37,14 @@ namespace Common
 namespace Application
 {
 
-class ControllerBasis
+Status
+ControllerBasis :: Init(void)
 {
-public:
-    virtual ~ControllerBasis(void) = default;
-
-protected:
-    ControllerBasis(void) = default;
-    ControllerBasis(const ControllerBasis &aControllerBasis) = delete;
-
-    ControllerBasis & operator =(const ControllerBasis &aControllerBasis) = delete;
-
-    Common::Status Init(void);
-};
+    return (kStatus_Success);
+}
 
 }; // namespace Application
 
 }; // namespace Common
 
 }; // namespace HLX
-
-#endif // OPENHLXCOMMONAPPLICATIONCONTROLLERBASIS_HPP
