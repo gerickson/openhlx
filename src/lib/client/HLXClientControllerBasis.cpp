@@ -52,10 +52,11 @@ namespace Application
  *    This is the class default constructor.
  *
  */
-ControllerBasis :: ControllerBasis(Client::Application::Controller &aController) :
-    FooType(),
+ControllerBasis :: ControllerBasis(void) :
+    ClientControllerContainer(),
     ControllerBasisRefreshDelegate(),
-    mController(aController),
+    mConnectionManager(),
+    mCommandManager(),
     mControllersDidRefreshCount(0),
     mRefreshDelegate(nullptr)
 {
@@ -97,13 +98,41 @@ Status
 ControllerBasis :: Init(const Common::RunLoopParameters &aRunLoopParameters)
 {
     Status lRetval = kStatus_Success;
-    Controllers::iterator begin, end;
 
-    lRetval = FooType::Init();
+
+    (void)aRunLoopParameters;
+
+    lRetval = ClientControllerContainer::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
  done:
     return (lRetval);
+}
+
+// MARK: Accessors
+
+const Client::CommandManager &
+ControllerBasis :: GetCommandManager(void) const
+{
+    return (mCommandManager);
+}
+
+Client::CommandManager &
+ControllerBasis :: GetCommandManager(void)
+{
+    return (mCommandManager);
+}
+
+const Client::ConnectionManager &
+ControllerBasis :: GetConnectionManager(void) const
+{
+    return (mConnectionManager);
+}
+
+Client::ConnectionManager &
+ControllerBasis :: GetConnectionManager(void)
+{
+    return (mConnectionManager);
 }
 
 /**
@@ -131,7 +160,7 @@ ControllerBasis :: Refresh(void)
 
     if (mRefreshDelegate != nullptr)
     {
-        mRefreshDelegate->ControllerWillRefresh(mController);
+        mRefreshDelegate->ControllerWillRefresh(*this);
     }
 
     // Reset the overall refresh count.
@@ -237,7 +266,7 @@ ControllerBasis :: ControllerIsRefreshing(Client::ControllerBasis &aController, 
 
         if (mRefreshDelegate != nullptr)
         {
-            mRefreshDelegate->ControllerIsRefreshing(mController, lPercentComplete);
+            mRefreshDelegate->ControllerIsRefreshing(*this, lPercentComplete);
         }
     }
 }
@@ -270,7 +299,7 @@ ControllerBasis :: ControllerDidRefresh(Client::ControllerBasis &aController)
             const Percentage lPercentComplete = CalculatePercentage(static_cast<uint8_t>(mControllersDidRefreshCount),
                                                                     static_cast<uint8_t>(GetControllers().size()));
 
-            mRefreshDelegate->ControllerIsRefreshing(mController, lPercentComplete);
+            mRefreshDelegate->ControllerIsRefreshing(*this, lPercentComplete);
         }
 
         if (mControllersDidRefreshCount == GetControllers().size())
@@ -291,7 +320,7 @@ ControllerBasis :: ControllerDidRefresh(Client::ControllerBasis &aController)
 
             if (mRefreshDelegate != nullptr)
             {
-                mRefreshDelegate->ControllerDidRefresh(mController);
+                mRefreshDelegate->ControllerDidRefresh(*this);
             }
         }
     }

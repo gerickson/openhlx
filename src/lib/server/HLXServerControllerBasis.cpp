@@ -49,9 +49,10 @@ namespace Application
  *    This is the class default constructor.
  *
  */
-ControllerBasis :: ControllerBasis(Server::Application::Controller &aController) :
-    FooType(),
-    mController(aController)
+ControllerBasis :: ControllerBasis(void) :
+    ServerControllerContainer(),
+    mConnectionManager(),
+    mCommandManager()
 {
     return;
 }
@@ -91,13 +92,41 @@ Status
 ControllerBasis :: Init(const Common::RunLoopParameters &aRunLoopParameters)
 {
     Status lRetval = kStatus_Success;
-    Controllers::iterator begin, end;
 
-    lRetval = FooType::Init();
+
+    (void)aRunLoopParameters;
+
+    lRetval = ServerControllerContainer::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
  done:
     return (lRetval);
+}
+
+// MARK: Accessors
+
+const Server::CommandManager &
+ControllerBasis :: GetCommandManager(void) const
+{
+    return (mCommandManager);
+}
+
+Server::CommandManager &
+ControllerBasis :: GetCommandManager(void)
+{
+    return (mCommandManager);
+}
+
+const Server::ConnectionManager &
+ControllerBasis :: GetConnectionManager(void) const
+{
+    return (mConnectionManager);
+}
+
+Server::ConnectionManager &
+ControllerBasis :: GetConnectionManager(void)
+{
+    return (mConnectionManager);
 }
 
 }; // namespace Application

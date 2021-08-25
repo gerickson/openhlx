@@ -28,10 +28,12 @@
 
 #include <map>
 
+#include <OpenHLX/Client/CommandManager.hpp>
+#include <OpenHLX/Client/ConnectionManager.hpp>
 #include <OpenHLX/Client/ControllerBasis.hpp>
 #include <OpenHLX/Client/ControllerBasisRefreshDelegate.hpp>
 #include <OpenHLX/Common/Errors.hpp>
-#include <OpenHLX/Common/HLXCommonControllerBasis.hpp>
+#include <OpenHLX/Common/HLXCommonControllerContainerTemplate.hpp>
 #include <OpenHLX/Common/RunLoopParameters.hpp>
 
 
@@ -59,7 +61,7 @@ class ControllerRefreshDelegate;
  *
  */
 class ControllerBasis :
-    public Common::Application::Foo<Client::ControllerBasis>,
+    public Common::Application::ControllerContainerTemplate<Client::ControllerBasis>,
     public ControllerBasisRefreshDelegate
 {
 public:
@@ -68,6 +70,13 @@ public:
     // Initializer(s)
 
     Common::Status Init(const Common::RunLoopParameters &aRunLoopParameters);
+
+    // Accessors
+
+    const Client::CommandManager &     GetCommandManager(void) const;
+    Client::CommandManager &           GetCommandManager(void);
+    const Client::ConnectionManager &  GetConnectionManager(void) const;
+    Client::ConnectionManager &        GetConnectionManager(void);
 
     Client::Application::ControllerRefreshDelegate *GetRefreshDelegate(void) const;
 
@@ -81,16 +90,19 @@ public:
     void ControllerDidRefresh(Client::ControllerBasis &aController) final;
 
 protected:
-    ControllerBasis(Client::Application::Controller &aController);
+    typedef Common::Application::ControllerContainerTemplate<Client::ControllerBasis> ClientControllerContainer;
+
+protected:
+    ControllerBasis(void);
 
     bool IsRefreshing(void) const;
-
 
 private:
     virtual void DeriveGroupState(void) = 0;
 
 private:
-    Controller &                                      mController;
+    Client::ConnectionManager                         mConnectionManager;
+    Client::CommandManager                            mCommandManager;
     size_t                                            mControllersDidRefreshCount;
     Client::Application::ControllerRefreshDelegate *  mRefreshDelegate;
 };

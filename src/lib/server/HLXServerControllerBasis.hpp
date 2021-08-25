@@ -29,9 +29,11 @@
 #include <map>
 
 #include <OpenHLX/Common/Errors.hpp>
-#include <OpenHLX/Common/HLXCommonControllerBasis.hpp>
+#include <OpenHLX/Common/HLXCommonControllerContainerTemplate.hpp>
 #include <OpenHLX/Common/RunLoopParameters.hpp>
 #include <OpenHLX/Server/ControllerBasis.hpp>
+#include <OpenHLX/Server/CommandManager.hpp>
+#include <OpenHLX/Server/ConnectionManager.hpp>
 
 
 namespace HLX
@@ -56,7 +58,7 @@ class Controller;
  *
  */
 class ControllerBasis :
-    public Common::Application::Foo<Server::ControllerBasis>
+    public Common::Application::ControllerContainerTemplate<Server::ControllerBasis>
 {
 public:
     virtual ~ControllerBasis(void);
@@ -65,11 +67,22 @@ public:
 
     Common::Status Init(const Common::RunLoopParameters &aRunLoopParameters);
 
+    // Accessors
+
+    const Server::CommandManager &     GetCommandManager(void) const;
+    Server::CommandManager &           GetCommandManager(void);
+    const Server::ConnectionManager &  GetConnectionManager(void) const;
+    Server::ConnectionManager &        GetConnectionManager(void);
+
 protected:
-    ControllerBasis(Server::Application::Controller &aController);
+    typedef Common::Application::ControllerContainerTemplate<Server::ControllerBasis> ServerControllerContainer;
+
+protected:
+    ControllerBasis(void);
 
 private:
-    Controller &                                      mController;
+    Server::ConnectionManager  mConnectionManager;
+    Server::CommandManager     mCommandManager;
 };
 
 }; // namespace Application
