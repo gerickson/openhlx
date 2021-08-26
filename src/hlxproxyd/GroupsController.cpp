@@ -289,7 +289,7 @@ void GroupsController :: ClearZonesRequestReceivedHandler(Server::ConnectionBasi
         lStatus = SendErrorResponse(aConnection);
         nlVERIFY_SUCCESS(lStatus);
     }
-#endif
+#endif // XXX
 
     return;
 }
