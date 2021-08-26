@@ -237,75 +237,21 @@ done:
 
 void GroupsController :: AddZoneRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    IdentifierType                            lGroupIdentifier;
-    ZoneModel::IdentifierType                 lZoneIdentifier;
-    GroupModel *                              lGroupModel;
-    Server::Command::Groups::AddZoneResponse  lAddZoneResponse;
-    ConnectionBuffer::MutableCountedPointer   lResponseBuffer;
-    const uint8_t *                           lBuffer;
-    size_t                                    lSize;
-    Status                                    lStatus;
+    Status                                   lStatus;
 
 
-    (void)aSize;
-
-    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Groups::AddZoneRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
-
-    // Match 2/3: Group Identifier
-    //
-    // The validity of the group identifier will be range checked at
-    // GetGroup below.
-
-    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
-                                                 Common::Utilities::Distance(aMatches.at(1)),
-                                                 lGroupIdentifier);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    // Match 3/3: Zone Identifier
-    //
-    // Parse and validate the identifier
-
-    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(2).rm_so,
-                                                 Common::Utilities::Distance(aMatches.at(1)),
-                                                 lZoneIdentifier);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lStatus = ZonesController::ValidateIdentifier(lZoneIdentifier);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lResponseBuffer.reset(new ConnectionBuffer);
-    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
-
-    lStatus = lResponseBuffer->Init();
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lStatus = mGroups.GetGroup(lGroupIdentifier, lGroupModel);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lStatus = lGroupModel->AddZone(lZoneIdentifier);
-    nlREQUIRE(lStatus >= kStatus_Success, done);
-
-    if (lStatus == kStatus_Success)
-    {
-        ;
-    }
-
-    lStatus = lAddZoneResponse.Init(lGroupIdentifier, lZoneIdentifier);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lBuffer = lAddZoneResponse.GetBuffer();
-    lSize = lAddZoneResponse.GetSize();
-
-    lStatus = Common::Utilities::Put(*lResponseBuffer.get(), lBuffer, lSize);
+    lStatus = ProxyMutationCommand(aConnection,
+                                   aBuffer,
+                                   aSize,
+                                   aMatches,
+                                   kZoneResponse,
+                                   Client::GroupsControllerBasis::ChangeZoneCompleteHandler,
+                                   Client::GroupsControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::GroupsControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
-    if (lStatus >= kStatus_Success)
-    {
-        lStatus = SendResponse(aConnection, lResponseBuffer);
-        nlVERIFY_SUCCESS(lStatus);
-    }
-    else
+    if (lStatus < kStatus_Success)
     {
         lStatus = SendErrorResponse(aConnection);
         nlVERIFY_SUCCESS(lStatus);
@@ -316,122 +262,62 @@ void GroupsController :: AddZoneRequestReceivedHandler(Server::ConnectionBasis &
 
 void GroupsController :: ClearZonesRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    IdentifierType                               lGroupIdentifier;
-    GroupModel *                                 lGroupModel;
-    Server::Command::Groups::ClearZonesResponse  lClearZonesResponse;
-    ConnectionBuffer::MutableCountedPointer      lResponseBuffer;
-    const uint8_t *                              lBuffer;
-    size_t                                       lSize;
+#if XXX // Need to create ClearZonesResponse
+    // There is no static clear group zones response, so we instantiate
+    // and initialize one on the stack.
+
+    Client::Command::Groups::ClearZonesResponse  lClearZonesResponse;
     Status                                       lStatus;
 
 
-    (void)aBuffer;
-    (void)aSize;
-
-    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Groups::ClearZonesRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
-
-    lResponseBuffer.reset(new ConnectionBuffer);
-    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
-
-    lStatus = lResponseBuffer->Init();
+    lStatus = lSetVolumeResponse.Init();
     nlREQUIRE_SUCCESS(lStatus, done);
 
-    for (lGroupIdentifier = IdentifierModel::kIdentifierMin; lGroupIdentifier <= kGroupsMax; lGroupIdentifier++)
-    {
-        lStatus = mGroups.GetGroup(lGroupIdentifier, lGroupModel);
-        nlREQUIRE_SUCCESS(lStatus, done);
-
-        lStatus = lGroupModel->ClearZones();
-        nlREQUIRE(lStatus >= kStatus_Success, done);
-
-        if (lStatus == kStatus_Success)
-        {
-            ;
-        }
-    }
-
-    lStatus = lClearZonesResponse.Init();
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lBuffer = lClearZonesResponse.GetBuffer();
-    lSize = lClearZonesResponse.GetSize();
-
-    lStatus = Common::Utilities::Put(*lResponseBuffer.get(), lBuffer, lSize);
+    lStatus = ProxyMutationCommand(aConnection,
+                                   aBuffer,
+                                   aSize,
+                                   aMatches,
+                                   lClearZonesResponse,
+                                   Client::GroupsControllerBasis::ClearZonesCompleteHandler,
+                                   Client::GroupsControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::GroupsControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
-    if (lStatus >= kStatus_Success)
-    {
-        lStatus = SendResponse(aConnection, lResponseBuffer);
-        nlVERIFY_SUCCESS(lStatus);
-    }
-    else
+    if (lStatus < kStatus_Success)
     {
         lStatus = SendErrorResponse(aConnection);
         nlVERIFY_SUCCESS(lStatus);
     }
+#endif
 
     return;
 }
 
-/*
- * As documented above, the decrease volume request functions quite
- * differently in the server group controller than it does in the
- * server zone controller.
- *
- * The group controller acts somewhat statelessly, since any member
- * zone may be independently mutated following a group operation that
- * includes such a zone. Consequently, group actions to attempt to
- * bring zone membership back into alignment with the prevailing
- * request, which may be a non-operation if zone state has not changed
- * since the last group operation.
- *
- * As a result, this handler (and, by extension, this controller) will
- * post a notification of state change to the server parent
- * controller. The server parent controller will receive notification
- * of the requested action and will carry it out by mutating the
- * relevant zones, based on membership.
- *
- * After the state change handling is complete, all this handler must
- * do is acknowledge the request by reflecting it back in the response
- * to the initiator.
- */
 void GroupsController :: DecreaseVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    static const VolumeModel::LevelType      kAdjustment = -1;
-    IdentifierType                           lGroupIdentifier;
-    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
-    Status                                   lStatus;
+    // There is no static decrease group volume response, so we
+    // instantiate and initialize one on the stack.
+
+    Client::Command::Groups::DecreaseVolumeResponse  lDecreaseVolumeResponse;
+    Status                                           lStatus;
 
 
-    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Groups::DecreaseVolumeRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
-
-    // Match 2/3: Group Identifier
-    //
-    // The validity of the group identifier will be range checked at
-    // HandleAdjustVolumeReceived below.
-
-    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
-                                                Common::Utilities::Distance(aMatches.at(1)),
-                                                lGroupIdentifier);
+    lStatus = lDecreaseVolumeResponse.Init();
     nlREQUIRE_SUCCESS(lStatus, done);
 
-    lResponseBuffer.reset(new ConnectionBuffer);
-    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
-
-    lStatus = lResponseBuffer->Init();
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lStatus = HandleAdjustVolumeReceived(aBuffer, aSize, lGroupIdentifier, kAdjustment, lResponseBuffer);
+    lStatus = ProxyMutationCommand(aConnection,
+                                   aBuffer,
+                                   aSize,
+                                   aMatches,
+                                   lDecreaseVolumeResponse,
+                                   Client::GroupsControllerBasis::DecreaseVolumeCompleteHandler,
+                                   Client::GroupsControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::GroupsControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
-    if (lStatus >= kStatus_Success)
-    {
-        lStatus = SendResponse(aConnection, lResponseBuffer);
-        nlVERIFY_SUCCESS(lStatus);
-    }
-    else
+    if (lStatus < kStatus_Success)
     {
         lStatus = SendErrorResponse(aConnection);
         nlVERIFY_SUCCESS(lStatus);
@@ -440,64 +326,30 @@ void GroupsController :: DecreaseVolumeRequestReceivedHandler(Server::Connection
     return;
 }
 
-/*
- * As documented above, the increase volume request functions quite
- * differently in the server group controller than it does in the
- * server zone controller.
- *
- * The group controller acts somewhat statelessly, since any member
- * zone may be independently mutated following a group operation that
- * includes such a zone. Consequently, group actions to attempt to
- * bring zone membership back into alignment with the prevailing
- * request, which may be a non-operation if zone state has not changed
- * since the last group operation.
- *
- * As a result, this handler (and, by extension, this controller) will
- * post a notification of state change to the server parent
- * controller. The server parent controller will receive notification
- * of the requested action and will carry it out by mutating the
- * relevant zones, based on membership.
- *
- * After the state change handling is complete, all this handler must
- * do is acknowledge the request by reflecting it back in the response
- * to the initiator.
- */
 void GroupsController :: IncreaseVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    static const VolumeModel::LevelType      kAdjustment = 1;
-    IdentifierType                           lGroupIdentifier;
-    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
-    Status                                   lStatus;
+    // There is no static increase group volume response, so we
+    // instantiate and initialize one on the stack.
+
+    Client::Command::Groups::IncreaseVolumeResponse  lIncreaseVolumeResponse;
+    Status                                           lStatus;
 
 
-    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Groups::IncreaseVolumeRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
-
-    // Match 2/3: Group Identifier
-    //
-    // The validity of the group identifier will be range checked at
-    // HandleAdjustVolumeReceived below.
-
-    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
-                                                Common::Utilities::Distance(aMatches.at(1)),
-                                                lGroupIdentifier);
+    lStatus = lIncreaseVolumeResponse.Init();
     nlREQUIRE_SUCCESS(lStatus, done);
 
-    lResponseBuffer.reset(new ConnectionBuffer);
-    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
-
-    lStatus = lResponseBuffer->Init();
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lStatus = HandleAdjustVolumeReceived(aBuffer, aSize, lGroupIdentifier, kAdjustment, lResponseBuffer);
+    lStatus = ProxyMutationCommand(aConnection,
+                                   aBuffer,
+                                   aSize,
+                                   aMatches,
+                                   lIncreaseVolumeResponse,
+                                   Client::GroupsControllerBasis::IncreaseVolumeCompleteHandler,
+                                   Client::GroupsControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::GroupsControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
-    if (lStatus >= kStatus_Success)
-    {
-        lStatus = SendResponse(aConnection, lResponseBuffer);
-        nlVERIFY_SUCCESS(lStatus);
-    }
-    else
+    if (lStatus < kStatus_Success)
     {
         lStatus = SendErrorResponse(aConnection);
         nlVERIFY_SUCCESS(lStatus);
@@ -506,72 +358,30 @@ void GroupsController :: IncreaseVolumeRequestReceivedHandler(Server::Connection
     return;
 }
 
-/*
- * As documented above, the mute request functions quite differently
- * in the server group controller than it does in the server zone
- * controller.
- *
- * The group controller acts somewhat statelessly, since any member
- * zone may be independently mutated following a group operation that
- * includes such a zone. Consequently, group actions to attempt to
- * bring zone membership back into alignment with the prevailing
- * request, which may be a non-operation if zone state has not changed
- * since the last group operation.
- *
- * As a result, this handler (and, by extension, this controller) will
- * post a notification of state change to the server parent
- * controller. The server parent controller will receive notification
- * of the requested action and will carry it out by mutating the
- * relevant zones, based on membership.
- *
- * After the state change handling is complete, all this handler must
- * do is acknowledge the request by reflecting it back in the response
- * to the initiator.
- */
 void GroupsController :: MuteRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    const char *                             lMutep;
-    IdentifierType                           lGroupIdentifier;
-    VolumeModel::MuteType                    lMute;
-    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
-    Status                                   lStatus;
+    // There is no static set group mute response, so we instantiate
+    // and initialize one on the stack.
+
+    Client::Command::Groups::SetMuteResponse  lSetMuteResponse;
+    Status                                    lStatus;
 
 
-    (void)aSize;
-
-    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Groups::MuteRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
-
-    // Match 2/3: Muted/Unmuted
-
-    lMutep = ((const char *)(aBuffer) + aMatches.at(1).rm_so);
-    lMute = ((lMutep[0] == 'U') ? false : true);
-
-    // Match 3/3: Group Identifier
-    //
-    // The validity of the group identifier will be range checked at
-    // HandleSetMute below.
-
-    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(2).rm_so,
-                                                Common::Utilities::Distance(aMatches.at(1)),
-                                                lGroupIdentifier);
+    lStatus = lSetMuteResponse.Init();
     nlREQUIRE_SUCCESS(lStatus, done);
 
-    lResponseBuffer.reset(new ConnectionBuffer);
-    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
-
-    lStatus = lResponseBuffer->Init();
+    lStatus = ProxyMutationCommand(aConnection,
+                                   aBuffer,
+                                   aSize,
+                                   aMatches,
+                                   lSetMuteResponse,
+                                   Client::GroupsControllerBasis::SetMuteCompleteHandler,
+                                   Client::GroupsControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::GroupsControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
-
-    lStatus = HandleSetMute(lGroupIdentifier, lMute, lResponseBuffer);
-    nlREQUIRE(lStatus >= kStatus_Success, done);
 
  done:
-    if (lStatus >= kStatus_Success)
-    {
-        lStatus = SendResponse(aConnection, lResponseBuffer);
-        nlVERIFY_SUCCESS(lStatus);
-    }
-    else
+    if (lStatus < kStatus_Success)
     {
         lStatus = SendErrorResponse(aConnection);
         nlVERIFY_SUCCESS(lStatus);
@@ -659,75 +469,21 @@ void GroupsController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aC
 
 void GroupsController :: RemoveZoneRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    IdentifierType                               lGroupIdentifier;
-    ZoneModel::IdentifierType                    lZoneIdentifier;
-    GroupModel *                                 lGroupModel;
-    Server::Command::Groups::RemoveZoneResponse  lRemoveZoneResponse;
-    ConnectionBuffer::MutableCountedPointer      lResponseBuffer;
-    const uint8_t *                              lBuffer;
-    size_t                                       lSize;
-    Status                                       lStatus;
+    Status                                   lStatus;
 
 
-    (void)aSize;
-
-    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Groups::RemoveZoneRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
-
-    // Match 2/3: Group Identifier
-    //
-    // The validity of the group identifier will be range checked at
-    // GetGroup below.
-
-    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
-                                                 Common::Utilities::Distance(aMatches.at(1)),
-                                                 lGroupIdentifier);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    // Match 3/3: Zone Identifier
-    //
-    // Parse and validate the identifier
-
-    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(2).rm_so,
-                                                 Common::Utilities::Distance(aMatches.at(1)),
-                                                 lZoneIdentifier);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lStatus = ZonesController::ValidateIdentifier(lZoneIdentifier);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lResponseBuffer.reset(new ConnectionBuffer);
-    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
-
-    lStatus = lResponseBuffer->Init();
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lStatus = mGroups.GetGroup(lGroupIdentifier, lGroupModel);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lStatus = lGroupModel->RemoveZone(lZoneIdentifier);
-    nlREQUIRE(lStatus >= kStatus_Success, done);
-
-    if (lStatus == kStatus_Success)
-    {
-        ;
-    }
-
-    lStatus = lRemoveZoneResponse.Init(lGroupIdentifier, lZoneIdentifier);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lBuffer = lRemoveZoneResponse.GetBuffer();
-    lSize = lRemoveZoneResponse.GetSize();
-
-    lStatus = Common::Utilities::Put(*lResponseBuffer.get(), lBuffer, lSize);
+    lStatus = ProxyMutationCommand(aConnection,
+                                   aBuffer,
+                                   aSize,
+                                   aMatches,
+                                   kZoneResponse,
+                                   Client::GroupsControllerBasis::ChangeZoneCompleteHandler,
+                                   Client::GroupsControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::GroupsControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
-    if (lStatus >= kStatus_Success)
-    {
-        lStatus = SendResponse(aConnection, lResponseBuffer);
-        nlVERIFY_SUCCESS(lStatus);
-    }
-    else
+    if (lStatus < kStatus_Success)
     {
         lStatus = SendErrorResponse(aConnection);
         nlVERIFY_SUCCESS(lStatus);
@@ -738,78 +494,21 @@ void GroupsController :: RemoveZoneRequestReceivedHandler(Server::ConnectionBasi
 
 void GroupsController :: SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    IdentifierType                           lGroupIdentifier;
-    const char *                             lName;
-    size_t                                   lNameSize;
-    GroupModel *                             lGroupModel;
-    Server::Command::Groups::NameResponse    lNameResponse;
-    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
-    const uint8_t *                          lBuffer;
-    size_t                                   lSize;
 
 
-    (void)aSize;
-
-    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Groups::SetNameRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
-
-    // Match 2/3: Group Identifier
-    //
-    // The validity of the group identifier will be range checked at
-    // GetGroup below.
-
-    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
-                                                Common::Utilities::Distance(aMatches.at(1)),
-                                                lGroupIdentifier);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    // Match 3/3: Name
-
-    lName = (reinterpret_cast<const char *>(aBuffer) + aMatches.at(2).rm_so);
-    lNameSize = Common::Utilities::Distance(aMatches.at(2));
-
-    lResponseBuffer.reset(new ConnectionBuffer);
-    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
-
-    lStatus = lResponseBuffer->Init();
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    // Get the group model associated with the parsed group
-    // identifier. This will include a range check on the group
-    // identifier.
-
-    lStatus = mGroups.GetGroup(lGroupIdentifier, lGroupModel);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    // Attempt to set the parsed name. This will include range check
-    // on the name length. If the set name is the same as the current
-    // name, that should still be regarded as a success with a
-    // success, rather than error, response sent.
-
-    lStatus = lGroupModel->SetName(lName, lNameSize);
-    nlREQUIRE(lStatus >= kStatus_Success, done);
-
-    if (lStatus == kStatus_Success)
-    {
-        ;
-    }
-
-    lStatus = lNameResponse.Init(lGroupIdentifier, lName, lNameSize);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lBuffer = lNameResponse.GetBuffer();
-    lSize = lNameResponse.GetSize();
-
-    lStatus = Common::Utilities::Put(*lResponseBuffer.get(), lBuffer, lSize);
+    lStatus = ProxyMutationCommand(aConnection,
+                                   aBuffer,
+                                   aSize,
+                                   aMatches,
+                                   kNameResponse,
+                                   Client::GroupsControllerBasis::SetNameCompleteHandler,
+                                   Client::GroupsControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::GroupsControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
-    if (lStatus >= kStatus_Success)
-    {
-        lStatus = SendResponse(aConnection, lResponseBuffer);
-        nlVERIFY_SUCCESS(lStatus);
-    }
-    else
+    if (lStatus < kStatus_Success)
     {
         lStatus = SendErrorResponse(aConnection);
         nlVERIFY_SUCCESS(lStatus);
@@ -818,28 +517,6 @@ void GroupsController :: SetNameRequestReceivedHandler(Server::ConnectionBasis &
     return;
 }
 
-/*
- * As documented above, the set source request functions quite
- * differently in the server group controller than it does in the
- * server zone controller.
- *
- * The group controller acts somewhat statelessly, since any member
- * zone may be independently mutated following a group operation that
- * includes such a zone. Consequently, group actions to attempt to
- * bring zone membership back into alignment with the prevailing
- * request, which may be a non-operation if zone state has not changed
- * since the last group operation.
- *
- * As a result, this handler (and, by extension, this controller) will
- * post a notification of state change to the server parent
- * controller. The server parent controller will receive notification
- * of the requested action and will carry it out by mutating the
- * relevant zones, based on membership.
- *
- * After the state change handling is complete, all this handler must
- * do is acknowledge the request by reflecting it back in the response
- * to the initiator.
- */
 void GroupsController :: SetSourceRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     Status                                   lStatus;
@@ -865,76 +542,30 @@ void GroupsController :: SetSourceRequestReceivedHandler(Server::ConnectionBasis
     return;
 }
 
-/*
- * As documented above, the set volume request functions quite
- * differently in the server group controller than it does in the
- * server zone controller.
- *
- * The group controller acts somewhat statelessly, since any member
- * zone may be independently mutated following a group operation that
- * includes such a zone. Consequently, group actions to attempt to
- * bring zone membership back into alignment with the prevailing
- * request, which may be a non-operation if zone state has not changed
- * since the last group operation.
- *
- * As a result, this handler (and, by extension, this controller) will
- * post a notification of state change to the server parent
- * controller. The server parent controller will receive notification
- * of the requested action and will carry it out by mutating the
- * relevant zones, based on membership.
- *
- * After the state change handling is complete, all this handler must
- * do is acknowledge the request by reflecting it back in the response
- * to the initiator.
- */
 void GroupsController :: SetVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    IdentifierType                           lGroupIdentifier;
-    VolumeModel::LevelType                   lVolume;
-    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
-    Status                                   lStatus;
+    // There is no static set group volume response, so we instantiate
+    // and initialize one on the stack.
+
+    Client::Command::Groups::SetVolumeResponse  lSetVolumeResponse;
+    Status                                      lStatus;
 
 
-    (void)aSize;
-
-    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Groups::SetVolumeRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
-
-    // Match 2/3: Group Identifier
-    //
-    // The validity of the group identifier will be range checked at
-    // HandleSetVolumeReceived below.
-
-    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
-                                                Common::Utilities::Distance(aMatches.at(1)),
-                                                lGroupIdentifier);
+    lStatus = lSetVolumeResponse.Init();
     nlREQUIRE_SUCCESS(lStatus, done);
 
-    // Match 3/3: Volume Level
-    //
-    // The validity of the volume level will be range checked at
-    // HandleSetVolumeReceived below.
-
-    lStatus = ::HLX::Utilities::Parse(aBuffer + aMatches.at(2).rm_so,
-                                      Common::Utilities::Distance(aMatches.at(2)),
-                                      lVolume);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lResponseBuffer.reset(new ConnectionBuffer);
-    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
-
-    lStatus = lResponseBuffer->Init();
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lStatus = HandleSetVolumeReceived(lGroupIdentifier, lVolume, lResponseBuffer);
+    lStatus = ProxyMutationCommand(aConnection,
+                                   aBuffer,
+                                   aSize,
+                                   aMatches,
+                                   lSetVolumeResponse,
+                                   Client::GroupsControllerBasis::SetVolumeCompleteHandler,
+                                   Client::GroupsControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::GroupsControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
-    if (lStatus >= kStatus_Success)
-    {
-        lStatus = SendResponse(aConnection, lResponseBuffer);
-        nlVERIFY_SUCCESS(lStatus);
-    }
-    else
+    if (lStatus < kStatus_Success)
     {
         lStatus = SendErrorResponse(aConnection);
         nlVERIFY_SUCCESS(lStatus);
@@ -967,46 +598,28 @@ void GroupsController :: SetVolumeRequestReceivedHandler(Server::ConnectionBasis
  */
 void GroupsController :: ToggleMuteRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    IdentifierType                           lGroupIdentifier;
-    GroupModel *                             lGroupModel;
-    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
-    Status                                   lStatus;
+    // There is no static toggle group mute response, so we instantiate
+    // and initialize one on the stack.
+
+    Client::Command::Groups::ToggleMuteResponse  lToggleMuteResponse;
+    Status                                       lStatus;
 
 
-    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Groups::ToggleMuteRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
-
-    // Match 2/2: Group Identifier
-    //
-    // The validity of the group identifier will be range checked at
-    // GetGroup below.
-
-    lStatus = Model::Utilities::ParseIdentifier(aBuffer + aMatches.at(1).rm_so,
-                                                Common::Utilities::Distance(aMatches.at(1)),
-                                                lGroupIdentifier);
+    lStatus = lToggleMuteResponse.Init();
     nlREQUIRE_SUCCESS(lStatus, done);
 
-    lResponseBuffer.reset(new ConnectionBuffer);
-    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
-
-    lStatus = lResponseBuffer->Init();
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lStatus = mGroups.GetGroup(lGroupIdentifier, lGroupModel);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    // XXX - lStatus = OnToggleMute(lGroupIdentifier, *lGroupModel);
-    // XXX - nlREQUIRE_SUCCESS(lStatus, done);
-
-    lStatus = HandleToggleMuteResponse(aBuffer, aSize, lResponseBuffer);
+    lStatus = ProxyMutationCommand(aConnection,
+                                   aBuffer,
+                                   aSize,
+                                   aMatches,
+                                   lToggleMuteResponse,
+                                   Client::GroupsControllerBasis::ToggleMuteCompleteHandler,
+                                   Client::GroupsControllerBasis::CommandErrorHandler,
+                                   static_cast<Client::GroupsControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
-    if (lStatus >= kStatus_Success)
-    {
-        lStatus = SendResponse(aConnection, lResponseBuffer);
-        nlVERIFY_SUCCESS(lStatus);
-    }
-    else
+    if (lStatus < kStatus_Success)
     {
         lStatus = SendErrorResponse(aConnection);
         nlVERIFY_SUCCESS(lStatus);
@@ -1125,71 +738,6 @@ void GroupsController :: ToggleMuteRequestReceivedHandler(Server::ConnectionBasi
     {
         lController->ToggleMuteRequestReceivedHandler(aConnection, aBuffer, aSize, aMatches);
     }
-}
-
-// MARK: Proxy Handlers
-
-// MARK: Proxy Handler Trampolines
-
-// MARK: Client-facing Server Implementation
-
-Status GroupsController :: HandleSetMute(const IdentifierType &aGroupIdentifier, const VolumeModel::MuteType &aMute, ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    GroupModel *                       lGroupModel;
-    Status                             lRetval;
-
-
-    lRetval = mGroups.GetGroup(aGroupIdentifier, lGroupModel);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = lGroupModel->SetMute(aMute);
-    nlREQUIRE(lRetval >= kStatus_Success, done);
-
-    lRetval = HandleSetMuteResponse(aGroupIdentifier, aMute, aBuffer);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status GroupsController :: HandleAdjustVolumeReceived(const uint8_t *aInputBuffer, const size_t &aInputSize, const IdentifierType &aGroupIdentifier, const Model::VolumeModel::LevelType &aAdjustment, ConnectionBuffer::MutableCountedPointer &aOutputBuffer)
-{
-    GroupModel *                       lGroupModel;
-    Status                             lRetval;
-
-
-    nlREQUIRE_ACTION(aAdjustment != 0, done, lRetval = -EINVAL);
-
-    lRetval = mGroups.GetGroup(aGroupIdentifier, lGroupModel);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    // XXX - lRetval = OnAdjustVolume(aGroupIdentifier, *lGroupModel, aAdjustment);
-    // XXX - nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = HandleAdjustVolumeResponse(aInputBuffer, aInputSize, aOutputBuffer);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status GroupsController :: HandleSetVolumeReceived(const IdentifierType &aGroupIdentifier, const VolumeModel::LevelType &aVolume, ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    GroupModel *                       lGroupModel;
-    Status                             lRetval;
-
-
-    lRetval = mGroups.GetGroup(aGroupIdentifier, lGroupModel);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    // XXX - lRetval = OnSetVolume(aGroupIdentifier, *lGroupModel, aVolume);
-    // XXX - nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = HandleSetVolumeResponse(aGroupIdentifier, aVolume, aBuffer);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
 }
 
 }; // namespace Proxy
