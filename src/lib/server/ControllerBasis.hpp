@@ -86,6 +86,7 @@ protected:
                                      void *aContext,
                                      const bool &aRegister);
 
+    Common::Status SendResponse(Common::ConnectionBuffer::ImmutableCountedPointer aBuffer) const;
     Common::Status SendResponse(ConnectionBasis &aConnection,
                                 Common::ConnectionBuffer::ImmutableCountedPointer aBuffer) const;
 

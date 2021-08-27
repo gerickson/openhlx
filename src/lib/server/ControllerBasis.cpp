@@ -155,6 +155,20 @@ done:
 }
 
 Status
+ControllerBasis :: SendResponse(ConnectionBuffer::ImmutableCountedPointer aBuffer) const
+{
+    Status lRetval = kStatus_Success;
+
+    nlREQUIRE_ACTION(mCommandManager != nullptr, done, lRetval = kError_NotInitialized);
+
+    lRetval = mCommandManager->SendResponse(aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
 ControllerBasis :: SendResponse(ConnectionBasis &aConnection, ConnectionBuffer::ImmutableCountedPointer aBuffer) const
 {
     Status lRetval = kStatus_Success;
