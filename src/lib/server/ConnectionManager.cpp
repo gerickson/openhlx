@@ -436,6 +436,26 @@ private:
 };
 
 Status
+ConnectionManager :: Send(Common::ConnectionBuffer::ImmutableCountedPointer aBuffer)
+{
+    Connections::iterator  lCurrent = mActiveConnections.begin();
+    Connections::iterator  lLast    = mActiveConnections.end();
+    Status                 lRetval;
+
+
+    while ((lCurrent != lLast))
+    {
+        lRetval = (*lCurrent)->Send(aBuffer);
+        nlREQUIRE_SUCCESS(lRetval, next);
+
+    next:
+        lCurrent++;
+    }
+
+    return (lRetval);
+}
+
+Status
 ConnectionManager :: Send(ConnectionBasis &aConnection, ConnectionBuffer::ImmutableCountedPointer aBuffer)
 {
     HeterogeneousCompare<ConnectionBasis>  lComparator(&aConnection);

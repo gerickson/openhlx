@@ -86,6 +86,7 @@ public:
     Common::Status AddDelegate(ConnectionManagerDelegate *aDelegate);
     Common::Status RemoveDelegate(ConnectionManagerDelegate *aDelegate);
 
+    Common::Status Send(Common::ConnectionBuffer::ImmutableCountedPointer aBuffer);
     Common::Status Send(ConnectionBasis &aConnection, Common::ConnectionBuffer::ImmutableCountedPointer aBuffer);
 
     // Listener Basis Delegate Methods
