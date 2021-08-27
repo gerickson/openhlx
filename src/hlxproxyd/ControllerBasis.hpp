@@ -57,6 +57,16 @@ public:
 
     virtual Common::Status QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
 
+    // Command Proxying
+
+    Common::Status ProxyMutationCommand(Server::ConnectionBasis &aClientConnection,
+                                        const uint8_t *aRequestBuffer,
+                                        const size_t &aRequestSize,
+                                        const Common::RegularExpression::Matches &aMatches,
+                                        const Client::Command::ResponseBasis &aExpectedResponse,
+                                        Client::CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
+                                        Client::CommandManager::OnCommandErrorFunc aOnCommandErrorHandler,
+                                        void *aClientContext);
     Common::Status ProxyObservationCommand(Server::ConnectionBasis &aClientConnection,
                                            const uint8_t *aRequestBuffer,
                                            const size_t &aRequestSize,
@@ -67,20 +77,20 @@ public:
                                            Server::CommandManager::OnRequestReceivedFunc aOnRequestReceivedHandler,
                                            void *aClientContext,
                                            void *aServerContext);
-    Common::Status ProxyMutationCommand(Server::ConnectionBasis &aClientConnection,
-                                        const uint8_t *aRequestBuffer,
-                                        const size_t &aRequestSize,
-                                        const Common::RegularExpression::Matches &aMatches,
-                                        const Client::Command::ResponseBasis &aExpectedResponse,
-                                        Client::CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
-                                        Client::CommandManager::OnCommandErrorFunc aOnCommandErrorHandler,
-                                        void *aClientContext);
+
+    // Notification Proxying
+
+    Common::Status ProxyNotification(const uint8_t *aNotificationBuffer,
+                                     const size_t &aNotificationSize,
+                                     const Common::RegularExpression::Matches &aNotificationMatches,
+                                     Client::CommandManager::OnNotificationReceivedFunc  aOnNotificationReceivedHandler,
+                                     void *aClientContext);
 
 protected:
     ControllerBasis(void);
 
 private:
-    // Proxy Handlers
+    // Command Proxy Handlers
 
     void ProxyErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aClientExchange,
                            const Common::Error &aClientError,
@@ -107,7 +117,7 @@ private:
                                       void * aContext);
 
 public:
-    // Proxy Handler Trampolines
+    // Command Proxy Handler Trampolines
 
     static void ProxyErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aClientExchange,
                                   const Common::Error &aClientError,

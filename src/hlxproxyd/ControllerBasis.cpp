@@ -109,6 +109,60 @@ ControllerBasis :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnectio
     return (lRetval);
 }
 
+// MARK: Command Proxying Methods
+
+Status
+ControllerBasis :: ProxyMutationCommand(Server::ConnectionBasis &aClientConnection,
+                                        const uint8_t *aRequestBuffer,
+                                        const size_t &aRequestSize,
+                                        const Common::RegularExpression::Matches &aServerMatches,
+                                        const Client::Command::ResponseBasis &aExpectedResponse,
+                                        Client::CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
+                                        Client::CommandManager::OnCommandErrorFunc aOnCommandErrorHandler,
+                                        void *aContext)
+{
+    DeclareScopedFunctionTracer(lTracer);
+    Client::Command::ExchangeBasis::MutableCountedPointer lCommand;
+    std::unique_ptr<Detail::ProxyContext>                 lProxyContext;
+    Status                                                lRetval = kStatus_Success;
+
+    nlREQUIRE_ACTION(aRequestBuffer != nullptr, done, lRetval = -EINVAL);
+    nlREQUIRE_ACTION(aRequestSize > 0, done, lRetval = -EINVAL);
+    nlREQUIRE_ACTION(aOnCommandCompleteHandler != nullptr, done, lRetval = -EINVAL);
+    nlREQUIRE_ACTION(aOnCommandErrorHandler != nullptr, done, lRetval = -EINVAL);
+    nlREQUIRE_ACTION(aContext != nullptr, done, lRetval = -EINVAL);
+
+    lProxyContext.reset(new Detail::ProxyContext());
+    nlREQUIRE_ACTION(lProxyContext, done, lRetval = -ENOMEM);
+
+    lProxyContext->mClientConnection         = &aClientConnection;
+    lProxyContext->mRequestBuffer            = aRequestBuffer;
+    lProxyContext->mRequestSize              = aRequestSize;
+    lProxyContext->mServerMatches            = aServerMatches;
+    lProxyContext->mOnCommandCompleteHandler = aOnCommandCompleteHandler;
+    lProxyContext->mOnCommandErrorHandler    = aOnCommandErrorHandler;
+    lProxyContext->mOnRequestReceivedHandler = nullptr;
+    lProxyContext->mTheirClientContext       = aContext;
+    lProxyContext->mTheirServerContext       = nullptr;
+    lProxyContext->mOurContext               = this;
+
+    lCommand.reset(new Proxy::Command::Proxy());
+    nlREQUIRE_ACTION(lCommand, done, lRetval = -ENOMEM);
+
+    lRetval = std::static_pointer_cast<Proxy::Command::Proxy>(lCommand)->Init(aRequestBuffer, aRequestSize, aExpectedResponse);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = mClientCommandManager->SendCommand(lCommand,
+                                                 mTimeout,
+                                                 ControllerBasis::ProxyMutationCompleteHandler,
+                                                 ControllerBasis::ProxyErrorHandler,
+                                                 lProxyContext.release());
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
 Status
 ControllerBasis :: ProxyObservationCommand(Server::ConnectionBasis &aClientConnection,
                                            const uint8_t *aRequestBuffer,
@@ -165,59 +219,46 @@ ControllerBasis :: ProxyObservationCommand(Server::ConnectionBasis &aClientConne
     return (lRetval);
 }
 
+// MARK: Notification Proxy Methods
+
 Status
-ControllerBasis :: ProxyMutationCommand(Server::ConnectionBasis &aClientConnection,
-                                        const uint8_t *aRequestBuffer,
-                                        const size_t &aRequestSize,
-                                        const Common::RegularExpression::Matches &aServerMatches,
-                                        const Client::Command::ResponseBasis &aExpectedResponse,
-                                        Client::CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
-                                        Client::CommandManager::OnCommandErrorFunc aOnCommandErrorHandler,
-                                        void *aContext)
+ControllerBasis :: ProxyNotification(const uint8_t *aNotificationBuffer,
+                                     const size_t &aNotificationSize,
+                                     const Common::RegularExpression::Matches &aNotificationMatches,
+                                     Client::CommandManager::OnNotificationReceivedFunc  aOnNotificationReceivedHandler,
+                                     void *aClientContext)
 {
     DeclareScopedFunctionTracer(lTracer);
-    Client::Command::ExchangeBasis::MutableCountedPointer lCommand;
-    std::unique_ptr<Detail::ProxyContext>                 lProxyContext;
-    Status                                                lRetval = kStatus_Success;
+    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
+    uint8_t *                                lResult;
+    Status                                   lRetval;
 
-    nlREQUIRE_ACTION(aRequestBuffer != nullptr, done, lRetval = -EINVAL);
-    nlREQUIRE_ACTION(aRequestSize > 0, done, lRetval = -EINVAL);
-    nlREQUIRE_ACTION(aOnCommandCompleteHandler != nullptr, done, lRetval = -EINVAL);
-    nlREQUIRE_ACTION(aOnCommandErrorHandler != nullptr, done, lRetval = -EINVAL);
-    nlREQUIRE_ACTION(aContext != nullptr, done, lRetval = -EINVAL);
 
-    lProxyContext.reset(new Detail::ProxyContext());
-    nlREQUIRE_ACTION(lProxyContext, done, lRetval = -ENOMEM);
+    aOnNotificationReceivedHandler(aNotificationBuffer,
+                                   aNotificationSize,
+                                   aNotificationMatches,
+                                   aClientContext);
 
-    lProxyContext->mClientConnection         = &aClientConnection;
-    lProxyContext->mRequestBuffer            = aRequestBuffer;
-    lProxyContext->mRequestSize              = aRequestSize;
-    lProxyContext->mServerMatches            = aServerMatches;
-    lProxyContext->mOnCommandCompleteHandler = aOnCommandCompleteHandler;
-    lProxyContext->mOnCommandErrorHandler    = aOnCommandErrorHandler;
-    lProxyContext->mOnRequestReceivedHandler = nullptr;
-    lProxyContext->mTheirClientContext       = aContext;
-    lProxyContext->mTheirServerContext       = nullptr;
-    lProxyContext->mOurContext               = this;
+    // Allocate a buffer and put the notification contents into it and
+    // send it to all subscribed clients.
 
-    lCommand.reset(new Proxy::Command::Proxy());
-    nlREQUIRE_ACTION(lCommand, done, lRetval = -ENOMEM);
+    lResponseBuffer.reset(new ConnectionBuffer);
+    nlREQUIRE_ACTION(lResponseBuffer, done, lRetval = -ENOMEM);
 
-    lRetval = std::static_pointer_cast<Proxy::Command::Proxy>(lCommand)->Init(aRequestBuffer, aRequestSize, aExpectedResponse);
+    lRetval = lResponseBuffer->Init(const_cast<uint8_t *>(aNotificationBuffer), aNotificationSize);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mClientCommandManager->SendCommand(lCommand,
-                                                 mTimeout,
-                                                 ControllerBasis::ProxyMutationCompleteHandler,
-                                                 ControllerBasis::ProxyErrorHandler,
-                                                 lProxyContext.release());
+    lResult = lResponseBuffer->Put(aNotificationSize);
+    nlREQUIRE_ACTION(lResult != nullptr, done, lRetval = -ENOSPC);
+    
+    lRetval = mServerCommandManager->SendResponse(lResponseBuffer);
     nlREQUIRE_SUCCESS(lRetval, done);
 
  done:
     return (lRetval);
 }
 
-// MARK: Proxy Handlers
+// MARK: Command Proxy Handlers
 
 void
 ControllerBasis :: ProxyErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aClientExchange,
