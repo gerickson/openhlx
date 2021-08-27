@@ -182,9 +182,21 @@ CommandManager :: Init(ConnectionManager &aConnectionManager,
     return (lRetval);
 }
 
+Status
+CommandManager :: SendResponse(Common::ConnectionBuffer::ImmutableCountedPointer aBuffer) const
+{
+    Status  lRetval = kStatus_Success;
+
+    lRetval = mConnectionManager->Send(aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
 Status CommandManager :: SendResponse(ConnectionBasis &aConnection, ConnectionBuffer::ImmutableCountedPointer aBuffer) const
 {
-    Status            lRetval = kStatus_Success;
+    Status  lRetval = kStatus_Success;
 
     lRetval = mConnectionManager->Send(aConnection, aBuffer);
     nlREQUIRE_SUCCESS(lRetval, done);

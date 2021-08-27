@@ -74,6 +74,7 @@ public:
 
     Common::Status Init(ConnectionManager &aConnectionManager, const Common::RunLoopParameters &aRunLoopParameters);
 
+    Common::Status SendResponse(Common::ConnectionBuffer::ImmutableCountedPointer aBuffer) const;
     Common::Status SendResponse(ConnectionBasis &aConnection, Common::ConnectionBuffer::ImmutableCountedPointer aBuffer) const;
     Common::Status SendErrorResponse(ConnectionBasis &aConnection) const;
     Common::Status SendErrorResponse(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
