@@ -103,13 +103,20 @@ Status
 ConfigurationController :: Init(CommandManager &aCommandManager, const Timeout &aTimeout)
 {
     DeclareScopedFunctionTracer(lTracer);
-    Status  lRetval = kStatus_Success;
+    constexpr bool  kRegister = true;
+    Status          lRetval = kStatus_Success;
 
 
     lRetval = Common::ConfigurationControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = Client::ConfigurationControllerBasis::Init(aCommandManager, aTimeout);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // This MUST come AFTER the base class initialization due to a
+    // dependency on the command manager instance.
+
+    lRetval = DoNotificationHandlers(kRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
