@@ -18,7 +18,7 @@
 
 /**
  *    @file
- *      This file defines an object for....
+ *      This file defines an object for...
  *
  */
 
@@ -54,7 +54,7 @@ class ConfigurationControllerDelegate;
 
 /**
  *  @brief
- *    An object for....
+ *    An object for...
  *
  *  @ingroup proxy
  *  @ingroup configuration
@@ -79,6 +79,11 @@ public:
     Common::Status SetDelegate(ConfigurationControllerDelegate *aDelegate);
     ConfigurationControllerDelegate *GetDelegate(void) const;
 
+    // Server-facing Client Notification Handler Trampolines
+
+    static void SaveToBackupNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void SavingToBackupNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+
     // Client-facing Server Command Request Handler Trampolines
 
     static void LoadFromBackupRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
@@ -87,7 +92,13 @@ public:
     static void SaveToBackupRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
+    Common::Status DoNotificationHandlers(const bool &aRegister);
     Common::Status DoRequestHandlers(const bool &aRegister);
+    
+    // Server-facing Client Notification Handlers
+    
+    void SaveToBackupNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void SavingToBackupNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 
     // Client-facing Server Command Completion Handlers
 

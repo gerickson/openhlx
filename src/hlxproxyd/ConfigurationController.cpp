@@ -74,44 +74,6 @@ ConfigurationController :: ~ConfigurationController(void)
     return;
 }
 
-Status
-ConfigurationController :: DoRequestHandlers(const bool &aRegister)
-{
-    DeclareScopedFunctionTracer(lTracer);
-    static const RequestHandlerBasis  lRequestHandlers[] = {
-        {
-            kLoadFromBackupRequest,
-            ConfigurationController::LoadFromBackupRequestReceivedHandler
-        },
-
-        {
-            kQueryCurrentRequest,
-            ConfigurationController::QueryCurrentRequestReceivedHandler
-        },
-
-        {
-            kResetToDefaultsRequest,
-            ConfigurationController::ResetToDefaultsRequestReceivedHandler
-        },
-
-        {
-            kSaveToBackupRequest,
-            ConfigurationController::SaveToBackupRequestReceivedHandler
-        }
-    };
-    static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
-    Status                   lRetval = kStatus_Success;
-
-    lRetval = Server::ControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
-                                                         &lRequestHandlers[lRequestHandlerCount],
-                                                         this,
-                                                         aRegister);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-done:
-    return (lRetval);
-}
-
 // MARK: Initializer(s)
 
 /**
@@ -157,6 +119,12 @@ ConfigurationController :: Init(Client::CommandManager &aClientCommandManager, S
     lRetval = Proxy::ControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
+    // This MUST come AFTER the base class initialization due to a
+    // dependency on the command manager instance.
+
+    lRetval = DoNotificationHandlers(kRegister);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
     // These MUST come AFTER the base class initialization due to a
     // dependency on the command manager instance.
 
@@ -186,6 +154,254 @@ ConfigurationController :: SetDelegate(ConfigurationControllerDelegate *aDelegat
 
  done:
     return (lRetval);
+}
+
+
+// MARK: Implementation
+
+Status
+ConfigurationController :: DoRequestHandlers(const bool &aRegister)
+{
+    DeclareScopedFunctionTracer(lTracer);
+    static const RequestHandlerBasis  lRequestHandlers[] = {
+        {
+            kLoadFromBackupRequest,
+            ConfigurationController::LoadFromBackupRequestReceivedHandler
+        },
+
+        {
+            kQueryCurrentRequest,
+            ConfigurationController::QueryCurrentRequestReceivedHandler
+        },
+
+        {
+            kResetToDefaultsRequest,
+            ConfigurationController::ResetToDefaultsRequestReceivedHandler
+        },
+
+        {
+            kSaveToBackupRequest,
+            ConfigurationController::SaveToBackupRequestReceivedHandler
+        }
+    };
+    static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
+    Status                   lRetval = kStatus_Success;
+
+    lRetval = Server::ControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
+                                                         &lRequestHandlers[lRequestHandlerCount],
+                                                         this,
+                                                         aRegister);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Register or unregister notification handlers.
+ *
+ *  This registers or unregisters the solicited and unsolicited client
+ *  command response notification handlers that this controller is
+ *  interested in and will handle on behalf of the client.
+ *
+ *  @param[in]  aRegister  Indicates whether to register (true) or
+ *                         unregister (false) the handlers.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -EINVAL                      If either of the handler iterators
+ *                                        was null.
+ *  @retval  -EEXIST                      If a registration already exists.
+ *  @retval  -ENOENT                      If there was no such handler
+ *                                        registration to unregister.
+ *  @retval  kError_NotInitialized        The base class was not properly
+ *                                        initialized.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+ConfigurationController :: DoNotificationHandlers(const bool &aRegister)
+{
+    static const NotificationHandlerBasis  lNotificationHandlers[] = {
+        {
+            kSaveToBackupResponse,
+            ConfigurationController::SaveToBackupNotificationReceivedHandler
+        },
+
+        {
+            kSavingToBackupResponse,
+            ConfigurationController::SavingToBackupNotificationReceivedHandler
+        },
+    };
+    static constexpr size_t                lNotificationHandlerCount = ElementsOf(lNotificationHandlers);
+    Status                                 lRetval = kStatus_Success;
+
+    lRetval = Client::ControllerBasis::DoNotificationHandlers(&lNotificationHandlers[0],
+                                                              &lNotificationHandlers[lNotificationHandlerCount],
+                                                              this,
+                                                              aRegister);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
+// MARK: Server-facing Client Unsolicited Notification Handlers
+
+/**
+ *  @brief
+ *    Save to backup configuration client unsolicited notification
+ *    handler.
+ *
+ *  This handles an unsolicited, asynchronous client notification for
+ *  the save to backup configuration state change notification.
+ *
+ *  @note
+ *    The HLX server saves any dirty configuration to non-volatile
+ *    storage every 30 seconds. Consequently, a notification such as
+ *    this may be received in response to such a save, absent any
+ *    client-initiated save to backup command request.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+ConfigurationController :: SaveToBackupNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    Client::ConfigurationControllerBasis *  lController = static_cast<Client::ConfigurationControllerBasis *>(this);
+    Status                                  lStatus;
+
+
+    lStatus = ProxyNotification(aBuffer,
+                                aSize,
+                                aMatches,
+                                Client::ConfigurationControllerBasis::SaveToBackupNotificationReceivedHandler,
+                                lController);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Saving to backup configuration client unsolicited notification
+ *    handler.
+ *
+ *  This handles an unsolicited, asynchronous client notification for
+ *  the saving to backup configuration notification.
+ *
+ *  @note
+ *    The HLX server saves any dirty configuration to non-volatile
+ *    storage every 30 seconds. Consequently, a notification such as
+ *    this may be received in response to such a save, absent any
+ *    client-initiated save to backup command request.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+ConfigurationController :: SavingToBackupNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    Client::ConfigurationControllerBasis *  lController = static_cast<Client::ConfigurationControllerBasis *>(this);
+    Status                                  lStatus;
+
+
+    lStatus = ProxyNotification(aBuffer,
+                                aSize,
+                                aMatches,
+                                Client::ConfigurationControllerBasis::SavingToBackupNotificationReceivedHandler,
+                                lController);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return;
+}
+
+// MARK: Server-facing Client Unsolicited Notification Handler Trampolines
+
+/**
+ *  @brief
+ *    Save to backup configuration client unsolicited notification
+ *    handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the save to backup configuration notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+ConfigurationController :: SaveToBackupNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ConfigurationController *lController = static_cast<ConfigurationController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->SaveToBackupNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Saving to backup configuration client unsolicited notification
+ *    handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the saving to backup configuration notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+ConfigurationController :: SavingToBackupNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ConfigurationController *lController = static_cast<ConfigurationController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->SavingToBackupNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
 }
 
 // MARK: Client-facing Server Command Request Completion Handlers
