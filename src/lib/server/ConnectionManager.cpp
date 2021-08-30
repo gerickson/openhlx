@@ -440,7 +440,7 @@ ConnectionManager :: Send(Common::ConnectionBuffer::ImmutableCountedPointer aBuf
 {
     Connections::iterator  lCurrent = mActiveConnections.begin();
     Connections::iterator  lLast    = mActiveConnections.end();
-    Status                 lRetval;
+    Status                 lRetval  = kStatus_Success;
 
 
     while ((lCurrent != lLast))
