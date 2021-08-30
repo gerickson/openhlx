@@ -137,6 +137,7 @@ Status
 GroupsController :: Init(CommandManager &aCommandManager, const Timeout &aTimeout)
 {
     DeclareScopedFunctionTracer(lTracer);
+    constexpr bool  kRegister = true;
     Status          lRetval = kStatus_Success;
 
 
@@ -144,6 +145,12 @@ GroupsController :: Init(CommandManager &aCommandManager, const Timeout &aTimeou
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = Client::GroupsControllerBasis::Init(aCommandManager, aTimeout);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // This MUST come AFTER the base class initialization due to a
+    // dependency on the command manager instance.
+
+    lRetval = DoNotificationHandlers(kRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -377,8 +384,8 @@ GroupsController :: SetMute(const IdentifierType &aGroupIdentifier,
 Status
 GroupsController :: ToggleMute(const IdentifierType &aGroupIdentifier)
 {
-    Command::ExchangeBasis::MutableCountedPointer lCommand;
-    Status lRetval = kStatus_Success;
+    Command::ExchangeBasis::MutableCountedPointer  lCommand;
+    Status                                         lRetval = kStatus_Success;
 
 
     lRetval = ValidateIdentifier(aGroupIdentifier);
@@ -396,7 +403,7 @@ GroupsController :: ToggleMute(const IdentifierType &aGroupIdentifier)
                           static_cast<Client::GroupsControllerBasis *>(this));
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
