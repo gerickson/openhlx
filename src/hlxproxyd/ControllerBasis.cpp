@@ -247,7 +247,7 @@ ControllerBasis :: ProxyNotification(const uint8_t *aNotificationBuffer,
 
     lResult = lResponseBuffer->Put(aNotificationSize);
     nlREQUIRE_ACTION(lResult != nullptr, done, lRetval = -ENOSPC);
-    
+
     lRetval = mServerCommandManager->SendResponse(lResponseBuffer);
     nlREQUIRE_SUCCESS(lRetval, done);
 

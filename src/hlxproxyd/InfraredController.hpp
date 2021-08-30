@@ -88,7 +88,7 @@ public:
 private:
     Common::Status DoNotificationHandlers(const bool &aRegister);
     Common::Status DoRequestHandlers(const bool &aRegister);
-    
+
     // Server-facing Client Notification Handlers
 
     void BrightnessNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
