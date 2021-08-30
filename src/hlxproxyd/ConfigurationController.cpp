@@ -156,46 +156,7 @@ ConfigurationController :: SetDelegate(ConfigurationControllerDelegate *aDelegat
     return (lRetval);
 }
 
-
 // MARK: Implementation
-
-Status
-ConfigurationController :: DoRequestHandlers(const bool &aRegister)
-{
-    DeclareScopedFunctionTracer(lTracer);
-    static const RequestHandlerBasis  lRequestHandlers[] = {
-        {
-            kLoadFromBackupRequest,
-            ConfigurationController::LoadFromBackupRequestReceivedHandler
-        },
-
-        {
-            kQueryCurrentRequest,
-            ConfigurationController::QueryCurrentRequestReceivedHandler
-        },
-
-        {
-            kResetToDefaultsRequest,
-            ConfigurationController::ResetToDefaultsRequestReceivedHandler
-        },
-
-        {
-            kSaveToBackupRequest,
-            ConfigurationController::SaveToBackupRequestReceivedHandler
-        }
-    };
-    static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
-    Status                   lRetval = kStatus_Success;
-
-    lRetval = Server::ControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
-                                                         &lRequestHandlers[lRequestHandlerCount],
-                                                         this,
-                                                         aRegister);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-done:
-    return (lRetval);
-}
 
 /**
  *  @brief
@@ -233,13 +194,51 @@ ConfigurationController :: DoNotificationHandlers(const bool &aRegister)
             ConfigurationController::SavingToBackupNotificationReceivedHandler
         },
     };
-    static constexpr size_t                lNotificationHandlerCount = ElementsOf(lNotificationHandlers);
-    Status                                 lRetval = kStatus_Success;
+    static constexpr size_t  lNotificationHandlerCount = ElementsOf(lNotificationHandlers);
+    Status                   lRetval = kStatus_Success;
 
     lRetval = Client::ControllerBasis::DoNotificationHandlers(&lNotificationHandlers[0],
                                                               &lNotificationHandlers[lNotificationHandlerCount],
                                                               this,
                                                               aRegister);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
+Status
+ConfigurationController :: DoRequestHandlers(const bool &aRegister)
+{
+    DeclareScopedFunctionTracer(lTracer);
+    static const RequestHandlerBasis  lRequestHandlers[] = {
+        {
+            kLoadFromBackupRequest,
+            ConfigurationController::LoadFromBackupRequestReceivedHandler
+        },
+
+        {
+            kQueryCurrentRequest,
+            ConfigurationController::QueryCurrentRequestReceivedHandler
+        },
+
+        {
+            kResetToDefaultsRequest,
+            ConfigurationController::ResetToDefaultsRequestReceivedHandler
+        },
+
+        {
+            kSaveToBackupRequest,
+            ConfigurationController::SaveToBackupRequestReceivedHandler
+        }
+    };
+    static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
+    Status                   lRetval = kStatus_Success;
+
+    lRetval = Server::ControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
+                                                         &lRequestHandlers[lRequestHandlerCount],
+                                                         this,
+                                                         aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
