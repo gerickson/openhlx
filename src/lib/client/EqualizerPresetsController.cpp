@@ -106,6 +106,7 @@ Status
 EqualizerPresetsController :: Init(CommandManager &aCommandManager, const Timeout &aTimeout)
 {
     DeclareScopedFunctionTracer(lTracer);
+    constexpr bool  kRegister = true;
     Status          lRetval = kStatus_Success;
 
 
@@ -113,6 +114,12 @@ EqualizerPresetsController :: Init(CommandManager &aCommandManager, const Timeou
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = Client::EqualizerPresetsControllerBasis::Init(aCommandManager, aTimeout);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // This MUST come AFTER the base class initialization due to a
+    // dependency on the command manager instance.
+
+    lRetval = DoNotificationHandlers(kRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
