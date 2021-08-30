@@ -49,6 +49,7 @@
 #include <OpenHLX/Common/RunLoopParameters.hpp>
 #include <OpenHLX/Common/Version.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
+#include <OpenHLX/Utilities/Parse.hpp>
 #include <OpenHLX/Utilities/ElementsOf.hpp>
 
 #include "HLXProxyController.hpp"
@@ -332,8 +333,24 @@ HLXProxy :: Start(void)
 {
     Status lRetval = kStatus_Success;
 
-    lRetval = mHLXProxyController.Connect(mConnectMaybeURL, GetVersions());
-    nlREQUIRE_SUCCESS(lRetval, done);
+    // Attempt to connect to the specified host, either with a
+    // user-specified timeout or with the internal default timeout.
+
+    if (sOptFlags & kOptTimeout)
+    {
+        lRetval = mHLXProxyController.Connect(mConnectMaybeURL,
+                                              GetVersions(),
+                                              sTimeout);
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
+    else
+    {
+        lRetval = mHLXProxyController.Connect(mConnectMaybeURL,
+                                              GetVersions());
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
+
+    // If no initial refresh was requested, then initiate listening.
 
     if ((sOptFlags & kOptNoInitialRefresh) == kOptNoInitialRefresh)
     {
@@ -892,7 +909,7 @@ DecodeOptions(const char *inProgram,
     int             c;
     unsigned int    error = 0;
     string          shortOptions;
-    Timeout::Value  timeoutMilliseconds;
+
 
     // Generate a list of those single-character options available as
     // a subset of the long option list.
@@ -973,8 +990,22 @@ DecodeOptions(const char *inProgram,
 
         case OPT_TIMEOUT:
             {
-                sOptFlags |= kOptTimeout;
-                timeoutMilliseconds = static_cast<Timeout::Value>(atoi(optarg));
+                Timeout::Value  timeoutMilliseconds;
+                const Status    lStatus = Parse(optarg, timeoutMilliseconds);
+
+                if (lStatus == kStatus_Success)
+                {
+                    const Timeout lTimeout(timeoutMilliseconds);
+
+                    sTimeout = lTimeout;
+
+                    sOptFlags |= kOptTimeout;
+                }
+                else
+                {
+                    Log::Error().Write("Cannot interpret timeout value '%s' as a duration in milliseconds.\n", optarg);
+                    error++;
+                }
             }
             break;
 
