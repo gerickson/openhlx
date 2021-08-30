@@ -1175,19 +1175,19 @@ SetLevel(Log::Level &inLevel, const char *inArgument)
 static void
 PrintUsage(const char *inProgram, int inStatus)
 {
-    const char * const theName = path(inProgram).leaf().c_str();
+    const std::string theName = path(inProgram).filename().string();
 
     // Regardless of the desired exit status, display a short usage
     // synopsis.
 
-    printf(sShortUsageString, theName);
+    printf(sShortUsageString, theName.c_str());
 
     // Depending on the desired exit status, display either a helpful
     // suggestion on obtaining more information or display a long
     // usage synopsis.
 
     if (inStatus != EXIT_SUCCESS)
-        printf("Try `%s -h' for more information.\n", theName);
+        printf("Try `%s -h' for more information.\n", theName.c_str());
 
     if (inStatus != EXIT_FAILURE) {
         printf(sLongUsageString);
@@ -1199,10 +1199,10 @@ PrintUsage(const char *inProgram, int inStatus)
 static void
 PrintVersion(const char *inProgram)
 {
-    const char * const theName = path(inProgram).leaf().c_str();
+    const std::string theName = path(inProgram).filename().string();
 
     printf("%s %s\n%s\n",
-           theName,
+           theName.c_str(),
            GetVersionString(),
            GetCopyrightString());
 
