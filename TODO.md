@@ -8,6 +8,7 @@ source code control and the project repository hosting site.
 - [ ] Add DNS-SD/mDNS support to `hlxsimd` and `hlxproxyd`.
 - [ ] Port the HLX control protocol and data schema to Matter (formerly, Project CHIP).
   - [ ] Add Matter (formerly, Project CHIP) support to `hlxc`, `hlxproxyd`, and `hlxsimd`.
+- [ ] Add support for Debian (Ubuntu) packaging and archive inclusion.
 
 ### In Progress
 
