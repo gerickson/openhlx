@@ -110,7 +110,6 @@ Status
 FavoritesControllerBasis :: Init(CommandManager &aCommandManager, const Timeout &aTimeout)
 {
     DeclareScopedFunctionTracer(lTracer);
-    constexpr bool  kRegister = true;
     Status          lRetval = kStatus_Success;
 
 
@@ -118,12 +117,6 @@ FavoritesControllerBasis :: Init(CommandManager &aCommandManager, const Timeout 
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = ControllerBasis::Init(aCommandManager, aTimeout);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    // This MUST come AFTER the base class initialization due to a
-    // dependency on the command manager instance.
-
-    lRetval = DoNotificationHandlers(kRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
