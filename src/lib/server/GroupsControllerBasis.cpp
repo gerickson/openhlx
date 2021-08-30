@@ -108,7 +108,6 @@ done:
 Status
 GroupsControllerBasis :: RequestInit(void)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 

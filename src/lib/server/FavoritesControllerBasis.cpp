@@ -92,7 +92,6 @@ done:
 Status
 FavoritesControllerBasis :: RequestInit(void)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 

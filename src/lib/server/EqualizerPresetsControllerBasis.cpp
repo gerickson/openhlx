@@ -95,7 +95,6 @@ done:
 Status
 EqualizerPresetsControllerBasis :: RequestInit(void)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 

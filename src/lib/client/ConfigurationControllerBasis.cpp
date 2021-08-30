@@ -227,7 +227,6 @@ done:
 Status
 ConfigurationControllerBasis :: ResponseInit(void)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 
@@ -340,7 +339,6 @@ ConfigurationControllerBasis :: QueryCompleteHandler(Command::ExchangeBasis::Mut
 void
 ConfigurationControllerBasis :: LoadFromBackupCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const RegularExpression::Matches &aMatches)
 {
-    DeclareScopedFunctionTracer(lTracer);
     StateChange::ConfigurationLoadedFromBackupNotification  lStateChangeNotification;
     Status lStatus;
 
@@ -405,7 +403,6 @@ ConfigurationControllerBasis :: SaveToBackupCompleteHandler(Command::ExchangeBas
 void
 ConfigurationControllerBasis :: ResetToDefaultsCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const RegularExpression::Matches &aMatches)
 {
-    DeclareScopedFunctionTracer(lTracer);
     StateChange::ConfigurationResetToDefaultsNotification  lStateChangeNotification;
     Status lStatus;
 

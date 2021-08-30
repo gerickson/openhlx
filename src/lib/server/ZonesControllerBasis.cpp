@@ -118,7 +118,6 @@ done:
 Status
 ZonesControllerBasis :: RequestInit(void)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 

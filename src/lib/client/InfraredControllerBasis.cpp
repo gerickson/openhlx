@@ -223,7 +223,6 @@ done:
 Status
 InfraredControllerBasis :: ResponseInit(void)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 

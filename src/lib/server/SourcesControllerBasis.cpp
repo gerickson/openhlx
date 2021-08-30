@@ -91,7 +91,6 @@ done:
 Status
 SourcesControllerBasis :: RequestInit(void)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 

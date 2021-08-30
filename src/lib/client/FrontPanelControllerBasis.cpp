@@ -230,7 +230,6 @@ done:
 Status
 FrontPanelControllerBasis :: ResponseInit(void)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 

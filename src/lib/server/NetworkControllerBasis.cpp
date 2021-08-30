@@ -91,7 +91,6 @@ done:
 Status
 NetworkControllerBasis :: RequestInit(void)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 

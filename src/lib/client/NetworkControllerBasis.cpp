@@ -208,7 +208,6 @@ NetworkControllerBasis :: DoNotificationHandlers(const bool &aRegister)
 Status
 NetworkControllerBasis :: ResponseInit(void)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 

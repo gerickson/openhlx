@@ -117,7 +117,6 @@ done:
 Status
 ConnectionManager :: Listen(const SocketAddress *aFirst, const SocketAddress *aLast)
 {
-    DeclareScopedFunctionTracer(lTracer);
     const SocketAddress *  lCurrent = aFirst;
     bool                   lSchemeSupported;
     Status                 lRetval = kStatus_Success;
@@ -167,7 +166,6 @@ Status ConnectionManager :: Listen(void)
 
 Common::Status ConnectionManager :: Listen(const Versions &aVersions)
 {
-    DeclareScopedFunctionTracer(lTracer);
     std::array<SocketAddress, 2>  lSocketAddresses;
     size_t                        n = 0;
     Status                        lRetval = kStatus_Success;
@@ -209,7 +207,6 @@ Common::Status ConnectionManager :: Listen(const Versions &aVersions)
 Common::Status
 ConnectionManager :: Listen(const char *aMaybeURL)
 {
-    DeclareScopedFunctionTracer(lTracer);
     const Versions kVersions = (kIPv4 | kIPv6);
     Status         lRetval   = kStatus_Success;
 
