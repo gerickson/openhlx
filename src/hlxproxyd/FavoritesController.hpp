@@ -76,13 +76,22 @@ public:
 
     Common::Status QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) final;
 
+    // Server-facing Client Notification Handler Trampolines
+
+    static void NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+
     // Client-facing Server Command Request Handler Trampolines
 
     static void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
     static void SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
+    Common::Status DoNotificationHandlers(const bool &aRegister);
     Common::Status DoRequestHandlers(const bool &aRegister);
+    
+    // Server-facing Client Notification Handlers
+
+    void NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 
     // Client-facing Server Command Completion Handlers
 

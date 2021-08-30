@@ -94,29 +94,6 @@ NetworkController :: ~NetworkController(void)
     return;
 }
 
-Status
-NetworkController :: DoRequestHandlers(const bool &aRegister)
-{
-    DeclareScopedFunctionTracer(lTracer);
-    static const RequestHandlerBasis  lRequestHandlers[] = {
-        {
-            kQueryRequest,
-            NetworkController::QueryRequestReceivedHandler
-        }
-    };
-    static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
-    Status                   lRetval = kStatus_Success;
-
-    lRetval = Server::ControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
-                                                         &lRequestHandlers[lRequestHandlerCount],
-                                                         this,
-                                                         aRegister);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-done:
-    return (lRetval);
-}
-
 // MARK: Initializer(s)
 
 /**
@@ -162,10 +139,72 @@ NetworkController :: Init(Client::CommandManager &aClientCommandManager, Server:
     lRetval = Proxy::ControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
+    // This MUST come AFTER the base class initialization due to a
+    // dependency on the command manager instance.
+
+    lRetval = DoNotificationHandlers(kRegister);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
     // These MUST come AFTER the base class initialization due to a
     // dependency on the command manager instance.
 
     lRetval = DoRequestHandlers(kRegister);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
+// MARK: Implementation
+
+/**
+ *  @brief
+ *    Register or unregister notification handlers.
+ *
+ *  This registers or unregisters the solicited and unsolicited client
+ *  command response notification handlers that this controller is
+ *  interested in and will handle on behalf of the client.
+ *
+ *  @param[in]  aRegister  Indicates whether to register (true) or
+ *                         unregister (false) the handlers.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -EINVAL                      If either of the handler iterators
+ *                                        was null.
+ *  @retval  -EEXIST                      If a registration already exists.
+ *  @retval  -ENOENT                      If there was no such handler
+ *                                        registration to unregister.
+ *  @retval  kError_NotInitialized        The base class was not properly
+ *                                        initialized.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+NetworkController :: DoNotificationHandlers(const bool &aRegister)
+{
+    Status  lRetval = kStatus_Success;
+
+
+    return (lRetval);
+}
+
+Status
+NetworkController :: DoRequestHandlers(const bool &aRegister)
+{
+    DeclareScopedFunctionTracer(lTracer);
+    static const RequestHandlerBasis  lRequestHandlers[] = {
+        {
+            kQueryRequest,
+            NetworkController::QueryRequestReceivedHandler
+        }
+    };
+    static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
+    Status                   lRetval = kStatus_Success;
+
+    lRetval = Server::ControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
+                                                         &lRequestHandlers[lRequestHandlerCount],
+                                                         this,
+                                                         aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:

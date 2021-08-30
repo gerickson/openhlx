@@ -87,6 +87,133 @@ GroupsController :: ~GroupsController(void)
     return;
 }
 
+// MARK: Initializer(s)
+
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the class with the specified command manager and
+ *  timeout.
+ *
+ *  @param[in]  aCommandManager  A reference to the command manager
+ *                               instance to initialize the controller
+ *                               with.
+ *  @param[in]  aTimeout         The timeout to initialize the controller
+ *                               with that will serve as the timeout for
+ *                               future operations with the peer client.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -EINVAL                      If an internal parameter was
+ *                                        invalid.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_NotInitialized        The base class was not properly
+ *                                        initialized.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+GroupsController :: Init(Client::CommandManager &aClientCommandManager, Server::CommandManager &aServerCommandManager, const Timeout &aTimeout)
+{
+    DeclareScopedFunctionTracer(lTracer);
+    constexpr bool  kRegister = true;
+    Status          lRetval = kStatus_Success;
+
+
+    lRetval = Common::GroupsControllerBasis::Init();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = Client::GroupsControllerBasis::Init(aClientCommandManager, aTimeout);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = Server::GroupsControllerBasis::Init(aServerCommandManager);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = Proxy::ControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // This MUST come AFTER the base class initialization due to a
+    // dependency on the command manager instance.
+
+    lRetval = DoNotificationHandlers(kRegister);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // These MUST come AFTER the base class initialization due to a
+    // dependency on the command manager instance.
+
+    lRetval = DoRequestHandlers(kRegister);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
+// MARK: Implementation
+
+/**
+ *  @brief
+ *    Register or unregister notification handlers.
+ *
+ *  This registers or unregisters the solicited and unsolicited client
+ *  command response notification handlers that this controller is
+ *  interested in and will handle on behalf of the client.
+ *
+ *  @param[in]  aRegister  Indicates whether to register (true) or
+ *                         unregister (false) the handlers.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -EINVAL                      If either of the handler iterators
+ *                                        was null.
+ *  @retval  -EEXIST                      If a registration already exists.
+ *  @retval  -ENOENT                      If there was no such handler
+ *                                        registration to unregister.
+ *  @retval  kError_NotInitialized        The base class was not properly
+ *                                        initialized.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+GroupsController :: DoNotificationHandlers(const bool &aRegister)
+{
+    static const NotificationHandlerBasis  lNotificationHandlers[] = {
+        {
+            kSetMuteResponse,
+            GroupsController::MuteNotificationReceivedHandler
+        },
+
+        {
+            kNameResponse,
+            GroupsController::NameNotificationReceivedHandler
+        },
+
+        {
+            kSourceResponse,
+            GroupsController::SourceNotificationReceivedHandler
+        },
+
+        {
+            kSetVolumeResponse,
+            GroupsController::VolumeNotificationReceivedHandler
+        },
+
+        {
+            kZoneResponse,
+            GroupsController::ZoneNotificationReceivedHandler
+        }
+    };
+    static constexpr size_t  lNotificationHandlerCount = ElementsOf(lNotificationHandlers);
+    Status                   lRetval = kStatus_Success;
+
+    lRetval = Client::ControllerBasis::DoNotificationHandlers(&lNotificationHandlers[0],
+                                                              &lNotificationHandlers[lNotificationHandlerCount],
+                                                              this,
+                                                              aRegister);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
 Status
 GroupsController :: DoRequestHandlers(const bool &aRegister)
 {
@@ -160,61 +287,6 @@ done:
     return (lRetval);
 }
 
-// MARK: Initializer(s)
-
-/**
- *  @brief
- *    This is the class initializer.
- *
- *  This initializes the class with the specified command manager and
- *  timeout.
- *
- *  @param[in]  aCommandManager  A reference to the command manager
- *                               instance to initialize the controller
- *                               with.
- *  @param[in]  aTimeout         The timeout to initialize the controller
- *                               with that will serve as the timeout for
- *                               future operations with the peer client.
- *
- *  @retval  kStatus_Success              If successful.
- *  @retval  -EINVAL                      If an internal parameter was
- *                                        invalid.
- *  @retval  -ENOMEM                      If memory could not be allocated.
- *  @retval  kError_NotInitialized        The base class was not properly
- *                                        initialized.
- *  @retval  kError_InitializationFailed  If initialization otherwise failed.
- *
- */
-Status
-GroupsController :: Init(Client::CommandManager &aClientCommandManager, Server::CommandManager &aServerCommandManager, const Timeout &aTimeout)
-{
-    DeclareScopedFunctionTracer(lTracer);
-    constexpr bool  kRegister = true;
-    Status          lRetval = kStatus_Success;
-
-
-    lRetval = Common::GroupsControllerBasis::Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = Client::GroupsControllerBasis::Init(aClientCommandManager, aTimeout);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = Server::GroupsControllerBasis::Init(aServerCommandManager);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = Proxy::ControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    // These MUST come AFTER the base class initialization due to a
-    // dependency on the command manager instance.
-
-    lRetval = DoRequestHandlers(kRegister);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-done:
-    return (lRetval);
-}
-
 // MARK: Configuration Management Methods
 
 Status
@@ -231,6 +303,369 @@ GroupsController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnecti
 
 done:
     return (lRetval);
+}
+
+// MARK: Server-facing Client Unsolicited Notification Handlers
+
+/**
+ *  @brief
+ *    Group volume mute state changed client unsolicited notification
+ *    handler.
+ *
+ *  This handles an asynchronous, unsolicited client notification for
+ *  the group volume mute state changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ *  @ingroup volume
+ *
+ */
+void
+GroupsController :: MuteNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    Client::GroupsControllerBasis *  lController = static_cast<Client::GroupsControllerBasis *>(this);
+    Status                           lStatus;
+
+
+    lStatus = ProxyNotification(aBuffer,
+                                aSize,
+                                aMatches,
+                                Client::GroupsControllerBasis::MuteNotificationReceivedHandler,
+                                lController);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Group name changed client unsolicited notification handler.
+ *
+ *  This handles an asynchronous, unsolicited client notification for
+ *  the group name changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+GroupsController :: NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    Client::GroupsControllerBasis *  lController = static_cast<Client::GroupsControllerBasis *>(this);
+    Status                           lStatus;
+
+
+    lStatus = ProxyNotification(aBuffer,
+                                aSize,
+                                aMatches,
+                                Client::GroupsControllerBasis::NameNotificationReceivedHandler,
+                                lController);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Group source (input) changed client unsolicited notification
+ *    handler.
+ *
+ *  This handles an asynchronous, unsolicited client notification for
+ *  the group source (input) changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+GroupsController :: SourceNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    Client::GroupsControllerBasis *  lController = static_cast<Client::GroupsControllerBasis *>(this);
+    Status                           lStatus;
+
+
+    lStatus = ProxyNotification(aBuffer,
+                                aSize,
+                                aMatches,
+                                Client::GroupsControllerBasis::SourceNotificationReceivedHandler,
+                                lController);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Group volume level state changed client unsolicited notification
+ *    handler.
+ *
+ *  This handles an asynchronous, unsolicited client notification for
+ *  the group volume level state changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ *  @ingroup volume
+ *
+ */
+void
+GroupsController :: VolumeNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    Client::GroupsControllerBasis *  lController = static_cast<Client::GroupsControllerBasis *>(this);
+    Status                           lStatus;
+
+
+    lStatus = ProxyNotification(aBuffer,
+                                aSize,
+                                aMatches,
+                                Client::GroupsControllerBasis::VolumeNotificationReceivedHandler,
+                                lController);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Group zone membership state changed client unsolicited
+ *    notification handler.
+ *
+ *  This handles an asynchronous, unsolicited client notification for
+ *  the group zone membership state changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+GroupsController :: ZoneNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    Client::GroupsControllerBasis *  lController = static_cast<Client::GroupsControllerBasis *>(this);
+    Status                           lStatus;
+
+
+    lStatus = ProxyNotification(aBuffer,
+                                aSize,
+                                aMatches,
+                                Client::GroupsControllerBasis::ZoneNotificationReceivedHandler,
+                                lController);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return;
+}
+
+// MARK: Server-facing Client Unsolicited Notification Handler Trampolines
+
+/**
+ *  @brief
+ *    Group volume mute state changed client unsolicited notification
+ *    handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the group volume mute state changed notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+GroupsController :: MuteNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    GroupsController *lController = static_cast<GroupsController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->MuteNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Group name changed client unsolicited notification handler
+ *    trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the group name changed notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+GroupsController :: NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    GroupsController *lController = static_cast<GroupsController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->NameNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Group source (input) changed client unsolicited notification
+ *    handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the group source (input) changed notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+GroupsController :: SourceNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    GroupsController *lController = static_cast<GroupsController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->SourceNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Group volume level state changed client unsolicited notification
+ *    handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the group volume level state changed notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+GroupsController :: VolumeNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    GroupsController *lController = static_cast<GroupsController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->VolumeNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Group zone membership state changed client unsolicited
+ *    notification handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the group zone membership state changed
+ *  notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+GroupsController :: ZoneNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    GroupsController *lController = static_cast<GroupsController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->ZoneNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
 }
 
 // MARK: Client-facing Server Command Request Completion Handlers

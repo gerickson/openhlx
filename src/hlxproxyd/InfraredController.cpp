@@ -74,34 +74,6 @@ InfraredController :: ~InfraredController(void)
     return;
 }
 
-Status
-InfraredController :: DoRequestHandlers(const bool &aRegister)
-{
-    DeclareScopedFunctionTracer(lTracer);
-    static const RequestHandlerBasis  lRequestHandlers[] = {
-        {
-            kQueryRequest,
-            InfraredController::QueryRequestReceivedHandler
-        },
-
-        {
-            kSetDisabledRequest,
-            InfraredController::SetDisabledRequestReceivedHandler
-        }
-    };
-    static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
-    Status                   lRetval = kStatus_Success;
-
-    lRetval = Server::ControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
-                                                         &lRequestHandlers[lRequestHandlerCount],
-                                                         this,
-                                                         aRegister);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-done:
-    return (lRetval);
-}
-
 // MARK: Initializer(s)
 
 /**
@@ -150,7 +122,87 @@ InfraredController :: Init(Client::CommandManager &aClientCommandManager, Server
     // This MUST come AFTER the base class initialization due to a
     // dependency on the command manager instance.
 
+    lRetval = DoNotificationHandlers(kRegister);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // These MUST come AFTER the base class initialization due to a
+    // dependency on the command manager instance.
+
     lRetval = DoRequestHandlers(kRegister);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
+// MARK: Implementation
+
+Status
+InfraredController :: DoRequestHandlers(const bool &aRegister)
+{
+    DeclareScopedFunctionTracer(lTracer);
+    static const RequestHandlerBasis  lRequestHandlers[] = {
+        {
+            kQueryRequest,
+            InfraredController::QueryRequestReceivedHandler
+        },
+
+        {
+            kSetDisabledRequest,
+            InfraredController::SetDisabledRequestReceivedHandler
+        }
+    };
+    static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
+    Status                   lRetval = kStatus_Success;
+
+    lRetval = Server::ControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
+                                                         &lRequestHandlers[lRequestHandlerCount],
+                                                         this,
+                                                         aRegister);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Register or unregister notification handlers.
+ *
+ *  This registers or unregisters the solicited and unsolicited client
+ *  command response notification handlers that this controller is
+ *  interested in and will handle on behalf of the client.
+ *
+ *  @param[in]  aRegister  Indicates whether to register (true) or
+ *                         unregister (false) the handlers.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -EINVAL                      If either of the handler iterators
+ *                                        was null.
+ *  @retval  -EEXIST                      If a registration already exists.
+ *  @retval  -ENOENT                      If there was no such handler
+ *                                        registration to unregister.
+ *  @retval  kError_NotInitialized        The base class was not properly
+ *                                        initialized.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+InfraredController :: DoNotificationHandlers(const bool &aRegister)
+{
+    static const NotificationHandlerBasis  lNotificationHandlers[] = {
+        {
+            kDisabledResponse,
+            InfraredController::DisabledNotificationReceivedHandler
+        }
+    };
+    static constexpr size_t  lNotificationHandlerCount = ElementsOf(lNotificationHandlers);
+    Status                   lRetval = kStatus_Success;
+
+    lRetval = Client::ControllerBasis::DoNotificationHandlers(&lNotificationHandlers[0],
+                                                              &lNotificationHandlers[lNotificationHandlerCount],
+                                                              this,
+                                                              aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -173,6 +225,80 @@ InfraredController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnec
 
 done:
     return (lRetval);
+}
+
+// MARK: Server-facing Client Unsolicited Notification Handlers
+
+/**
+ *  @brief
+ *    Infrared disabled/locked changed client unsolicited notification handler.
+ *
+ *  This handles an asynchronous, unsolicited client notification for
+ *  the infrared disabled/locked changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+InfraredController :: DisabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    Client::InfraredControllerBasis *  lController = static_cast<Client::InfraredControllerBasis *>(this);
+    Status                             lStatus;
+
+
+    lStatus = ProxyNotification(aBuffer,
+                                aSize,
+                                aMatches,
+                                Client::InfraredControllerBasis::DisabledNotificationReceivedHandler,
+                                lController);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return;
+}
+
+// MARK: Server-facing Client Unsolicited Notification Handler Trampolines
+
+/**
+ *  @brief
+ *    Infrared disabled/locked changed client unsolicited notification handler
+ *    trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the infrared disabled/locked changed notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+InfraredController :: DisabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    InfraredController *lController = static_cast<InfraredController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->DisabledNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
 }
 
 // MARK: Client-facing Server Command Request Completion Handlers

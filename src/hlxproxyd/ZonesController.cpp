@@ -45,10 +45,6 @@ using namespace HLX::Utilities;
 using namespace Nuovations;
 
 
-// Preprocessor Definitions
-
-#define USE_PROXY 1
-
 namespace HLX
 {
 
@@ -79,6 +75,178 @@ ZonesController :: ZonesController(void) :
 ZonesController :: ~ZonesController(void)
 {
     return;
+}
+
+// MARK: Initializer(s)
+
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the class with the specified command manager and
+ *  timeout.
+ *
+ *  @param[in]  aCommandManager  A reference to the command manager
+ *                               instance to initialize the controller
+ *                               with.
+ *  @param[in]  aTimeout         The timeout to initialize the controller
+ *                               with that will serve as the timeout for
+ *                               future operations with the peer client.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -EINVAL                      If an internal parameter was
+ *                                        invalid.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_NotInitialized        The base class was not properly
+ *                                        initialized.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+ZonesController :: Init(Client::CommandManager &aClientCommandManager, Server::CommandManager &aServerCommandManager, const Timeout &aTimeout)
+{
+    DeclareScopedFunctionTracer(lTracer);
+    constexpr bool  kRegister = true;
+    Status          lRetval = kStatus_Success;
+
+
+    lRetval = Common::ZonesControllerBasis::Init();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = Client::ZonesControllerBasis::Init(aClientCommandManager, aTimeout);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = Server::ZonesControllerBasis::Init(aServerCommandManager);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = Proxy::ControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // This MUST come AFTER the base class initialization due to a
+    // dependency on the command manager instance.
+
+    lRetval = DoNotificationHandlers(kRegister);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // These MUST come AFTER the base class initialization due to a
+    // dependency on the command manager instance.
+
+    lRetval = DoRequestHandlers(kRegister);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
+// MARK: Implementation
+
+/**
+ *  @brief
+ *    Register or unregister notification handlers.
+ *
+ *  This registers or unregisters the solicited and unsolicited client
+ *  command response notification handlers that this controller is
+ *  interested in and will handle on behalf of the client.
+ *
+ *  @param[in]  aRegister  Indicates whether to register (true) or
+ *                         unregister (false) the handlers.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -EINVAL                      If either of the handler iterators
+ *                                        was null.
+ *  @retval  -EEXIST                      If a registration already exists.
+ *  @retval  -ENOENT                      If there was no such handler
+ *                                        registration to unregister.
+ *  @retval  kError_NotInitialized        The base class was not properly
+ *                                        initialized.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+ZonesController :: DoNotificationHandlers(const bool &aRegister)
+{
+    static const NotificationHandlerBasis  lNotificationHandlers[] = {
+        {
+            kBalanceResponse,
+            ZonesController::BalanceNotificationReceivedHandler
+        },
+
+        {
+            kEqualizerBandResponse,
+            ZonesController::EqualizerBandNotificationReceivedHandler
+        },
+
+        {
+            kEqualizerPresetResponse,
+            ZonesController::EqualizerPresetNotificationReceivedHandler
+        },
+
+        {
+            kHighpassCrossoverResponse,
+            ZonesController::HighpassCrossoverNotificationReceivedHandler
+        },
+
+        {
+            kLowpassCrossoverResponse,
+            ZonesController::LowpassCrossoverNotificationReceivedHandler
+        },
+
+        {
+            kMuteResponse,
+            ZonesController::MuteNotificationReceivedHandler
+        },
+
+        {
+            kNameResponse,
+            ZonesController::NameNotificationReceivedHandler
+        },
+
+        {
+            kSoundModeResponse,
+            ZonesController::SoundModeNotificationReceivedHandler
+        },
+
+        {
+            kSourceResponse,
+            ZonesController::SourceNotificationReceivedHandler
+        },
+
+        {
+            kSourceAllResponse,
+            ZonesController::SourceAllNotificationReceivedHandler
+        },
+
+        {
+            kToneResponse,
+            ZonesController::ToneNotificationReceivedHandler
+        },
+
+        {
+            kVolumeResponse,
+            ZonesController::VolumeNotificationReceivedHandler
+        },
+
+        {
+            kVolumeAllResponse,
+            ZonesController::VolumeAllNotificationReceivedHandler
+        },
+
+        {
+            kVolumeFixedResponse,
+            ZonesController::VolumeFixedNotificationReceivedHandler
+        }
+    };
+    static constexpr size_t  lNotificationHandlerCount = ElementsOf(lNotificationHandlers);
+    Status                   lRetval = kStatus_Success;
+
+    lRetval = Client::ControllerBasis::DoNotificationHandlers(&lNotificationHandlers[0],
+                                                              &lNotificationHandlers[lNotificationHandlerCount],
+                                                              this,
+                                                              aRegister);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
 }
 
 Status
@@ -239,59 +407,6 @@ done:
     return (lRetval);
 }
 
-/**
- *  @brief
- *    This is the class initializer.
- *
- *  This initializes the class with the specified command manager and
- *  timeout.
- *
- *  @param[in]  aCommandManager  A reference to the command manager
- *                               instance to initialize the controller
- *                               with.
- *  @param[in]  aTimeout         The timeout to initialize the controller
- *                               with that will serve as the timeout for
- *                               future operations with the peer client.
- *
- *  @retval  kStatus_Success              If successful.
- *  @retval  -EINVAL                      If an internal parameter was
- *                                        invalid.
- *  @retval  -ENOMEM                      If memory could not be allocated.
- *  @retval  kError_NotInitialized        The base class was not properly
- *                                        initialized.
- *  @retval  kError_InitializationFailed  If initialization otherwise failed.
- *
- */
-Status
-ZonesController :: Init(Client::CommandManager &aClientCommandManager, Server::CommandManager &aServerCommandManager, const Timeout &aTimeout)
-{
-    DeclareScopedFunctionTracer(lTracer);
-    constexpr bool  kRegister = true;
-    Status          lRetval = kStatus_Success;
-
-
-    lRetval = Common::ZonesControllerBasis::Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = Client::ZonesControllerBasis::Init(aClientCommandManager, aTimeout);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = Server::ZonesControllerBasis::Init(aServerCommandManager);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = Proxy::ControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    // These MUST come AFTER the base class initialization due to a
-    // dependency on the command manager instance.
-
-    lRetval = DoRequestHandlers(kRegister);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-done:
-    return (lRetval);
-}
-
 // MARK: Configuration Management Methods
 
 Status
@@ -308,6 +423,1016 @@ ZonesController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnectio
 
 done:
     return (lRetval);
+}
+
+// MARK: Server-facing Client Unsolicited Notification Handlers
+
+/**
+ *  @brief
+ *    Zone stereophonic channel balance client unsolicited
+ *    notification handler.
+ *
+ *  This handles an unsolicited, asynchronous client notification for
+ *  a zone stereophonic channel balance changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ *  @ingroup balance
+ *
+ */
+void
+ZonesController :: BalanceNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    Client::ZonesControllerBasis *  lController = static_cast<Client::ZonesControllerBasis *>(this);
+    Status                          lStatus;
+
+
+    lStatus = ProxyNotification(aBuffer,
+                                aSize,
+                                aMatches,
+                                Client::ZonesControllerBasis::BalanceNotificationReceivedHandler,
+                                lController);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Zone equalizer band level client unsolicited notification
+ *    handler.
+ *
+ *  This handles an unsolicited, asynchronous client notification for
+ *  a zone equalizer band level changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+ZonesController :: EqualizerBandNotificationReceivedHandler(const uint8_t *aBuffer,
+                                                            const size_t &aSize,
+                                                            const RegularExpression::Matches &aMatches)
+{
+    Client::ZonesControllerBasis *  lController = static_cast<Client::ZonesControllerBasis *>(this);
+    Status                          lStatus;
+
+
+    lStatus = ProxyNotification(aBuffer,
+                                aSize,
+                                aMatches,
+                                Client::ZonesControllerBasis::EqualizerBandNotificationReceivedHandler,
+                                lController);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Zone equalizer preset client unsolicited notification handler.
+ *
+ *  This handles an unsolicited, asynchronous client notification for
+ *  a zone equalizer preset changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+ZonesController :: EqualizerPresetNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    Client::ZonesControllerBasis *  lController = static_cast<Client::ZonesControllerBasis *>(this);
+    Status                          lStatus;
+
+
+    lStatus = ProxyNotification(aBuffer,
+                                aSize,
+                                aMatches,
+                                Client::ZonesControllerBasis::EqualizerPresetNotificationReceivedHandler,
+                                lController);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Zone tone equalizer state client unsolicited notification
+ *    handler.
+ *
+ *  This handles an unsolicited, asynchronous client notification for
+ *  a zone tone equalizer state changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+ZonesController :: ToneNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    Client::ZonesControllerBasis *  lController = static_cast<Client::ZonesControllerBasis *>(this);
+    Status                          lStatus;
+
+
+    lStatus = ProxyNotification(aBuffer,
+                                aSize,
+                                aMatches,
+                                Client::ZonesControllerBasis::ToneNotificationReceivedHandler,
+                                lController);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Zone highpass filter crossover frequency client unsolicited
+ *    notification handler.
+ *
+ *  This handles an unsolicited, asynchronous client notification for
+ *  a zone highpass filter crossover frequency changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+ZonesController :: HighpassCrossoverNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    Client::ZonesControllerBasis *  lController = static_cast<Client::ZonesControllerBasis *>(this);
+    Status                          lStatus;
+
+
+    lStatus = ProxyNotification(aBuffer,
+                                aSize,
+                                aMatches,
+                                Client::ZonesControllerBasis::HighpassCrossoverNotificationReceivedHandler,
+                                lController);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Zone lowpass filter crossover frequency client unsolicited
+ *    notification handler.
+ *
+ *  This handles an unsolicited, asynchronous client notification for
+ *  a zone lowpass filter crossover frequency changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+ZonesController :: LowpassCrossoverNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    Client::ZonesControllerBasis *  lController = static_cast<Client::ZonesControllerBasis *>(this);
+    Status                          lStatus;
+
+
+    lStatus = ProxyNotification(aBuffer,
+                                aSize,
+                                aMatches,
+                                Client::ZonesControllerBasis::LowpassCrossoverNotificationReceivedHandler,
+                                lController);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Zone volume mute state changed client unsolicited notification
+ *    handler.
+ *
+ *  This handles an asynchronous, unsolicited client notification for
+ *  the zone volume mute state changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+ZonesController :: MuteNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    Client::ZonesControllerBasis *  lController = static_cast<Client::ZonesControllerBasis *>(this);
+    Status                          lStatus;
+
+
+    lStatus = ProxyNotification(aBuffer,
+                                aSize,
+                                aMatches,
+                                Client::ZonesControllerBasis::MuteNotificationReceivedHandler,
+                                lController);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Zone name changed client unsolicited notification handler.
+ *
+ *  This handles an asynchronous, unsolicited client notification for
+ *  the zone name changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+ZonesController :: NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    Client::ZonesControllerBasis *  lController = static_cast<Client::ZonesControllerBasis *>(this);
+    Status                          lStatus;
+
+
+    lStatus = ProxyNotification(aBuffer,
+                                aSize,
+                                aMatches,
+                                Client::ZonesControllerBasis::NameNotificationReceivedHandler,
+                                lController);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Zone equalizer sound mode changed client unsolicited
+ *    notification handler.
+ *
+ *  This handles an asynchronous, unsolicited client notification for
+ *  the zone equalizer sound mode changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+ZonesController :: SoundModeNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    Client::ZonesControllerBasis *  lController = static_cast<Client::ZonesControllerBasis *>(this);
+    Status                          lStatus;
+
+
+    lStatus = ProxyNotification(aBuffer,
+                                aSize,
+                                aMatches,
+                                Client::ZonesControllerBasis::SoundModeNotificationReceivedHandler,
+                                lController);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Zone source (input) changed client unsolicited notification
+ *    handler.
+ *
+ *  This handles an unsolicited, asynchronous client notification
+ *  for the zone source (input) changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+ZonesController :: SourceNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    Client::ZonesControllerBasis *  lController = static_cast<Client::ZonesControllerBasis *>(this);
+    Status                          lStatus;
+
+
+    lStatus = ProxyNotification(aBuffer,
+                                aSize,
+                                aMatches,
+                                Client::ZonesControllerBasis::SourceNotificationReceivedHandler,
+                                lController);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return;
+}
+
+/**
+ *  @brief
+ *    All zones source (input) changed client unsolicited notification
+ *    handler.
+ *
+ *  This handles an unsolicited, asynchronous client notification for
+ *  the all zones source (input) changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+ZonesController :: SourceAllNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    Client::ZonesControllerBasis *  lController = static_cast<Client::ZonesControllerBasis *>(this);
+    Status                          lStatus;
+
+
+    lStatus = ProxyNotification(aBuffer,
+                                aSize,
+                                aMatches,
+                                Client::ZonesControllerBasis::SourceAllNotificationReceivedHandler,
+                                lController);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Zone volume level state changed client unsolicited notification
+ *    handler.
+ *
+ *  This handles an asynchronous, unsolicited client notification for
+ *  the zone volume level state changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+ZonesController :: VolumeNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    Client::ZonesControllerBasis *  lController = static_cast<Client::ZonesControllerBasis *>(this);
+    Status                          lStatus;
+
+
+    lStatus = ProxyNotification(aBuffer,
+                                aSize,
+                                aMatches,
+                                Client::ZonesControllerBasis::VolumeNotificationReceivedHandler,
+                                lController);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return;
+}
+
+/**
+ *  @brief
+ *    All zones volume level state changed client unsolicited notification
+ *    handler.
+ *
+ *  This handles an asynchronous, unsolicited client notification for
+ *  the all zones volume level state changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+ZonesController :: VolumeAllNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    Client::ZonesControllerBasis *  lController = static_cast<Client::ZonesControllerBasis *>(this);
+    Status                          lStatus;
+
+
+    lStatus = ProxyNotification(aBuffer,
+                                aSize,
+                                aMatches,
+                                Client::ZonesControllerBasis::VolumeAllNotificationReceivedHandler,
+                                lController);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Zone volume fixed/locked state changed client unsolicited
+ *    notification handler.
+ *
+ *  This handles an asynchronous, unsolicited client notification for
+ *  the zone volume fixed/locked state changed notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+ZonesController :: VolumeFixedNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    Client::ZonesControllerBasis *  lController = static_cast<Client::ZonesControllerBasis *>(this);
+    Status                          lStatus;
+
+
+    lStatus = ProxyNotification(aBuffer,
+                                aSize,
+                                aMatches,
+                                Client::ZonesControllerBasis::VolumeFixedNotificationReceivedHandler,
+                                lController);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return;
+}
+
+// MARK: Server-facing Client Unsolicited Notification Handler Trampolines
+
+/**
+ *  @brief
+ *    Zone stereophonic channel balance changed client unsolicited
+ *    notification handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the zone stereophonic channel balance changed
+ *  notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+ZonesController :: BalanceNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->BalanceNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Zone equalizer band level changed client unsolicited
+ *    notification handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the zone equalizer band level changed
+ *  notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+ZonesController :: EqualizerBandNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->EqualizerBandNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Zone equalizer preset changed client unsolicited notification
+ *    handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the zone equalizer preset changed notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+ZonesController :: EqualizerPresetNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->EqualizerPresetNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Zone tone equalizer state changed client unsolicited
+ *    notification handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the zone tone equalizer state changed
+ *  notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+ZonesController :: ToneNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->ToneNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Zone highpass filter crossover frequency changed client
+ *    unsolicited notification handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the zone highpass filter crossover frequency
+ *  changed notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+ZonesController :: HighpassCrossoverNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->HighpassCrossoverNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Zone lowpass filter crossover frequency changed client
+ *    unsolicited notification handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the zone lowpass filter crossover frequency
+ *  changed notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+ZonesController :: LowpassCrossoverNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->LowpassCrossoverNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Zone volume mute state changed client unsolicited notification
+ *    handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the zone volume mute state changed notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+ZonesController :: MuteNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->MuteNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Zone name changed client unsolicited notification handler
+ *    trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the zone name changed notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+ZonesController :: NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->NameNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Zone equalizer sound mode changed client unsolicited
+ *    notification handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the zone equalizer sound mode changed
+ *  notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+ZonesController :: SoundModeNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->SoundModeNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Zone source (input) changed client unsolicited notification
+ *    handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the zone source (input) changed notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+ZonesController :: SourceNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->SourceNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    All zones source (input) changed client unsolicited notification
+ *    handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the all zones source (input) changed
+ *  notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+ZonesController :: SourceAllNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->SourceAllNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Zone volume level state changed client unsolicited notification
+ *    handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the zone volume level state changed notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+ZonesController :: VolumeNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+
+    if (lController != nullptr)
+    {
+        lController->VolumeNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    All zones volume level state changed client unsolicited
+ *    notification handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the all zones volume level state changed
+ *  notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+ZonesController :: VolumeAllNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->VolumeAllNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Zone volume fixed/locked state changed client unsolicited
+ *    notification handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the zone volume fixed/locked state changed
+ *  notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+ZonesController :: VolumeFixedNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    ZonesController *lController = static_cast<ZonesController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->VolumeFixedNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
 }
 
 // MARK: Client-facing Server Command Request Completion Handlers
