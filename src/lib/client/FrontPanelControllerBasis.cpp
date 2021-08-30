@@ -107,7 +107,6 @@ Status
 FrontPanelControllerBasis :: Init(CommandManager &aCommandManager, const Timeout &aTimeout)
 {
     DeclareScopedFunctionTracer(lTracer);
-    constexpr bool  kRegister = true;
     Status          lRetval = kStatus_Success;
 
 
@@ -115,12 +114,6 @@ FrontPanelControllerBasis :: Init(CommandManager &aCommandManager, const Timeout
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = ControllerBasis::Init(aCommandManager, aTimeout);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    // This MUST come AFTER the base class initialization due to a
-    // dependency on the command manager instance.
-
-    lRetval = DoNotificationHandlers(kRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -134,8 +127,8 @@ done:
  *  This attempts to refresh or obtain an up-to-date view of the
  *  server peer state with the specified timeout.
  *
- *  The peer server sources controller supports no such commands, so
- *  this is effectively a non-operation.
+ *  Presently, this controller does so by executing a "query front panel
+ *  [QFPL]" command with the peer server.
  *
  *  @param[in]  aTimeout  The timeout to use for the refresh operation
  *                        with the peer server.
