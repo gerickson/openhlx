@@ -103,7 +103,6 @@ Status
 NetworkControllerBasis :: Init(CommandManager &aCommandManager, const Timeout &aTimeout)
 {
     DeclareScopedFunctionTracer(lTracer);
-    constexpr bool  kRegister = true;
     Status          lRetval = kStatus_Success;
 
 
@@ -111,12 +110,6 @@ NetworkControllerBasis :: Init(CommandManager &aCommandManager, const Timeout &a
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = ControllerBasis::Init(aCommandManager, aTimeout);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    // This MUST come AFTER the base class initialization due to a
-    // dependency on the command manager instance.
-
-    lRetval = DoNotificationHandlers(kRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -130,8 +123,8 @@ done:
  *  This attempts to refresh or obtain an up-to-date view of the
  *  server peer state with the specified timeout.
  *
- *  The peer server sources controller supports no such commands, so
- *  this is effectively a non-operation.
+ *  Presently, this controller does so by executing a "query network
+ *  [QE]" command with the peer server.
  *
  *  @param[in]  aTimeout  The timeout to use for the refresh operation
  *                        with the peer server.
@@ -155,6 +148,8 @@ NetworkControllerBasis :: Refresh(const Timeout &aTimeout)
     // operation.
 
     SetRefreshRequested(true);
+
+    // Issue a query network request.
 
     lRetval = Query();
     nlREQUIRE_SUCCESS(lRetval, done);
@@ -190,7 +185,7 @@ done:
 Status
 NetworkControllerBasis :: DoNotificationHandlers(const bool &aRegister)
 {
-    Status                   lRetval = kStatus_Success;
+    Status  lRetval = kStatus_Success;
 
 
     return (lRetval);
