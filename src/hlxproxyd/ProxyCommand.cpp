@@ -47,7 +47,6 @@ Proxy :: Init(const uint8_t *aBuffer,
               const size_t &aSize,
               const Client::Command::ResponseBasis &aResponse)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Common::Command::Buffer &            lRequest  = static_cast<Common::Command::Buffer &>(mRequest);
     const char *                         lBuffer   = reinterpret_cast<const char *>(aBuffer);
     Common::Command::RegularExpression & lResponse = static_cast<Common::Command::RegularExpression &>(mResponse);

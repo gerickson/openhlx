@@ -189,7 +189,6 @@ done:
 Status
 FrontPanelController :: DoRequestHandlers(const bool &aRegister)
 {
-    DeclareScopedFunctionTracer(lTracer);
     static const RequestHandlerBasis  lRequestHandlers[] = {
         {
             kQueryRequest,
@@ -224,7 +223,6 @@ done:
 Status
 FrontPanelController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status  lRetval = kStatus_Success;
 
 

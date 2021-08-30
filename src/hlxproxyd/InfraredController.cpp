@@ -140,7 +140,6 @@ done:
 Status
 InfraredController :: DoRequestHandlers(const bool &aRegister)
 {
-    DeclareScopedFunctionTracer(lTracer);
     static const RequestHandlerBasis  lRequestHandlers[] = {
         {
             kQueryRequest,
@@ -214,7 +213,6 @@ done:
 Status
 InfraredController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status  lRetval = kStatus_Success;
 
 

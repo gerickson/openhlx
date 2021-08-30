@@ -184,7 +184,6 @@ done:
 Status
 SourcesController :: DoRequestHandlers(const bool &aRegister)
 {
-    DeclareScopedFunctionTracer(lTracer);
     static const RequestHandlerBasis  lRequestHandlers[] = {
         {
             kSetNameRequest,
@@ -209,7 +208,6 @@ done:
 Status
 SourcesController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 

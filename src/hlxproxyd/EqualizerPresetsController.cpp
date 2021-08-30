@@ -190,7 +190,6 @@ done:
 Status
 EqualizerPresetsController :: DoRequestHandlers(const bool &aRegister)
 {
-    DeclareScopedFunctionTracer(lTracer);
     static const RequestHandlerBasis  lRequestHandlers[] = {
         {
             kDecreaseBandRequest,
@@ -235,7 +234,6 @@ done:
 Status
 EqualizerPresetsController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status  lRetval = kStatus_Success;
 
 

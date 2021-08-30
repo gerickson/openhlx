@@ -210,7 +210,6 @@ done:
 Status
 ConfigurationController :: DoRequestHandlers(const bool &aRegister)
 {
-    DeclareScopedFunctionTracer(lTracer);
     static const RequestHandlerBasis  lRequestHandlers[] = {
         {
             kLoadFromBackupRequest,

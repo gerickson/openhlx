@@ -217,7 +217,6 @@ done:
 Status
 GroupsController :: DoRequestHandlers(const bool &aRegister)
 {
-    DeclareScopedFunctionTracer(lTracer);
     static const RequestHandlerBasis  lRequestHandlers[] = {
         {
             kAddZoneRequest,
@@ -292,7 +291,6 @@ done:
 Status
 GroupsController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status  lRetval = kStatus_Success;
 
 

@@ -252,7 +252,6 @@ done:
 Status
 ZonesController :: DoRequestHandlers(const bool &aRegister)
 {
-    DeclareScopedFunctionTracer(lTracer);
     static const RequestHandlerBasis  lRequestHandlers[] = {
         {
             kAdjustBalanceRequest,

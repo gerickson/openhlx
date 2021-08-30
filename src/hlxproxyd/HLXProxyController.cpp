@@ -67,7 +67,7 @@ Controller :: Controller(void) :
     mZonesController(),
     mDelegate(nullptr)
 {
-    DeclareScopedFunctionTracer(lTracer);
+    return;
 }
 
 /**
@@ -77,7 +77,7 @@ Controller :: Controller(void) :
  */
 Controller :: ~Controller(void)
 {
-    DeclareScopedFunctionTracer(lTracer);
+    return;
 }
 
 /**
@@ -136,7 +136,6 @@ done:
 Status
 Controller :: InitClient(void)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status  lRetval;
 
 
@@ -154,7 +153,6 @@ Controller :: InitClient(void)
 Status
 Controller :: InitServer(void)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status  lRetval;
 
 
@@ -189,7 +187,6 @@ Controller :: InitControllers(const RunLoopParameters &aRunLoopParameters)
 Status
 Controller :: InitClientControllers(const RunLoopParameters &aRunLoopParameters)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status  lRetval = kStatus_Success;
 
 
@@ -215,7 +212,6 @@ Controller :: InitClientControllers(const RunLoopParameters &aRunLoopParameters)
 Status
 Controller :: InitServerControllers(const RunLoopParameters &aRunLoopParameters)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status  lRetval = kStatus_Success;
 
 
@@ -242,7 +238,6 @@ Controller :: InitServerControllers(const RunLoopParameters &aRunLoopParameters)
 Status
 Controller :: InitProxyControllers(const RunLoopParameters &aRunLoopParameters)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status                 lRetval;
 
 
@@ -819,7 +814,6 @@ Controller :: ControllerStateDidChange(Client::ControllerBasis &aController,
 Status
 Controller :: QueryCurrentConfiguration(ConfigurationController &aController, Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    DeclareScopedFunctionTracer(lTracer);
     ProxyControllerContainer::Controllers::iterator  lCurrent, lEnd;
     Status                 lRetval;
 

@@ -294,7 +294,7 @@ HLXProxy :: HLXProxy(void) :
     mListenMaybeURL(nullptr),
     mVersions(0)
 {
-    DeclareScopedFunctionTracer(lTracer);
+    return;
 }
 
 HLXProxy :: ~HLXProxy(void)
@@ -733,8 +733,6 @@ void HLXProxy :: OnSignal(int aSignal)
 
 static void OnSignal(int aSignal)
 {
-    DeclareScopedFunctionTracer(lTracer);
-
     Log::Debug().Write("%s: caught signal %d\n", __func__, aSignal);
 
     if (sHLXProxy != nullptr)
@@ -1126,7 +1124,6 @@ FilterSyslog(Log::Logger &inLogger)
 
 int main(int argc, char * const argv[])
 {
-    DeclareScopedFunctionTracer(lTracer);
     HLXProxy     lHLXProxy;
     Status       lStatus;
     size_t       n = 0;
