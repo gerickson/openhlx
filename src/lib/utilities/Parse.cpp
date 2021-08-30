@@ -263,6 +263,42 @@ Parse(const char *aBuffer, const size_t &aBufferLength, uint16_t &aValue)
 
 /**
  *  @brief
+ *    Parse an unsigned 32-bit value from the specified string buffer
+ *    extent.
+ *
+ *  This attempts to parse an unsigned 32-bit value from the specified
+ *  string buffer extent.
+ *
+ *  @param[in]   aBuffer        A pointer to the start of the string buffer
+ *                              extent.
+ *  @param[in]   aBufferLength  The length of the string buffer extent.
+ *  @param[out]  aValue         A mutable reference to storage to parse the
+ *                              unsigned 32-bit value into.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *  @retval  -ERANGE          The parsed value was out of range.
+ *  @retval  -EINVAL          No valid parseable characters were encountered.
+ *  @retval  -EOVERFLOW       The parsed value was too large to represent.
+ *
+ */
+Status
+Parse(const char *aBuffer, const size_t &aBufferLength, uint32_t &aValue)
+{
+    unsigned long   lTemp;
+    Status          lRetval = kStatus_Success;
+
+
+    lRetval = Parse(aBuffer, aBufferLength, lTemp);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    aValue = static_cast<uint32_t>(lTemp);
+
+ done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
  *    Parse a Boolean value from the specified null-terminated C
  *    string.
  *
@@ -357,6 +393,31 @@ Parse(const char *aString, uint8_t &aValue)
  */
 Status
 Parse(const char *aString, uint16_t &aValue)
+{
+    return (Parse(aString, strlen(aString), aValue));
+}
+
+/**
+ *  @brief
+ *    Parse a unsigned 32-bit value from the specified null-terminated C
+ *    string.
+ *
+ *  This attempts to parse a unsigned 32-bit value from the specified
+ *  null-terminated C string.
+ *
+ *  @param[in]   aString  A pointer to the start of the null-terminated
+ *                        C string.
+ *  @param[out]  aValue   A mutable reference to storage to parse the
+ *                        unsigned 32-bit value into.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *  @retval  -ERANGE          The parsed value was out of range.
+ *  @retval  -EINVAL          No valid parseable characters were encountered.
+ *  @retval  -EOVERFLOW       The parsed value was too large to represent.
+ *
+ */
+Status
+Parse(const char *aString, uint32_t &aValue)
 {
     return (Parse(aString, strlen(aString), aValue));
 }

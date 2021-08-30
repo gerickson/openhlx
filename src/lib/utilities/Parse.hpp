@@ -41,11 +41,13 @@ extern Common::Status Parse(const char *aBuffer, const size_t &aBufferLength, bo
 extern Common::Status Parse(const char *aBuffer, const size_t &aBufferLength, int8_t &aValue);
 extern Common::Status Parse(const char *aBuffer, const size_t &aBufferLength, uint8_t &aValue);
 extern Common::Status Parse(const char *aBuffer, const size_t &aBufferLength, uint16_t &aValue);
+extern Common::Status Parse(const char *aBuffer, const size_t &aBufferLength, uint32_t &aValue);
 
 extern Common::Status Parse(const char *aString, bool &aValue);
 extern Common::Status Parse(const char *aString, int8_t &aValue);
-extern Common::Status Parse(const char *aString, uint16_t &aValue);
 extern Common::Status Parse(const char *aString, uint8_t &aValue);
+extern Common::Status Parse(const char *aString, uint16_t &aValue);
+extern Common::Status Parse(const char *aString, uint32_t &aValue);
 
 /**
  *  @brief
