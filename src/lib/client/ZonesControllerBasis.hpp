@@ -110,6 +110,11 @@ protected:
     static void VolumeAllNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
     static void VolumeFixedNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
+protected:
+    // Implementation
+
+    Common::Status DoNotificationHandlers(const bool &aRegister);
+
 private:
     // Command Completion Handlers
 
@@ -151,7 +156,6 @@ private:
 private:
     // Implementation
 
-    Common::Status DoNotificationHandlers(const bool &aRegister);
     Common::Status ResponseInit(void);
 
 private:
