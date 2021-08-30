@@ -25,6 +25,7 @@
 #include "ConfigurationControllerBasis.hpp"
 
 #include <memory>
+
 #include <errno.h>
 
 #include <LogUtilities/LogUtilities.hpp>
@@ -196,8 +197,8 @@ ConfigurationControllerBasis :: DoNotificationHandlers(const bool &aRegister)
             ConfigurationControllerBasis::SavingToBackupNotificationReceivedHandler
         },
     };
-    static constexpr size_t                lNotificationHandlerCount = ElementsOf(lNotificationHandlers);
-    Status                                 lRetval = kStatus_Success;
+    static constexpr size_t  lNotificationHandlerCount = ElementsOf(lNotificationHandlers);
+    Status                   lRetval = kStatus_Success;
 
     lRetval = Client::ControllerBasis::DoNotificationHandlers(&lNotificationHandlers[0],
                                                               &lNotificationHandlers[lNotificationHandlerCount],
