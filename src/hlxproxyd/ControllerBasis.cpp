@@ -264,7 +264,6 @@ ControllerBasis :: ProxyErrorHandler(Client::Command::ExchangeBasis::MutableCoun
                                      Client::CommandManager::OnCommandErrorFunc aOnCommandErrorHandler,
                                      void * aContext)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status lStatus;
 
     aOnCommandErrorHandler(aClientExchange, aClientError, aContext);
@@ -285,8 +284,6 @@ ControllerBasis :: ProxyObservationCompleteHandler(Client::Command::ExchangeBasi
                                                    void * aClientContext,
                                                    void * aServerContext)
 {
-    DeclareScopedFunctionTracer(lTracer);
-
     aOnCommandCompleteHandler(aClientExchange,
                               aClientMatches,
                               aClientContext);
@@ -308,7 +305,6 @@ ControllerBasis :: ProxyMutationCompleteHandler(Client::Command::ExchangeBasis::
                                                 Client::CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
                                                 void * aContext)
 {
-    DeclareScopedFunctionTracer(lTracer);
     const Client::Command::ResponseBasis *  lServerResponse           = aClientExchange->GetResponse();
     const uint8_t *                         lServerResponseBuffer     = lServerResponse->GetBuffer()->GetHead();
     const size_t                            lServerResponseBufferSize = lServerResponse->GetBuffer()->GetSize();
@@ -355,7 +351,6 @@ ControllerBasis :: ProxyErrorHandler(Client::Command::ExchangeBasis::MutableCoun
                                      const Common::Error &aClientError,
                                      void *aContext)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Detail::ProxyContext *lContext = static_cast<Detail::ProxyContext *>(aContext);
 
     if (lContext != nullptr)
@@ -409,7 +404,6 @@ ControllerBasis :: ProxyMutationCompleteHandler(Client::Command::ExchangeBasis::
                                                 const Common::RegularExpression::Matches &aClientMatches,
                                                 void *aContext)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Detail::ProxyContext *lContext = static_cast<Detail::ProxyContext *>(aContext);
 
     if (lContext != nullptr)
