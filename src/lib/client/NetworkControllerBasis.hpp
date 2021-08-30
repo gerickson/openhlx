@@ -70,6 +70,11 @@ protected:
 
     // Notification Handler Trampolines
 
+protected:
+    // Implementation
+
+    Common::Status DoNotificationHandlers(const bool &aRegister);
+
 private:
     // Command Completion Handlers
 
@@ -82,7 +87,6 @@ private:
 private:
     // Implementation
 
-    Common::Status DoNotificationHandlers(const bool &aRegister);
     Common::Status ResponseInit(void);
 
 private:
