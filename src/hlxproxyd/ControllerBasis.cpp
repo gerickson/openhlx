@@ -121,7 +121,6 @@ ControllerBasis :: ProxyMutationCommand(Server::ConnectionBasis &aClientConnecti
                                         Client::CommandManager::OnCommandErrorFunc aOnCommandErrorHandler,
                                         void *aContext)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Client::Command::ExchangeBasis::MutableCountedPointer lCommand;
     std::unique_ptr<Detail::ProxyContext>                 lProxyContext;
     Status                                                lRetval = kStatus_Success;
@@ -175,7 +174,6 @@ ControllerBasis :: ProxyObservationCommand(Server::ConnectionBasis &aClientConne
                                            void *aClientContext,
                                            void *aServerContext)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Client::Command::ExchangeBasis::MutableCountedPointer lCommand;
     std::unique_ptr<Detail::ProxyContext>                 lProxyContext;
     Status                                                lRetval = kStatus_Success;
@@ -228,7 +226,6 @@ ControllerBasis :: ProxyNotification(const uint8_t *aNotificationBuffer,
                                      Client::CommandManager::OnNotificationReceivedFunc  aOnNotificationReceivedHandler,
                                      void *aClientContext)
 {
-    DeclareScopedFunctionTracer(lTracer);
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     uint8_t *                                lResult;
     Status                                   lRetval;
