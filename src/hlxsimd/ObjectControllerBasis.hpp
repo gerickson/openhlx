@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef OPENHLXSIMULATORCONTROLLERBASIS_HPP
-#define OPENHLXSIMULATORCONTROLLERBASIS_HPP
+#ifndef OPENHLXSIMULATOROBJECTCONTROLLERBASIS_HPP
+#define OPENHLXSIMULATOROBJECTCONTROLLERBASIS_HPP
 
 #include <CoreFoundation/CFDictionary.h>
 
@@ -41,7 +41,7 @@ namespace HLX
 namespace Simulator
 {
 
-class ControllerBasisDelegate;
+class ObjectControllerBasisDelegate;
 
 /**
  *  @brief
@@ -50,17 +50,17 @@ class ControllerBasisDelegate;
  *  @ingroup simulator
  *
  */
-class ControllerBasis
+class ObjectControllerBasis
 {
 public:
-    virtual ~ControllerBasis(void);
+    virtual ~ObjectControllerBasis(void);
 
     // Initializer(s)
 
     virtual Common::Status Init(Server::CommandManager &aCommandManager) = 0;
 
-    Common::Status SetDelegate(ControllerBasisDelegate *aDelegate);
-    ControllerBasisDelegate *GetDelegate(void) const;
+    Common::Status SetDelegate(ObjectControllerBasisDelegate *aDelegate);
+    ObjectControllerBasisDelegate *GetDelegate(void) const;
 
     // Configuration Management Methods
 
@@ -72,14 +72,14 @@ public:
     void OnConfigurationIsDirty(void);
 
 protected:
-    ControllerBasis(void);
+    ObjectControllerBasis(void);
 
 private:
-    ControllerBasisDelegate *  mDelegate;
+    ObjectControllerBasisDelegate *  mDelegate;
 };
 
 }; // namespace Simulator
 
 }; // namespace HLX
 
-#endif // OPENHLXSIMULATORCONTROLLERBASIS_HPP
+#endif // OPENHLXSIMULATOROBJECTCONTROLLERBASIS_HPP

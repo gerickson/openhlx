@@ -31,7 +31,7 @@
 #include <OpenHLX/Model/SourceModel.hpp>
 #include <OpenHLX/Model/VolumeModel.hpp>
 
-#include "ControllerBasisDelegate.hpp"
+#include "ObjectControllerBasisDelegate.hpp"
 
 
 namespace HLX

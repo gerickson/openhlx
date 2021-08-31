@@ -32,7 +32,7 @@
 #include <OpenHLX/Server/ConfigurationControllerBasis.hpp>
 #include <OpenHLX/Server/ConfigurationControllerCommands.hpp>
 
-#include "ControllerBasis.hpp"
+#include "ObjectControllerBasis.hpp"
 
 
 namespace HLX
@@ -55,7 +55,7 @@ class ConfigurationControllerDelegate;
 class ConfigurationController :
     public Common::ConfigurationControllerBasis,
     public Server::ConfigurationControllerBasis,
-    public Simulator::ControllerBasis
+    public Simulator::ObjectControllerBasis
 {
 public:
     ConfigurationController(void);

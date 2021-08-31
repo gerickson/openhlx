@@ -31,7 +31,7 @@
 #include <OpenHLX/Server/InfraredControllerBasis.hpp>
 #include <OpenHLX/Server/InfraredControllerCommands.hpp>
 
-#include "ControllerBasis.hpp"
+#include "ObjectControllerBasis.hpp"
 
 
 namespace HLX
@@ -53,7 +53,7 @@ namespace Simulator
 class InfraredController :
     public Common::InfraredControllerBasis,
     public Server::InfraredControllerBasis,
-    public Simulator::ControllerBasis
+    public Simulator::ObjectControllerBasis
 {
 public:
     InfraredController(void);

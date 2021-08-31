@@ -95,7 +95,7 @@ SourcesController :: SourcesController(void) :
     Server::SourcesControllerBasis(Common::SourcesControllerBasis::mSources,
                                    Common::SourcesControllerBasis::kSourcesMax),
     Server::ContainerControllerBasis(),
-    Simulator::ControllerBasis()
+    Simulator::ObjectControllerBasis()
 {
     return;
 }
@@ -122,10 +122,10 @@ SourcesController :: DoRequestHandlers(const bool &aRegister)
     static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
     Status                   lRetval = kStatus_Success;
 
-    lRetval = Server::ControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
-                                                         &lRequestHandlers[lRequestHandlerCount],
-                                                         this,
-                                                         aRegister);
+    lRetval = Server::ObjectControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
+                                                               &lRequestHandlers[lRequestHandlerCount],
+                                                               this,
+                                                               aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:

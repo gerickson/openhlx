@@ -77,10 +77,10 @@ namespace Application
 class Controller :
     public Common::Application::ControllerBasis,
     public Server::Application::ControllerBasis,
-    public Common::Application::ControllerContainerTemplate<Simulator::ControllerBasis>,
+    public Common::Application::ControllerContainerTemplate<Simulator::ObjectControllerBasis>,
     public Server::ConnectionManagerDelegate,
     public Server::CommandManagerDelegate,
-    public Simulator::ControllerBasisDelegate,
+    public Simulator::ObjectControllerBasisDelegate,
     public Utilities::TimerDelegate,
     public ConfigurationControllerDelegate,
     public GroupsControllerDelegate
@@ -110,7 +110,7 @@ public:
 
     // Controller Delegate Methods
 
-    void ControllerConfigurationIsDirty(Simulator::ControllerBasis &aController) final;
+    void ControllerConfigurationIsDirty(Simulator::ObjectControllerBasis &aController) final;
 
     // Connection Manager Delegate Methods
 
@@ -158,7 +158,7 @@ public:
     void TimerDidFire(Utilities::Timer &aTimer) final;
 
 private:
-    typedef Common::Application::ControllerContainerTemplate<Simulator::ControllerBasis> SimulatorControllerContainer;
+    typedef Common::Application::ControllerContainerTemplate<Simulator::ObjectControllerBasis> SimulatorControllerContainer;
 
 private:
     class ShouldDoForGroupZonesFunctorBasis

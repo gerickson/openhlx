@@ -30,7 +30,7 @@
 #include <OpenHLX/Server/FrontPanelControllerBasis.hpp>
 #include <OpenHLX/Server/FrontPanelControllerCommands.hpp>
 
-#include "ControllerBasis.hpp"
+#include "ObjectControllerBasis.hpp"
 
 
 namespace HLX
@@ -51,7 +51,7 @@ namespace Simulator
 class FrontPanelController :
     public Common::FrontPanelControllerBasis,
     public Server::FrontPanelControllerBasis,
-    public Simulator::ControllerBasis
+    public Simulator::ObjectControllerBasis
 {
 public:
     FrontPanelController(void);

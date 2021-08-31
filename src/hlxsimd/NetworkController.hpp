@@ -31,7 +31,7 @@
 #include <OpenHLX/Server/NetworkControllerCommands.hpp>
 
 #include "ContainerControllerBasis.hpp"
-#include "ControllerBasis.hpp"
+#include "ObjectControllerBasis.hpp"
 
 
 namespace HLX
@@ -52,7 +52,7 @@ namespace Simulator
 class NetworkController :
     public Common::NetworkControllerBasis,
     public Server::NetworkControllerBasis,
-    public Simulator::ControllerBasis
+    public Simulator::ObjectControllerBasis
 {
 public:
     NetworkController(void);

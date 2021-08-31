@@ -22,18 +22,18 @@
  *
  */
 
-#include "ControllerBasis.hpp"
+#include "ObjectControllerBasis.hpp"
 
 #include <errno.h>
 
 #include <LogUtilities/LogUtilities.hpp>
 
 #include <OpenHLX/Common/Errors.hpp>
+#include <OpenHLX/Server/CommandManager.hpp>
 #include <OpenHLX/Server/ConnectionManager.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
 
-#include <CommandManager.hpp>
-#include <ControllerBasisDelegate.hpp>
+#include "ObjectControllerBasisDelegate.hpp"
 
 
 using namespace HLX::Common;
@@ -46,25 +46,25 @@ namespace HLX
 namespace Simulator
 {
 
-ControllerBasis :: ControllerBasis(void) :
+ObjectControllerBasis :: ObjectControllerBasis(void) :
     mDelegate(nullptr)
 {
     return;
 }
 
-ControllerBasis :: ~ControllerBasis(void)
+ObjectControllerBasis :: ~ObjectControllerBasis(void)
 {
     return;
 }
 
-ControllerBasisDelegate *
-ControllerBasis :: GetDelegate(void) const
+ObjectControllerBasisDelegate *
+ObjectControllerBasis :: GetDelegate(void) const
 {
     return (mDelegate);
 }
 
 Status
-ControllerBasis :: SetDelegate(ControllerBasisDelegate *aDelegate)
+ObjectControllerBasis :: SetDelegate(ObjectControllerBasisDelegate *aDelegate)
 {
     Status lRetval = kStatus_Success;
 
@@ -77,7 +77,7 @@ ControllerBasis :: SetDelegate(ControllerBasisDelegate *aDelegate)
 }
 
 void
-ControllerBasis :: OnConfigurationIsDirty(void)
+ObjectControllerBasis :: OnConfigurationIsDirty(void)
 {
     if (mDelegate != nullptr)
     {
@@ -88,7 +88,7 @@ ControllerBasis :: OnConfigurationIsDirty(void)
 // MARK: Configuration Management Methods
 
 Status
-ControllerBasis :: LoadFromBackupConfiguration(CFDictionaryRef aBackupDictionary)
+ObjectControllerBasis :: LoadFromBackupConfiguration(CFDictionaryRef aBackupDictionary)
 {
     Status lRetval = kStatus_Success;
 
@@ -99,7 +99,7 @@ ControllerBasis :: LoadFromBackupConfiguration(CFDictionaryRef aBackupDictionary
 }
 
 void
-ControllerBasis :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+ObjectControllerBasis :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     (void)aConnection;
     (void)aBuffer;
@@ -108,13 +108,13 @@ ControllerBasis :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnectio
 }
 
 void
-ControllerBasis :: ResetToDefaultConfiguration(void)
+ObjectControllerBasis :: ResetToDefaultConfiguration(void)
 {
     return;
 }
 
 void
-ControllerBasis :: SaveToBackupConfiguration(CFMutableDictionaryRef aBackupDictionary)
+ObjectControllerBasis :: SaveToBackupConfiguration(CFMutableDictionaryRef aBackupDictionary)
 {
     (void)aBackupDictionary;
 

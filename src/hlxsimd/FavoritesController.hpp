@@ -33,7 +33,7 @@
 #include <OpenHLX/Server/FavoritesControllerCommands.hpp>
 
 #include "ContainerControllerBasis.hpp"
-#include "ControllerBasis.hpp"
+#include "ObjectControllerBasis.hpp"
 
 
 namespace HLX
@@ -55,7 +55,7 @@ class FavoritesController :
     public Common::FavoritesControllerBasis,
     public Server::FavoritesControllerBasis,
     public Server::ContainerControllerBasis,
-    public Simulator::ControllerBasis
+    public Simulator::ObjectControllerBasis
 {
 public:
     FavoritesController(void);

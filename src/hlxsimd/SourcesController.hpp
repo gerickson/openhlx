@@ -33,7 +33,7 @@
 #include <OpenHLX/Server/SourcesControllerCommands.hpp>
 
 #include "ContainerControllerBasis.hpp"
-#include "ControllerBasis.hpp"
+#include "ObjectControllerBasis.hpp"
 
 
 namespace HLX
@@ -52,7 +52,7 @@ namespace Simulator
  *
  */
 class SourcesController :
-    public Simulator::ControllerBasis,
+    public Simulator::ObjectControllerBasis,
     public Server::ContainerControllerBasis,
     public Common::SourcesControllerBasis,
     public Server::SourcesControllerBasis

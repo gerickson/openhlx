@@ -37,7 +37,7 @@
 #include <OpenHLX/Server/ZonesControllerCommands.hpp>
 
 #include "ContainerControllerBasis.hpp"
-#include "ControllerBasis.hpp"
+#include "ObjectControllerBasis.hpp"
 
 
 namespace HLX
@@ -66,7 +66,7 @@ class ZonesController :
     public Common::ZonesControllerBasis,
     public Server::ZonesControllerBasis,
     public Server::ContainerControllerBasis,
-    public Simulator::ControllerBasis
+    public Simulator::ObjectControllerBasis
 {
 public:
     ZonesController(void);

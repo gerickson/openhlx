@@ -74,7 +74,7 @@ Controller :: Controller(void) :
     SimulatorControllerContainer(),
     ConnectionManagerDelegate(),
     CommandManagerDelegate(),
-    Simulator::ControllerBasisDelegate(),
+    Simulator::ObjectControllerBasisDelegate(),
     ConfigurationControllerDelegate(),
     GroupsControllerDelegate(),
     mRunLoopParameters(),
@@ -488,7 +488,7 @@ Status Controller :: SaveToBackupConfigurationStorage(ConfigurationController &a
 
 // MARK: Controller Delegate Methods
 
-void Controller :: ControllerConfigurationIsDirty(Simulator::ControllerBasis &aController)
+void Controller :: ControllerConfigurationIsDirty(Simulator::ObjectControllerBasis &aController)
 {
     (void)aController;
 

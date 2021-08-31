@@ -33,7 +33,7 @@
 #include <OpenHLX/Server/GroupsControllerCommands.hpp>
 
 #include "ContainerControllerBasis.hpp"
-#include "ControllerBasis.hpp"
+#include "ObjectControllerBasis.hpp"
 
 
 namespace HLX
@@ -57,7 +57,7 @@ class GroupsController :
     public Common::GroupsControllerBasis,
     public Server::GroupsControllerBasis,
     public Server::ContainerControllerBasis,
-    public Simulator::ControllerBasis
+    public Simulator::ObjectControllerBasis
 {
 public:
     GroupsController(void);

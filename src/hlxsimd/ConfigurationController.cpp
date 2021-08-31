@@ -63,7 +63,7 @@ namespace Simulator
 ConfigurationController :: ConfigurationController(void) :
     Common::ConfigurationControllerBasis(),
     Server::ConfigurationControllerBasis(),
-    Simulator::ControllerBasis(),
+    Simulator::ObjectControllerBasis(),
     mDelegate(nullptr)
 {
     return;
@@ -105,10 +105,10 @@ Status ConfigurationController :: DoRequestHandlers(const bool &aRegister)
     static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
     Status                   lRetval = kStatus_Success;
 
-    lRetval = Server::ControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
-                                                         &lRequestHandlers[lRequestHandlerCount],
-                                                         this,
-                                                         aRegister);
+    lRetval = Server::ObjectControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
+                                                               &lRequestHandlers[lRequestHandlerCount],
+                                                               this,
+                                                               aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:

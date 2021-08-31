@@ -27,8 +27,6 @@ noinst_HEADERS                                                             = \
     ConfigurationController.hpp                                              \
     ConfigurationControllerDelegate.hpp                                      \
     ContainerControllerBasis.hpp                                             \
-    ControllerBasis.hpp                                                      \
-    ControllerBasisDelegate.hpp                                              \
     EqualizerBandModelDefaults.hpp                                           \
     EqualizerPresetsController.hpp                                           \
     FavoritesController.hpp                                                  \
@@ -40,6 +38,8 @@ noinst_HEADERS                                                             = \
     InfraredController.hpp                                                   \
     NameModelDefaults.hpp                                                    \
     NetworkController.hpp                                                    \
+    ObjectControllerBasis.hpp                                                \
+    ObjectControllerBasisDelegate.hpp                                        \
     SourcesController.hpp                                                    \
     Utilities.hpp                                                            \
     ZonesController.hpp                                                      \
@@ -80,7 +80,6 @@ hlxsimd_LDFLAGS                                                            = \
 hlxsimd_SOURCES                                                            = \
     ConfigurationController.cpp                                              \
     ContainerControllerBasis.cpp                                             \
-    ControllerBasis.cpp                                                      \
     EqualizerPresetsController.cpp                                           \
     FavoritesController.cpp                                                  \
     FrontPanelController.cpp                                                 \
@@ -88,6 +87,7 @@ hlxsimd_SOURCES                                                            = \
     HLXSimulatorController.cpp                                               \
     InfraredController.cpp                                                   \
     NetworkController.cpp                                                    \
+    ObjectControllerBasis.cpp                                                \
     SourcesController.cpp                                                    \
     Utilities.cpp                                                            \
     ZonesController.cpp                                                      \

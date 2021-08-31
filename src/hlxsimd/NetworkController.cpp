@@ -100,7 +100,7 @@ struct NetworkModelDefaults
 NetworkController :: NetworkController(void) :
     Common::NetworkControllerBasis(),
     Server::NetworkControllerBasis(Common::NetworkControllerBasis::mNetworkModel),
-    Simulator::ControllerBasis()
+    Simulator::ObjectControllerBasis()
 {
     return;
 }
@@ -126,10 +126,10 @@ Status NetworkController :: DoRequestHandlers(const bool &aRegister)
     static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
     Status                   lRetval = kStatus_Success;
 
-    lRetval = Server::ControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
-                                                         &lRequestHandlers[lRequestHandlerCount],
-                                                         this,
-                                                         aRegister);
+    lRetval = Server::ObjectControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
+                                                               &lRequestHandlers[lRequestHandlerCount],
+                                                               this,
+                                                               aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
