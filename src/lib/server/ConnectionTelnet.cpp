@@ -343,9 +343,6 @@ Status ConnectionTelnet :: Disconnect(void)
 
         mWaitingForServerConfirmation = true;
 
-        // XXX - The connected and disconnected states should probably reflect
-        //       a count of connections.
-
         SetState(kState_Disconnected);
 
         OnDidDisconnect(lRetval);
@@ -416,9 +413,6 @@ void ConnectionTelnet :: HandleStreamError(const CFStreamEventType &aType, const
 
     case kState_Accepting:
         {
-            // XXX - The connected and disconnected states should
-            //       probably reflect a count of connections.
-
             SetState(kState_Disconnected);
 
             OnDidNotAccept(lError);
@@ -440,9 +434,6 @@ void ConnectionTelnet :: HandleStreamError(const CFStreamEventType &aType, const
             }
 
             mWaitingForServerConfirmation = true;
-
-            // XXX - The connected and disconnected states should
-            //       probably reflect a count of connections.
 
             SetState(kState_Disconnected);
 

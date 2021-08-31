@@ -185,40 +185,6 @@ void ListenerBasis :: OnDidNotListen(const Common::Error &aError)
     }
 }
 
-#if XXX
-void ListenerBasis :: OnWillAccept(void)
-{
-    if (mDelegate != nullptr)
-    {
-        mDelegate->ListenerWillAccept(*this);
-    }
-}
-
-void ListenerBasis :: OnIsAccepting(void)
-{
-    if (mDelegate != nullptr)
-    {
-        mDelegate->ListenerIsAccepting(*this);
-    }
-}
-
-void ListenerBasis :: OnDidAccept(void)
-{
-    if (mDelegate != nullptr)
-    {
-        mDelegate->ListenerDidAccept(*this);
-    }
-}
-
-void ListenerBasis :: OnDidNotAccept(const Common::Error &aError)
-{
-    if (mDelegate != nullptr)
-    {
-        mDelegate->ListenerDidNotAccept(*this, aError);
-    }
-}
-#endif // XXX
-
 void ListenerBasis :: OnError(const Common::Error &aError)
 {
     if (mDelegate != nullptr)
