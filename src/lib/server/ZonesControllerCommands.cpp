@@ -319,9 +319,9 @@ SetSourceAllRequest :: Init(void)
 Status
 SourceAllResponse :: Init(const Model::SourceModel::IdentifierType &aSourceIdentifier)
 {
-    static const char * const kZonesObject = "X";
+    static const char * const kAllZonesObject = "X";
 
-    return (SourceAllResponseBasis::Init(kZonesObject, aSourceIdentifier));
+    return (SourceAllResponseBasis::Init(kAllZonesObject, aSourceIdentifier));
 }
 
 // MARK: (Sound Mode) Tone Mutator Requests, Responses, and Commands
