@@ -41,6 +41,8 @@
 #include <OpenHLX/Server/ConnectionManager.hpp>
 #include <OpenHLX/Server/ConnectionManagerDelegate.hpp>
 #include <OpenHLX/Server/HLXServerControllerBasis.hpp>
+#include <OpenHLX/Utilities/Timer.hpp>
+#include <OpenHLX/Utilities/TimerDelegate.hpp>
 
 #include "ConfigurationController.hpp"
 #include "ConfigurationControllerDelegate.hpp"
@@ -79,6 +81,7 @@ class Controller :
     public Server::ConnectionManagerDelegate,
     public Server::CommandManagerDelegate,
     public Simulator::ControllerBasisDelegate,
+    public Utilities::TimerDelegate,
     public ConfigurationControllerDelegate,
     public GroupsControllerDelegate
 {
@@ -150,9 +153,9 @@ public:
     Common::Status ShouldSetVolume(GroupsController &aController, const Model::GroupModel::IdentifierType &aGroupIdentifier, const Model::GroupModel &aGroupModel, const Model::VolumeModel::LevelType &aVolume) final;
     Common::Status ShouldToggleMute(GroupsController &aController, const Model::GroupModel::IdentifierType &aGroupIdentifier, const Model::GroupModel &aGroupModel) final;
 
-    // Timer Trampoline
+    // Timer Delegate Method
 
-    static void TimerCallBack(CFRunLoopTimerRef aTimerRef, void *aContext);
+    void TimerDidFire(Utilities::Timer &aTimer) final;
 
 private:
     typedef Common::Application::ControllerContainerTemplate<Simulator::ControllerBasis> SimulatorControllerContainer;
@@ -233,8 +236,6 @@ private:
     Common::Status InitControllers(const Common::RunLoopParameters &aRunLoopParameters);
     Common::Status InitConfiguration(const Common::RunLoopParameters &aRunLoopParameters, const boost::filesystem::path &aPath);
 
-    void TimerCallBack(CFRunLoopTimerRef aTimerRef);
-
 private:
     // Sub-controller order is important since this is the order that
     // most closely matches the order in which the actual HLX hardware
@@ -252,7 +253,7 @@ private:
     SourcesController               mSourcesController;
     ZonesController                 mZonesController;
     ControllerDelegate *            mDelegate;
-    CFRunLoopTimerRef               mConfigurationAutoSaveTimer;
+    Utilities::Timer                mConfigurationAutoSaveTimer;
     bool                            mConfigurationIsDirty;
 };
 

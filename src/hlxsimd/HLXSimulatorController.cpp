@@ -89,7 +89,7 @@ Controller :: Controller(void) :
     mSourcesController(),
     mZonesController(),
     mDelegate(nullptr),
-    mConfigurationAutoSaveTimer(nullptr),
+    mConfigurationAutoSaveTimer(),
     mConfigurationIsDirty(false)
 {
     return;
@@ -103,15 +103,6 @@ Controller :: Controller(void) :
 Controller :: ~Controller(void)
 {
     DeclareScopedFunctionTracer(lTracer);
-
-    if (mConfigurationAutoSaveTimer != nullptr)
-    {
-        CFRunLoopTimerInvalidate(mConfigurationAutoSaveTimer);
-
-        CFRelease(mConfigurationAutoSaveTimer);
-
-        mConfigurationAutoSaveTimer = nullptr;
-    }
 }
 
 // MARK: Initializer(s)
@@ -275,25 +266,17 @@ Controller :: InitConfiguration(const RunLoopParameters &aRunLoopParameters, con
     // Establish the backup configuration auto-save timer.
 
     {
-        static const CFOptionFlags  lFlags = 0;
-        static const CFIndex        lOrder = 0;
-        const CFTimeInterval        lAutoSaveIntervalSeconds = 30;
-        const CFAbsoluteTime        lAutoSaveFirstFireDate = CFAbsoluteTimeGetCurrent() + lAutoSaveIntervalSeconds;
-        CFRunLoopTimerContext       lTimerContext = { 0, this, 0, 0, 0 };
+        constexpr Timeout::Value kAutoSaveIntervalMilliseconds = 30000;
 
+        lRetval = mConfigurationAutoSaveTimer.Init(aRunLoopParameters,
+                                                   kAutoSaveIntervalMilliseconds);
+        nlREQUIRE_SUCCESS(lRetval, done);
 
-        mConfigurationAutoSaveTimer = CFRunLoopTimerCreate(kCFAllocatorDefault,
-                                              lAutoSaveFirstFireDate,
-                                              lAutoSaveIntervalSeconds,
-                                              lFlags,
-                                              lOrder,
-                                              TimerCallBack,
-                                              &lTimerContext);
-        nlREQUIRE_ACTION(mConfigurationAutoSaveTimer != nullptr, done, lRetval = -ENOMEM);
+        lRetval = mConfigurationAutoSaveTimer.SetDelegate(this);
+        nlREQUIRE_SUCCESS(lRetval, done);
 
-        CFRunLoopAddTimer(aRunLoopParameters.GetRunLoop(),
-                          mConfigurationAutoSaveTimer,
-                          aRunLoopParameters.GetRunLoopMode());
+        lRetval = mConfigurationAutoSaveTimer.Start();
+        nlREQUIRE_SUCCESS(lRetval, done);
     }
 
     mConfigurationIsDirty = false;
@@ -888,11 +871,14 @@ Status Controller :: ShouldToggleMute(GroupsController &aController, const Model
     return (ShouldDoForGroupZones(aGroupIdentifier, aGroupModel, lShouldToggleMuteFunctor));
 }
 
-void Controller :: TimerCallBack(CFRunLoopTimerRef aTimerRef)
+// MARK: Timer Delegate Method
+
+void
+Controller :: TimerDidFire(Utilities::Timer &aTimer)
 {
     Status lStatus;
 
-    if (aTimerRef == mConfigurationAutoSaveTimer)
+    if (aTimer == mConfigurationAutoSaveTimer)
     {
         Log::Debug().Write("Auto-save timer fired!\n");
 
@@ -907,16 +893,6 @@ void Controller :: TimerCallBack(CFRunLoopTimerRef aTimerRef)
 
  done:
     return;
-}
-
-void Controller :: TimerCallBack(CFRunLoopTimerRef aTimerRef, void *aContext)
-{
-    Controller *lController = static_cast<Controller *>(aContext);
-
-    if (lController != nullptr)
-    {
-        lController->TimerCallBack(aTimerRef);
-    }
 }
 
 }; // namespace Application
