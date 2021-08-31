@@ -110,10 +110,10 @@ public:
     Common::Status SetSoundMode(const IdentifierType &aZoneIdentifier, const Model::SoundModel::SoundMode &aSoundMode);
 
     Common::Status SetSource(const IdentifierType &aZoneIdentifier, const Model::SourceModel::IdentifierType &aSourceIdentifier);
-    Common::Status SetSource(const Model::SourceModel::IdentifierType &aSourceIdentifier);
+    Common::Status SetSourceAll(const Model::SourceModel::IdentifierType &aSourceIdentifier);
 
     Common::Status SetVolume(const IdentifierType &aZoneIdentifier, const Model::VolumeModel::LevelType &aLevel);
-    Common::Status SetVolume(const Model::VolumeModel::LevelType &aLevel);
+    Common::Status SetVolumeAll(const Model::VolumeModel::LevelType &aLevel);
     Common::Status IncreaseVolume(const IdentifierType &aZoneIdentifier);
     Common::Status DecreaseVolume(const IdentifierType &aZoneIdentifier);
 

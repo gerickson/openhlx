@@ -1511,23 +1511,38 @@ done:
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Set all zones source (input) state to the specified source.
+ *
+ *  This attempts to set all zone source (input) state to the
+ *  specified source on the peer HLX server controller.
+ *
+ *  @param[in]  aSourceIdentifier  An immutable reference to the
+ *                                 source (input) to set.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *  @retval  -ERANGE          If the source (input) identifier is
+ *                            smaller or larger than supported.
+ *  @retval  -ENOMEM          If memory could not be allocated
+ *                            for the command exchange or
+ *                            exchange state.
+ *
+ */
 Status
-ZonesController :: SetSource(const Model::SourceModel::IdentifierType &aSourceIdentifier)
+ZonesController :: SetSourceAll(const Model::SourceModel::IdentifierType &aSourceIdentifier)
 {
     Command::ExchangeBasis::MutableCountedPointer lCommand;
     Status lRetval = kStatus_Success;
 
 
-    (void)aSourceIdentifier;
-
-#if 0 // XXX
     lRetval = SourcesController::ValidateIdentifier(aSourceIdentifier);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lCommand.reset(new Command::Zones::SetSourceAll());
     nlREQUIRE_ACTION(lCommand, done, lRetval = -ENOMEM);
 
-    lRetval = std::static_pointer_cast<Command::Zones::SetSourceAll>(lCommand)->Init(aZoneIdentifier, aSourceIdentifier);
+    lRetval = std::static_pointer_cast<Command::Zones::SetSourceAll>(lCommand)->Init(aSourceIdentifier);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = SendCommand(lCommand,
@@ -1537,7 +1552,6 @@ ZonesController :: SetSource(const Model::SourceModel::IdentifierType &aSourceId
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
-#endif // XXX
     return (lRetval);
 }
 
@@ -1593,16 +1607,31 @@ done:
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Set all zones volume level.
+ *
+ *  This attempts to set all zone volume level on the peer HLX server
+ *  controller.
+ *
+ *  @param[in]  aLevel            An immutable reference to the
+ *                                volume level state to set.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *  @retval  -ENOMEM          If memory could not be allocated
+ *                            for the command exchange or
+ *                            exchange state.
+ *
+ *  @ingroup volume
+ *
+ */
 Status
-ZonesController :: SetVolume(const Model::VolumeModel::LevelType &aLevel)
+ZonesController :: SetVolumeAll(const Model::VolumeModel::LevelType &aLevel)
 {
     Command::ExchangeBasis::MutableCountedPointer lCommand;
     Status lRetval = kStatus_Success;
 
 
-    (void)aLevel;
-
-#if 0 // XXX
     lCommand.reset(new Command::Zones::SetVolumeAll());
     nlREQUIRE_ACTION(lCommand, done, lRetval = -ENOMEM);
 
@@ -1616,7 +1645,6 @@ ZonesController :: SetVolume(const Model::VolumeModel::LevelType &aLevel)
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
-#endif // XXX
     return (lRetval);
 }
 
