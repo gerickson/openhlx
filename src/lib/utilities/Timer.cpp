@@ -81,7 +81,7 @@ Status Timer :: Init(const Common::RunLoopParameters &aRunLoopParameters,
 // MARK: Equality
 
 bool
-Timer :: operator == (const Timer &aTimer) const
+Timer :: operator ==(const Timer &aTimer) const
 {
     bool lRetval = false;
 
@@ -166,6 +166,8 @@ Timer :: Destroy(void)
 
         mTimerRef = nullptr;
     }
+
+    mDelegate = nullptr;
 }
 
 // MARK: Timer Fired Handler
