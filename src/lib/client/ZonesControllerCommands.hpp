@@ -1288,6 +1288,7 @@ private:
  *
  *  @ingroup client
  *  @ingroup command
+ *  @ingroup source
  *  @ingroup zone
  *
  */
@@ -1308,6 +1309,7 @@ public:
  *
  *  @ingroup client
  *  @ingroup command
+ *  @ingroup source
  *  @ingroup zone
  *
  */
@@ -1323,6 +1325,58 @@ public:
 private:
     SetSourceRequest  mRequest;
     SourceResponse    mResponse;
+};
+
+/**
+ *  @brief
+ *    An object for a HLX client all zones source data model set
+ *    property mutation command request buffer.
+ *
+ *  @ingroup client
+ *  @ingroup command
+ *  @ingroup source
+ *  @ingroup zone
+ *
+ */
+class SetSourceAllRequest :
+    public RequestBasis,
+    public Common::Command::SourceAllBufferBasis
+{
+public:
+    SetSourceAllRequest(void) = default;
+    virtual ~SetSourceAllRequest(void) = default;
+
+    Common::Status Init(const Model::SourceModel::IdentifierType &aSourceIdentifier);
+
+private:
+    // Explicitly hide base class initializers
+
+    using RequestBasis::Init;
+};
+
+/**
+ *  @brief
+ *    An object for a HLX client all zones source data model property
+ *    mutation command request / response pair.
+ *
+ *  @ingroup client
+ *  @ingroup command
+ *  @ingroup source
+ *  @ingroup zone
+ *
+ */
+class SetSourceAll :
+    public Command::ExchangeBasis
+{
+public:
+    SetSourceAll(void) = default;
+    virtual ~SetSourceAll(void) = default;
+
+    Common::Status Init(const Model::SourceModel::IdentifierType &aSourceIdentifier);
+
+private:
+    SetSourceAllRequest  mRequest;
+    SourceAllResponse    mResponse;
 };
 
 // MARK: (Sound Mode) Tone Mutator Requests, Responses, and Commands
@@ -1649,6 +1703,58 @@ public:
 private:
     SetVolumeRequest  mRequest;
     VolumeResponse    mResponse;
+};
+
+/**
+ *  @brief
+ *    An object for a HLX client all zones volume level data model
+ *    property mutation command request buffer.
+ *
+ *  @ingroup client
+ *  @ingroup command
+ *  @ingroup volume
+ *  @ingroup zone
+ *
+ */
+class SetVolumeAllRequest :
+    public RequestBasis,
+    public Common::Command::VolumeAllBufferBasis
+{
+public:
+    SetVolumeAllRequest(void) = default;
+    virtual ~SetVolumeAllRequest(void) = default;
+
+    Common::Status Init(const Model::VolumeModel::LevelType &aLevel);
+
+private:
+    // Explicitly hide base class initializers
+
+    using RequestBasis::Init;
+};
+
+/**
+ *  @brief
+ *    An object for a HLX client all zones volume level data model
+ *    property mutation command request / response pair.
+ *
+ *  @ingroup client
+ *  @ingroup command
+ *  @ingroup volume
+ *  @ingroup zone
+ *
+ */
+class SetVolumeAll :
+    public Command::ExchangeBasis
+{
+public:
+    SetVolumeAll(void) = default;
+    virtual ~SetVolumeAll(void) = default;
+
+    Common::Status Init(const Model::VolumeModel::LevelType &aLevel);
+
+private:
+    SetVolumeAllRequest  mRequest;
+    VolumeAllResponse    mResponse;
 };
 
 /**

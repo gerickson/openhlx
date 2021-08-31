@@ -1300,24 +1300,6 @@ SourceResponse :: Init(void)
 
 /**
  *  @brief
- *    This is the class default initializer.
- *
- *  This initializes the all zones source (input) command response
- *  regular expression.
- *
- *  @retval  kStatus_Success              If successful.
- *  @retval  -ENOMEM                      If memory could not be allocated.
- *  @retval  kError_InitializationFailed  If initialization otherwise failed.
- *
- */
-Status
-SourceAllResponse :: Init(void)
-{
-    return (SourceAllRegularExpressionBasis::Init(*this));
-}
-
-/**
- *  @brief
  *    This is the class initializer.
  *
  *  This initializes the zone source (input) set command.
@@ -1340,6 +1322,79 @@ SetSource :: Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
     Status lRetval = kStatus_Success;
 
     lRetval = mRequest.Init(aZoneIdentifier, aSourceIdentifier);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = mResponse.Init();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = ExchangeBasis::Init(mRequest, mResponse);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the all zones source (input) set command request
+ *  buffer.
+ *
+ *  @param[in]  aSourceIdentifier  An immutable reference to the
+ *                                 source (input) to set.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+SetSourceAllRequest :: Init(const Model::SourceModel::IdentifierType &aSourceIdentifier)
+{
+    static const char * const kAllZonesObject = "X";
+
+    return (SourceAllBufferBasis::Init(*this, kAllZonesObject, aSourceIdentifier));
+}
+
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the all zones source (input) command response
+ *  regular expression.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+SourceAllResponse :: Init(void)
+{
+    return (SourceAllRegularExpressionBasis::Init(*this));
+}
+
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the all zones source (input) set command.
+ *
+ *  @param[in]  aSourceIdentifier  An immutable reference to the
+ *                                 source (input) to set.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+SetSourceAll :: Init(const Model::SourceModel::IdentifierType &aSourceIdentifier)
+{
+    Status lRetval = kStatus_Success;
+
+    lRetval = mRequest.Init(aSourceIdentifier);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mResponse.Init();
@@ -1745,24 +1800,6 @@ VolumeResponse :: Init(void)
 
 /**
  *  @brief
- *    This is the class default initializer.
- *
- *  This initializes the all zones volume level command response
- *  regular expression.
- *
- *  @retval  kStatus_Success              If successful.
- *  @retval  -ENOMEM                      If memory could not be allocated.
- *  @retval  kError_InitializationFailed  If initialization otherwise failed.
- *
- */
-Status
-VolumeAllResponse :: Init(void)
-{
-    return (VolumeAllRegularExpressionBasis::Init(*this));
-}
-
-/**
- *  @brief
  *    This is the class initializer.
  *
  *  This initializes the zone volume level set command.
@@ -1785,6 +1822,79 @@ SetVolume :: Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
     Status lRetval = kStatus_Success;
 
     lRetval = mRequest.Init(aZoneIdentifier, aLevel);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = mResponse.Init();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = ExchangeBasis::Init(mRequest, mResponse);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the all zones volume level set command request
+ *  buffer.
+ *
+ *  @param[in]  aLevel            An immutable reference to the
+ *                                volume level state to set.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+SetVolumeAllRequest :: Init(const Model::VolumeModel::LevelType &aLevel)
+{
+    static const char * const kAllZonesObject = "X";
+
+    return (VolumeAllBufferBasis::Init(*this, kAllZonesObject, aLevel));
+}
+
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the all zones volume level command response
+ *  regular expression.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+VolumeAllResponse :: Init(void)
+{
+    return (VolumeAllRegularExpressionBasis::Init(*this));
+}
+
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the all zones volume level set command.
+ *
+ *  @param[in]  aLevel            An immutable reference to the
+ *                                volume level state to set.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+SetVolumeAll :: Init(const Model::VolumeModel::LevelType &aLevel)
+{
+    Status lRetval = kStatus_Success;
+
+    lRetval = mRequest.Init(aLevel);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mResponse.Init();
