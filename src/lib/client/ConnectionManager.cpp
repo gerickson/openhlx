@@ -143,8 +143,10 @@ done:
  */
 ConnectionManager :: ConnectionManager(void) :
     ConnectionManagerBasis(),
+    mRunLoopParameters(),
     mConnectionFactory(),
     mConnection(nullptr),
+    mConnectionTimer(),
     mDelegates()
 {
     return;
@@ -178,6 +180,8 @@ ConnectionManager :: Init(const RunLoopParameters &aRunLoopParameters)
 
     lRetval = mConnectionFactory.Init(aRunLoopParameters);
     nlREQUIRE_SUCCESS(lRetval, done);
+
+    mRunLoopParameters = aRunLoopParameters;
 
 done:
     return (lRetval);
@@ -401,8 +405,23 @@ ConnectionManager :: Connect(CFURLRef aURLRef,
         nlREQUIRE_SUCCESS(lRetval, done);
     }
 
+    if (aTimeout.IsMilliseconds())
+    {
+        lRetval = mConnectionTimer.Init(mRunLoopParameters, aTimeout);
+        nlREQUIRE_SUCCESS(lRetval, done);
+
+        lRetval = mConnectionTimer.SetDelegate(this);
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
+
     lRetval = mConnection->Connect(aURLRef, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
+
+    if (aTimeout.IsMilliseconds())
+    {
+        lRetval = mConnectionTimer.Start();
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
 
 done:
     return (lRetval);
@@ -695,6 +714,8 @@ ConnectionManager :: ConnectionDidConnect(ConnectionBasis &aConnection, CFURLRef
 {
     (void)aConnection;
 
+    mConnectionTimer.Destroy();
+
     if (!mDelegates.empty())
     {
         ConnectionManagerDelegates::iterator begin = mDelegates.begin();
@@ -725,6 +746,8 @@ void
 ConnectionManager :: ConnectionDidNotConnect(ConnectionBasis &aConnection, CFURLRef aURLRef, const Common::Error &aError)
 {
     (void)aConnection;
+
+    mConnectionTimer.Destroy();
 
     if (!mDelegates.empty())
     {
@@ -891,6 +914,24 @@ ConnectionManager :: ConnectionError(ConnectionBasis &aConnection, const Common:
             ++begin;
         }
     }
+}
+
+// MARK: Timer Delegate Method
+
+void
+ConnectionManager :: TimerDidFire(Utilities::Timer &aTimer)
+{
+    if (aTimer == mConnectionTimer)
+    {
+        if (mConnection != nullptr)
+        {
+            const Status lStatus = mConnection->Disconnect(-ETIMEDOUT);
+            nlREQUIRE_SUCCESS(lStatus, done);
+        }
+    }
+
+ done:
+    return;
 }
 
 }; // namespace Client

@@ -37,6 +37,8 @@
 #include <OpenHLX/Common/ConnectionManagerApplicationDataDelegate.hpp>
 #include <OpenHLX/Common/ConnectionManagerBasis.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
+#include <OpenHLX/Utilities/Timer.hpp>
+#include <OpenHLX/Utilities/TimerDelegate.hpp>
 
 
 namespace HLX
@@ -62,6 +64,7 @@ namespace Client
  */
 class ConnectionManager :
     public Common::ConnectionManagerBasis,
+    public Utilities::TimerDelegate,
     public ConnectionBasisDelegate
 {
 public:
@@ -82,26 +85,30 @@ public:
 
     // Connection Basis Delegate Methods
 
-    // Connect
+    // Connect Methods
 
     void ConnectionWillConnect(ConnectionBasis &aConnection, CFURLRef aURLRef, const Common::Timeout &aTimeout) final;
     void ConnectionIsConnecting(ConnectionBasis &aConnection, CFURLRef aURLRef, const Common::Timeout &aTimeout) final;
     void ConnectionDidConnect(ConnectionBasis &aConnection, CFURLRef aURLRef) final;
     void ConnectionDidNotConnect(ConnectionBasis &aConnection, CFURLRef aURLRef, const Common::Error &aError) final;
 
-    // Application Data
+    // Application Data Method
 
     void ConnectionDidReceiveApplicationData(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer aBuffer) final;
 
-    // Disconnect
+    // Disconnect Methods
 
     void ConnectionWillDisconnect(ConnectionBasis &aConnection, CFURLRef aURLRef) final;
     void ConnectionDidDisconnect(ConnectionBasis &aConnection, CFURLRef aURLRef, const Common::Error &aError) final;
     void ConnectionDidNotDisconnect(ConnectionBasis &aConnection, CFURLRef aURLRef, const Common::Error &aError) final;
 
-    // Error
+    // Error Method
 
     void ConnectionError(ConnectionBasis &aConnection, const Common::Error &aError) final;
+
+    // Timer Delegate Method
+
+    void TimerDidFire(Utilities::Timer &aTimer) final;
 
 private:
     void OnWillResolve(const char *aHost) final;
@@ -114,8 +121,10 @@ private:
 private:
     typedef std::unordered_set<ConnectionManagerDelegate *> ConnectionManagerDelegates;
 
+    Common::RunLoopParameters                   mRunLoopParameters;
     ConnectionFactory                           mConnectionFactory;
     ConnectionBasis *                           mConnection;
+    Utilities::Timer                            mConnectionTimer;
     ConnectionManagerDelegates                  mDelegates;
 };
 
