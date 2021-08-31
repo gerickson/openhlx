@@ -837,7 +837,8 @@ ZonesControllerBasis :: SetSourceAllCompleteHandler(Command::ExchangeBasis::Muta
     const uint8_t *                lBuffer     = lResponse->GetBuffer()->GetHead();
     const size_t                   lBufferSize = lResponse->GetBuffer()->GetSize();
 
-    // XXX - TBD
+
+    SourceAllNotificationReceivedHandler(lBuffer, lBufferSize, aMatches);
 }
 
 /**
@@ -918,7 +919,8 @@ ZonesControllerBasis :: SetVolumeAllCompleteHandler(Command::ExchangeBasis::Muta
     const uint8_t *                lBuffer     = lResponse->GetBuffer()->GetHead();
     const size_t                   lBufferSize = lResponse->GetBuffer()->GetSize();
 
-    // XXX - TBD
+
+    VolumeAllNotificationReceivedHandler(lBuffer, lBufferSize, aMatches);
 }
 
 /**
@@ -2191,7 +2193,6 @@ done:
 void
 ZonesControllerBasis :: SourceAllNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    ZoneModel::IdentifierType              lZoneIdentifier;
     SourceModel::IdentifierType            lSourceIdentifier;
     Status                                 lStatus;
 
@@ -2207,7 +2208,7 @@ ZonesControllerBasis :: SourceAllNotificationReceivedHandler(const uint8_t *aBuf
                                                 lSourceIdentifier);
     nlREQUIRE_SUCCESS(lStatus, done);
 
-    for (lZoneIdentifier = IdentifierModel::kIdentifierMin; lZoneIdentifier <= mZonesMax; lZoneIdentifier++)
+    for (auto lZoneIdentifier = IdentifierModel::kIdentifierMin; lZoneIdentifier <= mZonesMax; lZoneIdentifier++)
     {
         HandleSourceChange(lZoneIdentifier, lSourceIdentifier);
     }
@@ -2287,7 +2288,6 @@ done:
 void
 ZonesControllerBasis :: VolumeAllNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    ZoneModel::IdentifierType              lZoneIdentifier;
     VolumeModel::LevelType                 lVolume;
     Status                                 lStatus;
 
@@ -2304,7 +2304,7 @@ ZonesControllerBasis :: VolumeAllNotificationReceivedHandler(const uint8_t *aBuf
                                lVolume);
     nlREQUIRE_SUCCESS(lStatus, done);
 
-    for (lZoneIdentifier = IdentifierModel::kIdentifierMin; lZoneIdentifier <= mZonesMax; lZoneIdentifier++)
+    for (auto lZoneIdentifier = IdentifierModel::kIdentifierMin; lZoneIdentifier <= mZonesMax; lZoneIdentifier++)
     {
         HandleVolumeChange(lZoneIdentifier, lVolume);
     }
