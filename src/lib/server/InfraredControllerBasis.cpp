@@ -52,7 +52,7 @@ Server::Command::Infrared::SetDisabledRequest  InfraredControllerBasis::kSetDisa
  *
  */
 InfraredControllerBasis :: InfraredControllerBasis(Model::InfraredModel &aInfraredModel) :
-    Server::ControllerBasis(),
+    Server::ObjectControllerBasis(),
     mInfraredModel(aInfraredModel)
 {
     return;
@@ -80,7 +80,7 @@ InfraredControllerBasis :: Init(CommandManager &aCommandManager)
     lRetval = RequestInit();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = ControllerBasis::Init(aCommandManager);
+    lRetval = ObjectControllerBasis::Init(aCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:

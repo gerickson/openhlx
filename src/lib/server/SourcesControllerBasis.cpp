@@ -52,7 +52,7 @@ Server::Command::Sources::SetNameRequest      SourcesControllerBasis::kSetNameRe
  */
 SourcesControllerBasis :: SourcesControllerBasis(Model::SourcesModel &aSourcesModel,
                                                  const Model::SourceModel::IdentifierType &aSourcesMax) :
-    Server::ControllerBasis(),
+    Server::ObjectControllerBasis(),
     mSourcesModel(aSourcesModel),
     mSourcesMax(aSourcesMax)
 {
@@ -81,7 +81,7 @@ SourcesControllerBasis :: Init(CommandManager &aCommandManager)
     lRetval = RequestInit();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = ControllerBasis::Init(aCommandManager);
+    lRetval = ObjectControllerBasis::Init(aCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:

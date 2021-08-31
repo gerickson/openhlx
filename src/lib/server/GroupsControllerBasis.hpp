@@ -27,8 +27,8 @@
 
 #include <OpenHLX/Model/GroupModel.hpp>
 #include <OpenHLX/Model/GroupsModel.hpp>
-#include <OpenHLX/Server/ControllerBasis.hpp>
 #include <OpenHLX/Server/GroupsControllerCommands.hpp>
+#include <OpenHLX/Server/ObjectControllerBasis.hpp>
 
 
 namespace HLX
@@ -46,7 +46,7 @@ namespace Server
  *
  */
 class GroupsControllerBasis :
-    public Server::ControllerBasis
+    public Server::ObjectControllerBasis
 {
 public:
     virtual ~GroupsControllerBasis(void);

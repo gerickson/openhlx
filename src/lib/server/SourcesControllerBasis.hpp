@@ -27,7 +27,7 @@
 
 #include <OpenHLX/Model/SourceModel.hpp>
 #include <OpenHLX/Model/SourcesModel.hpp>
-#include <OpenHLX/Server/ControllerBasis.hpp>
+#include <OpenHLX/Server/ObjectControllerBasis.hpp>
 #include <OpenHLX/Server/SourcesControllerCommands.hpp>
 
 
@@ -46,7 +46,7 @@ namespace Server
  *
  */
 class SourcesControllerBasis :
-    public Server::ControllerBasis
+    public Server::ObjectControllerBasis
 {
 public:
     virtual ~SourcesControllerBasis(void);

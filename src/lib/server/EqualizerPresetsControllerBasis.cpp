@@ -56,7 +56,7 @@ Server::Command::EqualizerPresets::SetNameRequest       EqualizerPresetsControll
  */
 EqualizerPresetsControllerBasis :: EqualizerPresetsControllerBasis(Model::EqualizerPresetsModel &aEqualizerPresetsModel,
                                                                    const Model::EqualizerPresetModel::IdentifierType &aEqualizerPresetsMax) :
-    Server::ControllerBasis(),
+    Server::ObjectControllerBasis(),
     mEqualizerPresetsModel(aEqualizerPresetsModel),
     mEqualizerPresetsMax(aEqualizerPresetsMax)
 {
@@ -85,7 +85,7 @@ EqualizerPresetsControllerBasis :: Init(CommandManager &aCommandManager)
     lRetval = RequestInit();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = ControllerBasis::Init(aCommandManager);
+    lRetval = ObjectControllerBasis::Init(aCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:

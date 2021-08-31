@@ -27,8 +27,8 @@
 
 #include <OpenHLX/Model/FavoriteModel.hpp>
 #include <OpenHLX/Model/FavoritesModel.hpp>
-#include <OpenHLX/Server/ControllerBasis.hpp>
 #include <OpenHLX/Server/FavoritesControllerCommands.hpp>
+#include <OpenHLX/Server/ObjectControllerBasis.hpp>
 
 
 namespace HLX
@@ -46,7 +46,7 @@ namespace Server
  *
  */
 class FavoritesControllerBasis :
-    public Server::ControllerBasis
+    public Server::ObjectControllerBasis
 {
 public:
     virtual ~FavoritesControllerBasis(void);

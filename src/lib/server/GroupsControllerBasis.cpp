@@ -69,7 +69,7 @@ Server::Command::Groups::ToggleMuteRequest      GroupsControllerBasis::kToggleMu
  */
 GroupsControllerBasis :: GroupsControllerBasis(Model::GroupsModel &aGroupsModel,
                                                const Model::GroupsModel::IdentifierType &aGroupsMax) :
-    Server::ControllerBasis(),
+    Server::ObjectControllerBasis(),
     mGroupsModel(aGroupsModel),
     mGroupsMax(aGroupsMax)
 {
@@ -98,7 +98,7 @@ GroupsControllerBasis :: Init(CommandManager &aCommandManager)
     lRetval = RequestInit();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = ControllerBasis::Init(aCommandManager);
+    lRetval = ObjectControllerBasis::Init(aCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:

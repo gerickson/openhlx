@@ -79,7 +79,7 @@ Server::Command::Zones::ToggleMuteRequest             ZonesControllerBasis::kTog
  */
 ZonesControllerBasis :: ZonesControllerBasis(Model::ZonesModel &aZonesModel,
                                              const Model::ZoneModel::IdentifierType &aZonesMax) :
-    Server::ControllerBasis(),
+    Server::ObjectControllerBasis(),
     mZonesModel(aZonesModel),
     mZonesMax(aZonesMax)
 {
@@ -108,7 +108,7 @@ ZonesControllerBasis :: Init(CommandManager &aCommandManager)
     lRetval = RequestInit();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = ControllerBasis::Init(aCommandManager);
+    lRetval = ObjectControllerBasis::Init(aCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:

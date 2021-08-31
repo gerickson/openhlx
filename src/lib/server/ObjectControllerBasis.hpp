@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef OPENHLXSERVERCONTROLLERBASIS_HPP
-#define OPENHLXSERVERCONTROLLERBASIS_HPP
+#ifndef OPENHLXSERVEROBJECTCONTROLLERBASIS_HPP
+#define OPENHLXSERVEROBJECTCONTROLLERBASIS_HPP
 
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
@@ -41,20 +41,20 @@ namespace Server
 
 /**
  *  @brief
- *    A base object for all server-side HLX controllers.
+ *    A base object for all server-side HLX object controllers.
  *
  *  @ingroup server
  *
  */
-class ControllerBasis
+class ObjectControllerBasis
 {
 public:
-    virtual ~ControllerBasis(void);
+    virtual ~ObjectControllerBasis(void);
 
     virtual Common::Status Init(CommandManager &aCommandManager);
 
 protected:
-    ControllerBasis(void);
+    ObjectControllerBasis(void);
 
     /**
      *  @brief
@@ -102,4 +102,4 @@ private:
 
 }; // namespace HLX
 
-#endif // OPENHLXSERVERCONTROLLERBASIS_HPP
+#endif // OPENHLXSERVEROBJECTCONTROLLERBASIS_HPP

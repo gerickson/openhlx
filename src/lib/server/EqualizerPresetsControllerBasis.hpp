@@ -27,8 +27,8 @@
 
 #include <OpenHLX/Model/EqualizerPresetModel.hpp>
 #include <OpenHLX/Model/EqualizerPresetsModel.hpp>
-#include <OpenHLX/Server/ControllerBasis.hpp>
 #include <OpenHLX/Server/EqualizerPresetsControllerCommands.hpp>
+#include <OpenHLX/Server/ObjectControllerBasis.hpp>
 
 
 namespace HLX
@@ -46,7 +46,7 @@ namespace Server
  *
  */
 class EqualizerPresetsControllerBasis :
-    public Server::ControllerBasis
+    public Server::ObjectControllerBasis
 {
 public:
     virtual ~EqualizerPresetsControllerBasis(void);

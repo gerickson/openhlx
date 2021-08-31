@@ -53,7 +53,7 @@ Server::Command::Favorites::SetNameRequest  FavoritesControllerBasis::kSetNameRe
  */
 FavoritesControllerBasis :: FavoritesControllerBasis(Model::FavoritesModel &aFavoritesModel,
                                                      const Model::FavoriteModel::IdentifierType &aFavoritesMax) :
-    Server::ControllerBasis(),
+    Server::ObjectControllerBasis(),
     mFavoritesModel(aFavoritesModel),
     mFavoritesMax(aFavoritesMax)
 {
@@ -82,7 +82,7 @@ FavoritesControllerBasis :: Init(CommandManager &aCommandManager)
     lRetval = RequestInit();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = ControllerBasis::Init(aCommandManager);
+    lRetval = ObjectControllerBasis::Init(aCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:

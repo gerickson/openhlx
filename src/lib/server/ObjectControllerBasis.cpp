@@ -23,7 +23,7 @@
  *
  */
 
-#include "ControllerBasis.hpp"
+#include "ObjectControllerBasis.hpp"
 
 #include <errno.h>
 
@@ -48,7 +48,7 @@ namespace Server
  *    This is the class default constructor.
  *
  */
-ControllerBasis :: ControllerBasis(void) :
+ObjectControllerBasis :: ObjectControllerBasis(void) :
     mCommandManager(nullptr)
 {
     return;
@@ -59,7 +59,7 @@ ControllerBasis :: ControllerBasis(void) :
  *    This is the class destructor.
  *
  */
-ControllerBasis :: ~ControllerBasis(void)
+ObjectControllerBasis :: ~ObjectControllerBasis(void)
 {
     return;
 }
@@ -80,7 +80,7 @@ ControllerBasis :: ~ControllerBasis(void)
  *
  */
 Status
-ControllerBasis :: Init(CommandManager &aCommandManager)
+ObjectControllerBasis :: Init(CommandManager &aCommandManager)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
@@ -121,7 +121,7 @@ ControllerBasis :: Init(CommandManager &aCommandManager)
  *
  */
 Status
-ControllerBasis :: DoRequestHandlers(const RequestHandlerBasis *aFirstRequestHandler,
+ObjectControllerBasis :: DoRequestHandlers(const RequestHandlerBasis *aFirstRequestHandler,
                                      const RequestHandlerBasis *aLastRequestHandler,
                                      void *aContext,
                                      const bool &aRegister)
@@ -154,7 +154,7 @@ done:
 }
 
 Status
-ControllerBasis :: SendResponse(ConnectionBuffer::ImmutableCountedPointer aBuffer) const
+ObjectControllerBasis :: SendResponse(ConnectionBuffer::ImmutableCountedPointer aBuffer) const
 {
     Status lRetval = kStatus_Success;
 
@@ -168,7 +168,7 @@ ControllerBasis :: SendResponse(ConnectionBuffer::ImmutableCountedPointer aBuffe
 }
 
 Status
-ControllerBasis :: SendResponse(ConnectionBasis &aConnection, ConnectionBuffer::ImmutableCountedPointer aBuffer) const
+ObjectControllerBasis :: SendResponse(ConnectionBasis &aConnection, ConnectionBuffer::ImmutableCountedPointer aBuffer) const
 {
     Status lRetval = kStatus_Success;
 
@@ -182,7 +182,7 @@ ControllerBasis :: SendResponse(ConnectionBasis &aConnection, ConnectionBuffer::
 }
 
 Status
-ControllerBasis :: SendErrorResponse(ConnectionBasis &aConnection) const
+ObjectControllerBasis :: SendErrorResponse(ConnectionBasis &aConnection) const
 {
     Status lRetval = kStatus_Success;
 
@@ -196,7 +196,7 @@ ControllerBasis :: SendErrorResponse(ConnectionBasis &aConnection) const
 }
 
 Status
-ControllerBasis :: SendErrorResponse(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+ObjectControllerBasis :: SendErrorResponse(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     Status lRetval = kStatus_Success;
 

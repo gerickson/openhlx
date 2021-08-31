@@ -26,8 +26,8 @@
 #define OPENHLXSERVERFRONTPANELCONTROLLERBASIS_HPP
 
 #include <OpenHLX/Model/FrontPanelModel.hpp>
-#include <OpenHLX/Server/ControllerBasis.hpp>
 #include <OpenHLX/Server/FrontPanelControllerCommands.hpp>
+#include <OpenHLX/Server/ObjectControllerBasis.hpp>
 
 
 namespace HLX
@@ -45,7 +45,7 @@ namespace Server
  *
  */
 class FrontPanelControllerBasis :
-    public Server::ControllerBasis
+    public Server::ObjectControllerBasis
 {
 public:
     virtual ~FrontPanelControllerBasis(void);

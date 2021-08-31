@@ -64,7 +64,6 @@ libopenhlx_server_a_include_HEADERS                         = \
     ConnectionManager.hpp                                     \
     ConnectionManagerDelegate.hpp                             \
     ConnectionTelnet.hpp                                      \
-    ControllerBasis.hpp                                       \
     EqualizerPresetsControllerBasis.hpp                       \
     EqualizerPresetsControllerCommands.hpp                    \
     FavoritesControllerBasis.hpp                              \
@@ -83,6 +82,7 @@ libopenhlx_server_a_include_HEADERS                         = \
     ListenerTelnet.hpp                                        \
     NetworkControllerBasis.hpp                                \
     NetworkControllerCommands.hpp                             \
+    ObjectControllerBasis.hpp                                 \
     SourcesControllerBasis.hpp                                \
     SourcesControllerCommands.hpp                             \
     ZonesControllerBasis.hpp                                  \
@@ -115,7 +115,6 @@ libopenhlx_server_a_SOURCES                                 = \
     ConnectionFactory.cpp                                     \
     ConnectionManager.cpp                                     \
     ConnectionTelnet.cpp                                      \
-    ControllerBasis.cpp                                       \
     EqualizerPresetsControllerBasis.cpp                       \
     EqualizerPresetsControllerCommands.cpp                    \
     FavoritesControllerBasis.cpp                              \
@@ -133,6 +132,7 @@ libopenhlx_server_a_SOURCES                                 = \
     ListenerTelnet.cpp                                        \
     NetworkControllerBasis.cpp                                \
     NetworkControllerCommands.cpp                             \
+    ObjectControllerBasis.cpp                                 \
     SourcesControllerBasis.cpp                                \
     SourcesControllerCommands.cpp                             \
     ZonesControllerBasis.cpp                                  \

@@ -30,7 +30,7 @@
 #include <OpenHLX/Model/SoundModel.hpp>
 #include <OpenHLX/Model/ZoneModel.hpp>
 #include <OpenHLX/Model/ZonesModel.hpp>
-#include <OpenHLX/Server/ControllerBasis.hpp>
+#include <OpenHLX/Server/ObjectControllerBasis.hpp>
 #include <OpenHLX/Server/ZonesControllerCommands.hpp>
 
 
@@ -49,7 +49,7 @@ namespace Server
  *
  */
 class ZonesControllerBasis :
-    public Server::ControllerBasis
+    public Server::ObjectControllerBasis
 {
 public:
     virtual ~ZonesControllerBasis(void);

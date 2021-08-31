@@ -53,7 +53,7 @@ Server::Command::Network::QueryRequest  NetworkControllerBasis::kQueryRequest;
  *
  */
 NetworkControllerBasis :: NetworkControllerBasis(Model::NetworkModel &aNetworkModel) :
-    Server::ControllerBasis(),
+    Server::ObjectControllerBasis(),
     mNetworkModel(aNetworkModel)
 {
     return;
@@ -81,7 +81,7 @@ NetworkControllerBasis :: Init(CommandManager &aCommandManager)
     lRetval = RequestInit();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = ControllerBasis::Init(aCommandManager);
+    lRetval = ObjectControllerBasis::Init(aCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:

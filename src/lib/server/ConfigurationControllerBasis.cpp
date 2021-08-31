@@ -53,7 +53,7 @@ Server::Command::Configuration::SaveToBackupRequest     ConfigurationControllerB
  *
  */
 ConfigurationControllerBasis :: ConfigurationControllerBasis(void) :
-    Server::ControllerBasis()
+    Server::ObjectControllerBasis()
 {
     return;
 }
@@ -80,7 +80,7 @@ ConfigurationControllerBasis :: Init(CommandManager &aCommandManager)
     lRetval = RequestInit();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = ControllerBasis::Init(aCommandManager);
+    lRetval = ObjectControllerBasis::Init(aCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:

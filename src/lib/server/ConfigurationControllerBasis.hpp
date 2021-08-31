@@ -25,8 +25,8 @@
 #ifndef OPENHLXSERVERCONFIGURATIONCONTROLLERBASIS_HPP
 #define OPENHLXSERVERCONFIGURATIONCONTROLLERBASIS_HPP
 
-#include <OpenHLX/Server/ControllerBasis.hpp>
 #include <OpenHLX/Server/ConfigurationControllerCommands.hpp>
+#include <OpenHLX/Server/ObjectControllerBasis.hpp>
 
 
 namespace HLX
@@ -44,7 +44,7 @@ namespace Server
  *
  */
 class ConfigurationControllerBasis :
-    public Server::ControllerBasis
+    public Server::ObjectControllerBasis
 {
 public:
     virtual ~ConfigurationControllerBasis(void);

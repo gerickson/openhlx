@@ -53,7 +53,7 @@ Server::Command::FrontPanel::SetLockedRequest      FrontPanelControllerBasis::kS
  *
  */
 FrontPanelControllerBasis :: FrontPanelControllerBasis(Model::FrontPanelModel &aFrontPanelModel) :
-    Server::ControllerBasis(),
+    Server::ObjectControllerBasis(),
     mFrontPanelModel(aFrontPanelModel)
 {
     return;
@@ -81,7 +81,7 @@ FrontPanelControllerBasis :: Init(CommandManager &aCommandManager)
     lRetval = RequestInit();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = ControllerBasis::Init(aCommandManager);
+    lRetval = ObjectControllerBasis::Init(aCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:

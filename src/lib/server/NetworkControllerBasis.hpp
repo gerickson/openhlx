@@ -26,8 +26,8 @@
 #define OPENHLXSERVERNETWORKCONTROLLERBASIS_HPP
 
 #include <OpenHLX/Model/NetworkModel.hpp>
-#include <OpenHLX/Server/ControllerBasis.hpp>
 #include <OpenHLX/Server/NetworkControllerCommands.hpp>
+#include <OpenHLX/Server/ObjectControllerBasis.hpp>
 
 
 namespace HLX
@@ -45,7 +45,7 @@ namespace Server
  *
  */
 class NetworkControllerBasis :
-    public Server::ControllerBasis
+    public Server::ObjectControllerBasis
 {
 public:
     virtual ~NetworkControllerBasis(void);

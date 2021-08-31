@@ -26,8 +26,8 @@
 #define OPENHLXSERVERINFRAREDCONTROLLERBASIS_HPP
 
 #include <OpenHLX/Model/InfraredModel.hpp>
-#include <OpenHLX/Server/ControllerBasis.hpp>
 #include <OpenHLX/Server/InfraredControllerCommands.hpp>
+#include <OpenHLX/Server/ObjectControllerBasis.hpp>
 
 
 namespace HLX
@@ -45,7 +45,7 @@ namespace Server
  *
  */
 class InfraredControllerBasis :
-    public Server::ControllerBasis
+    public Server::ObjectControllerBasis
 {
 public:
     virtual ~InfraredControllerBasis(void);
