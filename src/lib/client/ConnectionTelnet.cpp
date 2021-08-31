@@ -400,7 +400,7 @@ ConnectionTelnet :: CloseStreams(void)
  *
  */
 Status
-ConnectionTelnet :: Disconnect(void)
+ConnectionTelnet :: Disconnect(const Error &aError)
 {
     DeclareScopedFunctionTracer(lTracer);
     const State  lCurrentState = GetState();
@@ -423,9 +423,9 @@ ConnectionTelnet :: Disconnect(void)
 
         SetState(kState_Disconnected);
 
-        OnDidDisconnect(lRetval);
+        OnDidDisconnect(aError);
 
-        lRetval = ConnectionBasis::Disconnect();
+        lRetval = ConnectionBasis::Disconnect(aError);
     }
     else
     {

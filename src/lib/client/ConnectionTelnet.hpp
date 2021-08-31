@@ -73,7 +73,7 @@ public:
     Common::Status Init(const Common::RunLoopParameters &aRunLoopParameters) final;
 
     Common::Status Connect(CFURLRef aURLRef, const Common::Timeout &aTimeout) final;
-    Common::Status Disconnect(void) final;
+    Common::Status Disconnect(const Common::Error &aError) final;
 
     Common::Status Send(Common::ConnectionBuffer::ImmutableCountedPointer &aBuffer) final;
 

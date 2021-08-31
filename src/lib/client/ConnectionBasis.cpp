@@ -167,7 +167,41 @@ Status
 ConnectionBasis :: Disconnect(void)
 {
     DeclareScopedFunctionTracer(lTracer);
+    Status lRetval;
+
+    lRetval = Disconnect(kStatus_Success);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Disconnect from the HLX server peer with the specified error.
+ *
+ *  This attempts to asynchronously disconnect from the
+ *  currently-connected HLX server peer, if any, with the specified
+ *  error (that is, reason for disconnection), for example -ETIMEDOUT.
+ *
+ *  @note
+ *    At present any meaningful work associated with the disconnection
+ *    is handled by a dervied class.
+ *
+ *  @param[in]  aError  A reference to the error associated with the
+ *                      reason for the disconnection.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+ConnectionBasis :: Disconnect(const Error &aError)
+{
+    DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
+
+
+    (void)aError;
 
     if (mURLRef != nullptr)
     {
@@ -175,6 +209,7 @@ ConnectionBasis :: Disconnect(void)
         mURLRef = nullptr;
     }
 
+ done:
     return (lRetval);
 }
 
