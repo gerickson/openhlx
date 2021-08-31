@@ -114,6 +114,11 @@ enum
      */
     kError_HostNameResolution   = -(7 << 8),
 
+    /**
+     *  An unknown error occurred.
+     */
+    kError_Unknown              = -(255 << 8),
+
     // Positive, non-error status
 
     /**
