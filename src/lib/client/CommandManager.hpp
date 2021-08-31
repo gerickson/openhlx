@@ -75,7 +75,7 @@ class ControllerBase;
 class CommandManager :
     public ConnectionManagerDelegate,
     public Common::ConnectionManagerApplicationDataDelegate,
-    public RunLoopQueueDelegate
+    public Utilities::RunLoopQueueDelegate
 {
 public:
     /**
@@ -160,8 +160,8 @@ public:
 
     // Run Loop Queue Delegate Methods
 
-    void QueueIsEmpty(RunLoopQueue &aQueue);
-    void QueueIsNotEmpty(RunLoopQueue &aQueue);
+    void QueueIsEmpty(Utilities::RunLoopQueue &aQueue);
+    void QueueIsNotEmpty(Utilities::RunLoopQueue &aQueue);
 
     // Connection Manager Response Handler Trampolines
 
@@ -271,7 +271,7 @@ private:
     CommandManagerDelegate *              mDelegate;
     CFRunLoopSourceRef                    mRunLoopSourceRef;
     ConnectionManager *                   mConnectionManager;
-    RunLoopQueue                          mCommandQueue;
+    Utilities::RunLoopQueue               mCommandQueue;
     ExchangeState::MutableCountedPointer  mActiveExchangeState;
     std::set<NotificationHandlerState>    mNotificationHandlers;
     Command::ErrorResponse                mErrorResponse;

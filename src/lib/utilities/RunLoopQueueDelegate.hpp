@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef OPENHLXCLIENTRUNLOOPQUEUEDELEGATE_HPP
-#define OPENHLXCLIENTRUNLOOPQUEUEDELEGATE_HPP
+#ifndef OPENHLXUTILITIESRUNLOOPQUEUEDELEGATE_HPP
+#define OPENHLXUTILITIESRUNLOOPQUEUEDELEGATE_HPP
 
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
@@ -33,7 +33,7 @@
 namespace HLX
 {
 
-namespace Client
+namespace Utilities
 {
 
 class RunLoopQueue;
@@ -73,8 +73,8 @@ public:
     virtual void QueueIsNotEmpty(RunLoopQueue &aQueue) = 0;
 };
 
-}; // namespace Client
+}; // namespace Utilities
 
 }; // namespace HLX
 
-#endif // OPENHLXCLIENTRUNLOOPQUEUEDELEGATE_HPP
+#endif // OPENHLXUTILITIESRUNLOOPQUEUEDELEGATE_HPP

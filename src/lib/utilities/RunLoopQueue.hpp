@@ -33,10 +33,11 @@
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/RunLoopParameters.hpp>
 
+
 namespace HLX
 {
 
-namespace Client
+namespace Utilities
 {
 
 class RunLoopQueueDelegate;
@@ -101,7 +102,7 @@ private:
     queue_type                 mQueue;
 };
 
-}; // namespace Client
+}; // namespace Utilities
 
 }; // namespace HLX
 

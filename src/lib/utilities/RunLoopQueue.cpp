@@ -34,13 +34,15 @@
 #include <OpenHLX/Utilities/Assert.hpp>
 #include <OpenHLX/Utilities/RunLoopQueueDelegate.hpp>
 
+
 using namespace HLX::Common;
 using namespace Nuovations;
+
 
 namespace HLX
 {
 
-namespace Client
+namespace Utilities
 {
 
 /**
@@ -403,6 +405,6 @@ RunLoopQueue :: Perform(void *aContext)
     }
 }
 
-}; // namespace Client
+}; // namespace Utilities
 
 }; // namespace HLX
