@@ -34,7 +34,7 @@
 #include <OpenHLX/Server/FavoritesControllerBasis.hpp>
 #include <OpenHLX/Server/FavoritesControllerCommands.hpp>
 
-#include "ControllerBasis.hpp"
+#include "ObjectControllerBasis.hpp"
 
 
 namespace HLX
@@ -62,7 +62,7 @@ class FavoritesController :
     public Common::FavoritesControllerBasis,
     public Client::FavoritesControllerBasis,
     public Server::FavoritesControllerBasis,
-    public Proxy::ControllerBasis
+    public Proxy::ObjectControllerBasis
 {
 public:
     FavoritesController(void);

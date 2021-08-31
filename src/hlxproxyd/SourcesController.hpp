@@ -34,7 +34,7 @@
 #include <OpenHLX/Server/SourcesControllerBasis.hpp>
 #include <OpenHLX/Server/SourcesControllerCommands.hpp>
 
-#include "ControllerBasis.hpp"
+#include "ObjectControllerBasis.hpp"
 
 
 namespace HLX
@@ -62,7 +62,7 @@ class SourcesController :
     public Common::SourcesControllerBasis,
     public Client::SourcesControllerBasis,
     public Server::SourcesControllerBasis,
-    public Proxy::ControllerBasis
+    public Proxy::ObjectControllerBasis
 {
 public:
     SourcesController(void);

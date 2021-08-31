@@ -26,7 +26,6 @@ include $(abs_top_nlbuild_autotools_dir)/automake/pre.am
 noinst_HEADERS                                                             = \
     ConfigurationController.hpp                                              \
     ConfigurationControllerDelegate.hpp                                      \
-    ControllerBasis.hpp                                                      \
     EqualizerPresetsController.hpp                                           \
     FavoritesController.hpp                                                  \
     FrontPanelController.hpp                                                 \
@@ -35,6 +34,7 @@ noinst_HEADERS                                                             = \
     HLXProxyControllerDelegate.hpp                                           \
     InfraredController.hpp                                                   \
     NetworkController.hpp                                                    \
+    ObjectControllerBasis.hpp                                                \
     ProxyCommand.hpp                                                         \
     SourcesController.hpp                                                    \
     ZonesController.hpp                                                      \
@@ -71,7 +71,6 @@ hlxproxyd_LDFLAGS                                                          = \
 
 hlxproxyd_SOURCES                                                          = \
     ConfigurationController.cpp                                              \
-    ControllerBasis.cpp                                                      \
     EqualizerPresetsController.cpp                                           \
     FavoritesController.cpp                                                  \
     FrontPanelController.cpp                                                 \
@@ -79,6 +78,7 @@ hlxproxyd_SOURCES                                                          = \
     HLXProxyController.cpp                                                   \
     InfraredController.cpp                                                   \
     NetworkController.cpp                                                    \
+    ObjectControllerBasis.cpp                                                \
     ProxyCommand.cpp                                                         \
     SourcesController.cpp                                                    \
     ZonesController.cpp                                                      \

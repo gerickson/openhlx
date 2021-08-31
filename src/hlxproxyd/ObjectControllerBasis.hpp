@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef OPENHLXPROXYCONTROLLERBASIS_HPP
-#define OPENHLXPROXYCONTROLLERBASIS_HPP
+#ifndef OPENHLXPROXYOBJECTCONTROLLERBASIS_HPP
+#define OPENHLXPROXYOBJECTCONTROLLERBASIS_HPP
 
 #include <OpenHLX/Client/CommandManager.hpp>
 #include <OpenHLX/Common/Errors.hpp>
@@ -44,10 +44,10 @@ namespace Proxy
  *  @ingroup proxy
  *
  */
-class ControllerBasis
+class ObjectControllerBasis
 {
 public:
-    virtual ~ControllerBasis(void);
+    virtual ~ObjectControllerBasis(void);
 
     // Intializer(s)
 
@@ -87,7 +87,7 @@ public:
                                      void *aClientContext);
 
 protected:
-    ControllerBasis(void);
+    ObjectControllerBasis(void);
 
 private:
     // Command Proxy Handlers
@@ -139,4 +139,4 @@ private:
 
 }; // namespace HLX
 
-#endif // OPENHLXPROXYCONTROLLERBASIS_HPP
+#endif // OPENHLXPROXYOBJECTCONTROLLERBASIS_HPP

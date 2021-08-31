@@ -34,7 +34,7 @@
 #include <OpenHLX/Server/EqualizerPresetsControllerBasis.hpp>
 #include <OpenHLX/Server/EqualizerPresetsControllerCommands.hpp>
 
-#include "ControllerBasis.hpp"
+#include "ObjectControllerBasis.hpp"
 
 
 namespace HLX
@@ -62,7 +62,7 @@ class EqualizerPresetsController :
     public Common::EqualizerPresetsControllerBasis,
     public Client::EqualizerPresetsControllerBasis,
     public Server::EqualizerPresetsControllerBasis,
-    public Proxy::ControllerBasis
+    public Proxy::ObjectControllerBasis
 {
 public:
     EqualizerPresetsController(void);

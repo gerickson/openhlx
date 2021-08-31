@@ -60,7 +60,7 @@ EqualizerPresetsController :: EqualizerPresetsController(void) :
                                             Common::EqualizerPresetsControllerBasis::kEqualizerPresetsMax),
     Server::EqualizerPresetsControllerBasis(Common::EqualizerPresetsControllerBasis::mEqualizerPresets,
                                             Common::EqualizerPresetsControllerBasis::kEqualizerPresetsMax),
-    Proxy::ControllerBasis()
+    Proxy::ObjectControllerBasis()
 {
     return;
 }
@@ -117,7 +117,7 @@ EqualizerPresetsController :: Init(Client::CommandManager &aClientCommandManager
     lRetval = Server::EqualizerPresetsControllerBasis::Init(aServerCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = Proxy::ControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
+    lRetval = Proxy::ObjectControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // This MUST come AFTER the base class initialization due to a

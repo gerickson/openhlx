@@ -34,7 +34,7 @@
 #include <OpenHLX/Server/NetworkControllerBasis.hpp>
 #include <OpenHLX/Server/NetworkControllerCommands.hpp>
 
-#include "ControllerBasis.hpp"
+#include "ObjectControllerBasis.hpp"
 
 
 namespace HLX
@@ -62,7 +62,7 @@ class NetworkController :
     public Common::NetworkControllerBasis,
     public Client::NetworkControllerBasis,
     public Server::NetworkControllerBasis,
-    public Proxy::ControllerBasis
+    public Proxy::ObjectControllerBasis
 {
 public:
     NetworkController(void);

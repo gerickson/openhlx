@@ -34,7 +34,7 @@
 #include <OpenHLX/Server/ConfigurationControllerBasis.hpp>
 #include <OpenHLX/Server/ConfigurationControllerCommands.hpp>
 
-#include "ControllerBasis.hpp"
+#include "ObjectControllerBasis.hpp"
 
 
 namespace HLX
@@ -64,7 +64,7 @@ class ConfigurationController :
     public Common::ConfigurationControllerBasis,
     public Client::ConfigurationControllerBasis,
     public Server::ConfigurationControllerBasis,
-    public Proxy::ControllerBasis
+    public Proxy::ObjectControllerBasis
 {
 public:
     ConfigurationController(void);

@@ -61,7 +61,7 @@ SourcesController :: SourcesController(void) :
                                    Common::SourcesControllerBasis::kSourcesMax),
     Server::SourcesControllerBasis(Common::SourcesControllerBasis::mSources,
                                    Common::SourcesControllerBasis::kSourcesMax),
-    Proxy::ControllerBasis()
+    Proxy::ObjectControllerBasis()
 {
     return;
 }
@@ -118,7 +118,7 @@ SourcesController :: Init(Client::CommandManager &aClientCommandManager, Server:
     lRetval = Server::SourcesControllerBasis::Init(aServerCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = Proxy::ControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
+    lRetval = Proxy::ObjectControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // This MUST come AFTER the base class initialization due to a

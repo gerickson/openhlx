@@ -22,7 +22,7 @@
  *
  */
 
-#include "ControllerBasis.hpp"
+#include "ObjectControllerBasis.hpp"
 
 #include <memory>
 
@@ -67,7 +67,7 @@ namespace Detail
     };
 }
 
-ControllerBasis :: ControllerBasis(void) :
+ObjectControllerBasis :: ObjectControllerBasis(void) :
     mClientCommandManager(nullptr),
     mServerCommandManager(nullptr),
     mTimeout()
@@ -75,7 +75,7 @@ ControllerBasis :: ControllerBasis(void) :
     return;
 }
 
-ControllerBasis :: ~ControllerBasis(void)
+ObjectControllerBasis :: ~ObjectControllerBasis(void)
 {
     return;
 }
@@ -83,7 +83,7 @@ ControllerBasis :: ~ControllerBasis(void)
 // MARK: Initializer(s)
 
 Status
-ControllerBasis :: Init(Client::CommandManager &aClientCommandManager, Server::CommandManager &aServerCommandManager, const Common::Timeout &aTimeout)
+ObjectControllerBasis :: Init(Client::CommandManager &aClientCommandManager, Server::CommandManager &aServerCommandManager, const Common::Timeout &aTimeout)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
@@ -99,7 +99,7 @@ ControllerBasis :: Init(Client::CommandManager &aClientCommandManager, Server::C
 // MARK: Configuration Management Methods
 
 Status
-ControllerBasis :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
+ObjectControllerBasis :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     Status lRetval = kStatus_Success;
 
@@ -112,7 +112,7 @@ ControllerBasis :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnectio
 // MARK: Command Proxying Methods
 
 Status
-ControllerBasis :: ProxyMutationCommand(Server::ConnectionBasis &aClientConnection,
+ObjectControllerBasis :: ProxyMutationCommand(Server::ConnectionBasis &aClientConnection,
                                         const uint8_t *aRequestBuffer,
                                         const size_t &aRequestSize,
                                         const Common::RegularExpression::Matches &aServerMatches,
@@ -153,8 +153,8 @@ ControllerBasis :: ProxyMutationCommand(Server::ConnectionBasis &aClientConnecti
 
     lRetval = mClientCommandManager->SendCommand(lCommand,
                                                  mTimeout,
-                                                 ControllerBasis::ProxyMutationCompleteHandler,
-                                                 ControllerBasis::ProxyErrorHandler,
+                                                 ObjectControllerBasis::ProxyMutationCompleteHandler,
+                                                 ObjectControllerBasis::ProxyErrorHandler,
                                                  lProxyContext.release());
     nlREQUIRE_SUCCESS(lRetval, done);
 
@@ -163,7 +163,7 @@ ControllerBasis :: ProxyMutationCommand(Server::ConnectionBasis &aClientConnecti
 }
 
 Status
-ControllerBasis :: ProxyObservationCommand(Server::ConnectionBasis &aClientConnection,
+ObjectControllerBasis :: ProxyObservationCommand(Server::ConnectionBasis &aClientConnection,
                                            const uint8_t *aRequestBuffer,
                                            const size_t &aRequestSize,
                                            const Common::RegularExpression::Matches &aServerMatches,
@@ -208,8 +208,8 @@ ControllerBasis :: ProxyObservationCommand(Server::ConnectionBasis &aClientConne
 
     lRetval = mClientCommandManager->SendCommand(lCommand,
                                                  mTimeout,
-                                                 ControllerBasis::ProxyObservationCompleteHandler,
-                                                 ControllerBasis::ProxyErrorHandler,
+                                                 ObjectControllerBasis::ProxyObservationCompleteHandler,
+                                                 ObjectControllerBasis::ProxyErrorHandler,
                                                  lProxyContext.release());
     nlREQUIRE_SUCCESS(lRetval, done);
 
@@ -220,7 +220,7 @@ ControllerBasis :: ProxyObservationCommand(Server::ConnectionBasis &aClientConne
 // MARK: Notification Proxy Methods
 
 Status
-ControllerBasis :: ProxyNotification(const uint8_t *aNotificationBuffer,
+ObjectControllerBasis :: ProxyNotification(const uint8_t *aNotificationBuffer,
                                      const size_t &aNotificationSize,
                                      const Common::RegularExpression::Matches &aNotificationMatches,
                                      Client::CommandManager::OnNotificationReceivedFunc  aOnNotificationReceivedHandler,
@@ -258,7 +258,7 @@ ControllerBasis :: ProxyNotification(const uint8_t *aNotificationBuffer,
 // MARK: Command Proxy Handlers
 
 void
-ControllerBasis :: ProxyErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aClientExchange,
+ObjectControllerBasis :: ProxyErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aClientExchange,
                                      const Common::Error &aClientError,
                                      Server::ConnectionBasis &aClientConnection,
                                      Client::CommandManager::OnCommandErrorFunc aOnCommandErrorHandler,
@@ -273,7 +273,7 @@ ControllerBasis :: ProxyErrorHandler(Client::Command::ExchangeBasis::MutableCoun
 }
 
 void
-ControllerBasis :: ProxyObservationCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aClientExchange,
+ObjectControllerBasis :: ProxyObservationCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aClientExchange,
                                                    const Common::RegularExpression::Matches &aClientMatches,
                                                    Server::ConnectionBasis &aClientConnection,
                                                    const uint8_t *aRequestBuffer,
@@ -296,7 +296,7 @@ ControllerBasis :: ProxyObservationCompleteHandler(Client::Command::ExchangeBasi
 }
 
 void
-ControllerBasis :: ProxyMutationCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aClientExchange,
+ObjectControllerBasis :: ProxyMutationCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aClientExchange,
                                                 const Common::RegularExpression::Matches &aClientMatches,
                                                 Server::ConnectionBasis &aClientConnection,
                                                 const uint8_t *aRequestBuffer,
@@ -347,7 +347,7 @@ ControllerBasis :: ProxyMutationCompleteHandler(Client::Command::ExchangeBasis::
 // MARK: Proxy Handler Trampolines
 
 /* static */ void
-ControllerBasis :: ProxyErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aClientExchange,
+ObjectControllerBasis :: ProxyErrorHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aClientExchange,
                                      const Common::Error &aClientError,
                                      void *aContext)
 {
@@ -355,7 +355,7 @@ ControllerBasis :: ProxyErrorHandler(Client::Command::ExchangeBasis::MutableCoun
 
     if (lContext != nullptr)
     {
-        ControllerBasis *lController = static_cast<ControllerBasis *>(lContext->mOurContext);
+        ObjectControllerBasis *lController = static_cast<ObjectControllerBasis *>(lContext->mOurContext);
 
         if (lController != nullptr)
         {
@@ -371,7 +371,7 @@ ControllerBasis :: ProxyErrorHandler(Client::Command::ExchangeBasis::MutableCoun
 }
 
 /* static */ void
-ControllerBasis :: ProxyObservationCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aClientExchange,
+ObjectControllerBasis :: ProxyObservationCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aClientExchange,
                                                    const Common::RegularExpression::Matches &aClientMatches,
                                                    void *aContext)
 {
@@ -379,7 +379,7 @@ ControllerBasis :: ProxyObservationCompleteHandler(Client::Command::ExchangeBasi
 
     if (lContext != nullptr)
     {
-        ControllerBasis *lController = static_cast<ControllerBasis *>(lContext->mOurContext);
+        ObjectControllerBasis *lController = static_cast<ObjectControllerBasis *>(lContext->mOurContext);
 
         if (lController != nullptr)
         {
@@ -400,7 +400,7 @@ ControllerBasis :: ProxyObservationCompleteHandler(Client::Command::ExchangeBasi
 }
 
 /* static */ void
-ControllerBasis :: ProxyMutationCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aClientExchange,
+ObjectControllerBasis :: ProxyMutationCompleteHandler(Client::Command::ExchangeBasis::MutableCountedPointer &aClientExchange,
                                                 const Common::RegularExpression::Matches &aClientMatches,
                                                 void *aContext)
 {
@@ -408,7 +408,7 @@ ControllerBasis :: ProxyMutationCompleteHandler(Client::Command::ExchangeBasis::
 
     if (lContext != nullptr)
     {
-        ControllerBasis *lController = static_cast<ControllerBasis *>(lContext->mOurContext);
+        ObjectControllerBasis *lController = static_cast<ObjectControllerBasis *>(lContext->mOurContext);
 
         if (lController != nullptr)
         {

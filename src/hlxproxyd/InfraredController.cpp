@@ -59,7 +59,7 @@ InfraredController :: InfraredController(void) :
     Common::InfraredControllerBasis(),
     Client::InfraredControllerBasis(Common::InfraredControllerBasis::mInfraredModel),
     Server::InfraredControllerBasis(Common::InfraredControllerBasis::mInfraredModel),
-    Proxy::ControllerBasis()
+    Proxy::ObjectControllerBasis()
 {
     return;
 }
@@ -116,7 +116,7 @@ InfraredController :: Init(Client::CommandManager &aClientCommandManager, Server
     lRetval = Server::InfraredControllerBasis::Init(aServerCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = Proxy::ControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
+    lRetval = Proxy::ObjectControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // This MUST come AFTER the base class initialization due to a

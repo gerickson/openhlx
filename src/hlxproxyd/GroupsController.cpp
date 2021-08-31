@@ -72,7 +72,7 @@ GroupsController :: GroupsController(void) :
                                   Common::GroupsControllerBasis::kGroupsMax),
     Server::GroupsControllerBasis(Common::GroupsControllerBasis::mGroups,
                                   Common::GroupsControllerBasis::kGroupsMax),
-    Proxy::ControllerBasis()
+    Proxy::ObjectControllerBasis()
 {
     return;
 }
@@ -129,7 +129,7 @@ GroupsController :: Init(Client::CommandManager &aClientCommandManager, Server::
     lRetval = Server::GroupsControllerBasis::Init(aServerCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = Proxy::ControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
+    lRetval = Proxy::ObjectControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // This MUST come AFTER the base class initialization due to a

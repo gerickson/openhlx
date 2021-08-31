@@ -61,7 +61,7 @@ FavoritesController :: FavoritesController(void) :
                                      Common::FavoritesControllerBasis::kFavoritesMax),
     Server::FavoritesControllerBasis(Common::FavoritesControllerBasis::mFavorites,
                                      Common::FavoritesControllerBasis::kFavoritesMax),
-    Proxy::ControllerBasis()
+    Proxy::ObjectControllerBasis()
 {
     return;
 }
@@ -118,7 +118,7 @@ FavoritesController :: Init(Client::CommandManager &aClientCommandManager, Serve
     lRetval = Server::FavoritesControllerBasis::Init(aServerCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = Proxy::ControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
+    lRetval = Proxy::ObjectControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // This MUST come AFTER the base class initialization due to a

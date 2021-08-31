@@ -79,7 +79,7 @@ NetworkController :: NetworkController(void) :
     Common::NetworkControllerBasis(),
     Client::NetworkControllerBasis(Common::NetworkControllerBasis::mNetworkModel),
     Server::NetworkControllerBasis(Common::NetworkControllerBasis::mNetworkModel),
-    Proxy::ControllerBasis()
+    Proxy::ObjectControllerBasis()
 {
     return;
 }
@@ -136,7 +136,7 @@ NetworkController :: Init(Client::CommandManager &aClientCommandManager, Server:
     lRetval = Server::NetworkControllerBasis::Init(aServerCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = Proxy::ControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
+    lRetval = Proxy::ObjectControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // This MUST come AFTER the base class initialization due to a

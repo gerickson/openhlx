@@ -58,7 +58,7 @@ ConfigurationController :: ConfigurationController(void) :
     Common::ConfigurationControllerBasis(),
     Client::ConfigurationControllerBasis(),
     Server::ConfigurationControllerBasis(),
-    Proxy::ControllerBasis(),
+    Proxy::ObjectControllerBasis(),
     mDelegate(nullptr)
 {
     return;
@@ -116,7 +116,7 @@ ConfigurationController :: Init(Client::CommandManager &aClientCommandManager, S
     lRetval = Server::ConfigurationControllerBasis::Init(aServerCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = Proxy::ControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
+    lRetval = Proxy::ObjectControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // This MUST come AFTER the base class initialization due to a

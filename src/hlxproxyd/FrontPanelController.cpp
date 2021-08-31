@@ -59,7 +59,7 @@ FrontPanelController :: FrontPanelController(void) :
     Common::FrontPanelControllerBasis(),
     Client::FrontPanelControllerBasis(Common::FrontPanelControllerBasis::mFrontPanelModel),
     Server::FrontPanelControllerBasis(Common::FrontPanelControllerBasis::mFrontPanelModel),
-    Proxy::ControllerBasis()
+    Proxy::ObjectControllerBasis()
 {
     return;
 }
@@ -116,7 +116,7 @@ FrontPanelController :: Init(Client::CommandManager &aClientCommandManager, Serv
     lRetval = Server::FrontPanelControllerBasis::Init(aServerCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = Proxy::ControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
+    lRetval = Proxy::ObjectControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // This MUST come AFTER the base class initialization due to a

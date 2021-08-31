@@ -34,7 +34,7 @@
 #include <OpenHLX/Server/InfraredControllerBasis.hpp>
 #include <OpenHLX/Server/InfraredControllerCommands.hpp>
 
-#include "ControllerBasis.hpp"
+#include "ObjectControllerBasis.hpp"
 
 
 namespace HLX
@@ -62,7 +62,7 @@ class InfraredController :
     public Common::InfraredControllerBasis,
     public Client::InfraredControllerBasis,
     public Server::InfraredControllerBasis,
-    public Proxy::ControllerBasis
+    public Proxy::ObjectControllerBasis
 {
 public:
     InfraredController(void);

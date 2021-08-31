@@ -34,7 +34,7 @@
 #include <OpenHLX/Server/FrontPanelControllerBasis.hpp>
 #include <OpenHLX/Server/FrontPanelControllerCommands.hpp>
 
-#include "ControllerBasis.hpp"
+#include "ObjectControllerBasis.hpp"
 
 
 namespace HLX
@@ -62,7 +62,7 @@ class FrontPanelController :
     public Common::FrontPanelControllerBasis,
     public Client::FrontPanelControllerBasis,
     public Server::FrontPanelControllerBasis,
-    public Proxy::ControllerBasis
+    public Proxy::ObjectControllerBasis
 {
 public:
     FrontPanelController(void);

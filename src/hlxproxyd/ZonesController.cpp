@@ -62,7 +62,7 @@ ZonesController :: ZonesController(void) :
                                  Common::ZonesControllerBasis::kZonesMax),
     Server::ZonesControllerBasis(Common::ZonesControllerBasis::mZones,
                                  Common::ZonesControllerBasis::kZonesMax),
-    Proxy::ControllerBasis()
+    Proxy::ObjectControllerBasis()
 {
     return;
 }
@@ -119,7 +119,7 @@ ZonesController :: Init(Client::CommandManager &aClientCommandManager, Server::C
     lRetval = Server::ZonesControllerBasis::Init(aServerCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = Proxy::ControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
+    lRetval = Proxy::ObjectControllerBasis::Init(aClientCommandManager, aServerCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // This MUST come AFTER the base class initialization due to a

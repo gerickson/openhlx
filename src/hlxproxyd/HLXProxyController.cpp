@@ -48,7 +48,7 @@ Controller :: Controller(void) :
     Common::Application::ControllerBasis(),
     Client::Application::ControllerBasis(),
     Server::Application::ControllerBasis(),
-    Common::Application::ControllerContainerTemplate<Proxy::ControllerBasis>(),
+    Common::Application::ControllerContainerTemplate<Proxy::ObjectControllerBasis>(),
     Client::ConnectionManagerDelegate(),
     Server::ConnectionManagerDelegate(),
     Client::CommandManagerDelegate(),

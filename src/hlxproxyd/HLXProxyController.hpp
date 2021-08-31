@@ -78,7 +78,7 @@ class Controller :
     public Common::Application::ControllerBasis,
     public Client::Application::ControllerBasis,
     public Server::Application::ControllerBasis,
-    public Common::Application::ControllerContainerTemplate<Proxy::ControllerBasis>,
+    public Common::Application::ControllerContainerTemplate<Proxy::ObjectControllerBasis>,
     public Client::ConnectionManagerDelegate,
     public Server::ConnectionManagerDelegate,
     public Client::CommandManagerDelegate,
@@ -172,7 +172,7 @@ private:
     void DeriveGroupState(void) final { return; }
 
 private:
-    typedef Common::Application::ControllerContainerTemplate<Proxy::ControllerBasis> ProxyControllerContainer;
+    typedef Common::Application::ControllerContainerTemplate<Proxy::ObjectControllerBasis> ProxyControllerContainer;
 
 private:
     // Sub-controller order is important since 1) this is the order that
