@@ -37,7 +37,7 @@ namespace HLX
 namespace Utilities
 {
 
-Timer :: Timer(void) : 
+Timer :: Timer(void) :
     mRunLoopParameters(),
     mTimerRef(nullptr),
     mDelegate(nullptr)
