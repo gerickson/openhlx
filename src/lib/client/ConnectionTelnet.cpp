@@ -502,22 +502,25 @@ ConnectionTelnet :: HandleStreamError(const CFStreamEventType &aType, const CFSt
 
     Log::Debug().Write("%s: state is %d\n", __FUNCTION__, lState);
 
+    switch (aStreamError.domain)
+    {
+
+    case kCFStreamErrorDomainPOSIX:
+        lError = -aStreamError.error;
+        break;
+
+    default:
+        lError = kError_Unknown;
+        break;
+
+    }
+
     switch (lState)
     {
 
     case kState_Connecting:
         {
             SetState(kState_Disconnected);
-
-            switch (aStreamError.domain)
-            {
-            case kCFStreamErrorDomainPOSIX:
-                lError = -aStreamError.error;
-                break;
-
-            default:
-                break;
-            }
 
             OnDidNotConnect(lError);
 
@@ -537,16 +540,6 @@ ConnectionTelnet :: HandleStreamError(const CFStreamEventType &aType, const CFSt
              mWaitingForClientConfirmation = true;
 
              SetState(kState_Disconnected);
-
-             switch (aStreamError.domain)
-             {
-             case kCFStreamErrorDomainPOSIX:
-                 lError = -aStreamError.error;
-                 break;
-
-             default:
-                 break;
-             }
 
              OnDidDisconnect(lError);
 
