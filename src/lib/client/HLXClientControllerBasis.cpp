@@ -323,7 +323,8 @@ ControllerBasis :: Connect(const char *aMaybeURL)
  *
  */
 Status
-ControllerBasis :: Connect(const char *aMaybeURL, const Timeout &aTimeout)
+ControllerBasis :: Connect(const char *aMaybeURL,
+                           const Timeout &aTimeout)
 {
     Status lRetval = kStatus_Success;
 
@@ -371,8 +372,8 @@ ControllerBasis :: Connect(const char *aMaybeURL, const Timeout &aTimeout)
  */
 Status
 ControllerBasis :: Connect(const char *aMaybeURL,
-                      const ConnectionManager::Versions &aVersions,
-                      const Timeout &aTimeout)
+                           const ConnectionManager::Versions &aVersions,
+                           const Timeout &aTimeout)
 {
     Status lRetval = kStatus_Success;
 
