@@ -398,6 +398,19 @@ void ConnectionTelnet :: HandleStreamError(const CFStreamEventType &aType, const
 
     Log::Debug().Write("%s: state is %d\n", __FUNCTION__, lState);
 
+    switch (aStreamError.domain)
+    {
+
+    case kCFStreamErrorDomainPOSIX:
+        lError = -aStreamError.error;
+        break;
+
+    default:
+        lError = kError_Unknown;
+        break;
+
+    }
+
     switch (lState)
     {
 
@@ -407,16 +420,6 @@ void ConnectionTelnet :: HandleStreamError(const CFStreamEventType &aType, const
             //       probably reflect a count of connections.
 
             SetState(kState_Disconnected);
-
-            switch (aStreamError.domain)
-            {
-            case kCFStreamErrorDomainPOSIX:
-                lError = -aStreamError.error;
-                break;
-
-            default:
-                break;
-            }
 
             OnDidNotAccept(lError);
 
@@ -442,16 +445,6 @@ void ConnectionTelnet :: HandleStreamError(const CFStreamEventType &aType, const
             //       probably reflect a count of connections.
 
             SetState(kState_Disconnected);
-
-            switch (aStreamError.domain)
-            {
-            case kCFStreamErrorDomainPOSIX:
-                lError = -aStreamError.error;
-                break;
-
-            default:
-                break;
-            }
 
             OnDidDisconnect(lError);
 
