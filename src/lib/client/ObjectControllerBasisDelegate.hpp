@@ -23,11 +23,11 @@
  *
  */
 
-#ifndef OPENHLXCLIENTCONTROLLERBASISDELEGATE_HPP
-#define OPENHLXCLIENTCONTROLLERBASISDELEGATE_HPP
+#ifndef OPENHLXCLIENTOBJECTCONTROLLERBASISDELEGATE_HPP
+#define OPENHLXCLIENTOBJECTCONTROLLERBASISDELEGATE_HPP
 
-#include <OpenHLX/Client/ControllerBasisErrorDelegate.hpp>
-#include <OpenHLX/Client/ControllerBasisRefreshDelegate.hpp>
-#include <OpenHLX/Client/ControllerBasisStateChangeDelegate.hpp>
+#include <OpenHLX/Client/ObjectControllerBasisErrorDelegate.hpp>
+#include <OpenHLX/Client/ObjectControllerBasisRefreshDelegate.hpp>
+#include <OpenHLX/Client/ObjectControllerBasisStateChangeDelegate.hpp>
 
-#endif // OPENHLXCLIENTCONTROLLERBASISDELEGATE_HPP
+#endif // OPENHLXCLIENTOBJECTCONTROLLERBASISDELEGATE_HPP

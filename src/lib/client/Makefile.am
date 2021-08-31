@@ -67,11 +67,6 @@ libopenhlx_client_a_include_HEADERS                         = \
     ConnectionManager.hpp                                     \
     ConnectionManagerDelegate.hpp                             \
     ConnectionTelnet.hpp                                      \
-    ControllerBasis.hpp                                       \
-    ControllerBasisDelegate.hpp                               \
-    ControllerBasisErrorDelegate.hpp                          \
-    ControllerBasisRefreshDelegate.hpp                        \
-    ControllerBasisStateChangeDelegate.hpp                    \
     EqualizerBandStateChangeNotificationBasis.hpp             \
     EqualizerPresetsController.hpp                            \
     EqualizerPresetsControllerBasis.hpp                       \
@@ -102,6 +97,11 @@ libopenhlx_client_a_include_HEADERS                         = \
     NetworkController.hpp                                     \
     NetworkControllerBasis.hpp                                \
     NetworkControllerCommands.hpp                             \
+    ObjectControllerBasis.hpp                                 \
+    ObjectControllerBasisDelegate.hpp                         \
+    ObjectControllerBasisErrorDelegate.hpp                    \
+    ObjectControllerBasisRefreshDelegate.hpp                  \
+    ObjectControllerBasisStateChangeDelegate.hpp              \
     SourceStateChangeNotificationBasis.hpp                    \
     SourcesController.hpp                                     \
     SourcesControllerBasis.hpp                                \
@@ -146,7 +146,6 @@ libopenhlx_client_a_SOURCES                                 = \
     ConnectionFactory.cpp                                     \
     ConnectionManager.cpp                                     \
     ConnectionTelnet.cpp                                      \
-    ControllerBasis.cpp                                       \
     EqualizerBandStateChangeNotificationBasis.cpp             \
     EqualizerPresetsController.cpp                            \
     EqualizerPresetsControllerBasis.cpp                       \
@@ -175,6 +174,7 @@ libopenhlx_client_a_SOURCES                                 = \
     NetworkController.cpp                                     \
     NetworkControllerBasis.cpp                                \
     NetworkControllerCommands.cpp                             \
+    ObjectControllerBasis.cpp                                 \
     SourceStateChangeNotificationBasis.cpp                    \
     SourcesController.cpp                                     \
     SourcesControllerBasis.cpp                                \

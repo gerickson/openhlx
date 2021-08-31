@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef OPENHLXCLIENTCONTROLLERBASISERRORDELEGATE_HPP
-#define OPENHLXCLIENTCONTROLLERBASISERRORDELEGATE_HPP
+#ifndef OPENHLXCLIENTOBJECTCONTROLLERBASISERRORDELEGATE_HPP
+#define OPENHLXCLIENTOBJECTCONTROLLERBASISERRORDELEGATE_HPP
 
 #include <OpenHLX/Common/Errors.hpp>
 
@@ -35,7 +35,7 @@ namespace HLX
 namespace Client
 {
 
-class ControllerBasis;
+class ObjectControllerBasis;
 
 /**
  *  @brief
@@ -44,11 +44,11 @@ class ControllerBasis;
  *  @ingroup client
  *
  */
-class ControllerBasisErrorDelegate
+class ObjectControllerBasisErrorDelegate
 {
 public:
-    ControllerBasisErrorDelegate(void) = default;
-    virtual ~ControllerBasisErrorDelegate(void) = default;
+    ObjectControllerBasisErrorDelegate(void) = default;
+    virtual ~ObjectControllerBasisErrorDelegate(void) = default;
 
     /**
      *  @brief
@@ -61,7 +61,7 @@ public:
      *                           associated with the event.
      *
      */
-    virtual void ControllerError(ControllerBasis &aController, const Common::Error &aError) = 0;
+    virtual void ControllerError(ObjectControllerBasis &aController, const Common::Error &aError) = 0;
 
 };
 
@@ -69,4 +69,4 @@ public:
 
 }; // namespace HLX
 
-#endif // OPENHLXCLIENTCONTROLLERBASISERRORDELEGATE_HPP
+#endif // OPENHLXCLIENTOBJECTCONTROLLERBASISERRORDELEGATE_HPP

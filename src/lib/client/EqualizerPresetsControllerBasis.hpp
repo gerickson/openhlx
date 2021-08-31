@@ -27,8 +27,8 @@
 
 #include <stddef.h>
 
-#include <OpenHLX/Client/ControllerBasis.hpp>
 #include <OpenHLX/Client/EqualizerPresetsControllerCommands.hpp>
+#include <OpenHLX/Client/ObjectControllerBasis.hpp>
 #include <OpenHLX/Model/EqualizerPresetModel.hpp>
 #include <OpenHLX/Model/EqualizerPresetsModel.hpp>
 
@@ -48,7 +48,7 @@ namespace Client
  *
  */
 class EqualizerPresetsControllerBasis :
-    public Client::ControllerBasis
+    public Client::ObjectControllerBasis
 {
 public:
     virtual ~EqualizerPresetsControllerBasis(void);

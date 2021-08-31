@@ -25,7 +25,7 @@
 #ifndef OPENHLXCLIENTZONESCONTROLLERBASIS_HPP
 #define OPENHLXCLIENTZONESCONTROLLERBASIS_HPP
 
-#include <OpenHLX/Client/ControllerBasis.hpp>
+#include <OpenHLX/Client/ObjectControllerBasis.hpp>
 #include <OpenHLX/Client/ZonesControllerCommands.hpp>
 #include <OpenHLX/Model/ZoneModel.hpp>
 #include <OpenHLX/Model/ZonesModel.hpp>
@@ -53,7 +53,7 @@ namespace Application
  *
  */
 class ZonesControllerBasis :
-    public Client::ControllerBasis
+    public Client::ObjectControllerBasis
 {
 public:
     virtual ~ZonesControllerBasis(void);

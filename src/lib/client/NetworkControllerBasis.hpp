@@ -25,8 +25,8 @@
 #ifndef OPENHLXCLIENTNETWORKCONTROLLERBASIS_HPP
 #define OPENHLXCLIENTNETWORKCONTROLLERBASIS_HPP
 
-#include <OpenHLX/Client/ControllerBasis.hpp>
 #include <OpenHLX/Client/NetworkControllerCommands.hpp>
+#include <OpenHLX/Client/ObjectControllerBasis.hpp>
 
 
 namespace HLX
@@ -44,7 +44,7 @@ namespace Client
  *
  */
 class NetworkControllerBasis :
-    public Client::ControllerBasis
+    public Client::ObjectControllerBasis
 {
 public:
     virtual ~NetworkControllerBasis(void);

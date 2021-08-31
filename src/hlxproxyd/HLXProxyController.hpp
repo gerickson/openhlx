@@ -30,9 +30,9 @@
 #include <OpenHLX/Client/CommandManagerDelegate.hpp>
 #include <OpenHLX/Client/ConnectionManager.hpp>
 #include <OpenHLX/Client/ConnectionManagerDelegate.hpp>
-#include <OpenHLX/Client/ControllerBasisDelegate.hpp>
 #include <OpenHLX/Client/HLXClientControllerBasis.hpp>
 #include <OpenHLX/Client/HLXClientControllerRefreshDelegate.hpp>
+#include <OpenHLX/Client/ObjectControllerBasisDelegate.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/HLXCommonControllerBasis.hpp>
 #include <OpenHLX/Common/HLXCommonControllerContainerTemplate.hpp>
@@ -43,7 +43,6 @@
 #include <OpenHLX/Server/ConnectionManager.hpp>
 #include <OpenHLX/Server/ConnectionManagerDelegate.hpp>
 #include <OpenHLX/Server/HLXServerControllerBasis.hpp>
-
 
 #include "ConfigurationController.hpp"
 #include "ConfigurationControllerDelegate.hpp"
@@ -83,8 +82,8 @@ class Controller :
     public Server::ConnectionManagerDelegate,
     public Client::CommandManagerDelegate,
     public Server::CommandManagerDelegate,
-    public Client::ControllerBasisErrorDelegate,
-    public Client::ControllerBasisStateChangeDelegate,
+    public Client::ObjectControllerBasisErrorDelegate,
+    public Client::ObjectControllerBasisStateChangeDelegate,
     public ConfigurationControllerDelegate
 {
 public:
@@ -149,11 +148,11 @@ public:
 
     // Server-facing Client Object Controller Basis Error Delegate Method
 
-    void ControllerError(Client::ControllerBasis &aController, const Common::Error &aError) final;
+    void ControllerError(Client::ObjectControllerBasis &aController, const Common::Error &aError) final;
 
     // Server-facing Client Object Controller Basis State Change Delegate Method
 
-    void ControllerStateDidChange(Client::ControllerBasis &aController, const Client::StateChange::NotificationBasis &aStateChangeNotification) final;
+    void ControllerStateDidChange(Client::ObjectControllerBasis &aController, const Client::StateChange::NotificationBasis &aStateChangeNotification) final;
 
     // Client-facing Server Controller Basis Delegate Methods
 

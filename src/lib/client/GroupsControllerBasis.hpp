@@ -27,8 +27,8 @@
 
 #include <stddef.h>
 
-#include <OpenHLX/Client/ControllerBasis.hpp>
 #include <OpenHLX/Client/GroupsControllerCommands.hpp>
+#include <OpenHLX/Client/ObjectControllerBasis.hpp>
 #include <OpenHLX/Model/GroupModel.hpp>
 #include <OpenHLX/Model/GroupsModel.hpp>
 
@@ -55,7 +55,7 @@ namespace Application
  *
  */
 class GroupsControllerBasis :
-    public Client::ControllerBasis
+    public Client::ObjectControllerBasis
 {
 public:
     virtual ~GroupsControllerBasis(void);

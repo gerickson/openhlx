@@ -27,7 +27,7 @@
 
 #include <stddef.h>
 
-#include <OpenHLX/Client/ControllerBasis.hpp>
+#include <OpenHLX/Client/ObjectControllerBasis.hpp>
 #include <OpenHLX/Client/SourcesControllerCommands.hpp>
 #include <OpenHLX/Model/SourceModel.hpp>
 #include <OpenHLX/Model/SourcesModel.hpp>
@@ -48,7 +48,7 @@ namespace Client
  *
  */
 class SourcesControllerBasis :
-    public Client::ControllerBasis
+    public Client::ObjectControllerBasis
 {
 public:
     virtual ~SourcesControllerBasis(void);

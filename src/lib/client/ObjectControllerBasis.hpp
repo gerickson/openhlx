@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef OPENHLXCLIENTCONTROLLERBASIS_HPP
-#define OPENHLXCLIENTCONTROLLERBASIS_HPP
+#ifndef OPENHLXCLIENTOBJECTCONTROLLERBASIS_HPP
+#define OPENHLXCLIENTOBJECTCONTROLLERBASIS_HPP
 
 #include <OpenHLX/Client/CommandExchangeBasis.hpp>
 #include <OpenHLX/Client/CommandManager.hpp>
@@ -40,22 +40,22 @@ namespace HLX
 namespace Client
 {
 
-class ControllerBasisErrorDelegate;
-class ControllerBasisRefreshDelegate;
-class ControllerBasisStateChangeDelegate;
+class ObjectControllerBasisErrorDelegate;
+class ObjectControllerBasisRefreshDelegate;
+class ObjectControllerBasisStateChangeDelegate;
 
 /**
  *  @brief
- *    A base object for all client-side HLX controllers.
+ *    A base object for all client-side HLX object controllers.
  *
  *  @ingroup client
  *
  */
-class ControllerBasis :
+class ObjectControllerBasis :
     public CommandManagerDelegate
 {
 public:
-    virtual ~ControllerBasis(void);
+    virtual ~ObjectControllerBasis(void);
 
     virtual Common::Status Init(CommandManager &aCommandManager);
     virtual Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout);
@@ -84,16 +84,16 @@ public:
 
     // Delegate Management
 
-    ControllerBasisErrorDelegate *GetErrorDelegate(void) const;
-    ControllerBasisRefreshDelegate *GetRefreshDelegate(void) const;
-    ControllerBasisStateChangeDelegate *GetStateChangeDelegate(void) const;
+    ObjectControllerBasisErrorDelegate *GetErrorDelegate(void) const;
+    ObjectControllerBasisRefreshDelegate *GetRefreshDelegate(void) const;
+    ObjectControllerBasisStateChangeDelegate *GetStateChangeDelegate(void) const;
 
-    Common::Status SetErrorDelegate(ControllerBasisErrorDelegate *aDelegate);
-    Common::Status SetRefreshDelegate(ControllerBasisRefreshDelegate *aDelegate);
-    Common::Status SetStateChangeDelegate(ControllerBasisStateChangeDelegate *aDelegate);
+    Common::Status SetErrorDelegate(ObjectControllerBasisErrorDelegate *aDelegate);
+    Common::Status SetRefreshDelegate(ObjectControllerBasisRefreshDelegate *aDelegate);
+    Common::Status SetStateChangeDelegate(ObjectControllerBasisStateChangeDelegate *aDelegate);
 
 protected:
-    ControllerBasis(void);
+    ObjectControllerBasis(void);
 
     /**
      *  @brief
@@ -161,16 +161,16 @@ protected:
     void MaybeUpdateRefreshIfRefreshWasRequested(void);
 
 private:
-    ControllerBasisErrorDelegate *        mErrorDelegate;
-    ControllerBasisRefreshDelegate *      mRefreshDelegate;
-    ControllerBasisStateChangeDelegate *  mStateChangeDelegate;
-    CommandManager *                      mCommandManager;
-    Common::Timeout                       mTimeout;
-    bool                                  mRefreshRequested;
+    ObjectControllerBasisErrorDelegate *        mErrorDelegate;
+    ObjectControllerBasisRefreshDelegate *      mRefreshDelegate;
+    ObjectControllerBasisStateChangeDelegate *  mStateChangeDelegate;
+    CommandManager *                            mCommandManager;
+    Common::Timeout                             mTimeout;
+    bool                                        mRefreshRequested;
 };
 
 }; // namespace Client
 
 }; // namespace HLX
 
-#endif // OPENHLXCLIENTCONTROLLERBASIS_HPP
+#endif // OPENHLXCLIENTOBJECTCONTROLLERBASIS_HPP

@@ -54,7 +54,7 @@ namespace Application
  */
 ControllerBasis :: ControllerBasis(void) :
     ClientControllerContainer(),
-    ControllerBasisRefreshDelegate(),
+    ObjectControllerBasisRefreshDelegate(),
     mConnectionManager(),
     mCommandManager(),
     mControllersDidRefreshCount(0),
@@ -430,7 +430,7 @@ ControllerBasis :: Disconnect(void)
 // MARK: Controller Basis Refresh Delegate Methods
 
 void
-ControllerBasis :: ControllerIsRefreshing(Client::ControllerBasis &aController, const uint8_t &aPercentComplete)
+ControllerBasis :: ControllerIsRefreshing(Client::ObjectControllerBasis &aController, const uint8_t &aPercentComplete)
 {
     Controllers::const_iterator lControllerIterator;
 
@@ -465,7 +465,7 @@ ControllerBasis :: ControllerIsRefreshing(Client::ControllerBasis &aController, 
  *
  */
 void
-ControllerBasis :: ControllerDidRefresh(Client::ControllerBasis &aController)
+ControllerBasis :: ControllerDidRefresh(Client::ObjectControllerBasis &aController)
 {
     Controllers::const_iterator lControllerIterator;
 

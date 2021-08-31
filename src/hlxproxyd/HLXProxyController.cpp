@@ -53,8 +53,8 @@ Controller :: Controller(void) :
     Server::ConnectionManagerDelegate(),
     Client::CommandManagerDelegate(),
     Server::CommandManagerDelegate(),
-    Client::ControllerBasisErrorDelegate(),
-    Client::ControllerBasisStateChangeDelegate(),
+    Client::ObjectControllerBasisErrorDelegate(),
+    Client::ObjectControllerBasisStateChangeDelegate(),
     ConfigurationControllerDelegate(),
     mConfigurationController(),
     mNetworkController(),
@@ -753,7 +753,7 @@ Controller :: ConnectionManagerError(Common::ConnectionManagerBasis &aConnection
 // MARK: Server-facing Client Object Controller Basis Error Delegate Methods
 
 void
-Controller :: ControllerError(Client::ControllerBasis &aController, const Common::Error &aError)
+Controller :: ControllerError(Client::ObjectControllerBasis &aController, const Common::Error &aError)
 {
     (void)aController;
     (void)aError;
@@ -800,7 +800,7 @@ Controller :: ControllerError(Client::ControllerBasis &aController, const Common
  *
  */
 void
-Controller :: ControllerStateDidChange(Client::ControllerBasis &aController,
+Controller :: ControllerStateDidChange(Client::ObjectControllerBasis &aController,
                                        const Client::StateChange::NotificationBasis &aStateChangeNotification)
 {
     (void)aController;

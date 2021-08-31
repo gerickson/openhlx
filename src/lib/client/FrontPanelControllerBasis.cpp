@@ -62,7 +62,7 @@ Command::FrontPanel::QueryResponse       FrontPanelControllerBasis::kQueryRespon
  *
  */
 FrontPanelControllerBasis :: FrontPanelControllerBasis(Model::FrontPanelModel &aFrontPanelModel) :
-    Client::ControllerBasis(),
+    Client::ObjectControllerBasis(),
     mFrontPanelModel(aFrontPanelModel)
 {
     return;
@@ -113,7 +113,7 @@ FrontPanelControllerBasis :: Init(CommandManager &aCommandManager, const Timeout
     lRetval = ResponseInit();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = ControllerBasis::Init(aCommandManager, aTimeout);
+    lRetval = ObjectControllerBasis::Init(aCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -203,7 +203,7 @@ FrontPanelControllerBasis :: DoNotificationHandlers(const bool &aRegister)
     static constexpr size_t  lNotificationHandlerCount = ElementsOf(lNotificationHandlers);
     Status                   lRetval = kStatus_Success;
 
-    lRetval = Client::ControllerBasis::DoNotificationHandlers(&lNotificationHandlers[0],
+    lRetval = Client::ObjectControllerBasis::DoNotificationHandlers(&lNotificationHandlers[0],
                                                               &lNotificationHandlers[lNotificationHandlerCount],
                                                               this,
                                                               aRegister);

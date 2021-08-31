@@ -25,8 +25,8 @@
 #ifndef OPENHLXCLIENTFRONTPANELCONTROLLERBASIS_HPP
 #define OPENHLXCLIENTFRONTPANELCONTROLLERBASIS_HPP
 
-#include <OpenHLX/Client/ControllerBasis.hpp>
 #include <OpenHLX/Client/FrontPanelControllerCommands.hpp>
+#include <OpenHLX/Client/ObjectControllerBasis.hpp>
 
 
 namespace HLX
@@ -44,7 +44,7 @@ namespace Client
  *
  */
 class FrontPanelControllerBasis :
-    public Client::ControllerBasis
+    public Client::ObjectControllerBasis
 {
 public:
     virtual ~FrontPanelControllerBasis(void);

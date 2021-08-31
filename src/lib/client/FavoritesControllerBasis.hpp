@@ -27,8 +27,8 @@
 
 #include <stddef.h>
 
-#include <OpenHLX/Client/ControllerBasis.hpp>
 #include <OpenHLX/Client/FavoritesControllerCommands.hpp>
+#include <OpenHLX/Client/ObjectControllerBasis.hpp>
 #include <OpenHLX/Model/FavoriteModel.hpp>
 #include <OpenHLX/Model/FavoritesModel.hpp>
 
@@ -48,7 +48,7 @@ namespace Client
  *
  */
 class FavoritesControllerBasis :
-    public Client::ControllerBasis
+    public Client::ObjectControllerBasis
 {
 public:
     virtual ~FavoritesControllerBasis(void);

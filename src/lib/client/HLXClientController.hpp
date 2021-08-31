@@ -34,7 +34,7 @@
 #include <OpenHLX/Client/ConfigurationController.hpp>
 #include <OpenHLX/Client/ConnectionManager.hpp>
 #include <OpenHLX/Client/ConnectionManagerDelegate.hpp>
-#include <OpenHLX/Client/ControllerBasisDelegate.hpp>
+#include <OpenHLX/Client/ObjectControllerBasisDelegate.hpp>
 #include <OpenHLX/Client/EqualizerPresetsController.hpp>
 #include <OpenHLX/Client/FavoritesController.hpp>
 #include <OpenHLX/Client/FrontPanelController.hpp>
@@ -84,8 +84,8 @@ class Controller :
     public Client::Application::ControllerBasis,
     public ConnectionManagerDelegate,
     public CommandManagerDelegate,
-    public ControllerBasisErrorDelegate,
-    public ControllerBasisStateChangeDelegate
+    public ObjectControllerBasisErrorDelegate,
+    public ObjectControllerBasisStateChangeDelegate
 {
 public:
     Controller(void);
@@ -221,8 +221,8 @@ public:
 
     // Object Controller Basis Delegate Methods
 
-    void ControllerError(Client::ControllerBasis &aController, const Common::Error &aError) final;
-    void ControllerStateDidChange(Client::ControllerBasis &aController, const StateChange::NotificationBasis &aStateChangeNotification) final;
+    void ControllerError(Client::ObjectControllerBasis &aController, const Common::Error &aError) final;
+    void ControllerStateDidChange(Client::ObjectControllerBasis &aController, const StateChange::NotificationBasis &aStateChangeNotification) final;
 
 private:
     void DeriveGroupState(void) final;
@@ -233,7 +233,7 @@ private:
     void DeriveGroupStateForGroup(const Model::GroupModel::IdentifierType &aGroupIdentifier,
                                   const Model::GroupModel &aGroupModel);
 
-    void MaybeHandleGroupZoneStateChangeInteractions(Client::ControllerBasis &aController, const StateChange::NotificationBasis &aStateChangeNotification);
+    void MaybeHandleGroupZoneStateChangeInteractions(Client::ObjectControllerBasis &aController, const StateChange::NotificationBasis &aStateChangeNotification);
     void HandleGroupZoneStateChangeInteractions(const StateChange::GroupsNotificationBasis &aGroupStateChangeNotification, const StateChange::Type &aType);
 
     struct DerivedGroupState

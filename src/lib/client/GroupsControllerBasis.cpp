@@ -67,7 +67,7 @@ Command::Groups::ZoneResponse            GroupsControllerBasis::kZoneResponse;
  */
 GroupsControllerBasis :: GroupsControllerBasis(Model::GroupsModel &aGroupsModel,
                                                const Model::GroupsModel::IdentifierType &aGroupsMax) :
-    Client::ControllerBasis(),
+    Client::ObjectControllerBasis(),
     mGroupsModel(aGroupsModel),
     mGroupsMax(aGroupsMax),
     mGroupsDidRefreshCount(0)
@@ -120,7 +120,7 @@ GroupsControllerBasis :: Init(CommandManager &aCommandManager, const Timeout &aT
     lRetval = ResponseInit();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = ControllerBasis::Init(aCommandManager, aTimeout);
+    lRetval = ObjectControllerBasis::Init(aCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -227,10 +227,10 @@ GroupsControllerBasis :: DoNotificationHandlers(const bool &aRegister)
     static constexpr size_t  lNotificationHandlerCount = ElementsOf(lNotificationHandlers);
     Status                   lRetval = kStatus_Success;
 
-    lRetval = Client::ControllerBasis::DoNotificationHandlers(&lNotificationHandlers[0],
-                                                              &lNotificationHandlers[lNotificationHandlerCount],
-                                                              this,
-                                                              aRegister);
+    lRetval = Client::ObjectControllerBasis::DoNotificationHandlers(&lNotificationHandlers[0],
+                                                                    &lNotificationHandlers[lNotificationHandlerCount],
+                                                                    this,
+                                                                    aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:

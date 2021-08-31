@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef OPENHLXCLIENTCONTROLLERBASISREFRESHDELEGATE_HPP
-#define OPENHLXCLIENTCONTROLLERBASISREFRESHDELEGATE_HPP
+#ifndef OPENHLXCLIENTOBJECTCONTROLLERBASISREFRESHDELEGATE_HPP
+#define OPENHLXCLIENTOBJECTCONTROLLERBASISREFRESHDELEGATE_HPP
 
 
 namespace HLX
@@ -33,7 +33,7 @@ namespace HLX
 namespace Client
 {
 
-class ControllerBasis;
+class ObjectControllerBasis;
 
 /**
  *  @brief
@@ -43,11 +43,11 @@ class ControllerBasis;
  *  @ingroup client
  *
  */
-class ControllerBasisRefreshDelegate
+class ObjectControllerBasisRefreshDelegate
 {
 public:
-    ControllerBasisRefreshDelegate(void) = default;
-    virtual ~ControllerBasisRefreshDelegate(void) = default;
+    ObjectControllerBasisRefreshDelegate(void) = default;
+    virtual ~ObjectControllerBasisRefreshDelegate(void) = default;
 
     /**
      *  @brief
@@ -61,7 +61,7 @@ public:
      *                                that has completed.
      *
      */
-    virtual void ControllerIsRefreshing(ControllerBasis &aController, const uint8_t &aPercentComplete) = 0;
+    virtual void ControllerIsRefreshing(ObjectControllerBasis &aController, const uint8_t &aPercentComplete) = 0;
 
     /**
      *  @brief
@@ -72,11 +72,11 @@ public:
      *                                that issued the delegation.
      *
      */
-    virtual void ControllerDidRefresh(ControllerBasis &aController) = 0;
+    virtual void ControllerDidRefresh(ObjectControllerBasis &aController) = 0;
 };
 
 }; // namespace Client
 
 }; // namespace HLX
 
-#endif // OPENHLXCLIENTCONTROLLERBASISREFRESHDELEGATE_HPP
+#endif // OPENHLXCLIENTOBJECTCONTROLLERBASISREFRESHDELEGATE_HPP

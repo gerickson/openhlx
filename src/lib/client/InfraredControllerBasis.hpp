@@ -25,8 +25,8 @@
 #ifndef OPENHLXCLIENTINFRAREDCONTROLLERBASIS_HPP
 #define OPENHLXCLIENTINFRAREDCONTROLLERBASIS_HPP
 
-#include <OpenHLX/Client/ControllerBasis.hpp>
 #include <OpenHLX/Client/InfraredControllerCommands.hpp>
+#include <OpenHLX/Client/ObjectControllerBasis.hpp>
 
 
 namespace HLX
@@ -44,7 +44,7 @@ namespace Client
  *
  */
 class InfraredControllerBasis :
-    public Client::ControllerBasis
+    public Client::ObjectControllerBasis
 {
 public:
     virtual ~InfraredControllerBasis(void);

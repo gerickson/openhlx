@@ -23,7 +23,7 @@
  *
  */
 
-#include "ControllerBasis.hpp"
+#include "ObjectControllerBasis.hpp"
 
 #include <errno.h>
 
@@ -35,7 +35,7 @@
 
 #include "CommandManager.hpp"
 #include "ConnectionManager.hpp"
-#include "ControllerBasisDelegate.hpp"
+#include "ObjectControllerBasisDelegate.hpp"
 
 
 using namespace HLX::Common;
@@ -54,7 +54,7 @@ namespace Client
  *    This is the class default constructor.
  *
  */
-ControllerBasis :: ControllerBasis(void) :
+ObjectControllerBasis :: ObjectControllerBasis(void) :
     mErrorDelegate(nullptr),
     mRefreshDelegate(nullptr),
     mStateChangeDelegate(nullptr),
@@ -70,7 +70,7 @@ ControllerBasis :: ControllerBasis(void) :
  *    This is the class destructor.
  *
  */
-ControllerBasis :: ~ControllerBasis(void)
+ObjectControllerBasis :: ~ObjectControllerBasis(void)
 {
     return;
 }
@@ -91,7 +91,7 @@ ControllerBasis :: ~ControllerBasis(void)
  *
  */
 Status
-ControllerBasis :: Init(CommandManager &aCommandManager)
+ObjectControllerBasis :: Init(CommandManager &aCommandManager)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
@@ -121,7 +121,7 @@ ControllerBasis :: Init(CommandManager &aCommandManager)
  *
  */
 Status
-ControllerBasis :: Init(CommandManager &aCommandManager, const Timeout &aTimeout)
+ObjectControllerBasis :: Init(CommandManager &aCommandManager, const Timeout &aTimeout)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
@@ -163,7 +163,7 @@ ControllerBasis :: Init(CommandManager &aCommandManager, const Timeout &aTimeout
  *
  */
 Status
-ControllerBasis :: DoNotificationHandlers(const NotificationHandlerBasis *aFirstNotificationHandler,
+ObjectControllerBasis :: DoNotificationHandlers(const NotificationHandlerBasis *aFirstNotificationHandler,
                                           const NotificationHandlerBasis *aLastNotificationHandler,
                                           void *aContext,
                                           const bool &aRegister)
@@ -211,7 +211,7 @@ done:
  *
  */
 Status
-ControllerBasis :: Refresh(void)
+ObjectControllerBasis :: Refresh(void)
 {
     Status lRetval = kStatus_Success;
 
@@ -228,8 +228,8 @@ ControllerBasis :: Refresh(void)
  *    A pointer to the error delegate for the controller basis.
  *
  */
-ControllerBasisErrorDelegate *
-ControllerBasis :: GetErrorDelegate(void) const
+ObjectControllerBasisErrorDelegate *
+ObjectControllerBasis :: GetErrorDelegate(void) const
 {
     return (mErrorDelegate);
 }
@@ -242,8 +242,8 @@ ControllerBasis :: GetErrorDelegate(void) const
  *    A pointer to the refresh delegate for the controller basis.
  *
  */
-ControllerBasisRefreshDelegate *
-ControllerBasis :: GetRefreshDelegate(void) const
+ObjectControllerBasisRefreshDelegate *
+ObjectControllerBasis :: GetRefreshDelegate(void) const
 {
     return (mRefreshDelegate);
 }
@@ -256,8 +256,8 @@ ControllerBasis :: GetRefreshDelegate(void) const
  *    A pointer to the state change delegate for the controller basis.
  *
  */
-ControllerBasisStateChangeDelegate *
-ControllerBasis :: GetStateChangeDelegate(void) const
+ObjectControllerBasisStateChangeDelegate *
+ObjectControllerBasis :: GetStateChangeDelegate(void) const
 {
     return (mStateChangeDelegate);
 }
@@ -276,7 +276,7 @@ ControllerBasis :: GetStateChangeDelegate(void) const
  *
  */
 Status
-ControllerBasis :: SetErrorDelegate(ControllerBasisErrorDelegate *aErrorDelegate)
+ObjectControllerBasis :: SetErrorDelegate(ObjectControllerBasisErrorDelegate *aErrorDelegate)
 {
     Status lRetval = kStatus_Success;
 
@@ -302,7 +302,7 @@ done:
  *
  */
 Status
-ControllerBasis :: SetRefreshDelegate(ControllerBasisRefreshDelegate *aRefreshDelegate)
+ObjectControllerBasis :: SetRefreshDelegate(ObjectControllerBasisRefreshDelegate *aRefreshDelegate)
 {
     Status lRetval = kStatus_Success;
 
@@ -330,7 +330,7 @@ done:
  *
  */
 Status
-ControllerBasis :: SetStateChangeDelegate(ControllerBasisStateChangeDelegate *aStateChangeDelegate)
+ObjectControllerBasis :: SetStateChangeDelegate(ObjectControllerBasisStateChangeDelegate *aStateChangeDelegate)
 {
     Status lRetval = kStatus_Success;
 
@@ -380,7 +380,7 @@ done:
  *
  */
 Status
-ControllerBasis :: SendCommand(Command::ExchangeBasis::MutableCountedPointer &aExchange,
+ObjectControllerBasis :: SendCommand(Command::ExchangeBasis::MutableCountedPointer &aExchange,
                                CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
                                CommandManager::OnCommandErrorFunc aOnCommandErrorHandler,
                                void *aContext)
@@ -438,7 +438,7 @@ done:
  *
  */
 Status
-ControllerBasis :: SendCommand(Command::ExchangeBasis::MutableCountedPointer &aExchange,
+ObjectControllerBasis :: SendCommand(Command::ExchangeBasis::MutableCountedPointer &aExchange,
                                const Timeout &aTimeout,
                                CommandManager::OnCommandCompleteFunc aOnCommandCompleteHandler,
                                CommandManager::OnCommandErrorFunc aOnCommandErrorHandler,
@@ -472,7 +472,7 @@ done:
  *
  */
 bool
-ControllerBasis :: IsRefreshing(void) const
+ObjectControllerBasis :: IsRefreshing(void) const
 {
     return (WasRefreshRequested());
 }
@@ -492,7 +492,7 @@ ControllerBasis :: IsRefreshing(void) const
  *
  */
 bool
-ControllerBasis :: WasRefreshRequested(void) const
+ObjectControllerBasis :: WasRefreshRequested(void) const
 {
     return (mRefreshRequested);
 }
@@ -513,7 +513,7 @@ ControllerBasis :: WasRefreshRequested(void) const
  *  @sa WasRefreshRequested
  */
 void
-ControllerBasis :: SetRefreshRequested(const bool &aRefreshRequested)
+ObjectControllerBasis :: SetRefreshRequested(const bool &aRefreshRequested)
 {
     mRefreshRequested = aRefreshRequested;
 }
@@ -546,7 +546,7 @@ ControllerBasis :: SetRefreshRequested(const bool &aRefreshRequested)
  *
  */
 void
-ControllerBasis :: OnCommandError(const uint8_t *       aCommandBuffer,
+ObjectControllerBasis :: OnCommandError(const uint8_t *       aCommandBuffer,
                                   const size_t &        aCommandSize,
                                   const char *          aCommandDescription,
                                   const Common::Error & aError)
@@ -576,7 +576,7 @@ ControllerBasis :: OnCommandError(const uint8_t *       aCommandBuffer,
  *
  */
 void
-ControllerBasis :: OnIsRefreshing(const uint8_t &aPercentComplete)
+ObjectControllerBasis :: OnIsRefreshing(const uint8_t &aPercentComplete)
 {
     if (mRefreshDelegate != nullptr)
     {
@@ -593,7 +593,7 @@ ControllerBasis :: OnIsRefreshing(const uint8_t &aPercentComplete)
  *
  */
 void
-ControllerBasis :: OnDidRefresh(void)
+ObjectControllerBasis :: OnDidRefresh(void)
 {
     if (mRefreshDelegate != nullptr)
     {
@@ -618,7 +618,7 @@ ControllerBasis :: OnDidRefresh(void)
  *
  */
 void
-ControllerBasis :: OnStateDidChange(const StateChange::NotificationBasis &aStateChangeNotification)
+ObjectControllerBasis :: OnStateDidChange(const StateChange::NotificationBasis &aStateChangeNotification)
 {
     if (mStateChangeDelegate != nullptr)
     {
@@ -629,7 +629,7 @@ ControllerBasis :: OnStateDidChange(const StateChange::NotificationBasis &aState
 // MARK: Refresh State and Delegation Convenience Methods
 
 void
-ControllerBasis :: MaybeUpdateRefreshIfRefreshWasRequested(const uint8_t &aNumerator, const uint8_t &aDenominator)
+ObjectControllerBasis :: MaybeUpdateRefreshIfRefreshWasRequested(const uint8_t &aNumerator, const uint8_t &aDenominator)
 {
     if (WasRefreshRequested())
     {
@@ -645,7 +645,7 @@ ControllerBasis :: MaybeUpdateRefreshIfRefreshWasRequested(const uint8_t &aNumer
 }
 
 void
-ControllerBasis :: MaybeUpdateRefreshIfRefreshWasRequested(void)
+ObjectControllerBasis :: MaybeUpdateRefreshIfRefreshWasRequested(void)
 {
     if (WasRefreshRequested())
     {

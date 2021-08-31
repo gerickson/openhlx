@@ -60,7 +60,7 @@ Command::Infrared::QueryResponse         InfraredControllerBasis::kQueryResponse
  *
  */
 InfraredControllerBasis :: InfraredControllerBasis(Model::InfraredModel &aInfraredModel) :
-    Client::ControllerBasis(),
+    Client::ObjectControllerBasis(),
     mInfraredModel(aInfraredModel)
 {
     return;
@@ -111,7 +111,7 @@ InfraredControllerBasis :: Init(CommandManager &aCommandManager, const Timeout &
     lRetval = ResponseInit();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = ControllerBasis::Init(aCommandManager, aTimeout);
+    lRetval = ObjectControllerBasis::Init(aCommandManager, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -196,10 +196,10 @@ InfraredControllerBasis :: DoNotificationHandlers(const bool &aRegister)
     static constexpr size_t  lNotificationHandlerCount = ElementsOf(lNotificationHandlers);
     Status                   lRetval = kStatus_Success;
 
-    lRetval = Client::ControllerBasis::DoNotificationHandlers(&lNotificationHandlers[0],
-                                                              &lNotificationHandlers[lNotificationHandlerCount],
-                                                              this,
-                                                              aRegister);
+    lRetval = Client::ObjectControllerBasis::DoNotificationHandlers(&lNotificationHandlers[0],
+                                                                    &lNotificationHandlers[lNotificationHandlerCount],
+                                                                    this,
+                                                                    aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:

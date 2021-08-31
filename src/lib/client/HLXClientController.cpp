@@ -196,8 +196,8 @@ Controller :: Controller(void) :
     Client::Application::ControllerBasis(),
     ConnectionManagerDelegate(),
     CommandManagerDelegate(),
-    ControllerBasisErrorDelegate(),
-    ControllerBasisStateChangeDelegate(),
+    ObjectControllerBasisErrorDelegate(),
+    ObjectControllerBasisStateChangeDelegate(),
     mConfigurationController(),
     mEqualizerPresetsController(),
     mFavoritesController(),
@@ -2482,7 +2482,7 @@ Controller :: DeriveGroupStateForGroup(const Model::GroupModel::IdentifierType &
 }
 
 void
-Controller :: MaybeHandleGroupZoneStateChangeInteractions(Client::ControllerBasis &aController, const StateChange::NotificationBasis &aStateChangeNotification)
+Controller :: MaybeHandleGroupZoneStateChangeInteractions(Client::ObjectControllerBasis &aController, const StateChange::NotificationBasis &aStateChangeNotification)
 {
     const StateChange::Type lType = aStateChangeNotification.GetType();
 
@@ -3043,7 +3043,7 @@ Controller :: ConnectionManagerError(Common::ConnectionManagerBasis &aConnection
 // MARK: Object Controller Basis Error Delegate Methods
 
 void
-Controller :: ControllerError(Client::ControllerBasis &aController, const Common::Error &aError)
+Controller :: ControllerError(Client::ObjectControllerBasis &aController, const Common::Error &aError)
 {
     (void)aController;
 
@@ -3092,7 +3092,7 @@ Controller :: ControllerError(Client::ControllerBasis &aController, const Common
  *
  */
 void
-Controller :: ControllerStateDidChange(Client::ControllerBasis &aController,
+Controller :: ControllerStateDidChange(Client::ObjectControllerBasis &aController,
                                        const StateChange::NotificationBasis &aStateChangeNotification)
 {
     MaybeHandleGroupZoneStateChangeInteractions(aController, aStateChangeNotification);

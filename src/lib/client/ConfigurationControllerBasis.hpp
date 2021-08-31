@@ -25,8 +25,8 @@
 #ifndef OPENHLXCLIENTCONFIGURATIONCONTROLLERBASIS_HPP
 #define OPENHLXCLIENTCONFIGURATIONCONTROLLERBASIS_HPP
 
-#include <OpenHLX/Client/ControllerBasis.hpp>
 #include <OpenHLX/Client/ConfigurationControllerCommands.hpp>
+#include <OpenHLX/Client/ObjectControllerBasis.hpp>
 
 
 namespace HLX
@@ -44,7 +44,7 @@ namespace Client
  *
  */
 class ConfigurationControllerBasis :
-    public Client::ControllerBasis
+    public Client::ObjectControllerBasis
 {
 public:
     virtual ~ConfigurationControllerBasis(void);

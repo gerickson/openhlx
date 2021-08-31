@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef OPENHLXCLIENTCONTROLLERBASISSTATECHANGEDELEGATE_HPP
-#define OPENHLXCLIENTCONTROLLERBASISSTATECHANGEDELEGATE_HPP
+#ifndef OPENHLXCLIENTOBJECTCONTROLLERBASISSTATECHANGEDELEGATE_HPP
+#define OPENHLXCLIENTOBJECTCONTROLLERBASISSTATECHANGEDELEGATE_HPP
 
 #include <OpenHLX/Client/StateChangeNotificationBasis.hpp>
 
@@ -35,7 +35,7 @@ namespace HLX
 namespace Client
 {
 
-class ControllerBasis;
+class ObjectControllerBasis;
 
 /**
  *  @brief
@@ -45,11 +45,11 @@ class ControllerBasis;
  *  @ingroup client
  *
  */
-class ControllerBasisStateChangeDelegate
+class ObjectControllerBasisStateChangeDelegate
 {
 public:
-    ControllerBasisStateChangeDelegate(void) = default;
-    virtual ~ControllerBasisStateChangeDelegate(void) = default;
+    ObjectControllerBasisStateChangeDelegate(void) = default;
+    virtual ~ObjectControllerBasisStateChangeDelegate(void) = default;
 
     /**
      *  @brief
@@ -66,11 +66,11 @@ public:
      *                                        change.
      *
      */
-    virtual void ControllerStateDidChange(ControllerBasis &aController, const StateChange::NotificationBasis &aStateChangeNotification) = 0;
+    virtual void ControllerStateDidChange(ObjectControllerBasis &aController, const StateChange::NotificationBasis &aStateChangeNotification) = 0;
 };
 
 }; // namespace Client
 
 }; // namespace HLX
 
-#endif // OPENHLXCLIENTCONTROLLERBASISSTATECHANGEDELEGATE_HPP
+#endif // OPENHLXCLIENTOBJECTCONTROLLERBASISSTATECHANGEDELEGATE_HPP
