@@ -1,0 +1,238 @@
+//
+//    Copyright (c) 2021 Grant Erickson
+//    All rights reserved.
+//
+//    Licensed under the Apache License, Version 2.0 (the "License");
+//    you may not use this file except in compliance with the License.
+//    You may obtain a copy of the License at
+//
+//        http://www.apache.org/licenses/LICENSE-2.0
+//
+//    Unless required by applicable law or agreed to in writing,
+//    software distributed under the License is distributed on an "AS
+//    IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+//    express or implied.  See the License for the specific language
+//    governing permissions and limitations under the License.
+//
+//    Description:
+//      This file is the manual page source in AsciiDoc format for the
+//      hlxproxyd HLX control caching proxy daemon.
+//
+
+hlxproxyd(1)
+============
+
+NAME
+----
+hlxproxyd - HLX control caching proxy daemon
+
+SYNOPSIS
+--------
+[verse]
+'hlxproxyd' [<options>]
+
+DESCRIPTION
+-----------
+The `hlxproxyd` command line program is used to act as a caching proxy
+for an Audio Authority HLX Series Modular Matrix System High
+Definition Audio/Video Switching System.
+
+`hlxproxyd` endeavors to represent with high-fidelity any implemented
+HLX control command responses and the attendant data model such that a
+client run against it may be used interchangeably and directly with
+real HLX hardware.
+
+`hlxproxyd` provides three key benefits to HLX control clients over
+directly connecting to real HLX hardware in exchange for a very slight
+trade-off in latency. First, `hlxproxyd` caches proxied HLX state,
+making initial client start up and state synchronization far faster
+(see `Caching Strategy` below). Second, and part of the reason for
+implementing `hlxproxyd` and its caching behavior in the first place,
+is that `hlxproxyd' provides buffer-at-a-time rather than
+character-at-a-time input/output, greatly speeding up HLX control
+protocol interactions versus real HLX hardware. Finally, the number of
+concurrent client sessions in `hlxproxyd` is limited only by the
+system resources on which it runs (see Buffering and Multiplexing`
+below).
+
+Caching Strategy
+~~~~~~~~~~~~~~~~
+`hlxproxyd` implements a read-through, write-around, and
+notify-through caching strategy. That is, `hlxproxyd` attempts to
+satisfy any read or observe command requests through its local
+cache. On a miss or failure, it will then proxy the read or request to
+the proxied HLX server and then both update its cache and satisfy the
+original request on the server response. For write or mutation command
+requests, `hlxproxyd` will first pass such request directly onto the
+server and then will latently update its local cache and satisfy the
+original request on the server response. Finally, any unsolicited,
+asynchronous state change notifications from the proxied server will
+both update the local cache and be passed along to all connected
+clients.
+
+The `hlxproxyd` cache is "pre-warmed" by default by performing a query
+of all relevant and supported HLX state before listening and allowing
+clients to connect, thereby imposing some latency between when
+`hlxproxyd` starts and when clients may first interact with it. This
+default behavior is implemented via the `--initial-refresh` option and
+may be suppressed with the `--no-initial-refresh` option. This allows
+clients to connect to the proxy nearly immediately but pushes the
+cache warming latency onto clients who first interact with the proxy.
+
+Buffering and Multiplexing
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+One significant departure between real HLX hardware and `hlxproxyd` is
+the number of concurrent client sessions and how buffering and
+multiplexing across sessions are handled.
+
+In the case of real HLX hardware, concurrent client sessions are
+limited to two (2). Input/output is handled `character` at a time and
+command responses and data model state change notifications are
+multiplexed across all connections `character` at a time as
+well. There are two implications of this. First, particularly for
+query commands such as 'Query Current Configuration [QX]', the
+response is incredibly slow. Second, particularly when more than one
+connection is active, the output among any client is interleaved,
+resulting in unparseable and, by extension, corrupt output. This
+renders concurrent client usage all but unusable when more than one
+command request and/or response is in flight.
+
+By contrast, the number of concurrent client sessions in `hlxproxyd` is
+limited only by the system resources on which it runs. In addition,
+`hlxproxyd` implements `buffer` at a time input/output and
+multiplexing. The latter not only speeds the responsiveness of the
+control protocol, speeding the initial data model configuration and
+state transfer by %1,000 or more, but allows for concurrent client
+sessions that do not corrupt one another.
+
+OPTIONS
+-------
+`hlxproxyd` supports the following general and proxy-specific options:
+
+General Options
+~~~~~~~~~~~~~~~
+-d::
+--debug ['LEVEL']::
+    Enable diagnostic output, optionally at level 'LEVEL'.
+
+-h::
+--help::                          
+    Print `hlxproxyd` help, then exit.
+
+-q::
+--quiet::
+    Run silently, suppressing all diagnostic and informative output.
+
+-s::
+--syslog::
+    Write all error, diagnostic and informative output only to the
+    system log, rather than to both the system log as well as standard
+    error and standard output.
+
+-v::
+--verbose ['LEVEL']::
+    Enable verbose output, optionally at level 'LEVEL'.
+
+-V::
+--version::
+    Print the `hlxproxyd` version, then exit.
+
+Proxy Options
+~~~~~~~~~~~~~~
+-4::
+--ipv4-only::
+    Force `hlxproxyd` to use IPv4 addresses only.
+
+-6::
+--ipv6-only::
+    Force `hlxproxyd` to use IPv6 addresses only.
+
+-c::
+--connect 'HOST'::
+    Specify that `hlxproxyd` should connect to the HLX server at host
+    HOST.  HOST may be either a resolvable name, name plus
+    colon-delimited TCP port number, IPv4 or IPv6 address, or IPv4 or
+    IPv6 address plus colon-delimited TCP port number.
+
+--[no-]initial-refresh
+    Do [not] perform an initial proxy cache pre-warming by requesting
+    all relevant and supported HLX state before listening and allowing
+    clients to connect. Pre-warming is the default.
+
+-l::
+--listen 'HOST'::
+    Optionally specify that `hlxproxyd` should listen for incoming HLX
+    client connections at host HOST. HOST may be either a resolvable
+    name, name plus colon-delimited TCP port number, IPv4 or IPv6
+    address, or IPv4 or IPv6 address plus colon-delimited TCP port
+    number.
+    
+    If not specified, 'hlxproxyd` will listen on the default HLX
+    control protocol TCP port (23) for the IPv4 and IPv6 wildcard or
+    "any" addresses.
+
+-t::
+--timeout 'MILLISECONDS'::
+    Set a connection timeout of MILLISECONDS milliseconds.
+
+EXIT STATUS
+-----------
+'hlxproxyd' exits with one of the following values:
+
+    0  `hlxproxyd` teriminated successfully.
+
+    1  `hlxproxyd` failed to initialize or start or terminated unsuccessfully.
+
+LIMITATIONS
+-----------
+`hlxproxyd` does `not` presently support `all` of those control
+commands supported by real hardware and documented in 'HLX Series
+Modular Matrix System High Definition Audio/Video Switching System:
+Installation and Operation'.
+
+Configuration
+~~~~~~~~~~~~~
+There is no support for the "Query Current Configuration, Respond in
+Square Brackets [QXSB]" command.
+
+Favorites
+~~~~~~~~~
+Beyond querying and naming favorites, there is no further support for
+the favorites commands and functionality.
+
+Groups
+~~~~~~
+
+- Breakaway (that is, independent) switching of audio and video
+  sources for a single group.
+
+Network
+~~~~~~~
+There is only support for querying the current network settings;
+however, there is no support for modifying the current network
+settings.
+
+Restrictions
+~~~~~~~~~~~~
+There is no support for the restrictions commands and functionality.
+
+Zones
+~~~~~
+
+- Breakaway (that is, independent) switching of audio and video
+  sources for a single or all zones.
+- Tracking.
+
+SEE ALSO
+--------
+hlxc(1),
+hlxsimd(1)
+
+AUTHOR
+------
+Written by Grant Erickson.
+
+Open HLX
+--------
+Part of the Open HLX package.
+
