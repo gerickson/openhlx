@@ -94,8 +94,8 @@ SourcesController :: SourcesController(void) :
     Common::SourcesControllerBasis(),
     Server::SourcesControllerBasis(Common::SourcesControllerBasis::mSources,
                                    Common::SourcesControllerBasis::kSourcesMax),
-    Simulator::ContainerControllerBasis(),
-    Simulator::ObjectControllerBasis()
+    Simulator::ObjectControllerBasis(),
+    Simulator::ContainerControllerBasis()
 {
     return;
 }
