@@ -226,7 +226,7 @@ ControllerBasis :: GetRefreshDelegate(void) const
  *
  *  This attempts to set a delegate for the client controller.
  *
- *  @param[in]  aDelegate  A pointer to the delegate to set.
+ *  @param[in]  aRefreshDelegate  A pointer to the delegate to set.
  *
  *  @retval  kStatus_Success          If successful.
  *  @retval  kStatus_ValueAlreadySet  If the delegate was already set to
