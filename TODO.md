@@ -12,8 +12,10 @@ source code control and the project repository hosting site.
 
 ### In Progress
 
-- [x] Create `hlxproxyd` proxy daemon to address the input/output and connection shortcomings of real HLX Series hardware.
+None
 
 ### Done
 
 - [x] Port the package to Linux.
+- [x] Create `hlxproxyd` proxy daemon to address the input/output and connection shortcomings of real HLX Series hardware.
+
