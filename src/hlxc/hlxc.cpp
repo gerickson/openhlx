@@ -640,16 +640,46 @@ void HLXClient :: ControllerDidNotResolve(Client::Application::Controller &aCont
 
 void HLXClient :: ControllerWillConnect(Client::Application::Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout)
 {
+    static const char * const kWillConnectToString = "Will connect to";
+
+
     (void)aController;
 
-    Log::Info().Write("Will connect to %s with %u ms timeout.\n", CFString(CFURLGetString(aURLRef)).GetCString(), aTimeout.GetMilliseconds());
+    if (aTimeout.IsMilliseconds())
+    {
+        Log::Info().Write("%s %s with %u ms timeout.\n",
+                          kWillConnectToString,
+                          CFString(CFURLGetString(aURLRef)).GetCString(),
+                          aTimeout.GetMilliseconds());
+    }
+    else
+    {
+        Log::Info().Write("%s %s with default timeout.\n",
+                          kWillConnectToString,
+                          CFString(CFURLGetString(aURLRef)).GetCString());
+    }
 }
 
 void HLXClient :: ControllerIsConnecting(Client::Application::Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout)
 {
+    static const char * const kConnectingToString = "Connecting to";
+
+
     (void)aController;
 
-    Log::Info().Write("Connecting to %s with %u ms timeout.\n", CFString(CFURLGetString(aURLRef)).GetCString(), aTimeout.GetMilliseconds());
+    if (aTimeout.IsMilliseconds())
+    {
+        Log::Info().Write("%s %s with %u ms timeout.\n",
+                          kConnectingToString,
+                          CFString(CFURLGetString(aURLRef)).GetCString(),
+                          aTimeout.GetMilliseconds());
+    }
+    else
+    {
+        Log::Info().Write("%s %s with default timeout.\n",
+                          kConnectingToString,
+                          CFString(CFURLGetString(aURLRef)).GetCString());
+    }
 }
 
 void HLXClient :: ControllerDidConnect(Client::Application::Controller &aController, CFURLRef aURLRef)
@@ -1469,8 +1499,17 @@ DecodeOptions(const char *inProgram,
 
         case OPT_TIMEOUT:
             {
-                sOptFlags |= kOptTimeout;
-                timeoutMilliseconds = static_cast<Timeout::Value>(atoi(optarg));
+                const Status  lStatus = Parse(optarg, timeoutMilliseconds);
+
+                if (lStatus != kStatus_Success)
+                {
+                    Log::Error().Write("Cannot interpret timeout value '%s' as a duration in milliseconds.\n", optarg);
+                    error++;
+                }
+                else
+                {
+                    sOptFlags |= kOptTimeout;
+                }
             }
             break;
 

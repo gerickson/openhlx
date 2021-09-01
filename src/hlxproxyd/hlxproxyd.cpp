@@ -563,16 +563,46 @@ void HLXProxy :: ControllerDidNotAccept(Proxy::Application::Controller &aControl
 
 void HLXProxy :: ControllerWillConnect(Proxy::Application::Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout)
 {
+    static const char * const kWillConnectToString = "Will connect to";
+
+
     (void)aController;
 
-    Log::Info().Write("Will connect to %s with %u ms timeout.\n", CFString(CFURLGetString(aURLRef)).GetCString(), aTimeout.GetMilliseconds());
+    if (aTimeout.IsMilliseconds())
+    {
+        Log::Info().Write("%s %s with %u ms timeout.\n",
+                          kWillConnectToString,
+                          CFString(CFURLGetString(aURLRef)).GetCString(),
+                          aTimeout.GetMilliseconds());
+    }
+    else
+    {
+        Log::Info().Write("%s %s with default timeout.\n",
+                          kWillConnectToString,
+                          CFString(CFURLGetString(aURLRef)).GetCString());
+    }
 }
 
 void HLXProxy :: ControllerIsConnecting(Proxy::Application::Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout)
 {
+    static const char * const kConnectingToString = "Connecting to";
+
+
     (void)aController;
 
-    Log::Info().Write("Connecting to %s with %u ms timeout.\n", CFString(CFURLGetString(aURLRef)).GetCString(), aTimeout.GetMilliseconds());
+    if (aTimeout.IsMilliseconds())
+    {
+        Log::Info().Write("%s %s with %u ms timeout.\n",
+                          kConnectingToString,
+                          CFString(CFURLGetString(aURLRef)).GetCString(),
+                          aTimeout.GetMilliseconds());
+    }
+    else
+    {
+        Log::Info().Write("%s %s with default timeout.\n",
+                          kConnectingToString,
+                          CFString(CFURLGetString(aURLRef)).GetCString());
+    }
 }
 
 void HLXProxy :: ControllerDidConnect(Proxy::Application::Controller &aController, CFURLRef aURLRef)
@@ -909,7 +939,7 @@ DecodeOptions(const char *inProgram,
     int             c;
     unsigned int    error = 0;
     string          shortOptions;
-
+    Timeout::Value  timeoutMilliseconds;
 
     // Generate a list of those single-character options available as
     // a subset of the long option list.
@@ -990,21 +1020,16 @@ DecodeOptions(const char *inProgram,
 
         case OPT_TIMEOUT:
             {
-                Timeout::Value  timeoutMilliseconds;
-                const Status    lStatus = Parse(optarg, timeoutMilliseconds);
+                const Status  lStatus = Parse(optarg, timeoutMilliseconds);
 
-                if (lStatus == kStatus_Success)
-                {
-                    const Timeout lTimeout(timeoutMilliseconds);
-
-                    sTimeout = lTimeout;
-
-                    sOptFlags |= kOptTimeout;
-                }
-                else
+                if (lStatus != kStatus_Success)
                 {
                     Log::Error().Write("Cannot interpret timeout value '%s' as a duration in milliseconds.\n", optarg);
                     error++;
+                }
+                else
+                {
+                    sOptFlags |= kOptTimeout;
                 }
             }
             break;
@@ -1045,6 +1070,26 @@ DecodeOptions(const char *inProgram,
     // processing actually starts.
 
     optind = 0;
+
+    // Check that the timeout, if specified, makes sense.
+
+    if (sOptFlags & kOptTimeout) {
+        if (timeoutMilliseconds <= 0) {
+            Log::Error().Write("The specified timeout `%d' is not greater "
+                               "than zero. Please specify a non-zero, "
+                               "positive timeout.\n", timeoutMilliseconds);
+            error++;
+
+        } else {
+            const Timeout tempTimeout(timeoutMilliseconds);
+
+            sTimeout = tempTimeout;
+
+        }
+    } else {
+        sTimeout = kTimeoutDefault;
+
+    }
 
     // If there were any errors parsing the command line arguments,
     // remind the user of proper invocation semantics and return an
