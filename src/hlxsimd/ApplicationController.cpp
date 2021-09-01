@@ -267,9 +267,10 @@ Controller :: InitConfiguration(const RunLoopParameters &aRunLoopParameters, con
 
     {
         constexpr Timeout::Value kAutoSaveIntervalMilliseconds = 30000;
+        const Timeout            lAutoSaveTimeout(kAutoSaveIntervalMilliseconds);
 
         lRetval = mConfigurationAutoSaveTimer.Init(aRunLoopParameters,
-                                                   kAutoSaveIntervalMilliseconds);
+                                                   lAutoSaveTimeout);
         nlREQUIRE_SUCCESS(lRetval, done);
 
         lRetval = mConfigurationAutoSaveTimer.SetDelegate(this);
