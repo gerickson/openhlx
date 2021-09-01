@@ -674,13 +674,14 @@ void HLXProxy :: ControllerDidDisconnect(Proxy::Application::Controller &aContro
         Log::Info().Write("Disconnected %s from %s: %d (%s).\n", GetString(aRoles), CFString(CFURLGetString(aURLRef)).GetCString(), aError, strerror(-aError));
     }
 
-    // Only call stop if we have non-error status; otherwise a
-    // DidNot... or Error delegation already called it.
-
-    // XXX - We may need to know whether this connection was on the
-    // server-facing client side versus the client-facing server side
-    // of the proxy since only the former should trigger a stop (if at
-    // all rather than a retry) and not the latter.
+    // Only call stop if we have non-error status that is not
+    // -ECONNRESET; otherwise a DidNot... or Error delegation already
+    // called it.
+    //
+    // For the -ECONNRESET case, only stop the proxy if the server
+    // side disconnected, resulting in forcible disconnect of all
+    // connected clients. If it is simply a client disconnecting from
+    // the proxy, do nothing.
 
     switch (aError)
     {
@@ -689,6 +690,10 @@ void HLXProxy :: ControllerDidDisconnect(Proxy::Application::Controller &aContro
         break;
 
     case -ECONNRESET:
+        if (IsClient(aRoles))
+        {
+            Stop(kError_ServerDisconnected);
+        }
         break;
 
     default:
