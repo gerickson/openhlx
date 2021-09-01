@@ -137,7 +137,7 @@ static const struct option  sOptions[] = {
 };
 
 static const char * const   sShortUsageString =
-"Usage: %s [ options ] TBD\n";
+"Usage: %s [ options ]\n";
 
 static const char * const   sLongUsageString =
 "\n"
@@ -160,8 +160,24 @@ static const char * const   sLongUsageString =
 "\n"
 "  -4, --ipv4-only             Force hlxproxyd to use IPv4 addresses only.\n"
 "  -6, --ipv6-only             Force hlxproxyd to use IPv6 addresses only.\n"
-"  -c, --connect=HOST          TBD.\n"
-"  -l, --listen=HOST           TBD.\n"
+"  -c, --connect=HOST          Specify that hlxproxyd should connect to the\n"
+"                              HLX server at host HOST.\n"
+"\n"
+"                              HOST may be either a resolvable name, name plus\n"
+"                              colon-delimited TCP port number, IPv4 or IPv6\n"
+"                              address, or IPv4 or IPv6 address plus colon-delimited\n"
+"                              TCP port number.\n"
+"  -l, --listen=HOST           Optionally specify that hlxproxyd should listen for\n"
+"                              incoming HLX client connections at host HOST.\n"
+"\n"
+"                              HOST may be either a resolvable name, name plus\n"
+"                              colon-delimited TCP port number, IPv4 or IPv6\n"
+"                              address, or IPv4 or IPv6 address plus colon-\n"
+"                              delimited TCP port number.\n"
+"\n"
+"                              If not specified, hlxproxyd will listen on the default\n"
+"                              TCP port (23) for the IPv4 and IPv6 wildcard or\n"
+"                              \"any\" addresses.\n"
 "  -t, --timeout=MILLISECONDS  Set a connection timeout of MILLISECONDS \n"
 "                              milliseconds.\n"
 "\n";
