@@ -385,6 +385,7 @@ ConnectionManager :: Connect(CFURLRef aURLRef,
     ConnectionBasis * lConnection = nullptr;
     Status            lRetval = kStatus_Success;
 
+
     // If there is already a non-null connection, then there is an
     // active connection or one in flight. If that's the case, return
     // the appropriate error.
