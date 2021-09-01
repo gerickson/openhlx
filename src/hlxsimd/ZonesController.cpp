@@ -603,7 +603,7 @@ ZonesController :: ZonesController(void) :
     Common::ZonesControllerBasis(),
     Server::ZonesControllerBasis(Common::ZonesControllerBasis::mZones,
                                  Common::ZonesControllerBasis::kZonesMax),
-    Server::ContainerControllerBasis(),
+    Simulator::ContainerControllerBasis(),
     Simulator::ObjectControllerBasis()
 {
     return;
@@ -1883,7 +1883,7 @@ ZonesController :: ElementLoadFromBackupConfiguration(CFDictionaryRef aZonesDict
 
     // Attempt to form the zone identifier key.
 
-    lZoneIdentifierKey = Server::Utilities::Configuration::CreateCFString(aZoneIdentifier);
+    lZoneIdentifierKey = Simulator::Utilities::Configuration::CreateCFString(aZoneIdentifier);
     nlREQUIRE_ACTION(lZoneIdentifierKey != nullptr, done, lRetval = -ENOMEM);
 
     // Attempt to retrieve the zone dictionary.
@@ -2207,7 +2207,7 @@ ZonesController :: ElementSaveToBackupConfiguration(CFMutableDictionaryRef aZone
     lRetval = mZones.GetZone(aZoneIdentifier, lZoneModel);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lZoneIdentifierKey = Server::Utilities::Configuration::CreateCFString(aZoneIdentifier);
+    lZoneIdentifierKey = Simulator::Utilities::Configuration::CreateCFString(aZoneIdentifier);
     nlREQUIRE_ACTION(lZoneIdentifierKey != nullptr, done, lRetval = -ENOMEM);
 
     lZoneDictionary = CFDictionaryCreateMutable(kCFAllocatorDefault,

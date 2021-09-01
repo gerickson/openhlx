@@ -58,7 +58,7 @@ namespace Simulator
 class EqualizerPresetsController :
     public Common::EqualizerPresetsControllerBasis,
     public Server::EqualizerPresetsControllerBasis,
-    public Server::ContainerControllerBasis,
+    public Simulator::ContainerControllerBasis,
     public Simulator::ObjectControllerBasis
 {
 public:

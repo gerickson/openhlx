@@ -139,7 +139,7 @@ GroupsController :: GroupsController(void) :
     Common::GroupsControllerBasis(),
     Server::GroupsControllerBasis(Common::GroupsControllerBasis::mGroups,
                                   Common::GroupsControllerBasis::kGroupsMax),
-    Server::ContainerControllerBasis(),
+    Simulator::ContainerControllerBasis(),
     Simulator::ObjectControllerBasis(),
     mDelegate(nullptr)
 {
@@ -449,7 +449,7 @@ Status GroupsController :: ElementLoadFromBackupConfiguration(CFDictionaryRef aG
 
     // Attempt to form the group identifier key.
 
-    lGroupIdentifierKey = Server::Utilities::Configuration::CreateCFString(aGroupIdentifier);
+    lGroupIdentifierKey = Simulator::Utilities::Configuration::CreateCFString(aGroupIdentifier);
     nlREQUIRE_ACTION(lGroupIdentifierKey != nullptr, done, lRetval = -ENOMEM);
 
     // Attempt to retrieve the group dictionary.
@@ -561,7 +561,7 @@ Status GroupsController :: ElementSaveToBackupConfiguration(CFMutableDictionaryR
     lRetval = mGroups.GetGroup(aGroupIdentifier, lGroupModel);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lGroupIdentifierKey = Server::Utilities::Configuration::CreateCFString(aGroupIdentifier);
+    lGroupIdentifierKey = Simulator::Utilities::Configuration::CreateCFString(aGroupIdentifier);
     nlREQUIRE_ACTION(lGroupIdentifierKey != nullptr, done, lRetval = -ENOMEM);
 
     lGroupDictionary = CFDictionaryCreateMutable(kCFAllocatorDefault,

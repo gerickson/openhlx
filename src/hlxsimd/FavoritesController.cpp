@@ -97,7 +97,7 @@ FavoritesController :: FavoritesController(void) :
     Common::FavoritesControllerBasis(),
     Server::FavoritesControllerBasis(Common::FavoritesControllerBasis::mFavorites,
                                      Common::FavoritesControllerBasis::kFavoritesMax),
-    Server::ContainerControllerBasis(),
+    Simulator::ContainerControllerBasis(),
     Simulator::ObjectControllerBasis()
 {
     return;
@@ -242,7 +242,7 @@ Status FavoritesController :: ElementLoadFromBackupConfiguration(CFDictionaryRef
 
     // Attempt to form the favorite identifier key.
 
-    lFavoriteIdentifierKey = Server::Utilities::Configuration::CreateCFString(aFavoriteIdentifier);
+    lFavoriteIdentifierKey = Simulator::Utilities::Configuration::CreateCFString(aFavoriteIdentifier);
     nlREQUIRE_ACTION(lFavoriteIdentifierKey != nullptr, done, lRetval = -ENOMEM);
 
     // Attempt to retrieve the favorite dictionary.
@@ -297,7 +297,7 @@ Status FavoritesController :: ElementSaveToBackupConfiguration(CFMutableDictiona
     lRetval = mFavorites.GetFavorite(aFavoriteIdentifier, lFavoriteModel);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lFavoriteIdentifierKey = Server::Utilities::Configuration::CreateCFString(aFavoriteIdentifier);
+    lFavoriteIdentifierKey = Simulator::Utilities::Configuration::CreateCFString(aFavoriteIdentifier);
     nlREQUIRE_ACTION(lFavoriteIdentifierKey != nullptr, done, lRetval = -ENOMEM);
 
     lFavoriteDictionary = CFDictionaryCreateMutable(kCFAllocatorDefault,

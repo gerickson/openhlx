@@ -38,7 +38,7 @@ using namespace HLX::Model;
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
 
 Common::Status
@@ -99,6 +99,6 @@ ContainerControllerBasis :: SaveToBackupConfiguration(CFMutableDictionaryRef aBa
     return;
 }
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX

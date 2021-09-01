@@ -32,17 +32,11 @@
 namespace HLX
 {
 
-namespace Server
-{
-
-class ConnectionBasis;
-
-}; // namespace Server
-
 namespace Simulator
 {
 
 class ConfigurationController;
+class ConnectionBasis;
 
 /**
  *  @brief
@@ -60,7 +54,7 @@ class ConfigurationController;
  *    - Serialzing back up configuration to a backup representation.
  *    - Storing backup configuration to non-volatile storage.
  *
- *  @ingroup server
+ *  @ingroup simulator
  *  @ingroup configuration
  */
 class ConfigurationControllerDelegate

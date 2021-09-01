@@ -56,7 +56,7 @@ class GroupsControllerDelegate;
 class GroupsController :
     public Common::GroupsControllerBasis,
     public Server::GroupsControllerBasis,
-    public Server::ContainerControllerBasis,
+    public Simulator::ContainerControllerBasis,
     public Simulator::ObjectControllerBasis
 {
 public:

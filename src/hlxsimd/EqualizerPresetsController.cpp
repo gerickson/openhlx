@@ -238,7 +238,7 @@ EqualizerPresetsController :: EqualizerPresetsController(void) :
     Common::EqualizerPresetsControllerBasis(),
     Server::EqualizerPresetsControllerBasis(Common::EqualizerPresetsControllerBasis::mEqualizerPresets,
                                             Common::EqualizerPresetsControllerBasis::kEqualizerPresetsMax),
-    Server::ContainerControllerBasis(),
+    Simulator::ContainerControllerBasis(),
     Simulator::ObjectControllerBasis()
 {
     return;
@@ -584,7 +584,7 @@ Status EqualizerPresetsController :: ElementLoadFromBackupConfiguration(CFDictio
 
     // Attempt to form the source identifier key.
 
-    lEqualizerPresetIdentifierKey = Server::Utilities::Configuration::CreateCFString(aEqualizerPresetIdentifier);
+    lEqualizerPresetIdentifierKey = Simulator::Utilities::Configuration::CreateCFString(aEqualizerPresetIdentifier);
     nlREQUIRE_ACTION(lEqualizerPresetIdentifierKey != nullptr, done, lRetval = -ENOMEM);
 
     // Attempt to retrieve the source dictionary.
@@ -686,7 +686,7 @@ Status EqualizerPresetsController :: ElementSaveToBackupConfiguration(CFMutableD
     lRetval = mEqualizerPresets.GetEqualizerPreset(aEqualizerPresetIdentifier, lEqualizerPresetModel);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lEqualizerPresetIdentifierKey = Server::Utilities::Configuration::CreateCFString(aEqualizerPresetIdentifier);
+    lEqualizerPresetIdentifierKey = Simulator::Utilities::Configuration::CreateCFString(aEqualizerPresetIdentifier);
     nlREQUIRE_ACTION(lEqualizerPresetIdentifierKey != nullptr, done, lRetval = -ENOMEM);
 
     lEqualizerPresetDictionary = CFDictionaryCreateMutable(kCFAllocatorDefault,

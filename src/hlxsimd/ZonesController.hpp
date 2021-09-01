@@ -65,7 +65,7 @@ namespace Application
 class ZonesController :
     public Common::ZonesControllerBasis,
     public Server::ZonesControllerBasis,
-    public Server::ContainerControllerBasis,
+    public Simulator::ContainerControllerBasis,
     public Simulator::ObjectControllerBasis
 {
 public:

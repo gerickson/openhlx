@@ -94,7 +94,7 @@ SourcesController :: SourcesController(void) :
     Common::SourcesControllerBasis(),
     Server::SourcesControllerBasis(Common::SourcesControllerBasis::mSources,
                                    Common::SourcesControllerBasis::kSourcesMax),
-    Server::ContainerControllerBasis(),
+    Simulator::ContainerControllerBasis(),
     Simulator::ObjectControllerBasis()
 {
     return;
@@ -230,7 +230,7 @@ Status SourcesController :: ElementLoadFromBackupConfiguration(CFDictionaryRef a
 
     // Attempt to form the source identifier key.
 
-    lSourceIdentifierKey = Server::Utilities::Configuration::CreateCFString(aSourceIdentifier);
+    lSourceIdentifierKey = Simulator::Utilities::Configuration::CreateCFString(aSourceIdentifier);
     nlREQUIRE_ACTION(lSourceIdentifierKey != nullptr, done, lRetval = -ENOMEM);
 
     // Attempt to retrieve the source dictionary.
@@ -285,7 +285,7 @@ Status SourcesController :: ElementSaveToBackupConfiguration(CFMutableDictionary
     lRetval = mSources.GetSource(aSourceIdentifier, lSourceModel);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lSourceIdentifierKey = Server::Utilities::Configuration::CreateCFString(aSourceIdentifier);
+    lSourceIdentifierKey = Simulator::Utilities::Configuration::CreateCFString(aSourceIdentifier);
     nlREQUIRE_ACTION(lSourceIdentifierKey != nullptr, done, lRetval = -ENOMEM);
 
     lSourceDictionary = CFDictionaryCreateMutable(kCFAllocatorDefault,

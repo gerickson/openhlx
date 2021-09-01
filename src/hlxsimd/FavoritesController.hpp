@@ -54,7 +54,7 @@ namespace Simulator
 class FavoritesController :
     public Common::FavoritesControllerBasis,
     public Server::FavoritesControllerBasis,
-    public Server::ContainerControllerBasis,
+    public Simulator::ContainerControllerBasis,
     public Simulator::ObjectControllerBasis
 {
 public:

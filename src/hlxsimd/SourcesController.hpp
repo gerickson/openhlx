@@ -52,10 +52,10 @@ namespace Simulator
  *
  */
 class SourcesController :
-    public Simulator::ObjectControllerBasis,
-    public Server::ContainerControllerBasis,
     public Common::SourcesControllerBasis,
-    public Server::SourcesControllerBasis
+    public Server::SourcesControllerBasis,
+    public Simulator::ObjectControllerBasis,
+    public Simulator::ContainerControllerBasis
 {
 public:
     SourcesController(void);
