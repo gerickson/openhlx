@@ -367,7 +367,7 @@ ControllerBasis :: Connect(const char *aMaybeURL,
  *                                    for the connection.
  *
  */
-Status 
+Status
 ControllerBasis :: Connect(const char *aMaybeURL, const Common::ConnectionManagerBasis::Versions &aVersions)
 {
     Status lRetval = kStatus_Success;
