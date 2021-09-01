@@ -50,6 +50,9 @@ libopenhlx_common_a_includedir                              = \
 # Public library headers to distribute and install.
 
 libopenhlx_common_a_include_HEADERS                         = \
+    ApplicationControllerBasis.hpp                            \
+    ApplicationControllerErrorDelegate.hpp                    \
+    ApplicationObjectControllerContainerTemplate.hpp          \
     CommandBalanceBufferBasis.hpp                             \
     CommandBuffer.hpp                                         \
     CommandBufferBasis.hpp                                    \
@@ -91,9 +94,6 @@ libopenhlx_common_a_include_HEADERS                         = \
     FavoritesControllerBasis.hpp                              \
     FrontPanelControllerBasis.hpp                             \
     GroupsControllerBasis.hpp                                 \
-    HLXCommonControllerBasis.hpp                              \
-    HLXCommonControllerContainerTemplate.hpp                  \
-    HLXCommonControllerErrorDelegate.hpp                      \
     HostURL.hpp                                               \
     HostURLAddress.hpp                                        \
     InfraredControllerBasis.hpp                               \
@@ -118,6 +118,7 @@ libopenhlx_common_a_CPPFLAGS                                = \
     $(NULL)
 
 libopenhlx_common_a_SOURCES                                 = \
+    ApplicationControllerBasis.cpp                            \
     CommandBalanceBufferBasis.cpp                             \
     CommandBuffer.cpp                                         \
     CommandConfigurationRegularExpressionBases.cpp            \
@@ -152,7 +153,6 @@ libopenhlx_common_a_SOURCES                                 = \
     FavoritesControllerBasis.cpp                              \
     FrontPanelControllerBasis.cpp                             \
     GroupsControllerBasis.cpp                                 \
-    HLXCommonControllerBasis.cpp                              \
     HostURL.cpp                                               \
     HostURLAddress.cpp                                        \
     InfraredControllerBasis.cpp                               \

@@ -40,14 +40,14 @@
 #include <OpenHLX/Client/FrontPanelController.hpp>
 #include <OpenHLX/Client/GroupsController.hpp>
 #include <OpenHLX/Client/GroupsStateChangeNotifications.hpp>
-#include <OpenHLX/Client/HLXClientControllerBasis.hpp>
-#include <OpenHLX/Client/HLXClientControllerDelegate.hpp>
+#include <OpenHLX/Client/ApplicationControllerBasis.hpp>
+#include <OpenHLX/Client/ApplicationControllerDelegate.hpp>
 #include <OpenHLX/Client/InfraredController.hpp>
 #include <OpenHLX/Client/NetworkController.hpp>
 #include <OpenHLX/Client/SourcesController.hpp>
 #include <OpenHLX/Client/ZonesController.hpp>
+#include <OpenHLX/Common/ApplicationControllerBasis.hpp>
 #include <OpenHLX/Common/Errors.hpp>
-#include <OpenHLX/Common/HLXCommonControllerBasis.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
 #include <OpenHLX/Model/GroupModel.hpp>
 #include <OpenHLX/Model/SourceModel.hpp>

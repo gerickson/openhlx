@@ -26,8 +26,8 @@
 #ifndef OPENHLXCOMMONAPPLICATIONCONTROLLERDELEGATE_HPP
 #define OPENHLXCOMMONAPPLICATIONCONTROLLERDELEGATE_HPP
 
+#include <OpenHLX/Common/ApplicationControllerBasis.hpp>
 #include <OpenHLX/Common/Errors.hpp>
-#include <OpenHLX/Common/HLXCommonControllerBasis.hpp>
 
 
 namespace HLX

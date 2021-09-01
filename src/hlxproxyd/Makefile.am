@@ -24,14 +24,14 @@
 include $(abs_top_nlbuild_autotools_dir)/automake/pre.am
 
 noinst_HEADERS                                                             = \
+    ApplicationController.hpp                                                \
+    ApplicationControllerDelegate.hpp                                        \
     ConfigurationController.hpp                                              \
     ConfigurationControllerDelegate.hpp                                      \
     EqualizerPresetsController.hpp                                           \
     FavoritesController.hpp                                                  \
     FrontPanelController.hpp                                                 \
     GroupsController.hpp                                                     \
-    HLXProxyController.hpp                                                   \
-    HLXProxyControllerDelegate.hpp                                           \
     InfraredController.hpp                                                   \
     NetworkController.hpp                                                    \
     ObjectControllerBasis.hpp                                                \
@@ -70,12 +70,12 @@ hlxproxyd_LDFLAGS                                                          = \
     $(NULL)
 
 hlxproxyd_SOURCES                                                          = \
+    ApplicationController.cpp                                                \
     ConfigurationController.cpp                                              \
     EqualizerPresetsController.cpp                                           \
     FavoritesController.cpp                                                  \
     FrontPanelController.cpp                                                 \
     GroupsController.cpp                                                     \
-    HLXProxyController.cpp                                                   \
     InfraredController.cpp                                                   \
     NetworkController.cpp                                                    \
     ObjectControllerBasis.cpp                                                \

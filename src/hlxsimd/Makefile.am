@@ -24,6 +24,8 @@
 include $(abs_top_nlbuild_autotools_dir)/automake/pre.am
 
 noinst_HEADERS                                                             = \
+    ApplicationController.hpp                                                \
+    ApplicationControllerDelegate.hpp                                        \
     ConfigurationController.hpp                                              \
     ConfigurationControllerDelegate.hpp                                      \
     ContainerControllerBasis.hpp                                             \
@@ -33,8 +35,6 @@ noinst_HEADERS                                                             = \
     FrontPanelController.hpp                                                 \
     GroupsController.hpp                                                     \
     GroupsControllerDelegate.hpp                                             \
-    HLXSimulatorController.hpp                                               \
-    HLXSimulatorControllerDelegate.hpp                                       \
     InfraredController.hpp                                                   \
     NameModelDefaults.hpp                                                    \
     NetworkController.hpp                                                    \
@@ -78,13 +78,13 @@ hlxsimd_LDFLAGS                                                            = \
     $(NULL)
 
 hlxsimd_SOURCES                                                            = \
+    ApplicationController.cpp                                                \
     ConfigurationController.cpp                                              \
     ContainerControllerBasis.cpp                                             \
     EqualizerPresetsController.cpp                                           \
     FavoritesController.cpp                                                  \
     FrontPanelController.cpp                                                 \
     GroupsController.cpp                                                     \
-    HLXSimulatorController.cpp                                               \
     InfraredController.cpp                                                   \
     NetworkController.cpp                                                    \
     ObjectControllerBasis.cpp                                                \

@@ -28,9 +28,9 @@
 
 #include <map>
 
+#include <OpenHLX/Common/ApplicationObjectControllerContainerTemplate.hpp>
 #include <OpenHLX/Common/ConnectionManagerBasis.hpp>
 #include <OpenHLX/Common/Errors.hpp>
-#include <OpenHLX/Common/HLXCommonControllerContainerTemplate.hpp>
 #include <OpenHLX/Common/RunLoopParameters.hpp>
 #include <OpenHLX/Server/CommandManager.hpp>
 #include <OpenHLX/Server/ConnectionManager.hpp>
@@ -59,7 +59,7 @@ class Controller;
  *
  */
 class ControllerBasis :
-    public Common::Application::ControllerContainerTemplate<Server::ObjectControllerBasis>
+    public Common::Application::ObjectControllerContainerTemplate<Server::ObjectControllerBasis>
 {
 public:
     virtual ~ControllerBasis(void);
@@ -83,7 +83,7 @@ public:
     Common::Status Listen(const char *aMaybeURL, const Common::ConnectionManagerBasis::Versions &aVersions);
 
 protected:
-    typedef Common::Application::ControllerContainerTemplate<Server::ObjectControllerBasis> ServerControllerContainer;
+    typedef Common::Application::ObjectControllerContainerTemplate<Server::ObjectControllerBasis> ServerObjectControllerContainer;
 
 protected:
     ControllerBasis(void);

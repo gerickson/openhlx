@@ -52,7 +52,7 @@
 #include <OpenHLX/Utilities/Parse.hpp>
 #include <OpenHLX/Utilities/ElementsOf.hpp>
 
-#include "HLXProxyController.hpp"
+#include "ApplicationController.hpp"
 
 
 using namespace HLX;

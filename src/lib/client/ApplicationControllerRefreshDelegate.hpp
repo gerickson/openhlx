@@ -27,7 +27,7 @@
 #define OPENHLXCLIENTAPPLICATIONCONTROLLERREFRESHDELEGATE_HPP
 
 
-#include <OpenHLX/Client/HLXClientControllerBasis.hpp>
+#include <OpenHLX/Client/ApplicationControllerBasis.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 
 

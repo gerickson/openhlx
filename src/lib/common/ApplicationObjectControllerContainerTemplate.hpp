@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef OPENHLXCOMMONAPPLICATIONCONTROLLERCONTAINERTEMPLATE_HPP
-#define OPENHLXCOMMONAPPLICATIONCONTROLLERCONTAINERTEMPLATE_HPP
+#ifndef OPENHLXCOMMONAPPLICATIONOBJECTCONTROLLERCONTAINERTEMPLATE_HPP
+#define OPENHLXCOMMONAPPLICATIONOBJECTCONTROLLERCONTAINERTEMPLATE_HPP
 
 
 #include <map>
@@ -41,16 +41,16 @@ namespace Application
 {
 
 template <typename T>
-class ControllerContainerTemplate
+class ObjectControllerContainerTemplate
 {
 public:
-    typedef T ControllerBasisType;
+    typedef T ObjectControllerBasisType;
 
 public:
-    virtual ~ControllerContainerTemplate(void) = default;
+    virtual ~ObjectControllerContainerTemplate(void) = default;
 
 protected:
-    ControllerContainerTemplate(void) = default;
+    ObjectControllerContainerTemplate(void) = default;
 
     Common::Status Init(void)
     {
@@ -58,37 +58,37 @@ protected:
     }
 
 protected:
-    struct ControllerState
+    struct ObjectControllerState
     {
-        ControllerBasisType * mController;
+        ObjectControllerBasisType * mController;
     };
 
-    typedef std::map<ControllerBasisType *, ControllerState> Controllers;
+    typedef std::map<ObjectControllerBasisType *, ObjectControllerState> Controllers;
 
 protected:
     // Accessors
 
     const Controllers &  GetControllers(void) const
     {
-        return (mControllers);
+        return (mObjectControllers);
     }
 
     Controllers &        GetControllers(void)
     {
-        return (mControllers);
+        return (mObjectControllers);
     }
 
     // Mutators
 
-    void AddController(ControllerBasisType &aController)
+    void AddController(ObjectControllerBasisType &aController)
     {
-        const ControllerState lControllerState = { &aController };
+        const ObjectControllerState lObjectControllerState = { &aController };
 
-        mControllers[&aController] = lControllerState;
+        mObjectControllers[&aController] = lObjectControllerState;
     }
 
 private:
-    Controllers  mControllers;
+    Controllers  mObjectControllers;
 };
 
 }; // namespace Application
@@ -97,4 +97,4 @@ private:
 
 }; // namespace HLX
 
-#endif // OPENHLXCOMMONAPPLICATIONCONTROLLERCONTAINERTEMPLATE_HPP
+#endif // OPENHLXCOMMONAPPLICATIONOBJECTCONTROLLERCONTAINERTEMPLATE_HPP

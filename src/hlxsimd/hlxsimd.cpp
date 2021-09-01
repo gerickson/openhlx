@@ -70,11 +70,7 @@
 #include <OpenHLX/Utilities/ElementsOf.hpp>
 #include <OpenHLX/Utilities/Utilities.hpp>
 
-#include <CommandManager.hpp>
-#include <CommandRegularExpression.hpp>
-#include <CommandRequestBasis.hpp>
-#include <HLXSimulatorController.hpp>
-#include <SourcesControllerCommands.hpp>
+#include "ApplicationController.hpp"
 
 
 using namespace HLX;

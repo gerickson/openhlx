@@ -23,7 +23,7 @@
  *
  */
 
-#include "HLXSimulatorController.hpp"
+#include "ApplicationController.hpp"
 
 #include <vector>
 
@@ -35,7 +35,7 @@
 #include <CFUtilities/CFUtilities.hpp>
 #include <LogUtilities/LogUtilities.hpp>
 
-#include <OpenHLX/Server/HLXServerControllerBasis.hpp>
+#include <OpenHLX/Server/ApplicationControllerBasis.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
 
 
@@ -71,7 +71,7 @@ typedef std::vector<ZoneModel::IdentifierType>   ZoneIdentifiers;
 Controller :: Controller(void) :
     Common::Application::ControllerBasis(),
     Server::Application::ControllerBasis(),
-    SimulatorControllerContainer(),
+    SimulatorObjectControllerContainer(),
     ConnectionManagerDelegate(),
     CommandManagerDelegate(),
     Simulator::ObjectControllerBasisDelegate(),
@@ -120,7 +120,7 @@ Controller :: Init(const RunLoopParameters &aRunLoopParameters, const boost::fil
     lRetval = Server::Application::ControllerBasis::Init(aRunLoopParameters);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = SimulatorControllerContainer::Init();
+    lRetval = SimulatorObjectControllerContainer::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // Initialize the connection manager
@@ -152,7 +152,7 @@ done:
 Status
 Controller :: InitControllers(const RunLoopParameters &aRunLoopParameters)
 {
-    SimulatorControllerContainer::Controllers::iterator  lCurrent, lEnd;
+    SimulatorObjectControllerContainer::Controllers::iterator  lCurrent, lEnd;
     Status                 lRetval;
 
 
@@ -163,15 +163,15 @@ Controller :: InitControllers(const RunLoopParameters &aRunLoopParameters)
     // closely matches the order in which the actual HLX hardware
     // responds to for the 'query current configuration' command.
 
-    SimulatorControllerContainer::AddController(mConfigurationController);
-    SimulatorControllerContainer::AddController(mNetworkController);
-    SimulatorControllerContainer::AddController(mFavoritesController);
-    SimulatorControllerContainer::AddController(mGroupsController);
-    SimulatorControllerContainer::AddController(mFrontPanelController);
-    SimulatorControllerContainer::AddController(mInfraredController);
-    SimulatorControllerContainer::AddController(mEqualizerPresetsController);
-    SimulatorControllerContainer::AddController(mSourcesController);
-    SimulatorControllerContainer::AddController(mZonesController);
+    SimulatorObjectControllerContainer::AddController(mConfigurationController);
+    SimulatorObjectControllerContainer::AddController(mNetworkController);
+    SimulatorObjectControllerContainer::AddController(mFavoritesController);
+    SimulatorObjectControllerContainer::AddController(mGroupsController);
+    SimulatorObjectControllerContainer::AddController(mFrontPanelController);
+    SimulatorObjectControllerContainer::AddController(mInfraredController);
+    SimulatorObjectControllerContainer::AddController(mEqualizerPresetsController);
+    SimulatorObjectControllerContainer::AddController(mSourcesController);
+    SimulatorObjectControllerContainer::AddController(mZonesController);
 
     // Explicitly handle the configuration controller, since it has a
     // unique initialization signature and delegate override.
@@ -200,8 +200,8 @@ Controller :: InitControllers(const RunLoopParameters &aRunLoopParameters)
     // Intialize the controllers (skipping the configuration
     // controller as we just handled that).
 
-    lCurrent = SimulatorControllerContainer::GetControllers().begin();
-    lEnd     = SimulatorControllerContainer::GetControllers().end();
+    lCurrent = SimulatorObjectControllerContainer::GetControllers().begin();
+    lEnd     = SimulatorObjectControllerContainer::GetControllers().end();
 
     while (lCurrent != lEnd)
     {
@@ -318,8 +318,8 @@ Status Controller :: RegisterRequestHandler(Server::Command::RequestBasis &aRequ
 Status Controller :: LoadFromBackupConfiguration(ConfigurationController &aController, CFDictionaryRef aBackupDictionary)
 {
     DeclareScopedFunctionTracer(lTracer);
-    SimulatorControllerContainer::Controllers::iterator lCurrent;
-    SimulatorControllerContainer::Controllers::iterator lLast;
+    SimulatorObjectControllerContainer::Controllers::iterator lCurrent;
+    SimulatorObjectControllerContainer::Controllers::iterator lLast;
     Status                lRetval = kStatus_Success;
 
 
@@ -327,8 +327,8 @@ Status Controller :: LoadFromBackupConfiguration(ConfigurationController &aContr
 
     nlREQUIRE_ACTION(aBackupDictionary != nullptr, done, lRetval = -EINVAL);
 
-    lCurrent = SimulatorControllerContainer::GetControllers().begin();
-    lLast = SimulatorControllerContainer::GetControllers().end();
+    lCurrent = SimulatorObjectControllerContainer::GetControllers().begin();
+    lLast = SimulatorObjectControllerContainer::GetControllers().end();
 
     while (lCurrent != lLast)
     {
@@ -390,14 +390,14 @@ Status Controller :: LoadFromBackupConfigurationStorage(ConfigurationController 
 
 void Controller :: QueryCurrentConfiguration(ConfigurationController &aController, Server::ConnectionBasis &aConnection, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    SimulatorControllerContainer::Controllers::iterator lCurrent;
-    SimulatorControllerContainer::Controllers::iterator lLast;
+    SimulatorObjectControllerContainer::Controllers::iterator lCurrent;
+    SimulatorObjectControllerContainer::Controllers::iterator lLast;
 
 
     (void)aController;
 
-    lCurrent = SimulatorControllerContainer::GetControllers().begin();
-    lLast = SimulatorControllerContainer::GetControllers().end();
+    lCurrent = SimulatorObjectControllerContainer::GetControllers().begin();
+    lLast = SimulatorObjectControllerContainer::GetControllers().end();
 
     while (lCurrent != lLast)
     {
@@ -409,14 +409,14 @@ void Controller :: QueryCurrentConfiguration(ConfigurationController &aControlle
 
 void Controller :: ResetToDefaultConfiguration(ConfigurationController &aController)
 {
-    SimulatorControllerContainer::Controllers::iterator lCurrent;
-    SimulatorControllerContainer::Controllers::iterator lLast;
+    SimulatorObjectControllerContainer::Controllers::iterator lCurrent;
+    SimulatorObjectControllerContainer::Controllers::iterator lLast;
 
 
     (void)aController;
 
-    lCurrent = SimulatorControllerContainer::GetControllers().begin();
-    lLast = SimulatorControllerContainer::GetControllers().end();
+    lCurrent = SimulatorObjectControllerContainer::GetControllers().begin();
+    lLast = SimulatorObjectControllerContainer::GetControllers().end();
 
     while (lCurrent != lLast)
     {
@@ -429,8 +429,8 @@ void Controller :: ResetToDefaultConfiguration(ConfigurationController &aControl
 void Controller :: SaveToBackupConfiguration(ConfigurationController &aController, CFMutableDictionaryRef aBackupDictionary)
 {
     DeclareScopedFunctionTracer(lTracer);
-    SimulatorControllerContainer::Controllers::iterator lCurrent;
-    SimulatorControllerContainer::Controllers::iterator lLast;
+    SimulatorObjectControllerContainer::Controllers::iterator lCurrent;
+    SimulatorObjectControllerContainer::Controllers::iterator lLast;
 
 
     (void)aController;
@@ -438,8 +438,8 @@ void Controller :: SaveToBackupConfiguration(ConfigurationController &aControlle
     // First, allow all controllers to serialize their configuration
     // into the back-up dictionary.
 
-    lCurrent = SimulatorControllerContainer::GetControllers().begin();
-    lLast = SimulatorControllerContainer::GetControllers().end();
+    lCurrent = SimulatorObjectControllerContainer::GetControllers().begin();
+    lLast = SimulatorObjectControllerContainer::GetControllers().end();
 
     while (lCurrent != lLast)
     {

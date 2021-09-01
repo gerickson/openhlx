@@ -23,7 +23,7 @@
  *
  */
 
-#include "HLXProxyController.hpp"
+#include "ApplicationController.hpp"
 
 #include <LogUtilities/LogUtilities.hpp>
 
@@ -48,7 +48,7 @@ Controller :: Controller(void) :
     Common::Application::ControllerBasis(),
     Client::Application::ControllerBasis(),
     Server::Application::ControllerBasis(),
-    Common::Application::ControllerContainerTemplate<Proxy::ObjectControllerBasis>(),
+    Common::Application::ObjectControllerContainerTemplate<Proxy::ObjectControllerBasis>(),
     Client::ConnectionManagerDelegate(),
     Server::ConnectionManagerDelegate(),
     Client::CommandManagerDelegate(),
@@ -115,7 +115,7 @@ Controller :: Init(const RunLoopParameters &aRunLoopParameters)
     lRetval = Server::Application::ControllerBasis::Init(aRunLoopParameters);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = ProxyControllerContainer::Init();
+    lRetval = ProxyObjectControllerContainer::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = InitClient();
@@ -248,19 +248,19 @@ Controller :: InitProxyControllers(const RunLoopParameters &aRunLoopParameters)
     // closely matches the order in which the actual HLX hardware
     // responds to for the 'query current configuration' command.
 
-    ProxyControllerContainer::AddController(mConfigurationController);
-    ProxyControllerContainer::AddController(mNetworkController);
-    ProxyControllerContainer::AddController(mFavoritesController);
-    ProxyControllerContainer::AddController(mGroupsController);
-    ProxyControllerContainer::AddController(mFrontPanelController);
-    ProxyControllerContainer::AddController(mInfraredController);
-    ProxyControllerContainer::AddController(mEqualizerPresetsController);
-    ProxyControllerContainer::AddController(mSourcesController);
-    ProxyControllerContainer::AddController(mZonesController);
+    ProxyObjectControllerContainer::AddController(mConfigurationController);
+    ProxyObjectControllerContainer::AddController(mNetworkController);
+    ProxyObjectControllerContainer::AddController(mFavoritesController);
+    ProxyObjectControllerContainer::AddController(mGroupsController);
+    ProxyObjectControllerContainer::AddController(mFrontPanelController);
+    ProxyObjectControllerContainer::AddController(mInfraredController);
+    ProxyObjectControllerContainer::AddController(mEqualizerPresetsController);
+    ProxyObjectControllerContainer::AddController(mSourcesController);
+    ProxyObjectControllerContainer::AddController(mZonesController);
 
     {
-        ProxyControllerContainer::Controllers::iterator  lCurrent = ProxyControllerContainer::GetControllers().begin();
-        ProxyControllerContainer::Controllers::iterator  lEnd = ProxyControllerContainer::GetControllers().end();
+        ProxyObjectControllerContainer::Controllers::iterator  lCurrent = ProxyObjectControllerContainer::GetControllers().begin();
+        ProxyObjectControllerContainer::Controllers::iterator  lEnd = ProxyObjectControllerContainer::GetControllers().end();
 
         // Intialize the controllers, using the top-down proxy initializer.
 
@@ -283,8 +283,8 @@ Controller :: InitProxyControllers(const RunLoopParameters &aRunLoopParameters)
     }
 
     {
-        ClientControllerContainer::Controllers::iterator  lCurrent = ClientControllerContainer::GetControllers().begin();
-        ClientControllerContainer::Controllers::iterator  lEnd = ClientControllerContainer::GetControllers().end();
+        ClientObjectControllerContainer::Controllers::iterator  lCurrent = ClientObjectControllerContainer::GetControllers().begin();
+        ClientObjectControllerContainer::Controllers::iterator  lEnd = ClientObjectControllerContainer::GetControllers().end();
 
         while (lCurrent != lEnd)
         {
@@ -814,14 +814,14 @@ Controller :: ControllerStateDidChange(Client::ObjectControllerBasis &aControlle
 Status
 Controller :: QueryCurrentConfiguration(ConfigurationController &aController, Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    ProxyControllerContainer::Controllers::iterator  lCurrent, lEnd;
+    ProxyObjectControllerContainer::Controllers::iterator  lCurrent, lEnd;
     Status                 lRetval;
 
 
     (void)aController;
 
-    lCurrent = ProxyControllerContainer::GetControllers().begin();
-    lEnd     = ProxyControllerContainer::GetControllers().end();
+    lCurrent = ProxyObjectControllerContainer::GetControllers().begin();
+    lEnd     = ProxyObjectControllerContainer::GetControllers().end();
 
     while (lCurrent != lEnd)
     {

@@ -22,7 +22,7 @@
  *
  */
 
-#include "HLXServerControllerBasis.hpp"
+#include "ApplicationControllerBasis.hpp"
 
 #include <LogUtilities/LogUtilities.hpp>
 
@@ -50,7 +50,7 @@ namespace Application
  *
  */
 ControllerBasis :: ControllerBasis(void) :
-    ServerControllerContainer(),
+    ServerObjectControllerContainer(),
     mConnectionManager(),
     mCommandManager()
 {
@@ -94,7 +94,7 @@ ControllerBasis :: Init(const Common::RunLoopParameters &aRunLoopParameters)
     Status lRetval = kStatus_Success;
 
 
-    lRetval = ServerControllerContainer::Init();
+    lRetval = ServerObjectControllerContainer::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mConnectionManager.Init(aRunLoopParameters);

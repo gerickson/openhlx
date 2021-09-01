@@ -22,7 +22,7 @@
  *
  */
 
-#include "HLXCommonControllerBasis.hpp"
+#include "ApplicationControllerBasis.hpp"
 
 
 using namespace HLX::Common;

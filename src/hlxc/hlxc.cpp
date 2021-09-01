@@ -47,11 +47,11 @@
 #include <LogUtilities/LogUtilities.hpp>
 #include <NuovationsUtilities/GenerateShortOptions.hpp>
 
+#include <OpenHLX/Client/ApplicationController.hpp>
 #include <OpenHLX/Client/EqualizerPresetsStateChangeNotifications.hpp>
 #include <OpenHLX/Client/FavoritesStateChangeNotifications.hpp>
 #include <OpenHLX/Client/FrontPanelStateChangeNotifications.hpp>
 #include <OpenHLX/Client/GroupsStateChangeNotifications.hpp>
-#include <OpenHLX/Client/HLXClientController.hpp>
 #include <OpenHLX/Client/InfraredStateChangeNotifications.hpp>
 #include <OpenHLX/Client/SourcesStateChangeNotifications.hpp>
 #include <OpenHLX/Client/ZonesStateChangeNotifications.hpp>

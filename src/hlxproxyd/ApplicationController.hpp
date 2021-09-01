@@ -26,31 +26,31 @@
 #ifndef OPENHLXPROXYAPPLICATIONCONTROLLER_HPP
 #define OPENHLXPROXYAPPLICATIONCONTROLLER_HPP
 
+#include <OpenHLX/Client/ApplicationControllerBasis.hpp>
+#include <OpenHLX/Client/ApplicationControllerRefreshDelegate.hpp>
 #include <OpenHLX/Client/CommandManager.hpp>
 #include <OpenHLX/Client/CommandManagerDelegate.hpp>
 #include <OpenHLX/Client/ConnectionManager.hpp>
 #include <OpenHLX/Client/ConnectionManagerDelegate.hpp>
-#include <OpenHLX/Client/HLXClientControllerBasis.hpp>
-#include <OpenHLX/Client/HLXClientControllerRefreshDelegate.hpp>
 #include <OpenHLX/Client/ObjectControllerBasisDelegate.hpp>
+#include <OpenHLX/Common/ApplicationControllerBasis.hpp>
+#include <OpenHLX/Common/ApplicationObjectControllerContainerTemplate.hpp>
 #include <OpenHLX/Common/Errors.hpp>
-#include <OpenHLX/Common/HLXCommonControllerBasis.hpp>
-#include <OpenHLX/Common/HLXCommonControllerContainerTemplate.hpp>
 #include <OpenHLX/Common/RunLoopParameters.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
+#include <OpenHLX/Server/ApplicationControllerBasis.hpp>
 #include <OpenHLX/Server/CommandManager.hpp>
 #include <OpenHLX/Server/CommandManagerDelegate.hpp>
 #include <OpenHLX/Server/ConnectionManager.hpp>
 #include <OpenHLX/Server/ConnectionManagerDelegate.hpp>
-#include <OpenHLX/Server/HLXServerControllerBasis.hpp>
 
+#include "ApplicationControllerDelegate.hpp"
 #include "ConfigurationController.hpp"
 #include "ConfigurationControllerDelegate.hpp"
 #include "EqualizerPresetsController.hpp"
 #include "FavoritesController.hpp"
 #include "FrontPanelController.hpp"
 #include "GroupsController.hpp"
-#include "HLXProxyControllerDelegate.hpp"
 #include "InfraredController.hpp"
 #include "NetworkController.hpp"
 #include "SourcesController.hpp"
@@ -77,7 +77,7 @@ class Controller :
     public Common::Application::ControllerBasis,
     public Client::Application::ControllerBasis,
     public Server::Application::ControllerBasis,
-    public Common::Application::ControllerContainerTemplate<Proxy::ObjectControllerBasis>,
+    public Common::Application::ObjectControllerContainerTemplate<Proxy::ObjectControllerBasis>,
     public Client::ConnectionManagerDelegate,
     public Server::ConnectionManagerDelegate,
     public Client::CommandManagerDelegate,
@@ -171,7 +171,7 @@ private:
     void DeriveGroupState(void) final { return; }
 
 private:
-    typedef Common::Application::ControllerContainerTemplate<Proxy::ObjectControllerBasis> ProxyControllerContainer;
+    typedef Common::Application::ObjectControllerContainerTemplate<Proxy::ObjectControllerBasis> ProxyObjectControllerContainer;
 
 private:
     // Sub-controller order is important since 1) this is the order that

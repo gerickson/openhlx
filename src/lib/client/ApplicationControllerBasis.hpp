@@ -32,8 +32,8 @@
 #include <OpenHLX/Client/ConnectionManager.hpp>
 #include <OpenHLX/Client/ObjectControllerBasis.hpp>
 #include <OpenHLX/Client/ObjectControllerBasisRefreshDelegate.hpp>
+#include <OpenHLX/Common/ApplicationObjectControllerContainerTemplate.hpp>
 #include <OpenHLX/Common/Errors.hpp>
-#include <OpenHLX/Common/HLXCommonControllerContainerTemplate.hpp>
 #include <OpenHLX/Common/RunLoopParameters.hpp>
 
 
@@ -61,7 +61,7 @@ class ControllerRefreshDelegate;
  *
  */
 class ControllerBasis :
-    public Common::Application::ControllerContainerTemplate<Client::ObjectControllerBasis>,
+    public Common::Application::ObjectControllerContainerTemplate<Client::ObjectControllerBasis>,
     public ObjectControllerBasisRefreshDelegate
 {
 public:
@@ -102,7 +102,7 @@ public:
     void ControllerDidRefresh(Client::ObjectControllerBasis &aController) final;
 
 protected:
-    typedef Common::Application::ControllerContainerTemplate<Client::ObjectControllerBasis> ClientControllerContainer;
+    typedef Common::Application::ObjectControllerContainerTemplate<Client::ObjectControllerBasis> ClientObjectControllerContainer;
 
 protected:
     ControllerBasis(void);

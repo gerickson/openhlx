@@ -28,10 +28,10 @@
 
 #include <CoreFoundation/CFURL.h>
 
-#include <OpenHLX/Client/HLXClientControllerRefreshDelegate.hpp>
+#include <OpenHLX/Client/ApplicationControllerRefreshDelegate.hpp>
 #include <OpenHLX/Client/StateChangeNotificationBasis.hpp>
 #include <OpenHLX/Common/Errors.hpp>
-#include <OpenHLX/Common/HLXCommonControllerErrorDelegate.hpp>
+#include <OpenHLX/Common/ApplicationControllerErrorDelegate.hpp>
 #include <OpenHLX/Common/IPAddress.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
 

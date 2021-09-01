@@ -22,11 +22,11 @@
  *
  */
 
-#include "HLXClientControllerBasis.hpp"
+#include "ApplicationControllerBasis.hpp"
 
 #include <LogUtilities/LogUtilities.hpp>
 
-#include <OpenHLX/Client/HLXClientControllerRefreshDelegate.hpp>
+#include <OpenHLX/Client/ApplicationControllerRefreshDelegate.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
 #include <OpenHLX/Utilities/Percentage.hpp>
 
@@ -53,7 +53,7 @@ namespace Application
  *
  */
 ControllerBasis :: ControllerBasis(void) :
-    ClientControllerContainer(),
+    ClientObjectControllerContainer(),
     ObjectControllerBasisRefreshDelegate(),
     mConnectionManager(),
     mCommandManager(),
@@ -100,7 +100,7 @@ ControllerBasis :: Init(const Common::RunLoopParameters &aRunLoopParameters)
     Status lRetval = kStatus_Success;
 
 
-    lRetval = ClientControllerContainer::Init();
+    lRetval = ClientObjectControllerContainer::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mConnectionManager.Init(aRunLoopParameters);

@@ -44,6 +44,7 @@ libopenhlx_server_a_includedir                              = \
 # Public library headers to distribute and install.
 
 libopenhlx_server_a_include_HEADERS                         = \
+    ApplicationControllerBasis.hpp                            \
     CommandBalanceResponseBasis.hpp                           \
     CommandEqualizerBandResponseBasis.hpp                     \
     CommandErrorResponse.hpp                                  \
@@ -72,7 +73,6 @@ libopenhlx_server_a_include_HEADERS                         = \
     FrontPanelControllerCommands.hpp                          \
     GroupsControllerBasis.hpp                                 \
     GroupsControllerCommands.hpp                              \
-    HLXServerControllerBasis.hpp                              \
     InfraredControllerBasis.hpp                               \
     InfraredControllerCommands.hpp                            \
     ListenerBasis.hpp                                         \
@@ -98,6 +98,7 @@ libopenhlx_server_a_CPPFLAGS                                = \
     $(NULL)
 
 libopenhlx_server_a_SOURCES                                 = \
+    ApplicationControllerBasis.cpp                            \
     CommandBalanceResponseBasis.cpp                           \
     CommandEqualizerBandResponseBasis.cpp                     \
     CommandErrorResponse.cpp                                  \
@@ -123,7 +124,6 @@ libopenhlx_server_a_SOURCES                                 = \
     FrontPanelControllerCommands.cpp                          \
     GroupsControllerBasis.cpp                                 \
     GroupsControllerCommands.cpp                              \
-    HLXServerControllerBasis.cpp                              \
     InfraredControllerBasis.cpp                               \
     InfraredControllerCommands.cpp                            \
     ListenerBasis.cpp                                         \

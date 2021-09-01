@@ -32,18 +32,19 @@
 
 #include <CoreFoundation/CFRunLoop.h>
 
+#include <OpenHLX/Common/ApplicationControllerBasis.hpp>
+#include <OpenHLX/Common/ApplicationObjectControllerContainerTemplate.hpp>
 #include <OpenHLX/Common/Errors.hpp>
-#include <OpenHLX/Common/HLXCommonControllerBasis.hpp>
-#include <OpenHLX/Common/HLXCommonControllerContainerTemplate.hpp>
 #include <OpenHLX/Common/RunLoopParameters.hpp>
+#include <OpenHLX/Server/ApplicationControllerBasis.hpp>
 #include <OpenHLX/Server/CommandManager.hpp>
 #include <OpenHLX/Server/CommandManagerDelegate.hpp>
 #include <OpenHLX/Server/ConnectionManager.hpp>
 #include <OpenHLX/Server/ConnectionManagerDelegate.hpp>
-#include <OpenHLX/Server/HLXServerControllerBasis.hpp>
 #include <OpenHLX/Utilities/Timer.hpp>
 #include <OpenHLX/Utilities/TimerDelegate.hpp>
 
+#include "ApplicationControllerDelegate.hpp"
 #include "ConfigurationController.hpp"
 #include "ConfigurationControllerDelegate.hpp"
 #include "EqualizerPresetsController.hpp"
@@ -51,7 +52,6 @@
 #include "FrontPanelController.hpp"
 #include "GroupsController.hpp"
 #include "GroupsControllerDelegate.hpp"
-#include "HLXSimulatorControllerDelegate.hpp"
 #include "InfraredController.hpp"
 #include "NetworkController.hpp"
 #include "SourcesController.hpp"
@@ -77,7 +77,7 @@ namespace Application
 class Controller :
     public Common::Application::ControllerBasis,
     public Server::Application::ControllerBasis,
-    public Common::Application::ControllerContainerTemplate<Simulator::ObjectControllerBasis>,
+    public Common::Application::ObjectControllerContainerTemplate<Simulator::ObjectControllerBasis>,
     public Server::ConnectionManagerDelegate,
     public Server::CommandManagerDelegate,
     public Simulator::ObjectControllerBasisDelegate,
@@ -158,7 +158,7 @@ public:
     void TimerDidFire(Utilities::Timer &aTimer) final;
 
 private:
-    typedef Common::Application::ControllerContainerTemplate<Simulator::ObjectControllerBasis> SimulatorControllerContainer;
+    typedef Common::Application::ObjectControllerContainerTemplate<Simulator::ObjectControllerBasis> SimulatorObjectControllerContainer;
 
 private:
     class ShouldDoForGroupZonesFunctorBasis

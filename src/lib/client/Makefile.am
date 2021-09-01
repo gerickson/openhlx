@@ -44,6 +44,10 @@ libopenhlx_client_a_includedir                              = \
 # Public library headers to distribute and install.
 
 libopenhlx_client_a_include_HEADERS                         = \
+    ApplicationController.hpp                                 \
+    ApplicationControllerBasis.hpp                            \
+    ApplicationControllerDelegate.hpp                         \
+    ApplicationControllerRefreshDelegate.hpp                  \
     CommandBalanceRequestBases.hpp                            \
     CommandEqualizerBandRequestBases.hpp                      \
     CommandErrorResponse.hpp                                  \
@@ -84,10 +88,6 @@ libopenhlx_client_a_include_HEADERS                         = \
     GroupsControllerBasis.hpp                                 \
     GroupsControllerCommands.hpp                              \
     GroupsStateChangeNotifications.hpp                        \
-    HLXClientController.hpp                                   \
-    HLXClientControllerBasis.hpp                              \
-    HLXClientControllerDelegate.hpp                           \
-    HLXClientControllerRefreshDelegate.hpp                    \
     IdentifierStateChangeNotificationBasis.hpp                \
     InfraredController.hpp                                    \
     InfraredControllerBasis.hpp                               \
@@ -126,6 +126,8 @@ libopenhlx_client_a_CPPFLAGS                                = \
     $(NULL)
 
 libopenhlx_client_a_SOURCES                                 = \
+    ApplicationController.cpp                                 \
+    ApplicationControllerBasis.cpp                            \
     CommandBalanceRequestBases.cpp                            \
     CommandEqualizerBandRequestBases.cpp                      \
     CommandErrorResponse.cpp                                  \
@@ -163,8 +165,6 @@ libopenhlx_client_a_SOURCES                                 = \
     GroupsControllerBasis.cpp                                 \
     GroupsControllerCommands.cpp                              \
     GroupsStateChangeNotifications.cpp                        \
-    HLXClientController.cpp                                   \
-    HLXClientControllerBasis.cpp                              \
     IdentifierStateChangeNotificationBasis.cpp                \
     InfraredController.cpp                                    \
     InfraredControllerBasis.cpp                               \
