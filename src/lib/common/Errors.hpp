@@ -115,6 +115,11 @@ enum
     kError_HostNameResolution   = -(7 << 8),
 
     /**
+     *  The peer server disconnected.
+     */
+    kError_ServerDisconnected   = -(8 << 8),
+
+    /**
      *  An unknown error occurred.
      */
     kError_Unknown              = -(255 << 8),
