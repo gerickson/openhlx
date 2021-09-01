@@ -461,6 +461,7 @@ void
 CommandManager :: ConnectionManagerWillResolve(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, const char *aHost)
 {
     (void)aConnectionManager;
+    (void)aRoles;
     (void)aHost;
 }
 
@@ -480,12 +481,12 @@ void
 CommandManager :: ConnectionManagerIsResolving(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, const char *aHost)
 {
     (void)aConnectionManager;
+    (void)aRoles;
     (void)aHost;
 }
 
 /**
  *  @brief
- *
  *    Delegation from the connection manager that a host name has
  *    resolved to an IP address.
  *
@@ -508,13 +509,13 @@ void
 CommandManager :: ConnectionManagerDidResolve(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, const char *aHost, const Common::IPAddress &aIPAddress)
 {
     (void)aConnectionManager;
+    (void)aRoles;
     (void)aHost;
     (void)aIPAddress;
 }
 
 /**
  *  @brief
- *
  *    Delegation from the connection manager that a host name did
  *    not resolve.
  *
@@ -532,6 +533,7 @@ void
 CommandManager :: ConnectionManagerDidNotResolve(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, const char *aHost, const Common::Error &aError)
 {
     (void)aConnectionManager;
+    (void)aRoles;
     (void)aHost;
     (void)aError;
 }
@@ -662,6 +664,7 @@ void
 CommandManager :: ConnectionManagerWillDisconnect(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, CFURLRef aURLRef)
 {
     (void)aConnectionManager;
+    (void)aRoles;
     (void)aURLRef;
 }
 
@@ -681,6 +684,7 @@ void
 CommandManager :: ConnectionManagerDidDisconnect(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, CFURLRef aURLRef, const Common::Error &aError)
 {
     (void)aConnectionManager;
+    (void)aRoles;
     (void)aURLRef;
     (void)aError;
 }
@@ -702,6 +706,7 @@ void
 CommandManager :: ConnectionManagerDidNotDisconnect(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, CFURLRef aURLRef, const Common::Error &aError)
 {
     (void)aConnectionManager;
+    (void)aRoles;
     (void)aURLRef;
     (void)aError;
 }
@@ -727,6 +732,7 @@ void
 CommandManager :: ConnectionManagerError(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, const Common::Error &aError)
 {
     (void)aConnectionManager;
+    (void)aRoles;
     (void)aError;
 
     return;
