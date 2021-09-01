@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef OPENHLXUTILITIESRUNLOOPQUEUEDELEGATE_HPP
-#define OPENHLXUTILITIESRUNLOOPQUEUEDELEGATE_HPP
+#ifndef OPENHLXCOMMONRUNLOOPQUEUEDELEGATE_HPP
+#define OPENHLXCOMMONRUNLOOPQUEUEDELEGATE_HPP
 
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
@@ -33,7 +33,7 @@
 namespace HLX
 {
 
-namespace Utilities
+namespace Common
 {
 
 class RunLoopQueue;
@@ -42,7 +42,7 @@ class RunLoopQueue;
  *  @brief
  *    Abstract delegate definition for a run loop queue.
  *
- *  @ingroup utilities
+ *  @ingroup common
  *
  */
 class RunLoopQueueDelegate
@@ -73,8 +73,8 @@ public:
     virtual void QueueIsNotEmpty(RunLoopQueue &aQueue) = 0;
 };
 
-}; // namespace Utilities
+}; // namespace Common
 
 }; // namespace HLX
 
-#endif // OPENHLXUTILITIESRUNLOOPQUEUEDELEGATE_HPP
+#endif // OPENHLXCOMMONRUNLOOPQUEUEDELEGATE_HPP

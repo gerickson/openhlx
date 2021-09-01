@@ -31,8 +31,8 @@
 
 #include <LogUtilities/LogUtilities.hpp>
 
+#include <OpenHLX/Common/RunLoopQueueDelegate.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
-#include <OpenHLX/Utilities/RunLoopQueueDelegate.hpp>
 
 
 using namespace HLX::Common;
@@ -42,7 +42,7 @@ using namespace Nuovations;
 namespace HLX
 {
 
-namespace Utilities
+namespace Common
 {
 
 /**
@@ -405,6 +405,6 @@ RunLoopQueue :: Perform(void *aContext)
     }
 }
 
-}; // namespace Utilities
+}; // namespace Common
 
 }; // namespace HLX

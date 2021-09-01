@@ -875,7 +875,7 @@ Status Controller :: ShouldToggleMute(GroupsController &aController, const Model
 // MARK: Timer Delegate Method
 
 void
-Controller :: TimerDidFire(Utilities::Timer &aTimer)
+Controller :: TimerDidFire(Common::Timer &aTimer)
 {
     Status lStatus;
 

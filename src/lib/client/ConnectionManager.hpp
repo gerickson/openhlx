@@ -37,8 +37,8 @@
 #include <OpenHLX/Common/ConnectionManagerApplicationDataDelegate.hpp>
 #include <OpenHLX/Common/ConnectionManagerBasis.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
-#include <OpenHLX/Utilities/Timer.hpp>
-#include <OpenHLX/Utilities/TimerDelegate.hpp>
+#include <OpenHLX/Common/Timer.hpp>
+#include <OpenHLX/Common/TimerDelegate.hpp>
 
 
 namespace HLX
@@ -64,7 +64,7 @@ namespace Client
  */
 class ConnectionManager :
     public Common::ConnectionManagerBasis,
-    public Utilities::TimerDelegate,
+    public Common::TimerDelegate,
     public ConnectionBasisDelegate
 {
 public:
@@ -108,7 +108,7 @@ public:
 
     // Timer Delegate Method
 
-    void TimerDidFire(Utilities::Timer &aTimer) final;
+    void TimerDidFire(Common::Timer &aTimer) final;
 
 private:
     void OnWillResolve(const char *aHost) final;
@@ -121,11 +121,11 @@ private:
 private:
     typedef std::unordered_set<ConnectionManagerDelegate *> ConnectionManagerDelegates;
 
-    Common::RunLoopParameters                   mRunLoopParameters;
-    ConnectionFactory                           mConnectionFactory;
-    ConnectionBasis *                           mConnection;
-    Utilities::Timer                            mConnectionTimer;
-    ConnectionManagerDelegates                  mDelegates;
+    Common::RunLoopParameters   mRunLoopParameters;
+    ConnectionFactory           mConnectionFactory;
+    ConnectionBasis *           mConnection;
+    Common::Timer               mConnectionTimer;
+    ConnectionManagerDelegates  mDelegates;
 };
 
 }; // namespace Client

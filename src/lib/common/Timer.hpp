@@ -18,12 +18,13 @@
 
 /**
  *    @file
- *      This file defines types and objects for specifying timeouts.
+ *      This file defines types and objects for specifying a run loop
+ *      timer.
  *
  */
 
-#ifndef OPENHLXUTILITIESTIMEOUT_HPP
-#define OPENHLXUTILITIESTIMEOUT_HPP
+#ifndef OPENHLXCOMMONTIMER_HPP
+#define OPENHLXCOMMONTIMER_HPP
 
 
 #include <CoreFoundation/CFRunLoop.h>
@@ -36,16 +37,17 @@
 namespace HLX
 {
 
-namespace Utilities
+namespace Common
 {
 
+class Timeout;
 class TimerDelegate;
 
 /**
  *  @brief
  *    An object for...
  *
- *  @ingroup utilities
+ *  @ingroup common
  *
  */
 class Timer
@@ -89,8 +91,8 @@ private:
     TimerDelegate *            mDelegate;
 };
 
-}; // namespace Utilities
+}; // namespace Common
 
 }; // namespace HLX
 
-#endif // OPENHLXUTILITIESTIMEOUT_HPP
+#endif // OPENHLXCOMMONTIMER_HPP

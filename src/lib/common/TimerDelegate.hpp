@@ -18,18 +18,18 @@
 
 /**
  *    @file
- *      This file defines an abstract delegate to a run loop queue.
+ *      This file defines an abstract delegate to a run loop timer.
  *
  */
 
-#ifndef OPENHLXUTILITIESTIMERDELEGATE_HPP
-#define OPENHLXUTILITIESTIMERDELEGATE_HPP
+#ifndef OPENHLXCOMMONTIMERDELEGATE_HPP
+#define OPENHLXCOMMONTIMERDELEGATE_HPP
 
 
 namespace HLX
 {
 
-namespace Utilities
+namespace Common
 {
 
 class Timer;
@@ -38,7 +38,7 @@ class Timer;
  *  @brief
  *    Abstract delegate definition for a timer.
  *
- *  @ingroup utilities
+ *  @ingroup common
  *
  */
 class TimerDelegate
@@ -58,8 +58,8 @@ public:
     virtual void TimerDidFire(Timer &aTimer) = 0;
 };
 
-}; // namespace Utilities
+}; // namespace Common
 
 }; // namespace HLX
 
-#endif // OPENHLXUTILITIESTIMERDELEGATE_HPP
+#endif // OPENHLXCOMMONTIMERDELEGATE_HPP

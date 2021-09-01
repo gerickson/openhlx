@@ -36,13 +36,13 @@
 #include <OpenHLX/Common/ApplicationObjectControllerContainerTemplate.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/RunLoopParameters.hpp>
+#include <OpenHLX/Common/Timer.hpp>
+#include <OpenHLX/Common/TimerDelegate.hpp>
 #include <OpenHLX/Server/ApplicationControllerBasis.hpp>
 #include <OpenHLX/Server/CommandManager.hpp>
 #include <OpenHLX/Server/CommandManagerDelegate.hpp>
 #include <OpenHLX/Server/ConnectionManager.hpp>
 #include <OpenHLX/Server/ConnectionManagerDelegate.hpp>
-#include <OpenHLX/Utilities/Timer.hpp>
-#include <OpenHLX/Utilities/TimerDelegate.hpp>
 
 #include "ApplicationControllerDelegate.hpp"
 #include "ConfigurationController.hpp"
@@ -81,7 +81,7 @@ class Controller :
     public Server::ConnectionManagerDelegate,
     public Server::CommandManagerDelegate,
     public Simulator::ObjectControllerBasisDelegate,
-    public Utilities::TimerDelegate,
+    public Common::TimerDelegate,
     public ConfigurationControllerDelegate,
     public GroupsControllerDelegate
 {
@@ -155,7 +155,7 @@ public:
 
     // Timer Delegate Method
 
-    void TimerDidFire(Utilities::Timer &aTimer) final;
+    void TimerDidFire(Common::Timer &aTimer) final;
 
 private:
     typedef Common::Application::ObjectControllerContainerTemplate<Simulator::ObjectControllerBasis> SimulatorObjectControllerContainer;
@@ -253,7 +253,7 @@ private:
     SourcesController               mSourcesController;
     ZonesController                 mZonesController;
     ControllerDelegate *            mDelegate;
-    Utilities::Timer                mConfigurationAutoSaveTimer;
+    Common::Timer                   mConfigurationAutoSaveTimer;
     bool                            mConfigurationIsDirty;
 };
 

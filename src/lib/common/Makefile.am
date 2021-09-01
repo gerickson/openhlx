@@ -102,9 +102,13 @@ libopenhlx_common_a_include_HEADERS                         = \
     OutputStringStream.hpp                                    \
     RegularExpression.hpp                                     \
     RunLoopParameters.hpp                                     \
+    RunLoopQueue.hpp                                          \
+    RunLoopQueueDelegate.hpp                                  \
     SocketAddress.hpp                                         \
     SourcesControllerBasis.hpp                                \
     Timeout.hpp                                               \
+    Timer.hpp                                                 \
+    TimerDelegate.hpp                                         \
     Version.hpp                                               \
     ZonesControllerBasis.hpp                                  \
     $(NULL)
@@ -161,9 +165,11 @@ libopenhlx_common_a_SOURCES                                 = \
     OutputStringStream.cpp                                    \
     RegularExpression.cpp                                     \
     RunLoopParameters.cpp                                     \
+    RunLoopQueue.cpp                                          \
     SocketAddress.cpp                                         \
     SourcesControllerBasis.cpp                                \
     Timeout.cpp                                               \
+    Timer.cpp                                                 \
     Version.cpp                                               \
     ZonesControllerBasis.cpp                                  \
     $(NULL)

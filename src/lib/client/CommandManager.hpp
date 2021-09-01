@@ -42,8 +42,8 @@
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/RegularExpression.hpp>
 #include <OpenHLX/Common/RunLoopParameters.hpp>
-#include <OpenHLX/Utilities/RunLoopQueue.hpp>
-#include <OpenHLX/Utilities/RunLoopQueueDelegate.hpp>
+#include <OpenHLX/Common/RunLoopQueue.hpp>
+#include <OpenHLX/Common/RunLoopQueueDelegate.hpp>
 
 
 namespace HLX
@@ -75,7 +75,7 @@ class ControllerBase;
 class CommandManager :
     public ConnectionManagerDelegate,
     public Common::ConnectionManagerApplicationDataDelegate,
-    public Utilities::RunLoopQueueDelegate
+    public Common::RunLoopQueueDelegate
 {
 public:
     /**
@@ -160,8 +160,8 @@ public:
 
     // Run Loop Queue Delegate Methods
 
-    void QueueIsEmpty(Utilities::RunLoopQueue &aQueue);
-    void QueueIsNotEmpty(Utilities::RunLoopQueue &aQueue);
+    void QueueIsEmpty(Common::RunLoopQueue &aQueue);
+    void QueueIsNotEmpty(Common::RunLoopQueue &aQueue);
 
     // Connection Manager Response Handler Trampolines
 
@@ -271,7 +271,7 @@ private:
     CommandManagerDelegate *              mDelegate;
     CFRunLoopSourceRef                    mRunLoopSourceRef;
     ConnectionManager *                   mConnectionManager;
-    Utilities::RunLoopQueue               mCommandQueue;
+    Common::RunLoopQueue                  mCommandQueue;
     ExchangeState::MutableCountedPointer  mActiveExchangeState;
     std::set<NotificationHandlerState>    mNotificationHandlers;
     Command::ErrorResponse                mErrorResponse;

@@ -920,7 +920,7 @@ ConnectionManager :: ConnectionError(ConnectionBasis &aConnection, const Common:
 // MARK: Timer Delegate Method
 
 void
-ConnectionManager :: TimerDidFire(Utilities::Timer &aTimer)
+ConnectionManager :: TimerDidFire(Common::Timer &aTimer)
 {
     if (aTimer == mConnectionTimer)
     {

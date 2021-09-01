@@ -22,6 +22,7 @@
 
 #include <LogUtilities/LogUtilities.hpp>
 
+#include <OpenHLX/Common/Timeout.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
 
 #include "TimerDelegate.hpp"
@@ -34,7 +35,7 @@ using namespace Nuovations;
 namespace HLX
 {
 
-namespace Utilities
+namespace Common
 {
 
 Timer :: Timer(void) :
@@ -196,6 +197,6 @@ Timer :: TimerFiredCallBack(CFRunLoopTimerRef aTimerRef, void *aContext)
     }
 }
 
-}; // namespace Utilities
+}; // namespace Common
 
 }; // namespace HLX

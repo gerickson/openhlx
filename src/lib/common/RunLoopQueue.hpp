@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef OPENHLXCLIENTRUNLOOPQUEUE_HPP
-#define OPENHLXCLIENTRUNLOOPQUEUE_HPP
+#ifndef OPENHLXCOMMONRUNLOOPQUEUE_HPP
+#define OPENHLXCOMMONRUNLOOPQUEUE_HPP
 
 #include <queue>
 
@@ -37,7 +37,7 @@
 namespace HLX
 {
 
-namespace Utilities
+namespace Common
 {
 
 class RunLoopQueueDelegate;
@@ -47,7 +47,7 @@ class RunLoopQueueDelegate;
  *     A run loop-aware queue for managing a queue of non-retained and
  *     unmanaged object pointers.
  *
- *  @ingroup utilities
+ *  @ingroup common
  *
  */
 class RunLoopQueue
@@ -102,8 +102,8 @@ private:
     queue_type                 mQueue;
 };
 
-}; // namespace Utilities
+}; // namespace Common
 
 }; // namespace HLX
 
-#endif // OPENHLXCLIENTRUNLOOPQUEUE_HPP
+#endif // OPENHLXCOMMONRUNLOOPQUEUE_HPP
