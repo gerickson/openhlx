@@ -154,7 +154,7 @@ LIMITATIONS
 In addition to the aforementioned changes in the number of supported
 client sessions, buffering, and multiplexing, `hlxsimd` does `not`
 presently support `all` of those control commands supported by real
-hardware and documented in 'HLX SeriesModular Matrix System High
+hardware and documented in 'HLX Series Modular Matrix System High
 Definition Audio/Video Switching System: Installation and Operation'.
 
 Configuration
@@ -193,6 +193,7 @@ Zones
 SEE ALSO
 --------
 hlxc(1),
+hlxproxyd(1),
 plutil(1)
 
 AUTHOR
