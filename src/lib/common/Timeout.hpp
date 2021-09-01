@@ -85,8 +85,8 @@ class Timeout :
 {
 public:
     Timeout(void) = default;
-    Timeout(const Value &aMilliseconds);
-    Timeout(Type &aType);
+    explicit Timeout(const Value &aMilliseconds);
+    explicit Timeout(Type &aType);
     Timeout(const Timeout &aTimeout);
     Timeout(const TimeoutBasis &aTimeoutBasis);
     ~Timeout(void) = default;
