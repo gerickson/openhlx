@@ -46,13 +46,17 @@ aforementioned libraries:
       <dt><strong>hlxc</strong></dt>
       <dd>A command line client for observing and mutating HLX state
           such as setting the volume of a zone.</dd>
+      <dt><strong>hlxproxyd</strong></dt>
+      <dd>A command line server that can act as a caching proxy to
+          another HLX server, whether `hlxsimd` or actual HLX Series
+          hardware.</dd>
       <dt><strong>hlxsimd</strong></dt>
       <dd>A command line server that can simulate an HLX server and,
           as a result, actual HLX Series hardware.</dd>
   </dl>
 
 The `hlxc` client functions both against real HLX Series hardware as
-well as the `hlxsimd` simulator.
+well as the `hlxproxyd` caching proxy and the `hlxsimd` simulator.
 
 ## Background
 
@@ -90,11 +94,11 @@ resulting in unparseable and, by extension, corrupt output. This
 renders concurrent client usage all but unusable when more than one
 command request and/or response is in flight.
 
-`hlxsimd` addresses both of these limitations (and points the way for
-a future effort, `hlxproxyd`) by allowing a number of client
-connections limited only by the system resources on which it runs and
-by performing *buffer* at a time input/output, speeding responsiveness
-of the control protocol by 1,000% or more.
+`hlxsimd` and `hlxproxyd` address both of these limitations by
+allowing a number of client connections limited only by the system
+resources on which it runs and by performing *buffer* at a time
+input/output, speeding responsiveness of the control protocol by
+1,000% or more.
 
 # Getting Started with Open HLX
 
