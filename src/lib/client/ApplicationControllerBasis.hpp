@@ -86,6 +86,7 @@ public:
 
     Common::Status Connect(const char *aMaybeURL);
     Common::Status Connect(const char *aMaybeURL, const Common::Timeout &aTimeout);
+    Common::Status Connect(const char *aMaybeURL, const Common::ConnectionManagerBasis::Versions &aVersions);
     Common::Status Connect(const char *aMaybeURL, const Common::ConnectionManagerBasis::Versions &aVersions, const Common::Timeout &aTimeout);
 
     bool           IsConnected(void) const;

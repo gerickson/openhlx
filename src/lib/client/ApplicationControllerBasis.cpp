@@ -340,6 +340,51 @@ ControllerBasis :: Connect(const char *aMaybeURL,
  *    Connect to a HLX server peer.
  *
  *  This attempts to asynchronously connect to the HLX server peer at
+ *  the specified URL using IPv4 or IPv6 resolved addresses as
+ *  specified.
+ *
+ *  @param[in]  aMaybeURL  A pointer to a null-terminated C string
+ *                         containing the URL, host name, or host name
+ *                         and port of the HLX server peer to connect
+ *                         to. The URL or host name may be a name to
+ *                         be resolved or a literal IP address.
+ *                         HLX server peer to connect to.
+ *  @param[in]  aVersions  An immutable references to those IP address
+ *                         versions that should be used for resolving
+ *                         the host name.
+*
+ *  @retval  kStatus_Success          If successful.
+ *  @retval  -EALREADY                The client connection is already
+ *                                    connected.
+ *  @retval  -EINPROGRESS             The client connection is in
+ *                                    progress.
+ *  @retval  -EINVAL                  The port number for the URL was
+ *                                    invalid.
+ *  @retval  -EPROTONOSUPPORT         The protocol scheme associated
+ *                                    with the specified URL is not
+ *                                    supported.
+ *  @retval  kStatus_ValueAlreadySet  This manager is already the delegate
+ *                                    for the connection.
+ *
+ */
+Status 
+ControllerBasis :: Connect(const char *aMaybeURL, const Common::ConnectionManagerBasis::Versions &aVersions)
+{
+    Status lRetval = kStatus_Success;
+
+
+    lRetval = GetConnectionManager().Connect(aMaybeURL, aVersions, kTimeoutDefault);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Connect to a HLX server peer.
+ *
+ *  This attempts to asynchronously connect to the HLX server peer at
  *  the specified URL, host name, or host name and port with the
  *  provided timeout using IPv4 or IPv6 resolved addresses as
  *  specified.
@@ -376,6 +421,7 @@ ControllerBasis :: Connect(const char *aMaybeURL,
                            const Timeout &aTimeout)
 {
     Status lRetval = kStatus_Success;
+
 
     lRetval = GetConnectionManager().Connect(aMaybeURL, aVersions, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
