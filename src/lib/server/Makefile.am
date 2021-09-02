@@ -31,7 +31,12 @@ lib_LIBRARIES                                               = \
 
 AM_RECURSIVE_TARGETS: $(LIBRARIES)
 
+SUBDIRS                                                     = \
+    tests                                                     \
+    $(NULL)
+
 noinst_HEADERS                                              = \
+    ConnectionSchemeIdentifierManager.hpp                     \
     $(NULL)
 
 # The 'install' target directory transform. Headers in
@@ -115,6 +120,7 @@ libopenhlx_server_a_SOURCES                                 = \
     ConnectionBasis.cpp                                       \
     ConnectionFactory.cpp                                     \
     ConnectionManager.cpp                                     \
+    ConnectionSchemeIdentifierManager.cpp                     \
     ConnectionTelnet.cpp                                      \
     EqualizerPresetsControllerBasis.cpp                       \
     EqualizerPresetsControllerCommands.cpp                    \
