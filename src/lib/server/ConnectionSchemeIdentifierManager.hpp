@@ -71,7 +71,7 @@ private:
         IdentifierMap   mIdentifierMap;
         IdentifierType  mNextIdentifier;
     };
-    
+
     typedef std::map<std::string, IdentifierMapState> SchemeIdentifierMap;
 
     SchemeIdentifierMap mSchemeIdentifierMap;
