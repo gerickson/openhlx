@@ -181,17 +181,294 @@ static void TestMutation(nlTestSuite *inSuite, void *inContext __attribute__((un
     //    confirming it is claimed, and then claiming and confirming
     //    another identifier.
 
+    {
+        ConnectionSchemeIdentifierManager                  lSchemeIdentifierManager;
+        bool                                               lClaimed;
+        bool                                               lReleased;
+        ConnectionSchemeIdentifierManager::IdentifierType  lIdentifier;
+        ConnectionSchemeIdentifierManager::IdentifierType  lReleasedIdentifiers[2];
+
+        // 5.1: Test claiming some identifiers across various schemes,
+        //      introspecting they are claimed.
+
+        lIdentifier = lSchemeIdentifierManager.ClaimSchemeIdentifier("telnet");
+        NL_TEST_ASSERT(inSuite, lIdentifier != ConnectionSchemeIdentifierManager::kInvalidIdentifier);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lIdentifier);
+        NL_TEST_ASSERT(inSuite, lClaimed == true);
+
+        lIdentifier = lSchemeIdentifierManager.ClaimSchemeIdentifier("telnet");
+        NL_TEST_ASSERT(inSuite, lIdentifier != ConnectionSchemeIdentifierManager::kInvalidIdentifier);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lIdentifier);
+        NL_TEST_ASSERT(inSuite, lClaimed == true);
+
+        lIdentifier = lSchemeIdentifierManager.ClaimSchemeIdentifier("telnet");
+        NL_TEST_ASSERT(inSuite, lIdentifier != ConnectionSchemeIdentifierManager::kInvalidIdentifier);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lIdentifier);
+        NL_TEST_ASSERT(inSuite, lClaimed == true);
+
+        lReleasedIdentifiers[0] = lIdentifier;
+
+        lIdentifier = lSchemeIdentifierManager.ClaimSchemeIdentifier("telnet");
+        NL_TEST_ASSERT(inSuite, lIdentifier != ConnectionSchemeIdentifierManager::kInvalidIdentifier);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lIdentifier);
+        NL_TEST_ASSERT(inSuite, lClaimed == true);
+
+        lIdentifier = lSchemeIdentifierManager.ClaimSchemeIdentifier("telnet");
+        NL_TEST_ASSERT(inSuite, lIdentifier != ConnectionSchemeIdentifierManager::kInvalidIdentifier);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lIdentifier);
+        NL_TEST_ASSERT(inSuite, lClaimed == true);
+
+        lIdentifier = lSchemeIdentifierManager.ClaimSchemeIdentifier("telnet");
+        NL_TEST_ASSERT(inSuite, lIdentifier != ConnectionSchemeIdentifierManager::kInvalidIdentifier);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lIdentifier);
+        NL_TEST_ASSERT(inSuite, lClaimed == true);
+
+        lReleasedIdentifiers[1] = lIdentifier;
+
+        lIdentifier = lSchemeIdentifierManager.ClaimSchemeIdentifier("telnet");
+        NL_TEST_ASSERT(inSuite, lIdentifier != ConnectionSchemeIdentifierManager::kInvalidIdentifier);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lIdentifier);
+        NL_TEST_ASSERT(inSuite, lClaimed == true);
+
+        // 5.2: Release one (1) of the identifiers and confirming it
+        //      is no longer claimed.
+
+        lReleased = lSchemeIdentifierManager.ReleaseSchemeIdentifier("telnet", lReleasedIdentifiers[0]);
+        NL_TEST_ASSERT(inSuite, lReleased == true);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lReleasedIdentifiers[0]);
+        NL_TEST_ASSERT(inSuite, lClaimed == false);
+
+        // 5.3: Attempt to reclaim the previously-released identifier
+        //      and confirm that it is claimed.
+
+        lIdentifier = lSchemeIdentifierManager.ClaimSchemeIdentifier("telnet");
+        NL_TEST_ASSERT(inSuite, lIdentifier != ConnectionSchemeIdentifierManager::kInvalidIdentifier);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lIdentifier);
+        NL_TEST_ASSERT(inSuite, lClaimed == true);
+
+        // 5.4: Claim and confirm another identifier.
+
+        lIdentifier = lSchemeIdentifierManager.ClaimSchemeIdentifier("telnet");
+        NL_TEST_ASSERT(inSuite, lIdentifier != ConnectionSchemeIdentifierManager::kInvalidIdentifier);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lIdentifier);
+        NL_TEST_ASSERT(inSuite, lClaimed == true);
+    }
+
     // 6: Test claiming some identifiers across various schemes,
     //    introspecting they are claimed, releasing two (2) of them,
     //    confirming they are no longer claimed, reclaiming them,
     //    confirming they are claimed, and then claiming and
     //    confirming another identifier.
 
+    {
+        ConnectionSchemeIdentifierManager                  lSchemeIdentifierManager;
+        bool                                               lClaimed;
+        bool                                               lReleased;
+        ConnectionSchemeIdentifierManager::IdentifierType  lIdentifier;
+        ConnectionSchemeIdentifierManager::IdentifierType  lReleasedIdentifiers[2];
+
+        // 6.1: Test claiming some identifiers across various schemes,
+        //      introspecting they are claimed.
+
+        lIdentifier = lSchemeIdentifierManager.ClaimSchemeIdentifier("telnet");
+        NL_TEST_ASSERT(inSuite, lIdentifier != ConnectionSchemeIdentifierManager::kInvalidIdentifier);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lIdentifier);
+        NL_TEST_ASSERT(inSuite, lClaimed == true);
+
+        lIdentifier = lSchemeIdentifierManager.ClaimSchemeIdentifier("telnet");
+        NL_TEST_ASSERT(inSuite, lIdentifier != ConnectionSchemeIdentifierManager::kInvalidIdentifier);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lIdentifier);
+        NL_TEST_ASSERT(inSuite, lClaimed == true);
+
+        lIdentifier = lSchemeIdentifierManager.ClaimSchemeIdentifier("telnet");
+        NL_TEST_ASSERT(inSuite, lIdentifier != ConnectionSchemeIdentifierManager::kInvalidIdentifier);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lIdentifier);
+        NL_TEST_ASSERT(inSuite, lClaimed == true);
+
+        lReleasedIdentifiers[0] = lIdentifier;
+
+        lIdentifier = lSchemeIdentifierManager.ClaimSchemeIdentifier("telnet");
+        NL_TEST_ASSERT(inSuite, lIdentifier != ConnectionSchemeIdentifierManager::kInvalidIdentifier);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lIdentifier);
+        NL_TEST_ASSERT(inSuite, lClaimed == true);
+
+        lIdentifier = lSchemeIdentifierManager.ClaimSchemeIdentifier("telnet");
+        NL_TEST_ASSERT(inSuite, lIdentifier != ConnectionSchemeIdentifierManager::kInvalidIdentifier);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lIdentifier);
+        NL_TEST_ASSERT(inSuite, lClaimed == true);
+
+        lIdentifier = lSchemeIdentifierManager.ClaimSchemeIdentifier("telnet");
+        NL_TEST_ASSERT(inSuite, lIdentifier != ConnectionSchemeIdentifierManager::kInvalidIdentifier);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lIdentifier);
+        NL_TEST_ASSERT(inSuite, lClaimed == true);
+
+        lReleasedIdentifiers[1] = lIdentifier;
+
+        lIdentifier = lSchemeIdentifierManager.ClaimSchemeIdentifier("telnet");
+        NL_TEST_ASSERT(inSuite, lIdentifier != ConnectionSchemeIdentifierManager::kInvalidIdentifier);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lIdentifier);
+        NL_TEST_ASSERT(inSuite, lClaimed == true);
+
+        // 6.2: Release two (2) of the identifiers and confirming they
+        //      are no longer claimed.
+
+        lReleased = lSchemeIdentifierManager.ReleaseSchemeIdentifier("telnet", lReleasedIdentifiers[0]);
+        NL_TEST_ASSERT(inSuite, lReleased == true);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lReleasedIdentifiers[0]);
+        NL_TEST_ASSERT(inSuite, lClaimed == false);
+
+        lReleased = lSchemeIdentifierManager.ReleaseSchemeIdentifier("telnet", lReleasedIdentifiers[1]);
+        NL_TEST_ASSERT(inSuite, lReleased == true);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lReleasedIdentifiers[1]);
+        NL_TEST_ASSERT(inSuite, lClaimed == false);
+
+        // 6.3: Attempt to reclaim the previously-released identifiers
+        //      and confirm that they are the same and are claimed.
+
+        lIdentifier = lSchemeIdentifierManager.ClaimSchemeIdentifier("telnet");
+        NL_TEST_ASSERT(inSuite, lIdentifier != ConnectionSchemeIdentifierManager::kInvalidIdentifier);
+        NL_TEST_ASSERT(inSuite, lIdentifier == lReleasedIdentifiers[0]);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lIdentifier);
+        NL_TEST_ASSERT(inSuite, lClaimed == true);
+
+        lIdentifier = lSchemeIdentifierManager.ClaimSchemeIdentifier("telnet");
+        NL_TEST_ASSERT(inSuite, lIdentifier != ConnectionSchemeIdentifierManager::kInvalidIdentifier);
+        NL_TEST_ASSERT(inSuite, lIdentifier == lReleasedIdentifiers[1]);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lIdentifier);
+        NL_TEST_ASSERT(inSuite, lClaimed == true);
+
+        // 6.4: Claim and confirm another identifier.
+
+        lIdentifier = lSchemeIdentifierManager.ClaimSchemeIdentifier("telnet");
+        NL_TEST_ASSERT(inSuite, lIdentifier != ConnectionSchemeIdentifierManager::kInvalidIdentifier);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lIdentifier);
+        NL_TEST_ASSERT(inSuite, lClaimed == true);
+    }
+
     // 7: Test claiming some identifiers across various schemes,
     //    introspecting they are claimed, releasing two (2) of them in
     //    a different order, confirming they are no longer claimed,
     //    reclaiming them, confirming they are claimed, and then
     //    claiming and confirming another identifier.
+
+    {
+        ConnectionSchemeIdentifierManager                  lSchemeIdentifierManager;
+        bool                                               lClaimed;
+        bool                                               lReleased;
+        ConnectionSchemeIdentifierManager::IdentifierType  lIdentifier;
+        ConnectionSchemeIdentifierManager::IdentifierType  lReleasedIdentifiers[2];
+
+        // 7.1: Test claiming some identifiers across various schemes,
+        //      introspecting they are claimed.
+
+        lIdentifier = lSchemeIdentifierManager.ClaimSchemeIdentifier("telnet");
+        NL_TEST_ASSERT(inSuite, lIdentifier != ConnectionSchemeIdentifierManager::kInvalidIdentifier);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lIdentifier);
+        NL_TEST_ASSERT(inSuite, lClaimed == true);
+
+        lIdentifier = lSchemeIdentifierManager.ClaimSchemeIdentifier("telnet");
+        NL_TEST_ASSERT(inSuite, lIdentifier != ConnectionSchemeIdentifierManager::kInvalidIdentifier);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lIdentifier);
+        NL_TEST_ASSERT(inSuite, lClaimed == true);
+
+        lIdentifier = lSchemeIdentifierManager.ClaimSchemeIdentifier("telnet");
+        NL_TEST_ASSERT(inSuite, lIdentifier != ConnectionSchemeIdentifierManager::kInvalidIdentifier);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lIdentifier);
+        NL_TEST_ASSERT(inSuite, lClaimed == true);
+
+        lReleasedIdentifiers[0] = lIdentifier;
+
+        lIdentifier = lSchemeIdentifierManager.ClaimSchemeIdentifier("telnet");
+        NL_TEST_ASSERT(inSuite, lIdentifier != ConnectionSchemeIdentifierManager::kInvalidIdentifier);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lIdentifier);
+        NL_TEST_ASSERT(inSuite, lClaimed == true);
+
+        lIdentifier = lSchemeIdentifierManager.ClaimSchemeIdentifier("telnet");
+        NL_TEST_ASSERT(inSuite, lIdentifier != ConnectionSchemeIdentifierManager::kInvalidIdentifier);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lIdentifier);
+        NL_TEST_ASSERT(inSuite, lClaimed == true);
+
+        lIdentifier = lSchemeIdentifierManager.ClaimSchemeIdentifier("telnet");
+        NL_TEST_ASSERT(inSuite, lIdentifier != ConnectionSchemeIdentifierManager::kInvalidIdentifier);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lIdentifier);
+        NL_TEST_ASSERT(inSuite, lClaimed == true);
+
+        lReleasedIdentifiers[1] = lIdentifier;
+
+        lIdentifier = lSchemeIdentifierManager.ClaimSchemeIdentifier("telnet");
+        NL_TEST_ASSERT(inSuite, lIdentifier != ConnectionSchemeIdentifierManager::kInvalidIdentifier);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lIdentifier);
+        NL_TEST_ASSERT(inSuite, lClaimed == true);
+
+        // 7.2: Release two (2) of the identifiers and confirming they
+        //      are no longer claimed.
+
+        lReleased = lSchemeIdentifierManager.ReleaseSchemeIdentifier("telnet", lReleasedIdentifiers[1]);
+        NL_TEST_ASSERT(inSuite, lReleased == true);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lReleasedIdentifiers[1]);
+        NL_TEST_ASSERT(inSuite, lClaimed == false);
+
+        lReleased = lSchemeIdentifierManager.ReleaseSchemeIdentifier("telnet", lReleasedIdentifiers[0]);
+        NL_TEST_ASSERT(inSuite, lReleased == true);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lReleasedIdentifiers[0]);
+        NL_TEST_ASSERT(inSuite, lClaimed == false);
+
+        // 7.3: Attempt to reclaim the previously-released identifiers
+        //      and confirm that they are the same and are claimed.
+
+        lIdentifier = lSchemeIdentifierManager.ClaimSchemeIdentifier("telnet");
+        NL_TEST_ASSERT(inSuite, lIdentifier != ConnectionSchemeIdentifierManager::kInvalidIdentifier);
+        NL_TEST_ASSERT(inSuite, lIdentifier == lReleasedIdentifiers[0]);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lIdentifier);
+        NL_TEST_ASSERT(inSuite, lClaimed == true);
+
+        lIdentifier = lSchemeIdentifierManager.ClaimSchemeIdentifier("telnet");
+        NL_TEST_ASSERT(inSuite, lIdentifier != ConnectionSchemeIdentifierManager::kInvalidIdentifier);
+        NL_TEST_ASSERT(inSuite, lIdentifier == lReleasedIdentifiers[1]);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lIdentifier);
+        NL_TEST_ASSERT(inSuite, lClaimed == true);
+
+        // 7.4: Claim and confirm another identifier.
+
+        lIdentifier = lSchemeIdentifierManager.ClaimSchemeIdentifier("telnet");
+        NL_TEST_ASSERT(inSuite, lIdentifier != ConnectionSchemeIdentifierManager::kInvalidIdentifier);
+
+        lClaimed = lSchemeIdentifierManager.IsSchemeIdentifierClaimed("telnet", lIdentifier);
+        NL_TEST_ASSERT(inSuite, lClaimed == true);
+    }
 }
 
 /**
