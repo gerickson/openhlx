@@ -67,7 +67,7 @@ ConnectionBasis :: ~ConnectionBasis(void)
     return;
 }
 
-Status ConnectionBasis :: Init(const RunLoopParameters &aRunLoopParameters)
+Status ConnectionBasis :: Init(const RunLoopParameters &aRunLoopParameters, const IdentifierType &aIdentifier)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
@@ -75,6 +75,7 @@ Status ConnectionBasis :: Init(const RunLoopParameters &aRunLoopParameters)
     lRetval = Common::ConnectionBasis::Init(aRunLoopParameters);
     nlREQUIRE_SUCCESS(lRetval, done);
 
+    mIdentifier        = aIdentifier;
     mState             = kState_Ready;
 
  done:
@@ -197,6 +198,12 @@ void ConnectionBasis :: OnError(const Common::Error &aError)
     {
         mDelegate->ConnectionError(*this, aError);
     }
+}
+
+ConnectionBasis::IdentifierType
+ConnectionBasis :: GetIdentifier(void) const
+{
+    return (mIdentifier);
 }
 
 bool ConnectionBasis :: IsState(State aState) const

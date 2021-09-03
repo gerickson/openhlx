@@ -98,7 +98,8 @@ ConnectionTelnet :: ~ConnectionTelnet(void)
     return;
 }
 
-Status ConnectionTelnet :: Init(const RunLoopParameters &aRunLoopParameters)
+Status ConnectionTelnet :: Init(const RunLoopParameters &aRunLoopParameters,
+                                const IdentifierType &aIdentifier)
 {
     DeclareScopedFunctionTracer(lTracer);
     const size_t lExpectedMatchCount = 0;
@@ -116,7 +117,7 @@ Status ConnectionTelnet :: Init(const RunLoopParameters &aRunLoopParameters)
     // Initialize the parent class now that the child intialization is
     // successfully finished.
 
-    lRetval = ConnectionBasis::Init(aRunLoopParameters);
+    lRetval = ConnectionBasis::Init(aRunLoopParameters, aIdentifier);
     nlREQUIRE_SUCCESS(lRetval, done);
 
  done:
@@ -545,9 +546,7 @@ void ConnectionTelnet :: CFWriteStreamCallback(CFWriteStreamRef aStream, CFStrea
             {
                 if (mWaitingForServerConfirmation)
                 {
-                    const unsigned int lClient = 1; // XXX
-
-                    telnet_raw_printf(mTelnet, "telnet_client_%u: connected\r\n", lClient);
+                    telnet_raw_printf(mTelnet, "telnet_client_%zu: connected\r\n", GetIdentifier());
 
                     mWaitingForServerConfirmation = false;
                 }
