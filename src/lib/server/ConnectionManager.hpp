@@ -40,6 +40,7 @@
 #include <OpenHLX/Server/ConnectionBasisDelegate.hpp>
 #include <OpenHLX/Server/ConnectionFactory.hpp>
 #include <OpenHLX/Server/ConnectionManagerDelegate.hpp>
+#include <OpenHLX/Server/ConnectionSchemeIdentifierManager.hpp>
 #include <OpenHLX/Server/ListenerBasis.hpp>
 #include <OpenHLX/Server/ListenerBasisAcceptDelegate.hpp>
 #include <OpenHLX/Server/ListenerBasisDelegate.hpp>
@@ -137,6 +138,8 @@ private:
 
     Common::Status Listen(const Common::SocketAddress *aFirst, const Common::SocketAddress *aLast);
 
+    Common::Status CreateConnection(CFStringRef aScheme, const int &aSocket, const Common::SocketAddress &aPeerAddress);
+
     Common::Status DisposeInactiveConnection(ConnectionBasis &aConnection);
     void FlushInactiveConnections(void);
 
@@ -152,6 +155,7 @@ private:
     Connections                                 mInactiveConnections;
     Common::RunLoopParameters                   mRunLoopParameters;
     ConnectionManagerDelegates                  mDelegates;
+    ConnectionSchemeIdentifierManager           mSchemeIdentifierManager;
 };
 
 }; // namespace Server

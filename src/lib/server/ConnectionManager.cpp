@@ -71,7 +71,8 @@ ConnectionManager :: ConnectionManager(void) :
     mListeners(),
     mActiveConnections(),
     mInactiveConnections(),
-    mDelegates()
+    mDelegates(),
+    mSchemeIdentifierManager()
 {
     return;
 }
@@ -330,6 +331,8 @@ done:
     return (lRetval);
 }
 
+
+
 /**
  *  @brief
  *    Adds a delegate to the connection manager.
@@ -496,11 +499,17 @@ ConnectionManager :: DisposeInactiveConnection(ConnectionBasis &aConnection)
     Connections::iterator  lCurrent = mActiveConnections.begin();
     Connections::iterator  lLast    = mActiveConnections.end();
     Connections::iterator  lResult;
+    bool                   lReleased;
     Status                 lRetval = kStatus_Success;
 
 
     lResult = std::find_if(lCurrent, lLast, HeterogeneousCompare<ConnectionBasis>(&aConnection));
     nlREQUIRE_ACTION(lResult != lLast, done, lRetval = -ENOENT);
+
+    // Release the connection scheme identifier for later reuse.
+
+    lReleased = mSchemeIdentifierManager.ReleaseSchemeIdentifier(CFString(aConnection.GetScheme()).GetUTF8String(), aConnection.GetIdentifier());
+    nlREQUIRE_ACTION(lReleased == true, done, lRetval = -EIDRM);
 
     // Move the result to the inactive connections collection.
 
@@ -517,6 +526,42 @@ ConnectionManager :: DisposeInactiveConnection(ConnectionBasis &aConnection)
 void ConnectionManager :: FlushInactiveConnections(void)
 {
     mInactiveConnections.clear();
+}
+
+Status
+ConnectionManager :: CreateConnection(CFStringRef aScheme, const int &aSocket, const Common::SocketAddress &aPeerAddress)
+{
+    bool                                               lSchemeSupported;
+    ConnectionSchemeIdentifierManager::IdentifierType  lIdentifier;
+    Connections::value_type                            lConnection;
+    Status                                             lRetval = kStatus_Success;
+
+    // Attempt to allocate and connect a new connection.
+
+    lSchemeSupported = mConnectionFactory.SupportsScheme(aScheme);
+    nlREQUIRE_ACTION(lSchemeSupported, done, lRetval = -EPROTONOSUPPORT);
+
+    lIdentifier = mSchemeIdentifierManager.ClaimSchemeIdentifier(CFString(aScheme).GetUTF8String());
+    nlREQUIRE_ACTION(lIdentifier != ConnectionSchemeIdentifierManager::kInvalidIdentifier, done, lRetval = -ENOMEM);
+
+    lConnection = mConnectionFactory.CreateConnection(aScheme);
+    nlREQUIRE_ACTION(lConnection != nullptr, done, lRetval = -ENOMEM);
+
+    lRetval = lConnection->Init(mRunLoopParameters, lIdentifier);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = lConnection->SetDelegate(this);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = lConnection->Connect(aSocket, aPeerAddress);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // Add the connection to the tracked list of active connections.
+
+    mActiveConnections.push_back(std::move(lConnection));
+
+ done:
+    return (lRetval);
 }
 
 void
@@ -679,36 +724,15 @@ void ConnectionManager :: ListenerError(ListenerBasis &aListener, const Common::
 
 Status ConnectionManager :: ListenerDidAccept(ListenerBasis &aListener, const int &aSocket, const Common::SocketAddress &aPeerAddress)
 {
-    CFStringRef                       lScheme = aListener.GetScheme();
-    bool                              lSchemeSupported;
-    Connections::value_type           lConnection;
-    Status                            lRetval = kStatus_Success;
+    Status  lRetval = kStatus_Success;
 
     // We have a new connection, first flush any
     // previously-garbage-collected inactive connections.
 
     FlushInactiveConnections();
 
-    // Attempt to allocate and connect a new connection.
-
-    lSchemeSupported = mConnectionFactory.SupportsScheme(lScheme);
-    nlREQUIRE_ACTION(lSchemeSupported, done, lRetval = -EPROTONOSUPPORT);
-
-    lConnection = mConnectionFactory.CreateConnection(lScheme);
-    nlREQUIRE_ACTION(lConnection != nullptr, done, lRetval = -ENOMEM);
-
-    lRetval = lConnection->Init(mRunLoopParameters);
+    lRetval = CreateConnection(aListener.GetScheme(), aSocket, aPeerAddress);
     nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = lConnection->SetDelegate(this);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = lConnection->Connect(aSocket, aPeerAddress);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    // Add the connection to the tracked list of active connections.
-
-    mActiveConnections.push_back(std::move(lConnection));
 
  done:
     return (lRetval);
