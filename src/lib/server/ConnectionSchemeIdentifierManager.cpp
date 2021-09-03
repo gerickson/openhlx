@@ -24,12 +24,9 @@
 
 #include "ConnectionSchemeIdentifierManager.hpp"
 
-#include <LogUtilities/LogUtilities.hpp>
-
 #include <OpenHLX/Utilities/Assert.hpp>
 
 
-using namespace Nuovations;
 using namespace std;
 
 
@@ -44,21 +41,12 @@ static constexpr ConnectionSchemeIdentifierManager::IdentifierType kFirstIdentif
 // MARK: Observers
 
 bool
-ConnectionSchemeIdentifierManager :: IsSchemeIdentifierClaimed(const char *aScheme, const IdentifierType &aIdentifier) const
-{
-    return (IsSchemeIdentifierClaimed(string(aScheme), aIdentifier));
-}
-
-bool
 ConnectionSchemeIdentifierManager :: IsSchemeIdentifierClaimed(const std::string &aScheme, const IdentifierType &aIdentifier) const
 {
     SchemeIdentifierMap::const_iterator  lIdentifiers;
     IdentifierMap::const_iterator        lIdentifier;
     bool                                 lRetval = false;
 
-
-    Log::Debug().Write("%s: aScheme '%s' aIdentifier %zu\n",
-                       __func__, aScheme.c_str(), aIdentifier);
 
     nlREQUIRE(aIdentifier != kInvalidIdentifier, done);
     nlREQUIRE(!aScheme.empty(), done);
@@ -76,8 +64,6 @@ ConnectionSchemeIdentifierManager :: IsSchemeIdentifierClaimed(const std::string
     lRetval = (lIdentifier != lIdentifiers->second.mIdentifierMap.end());
 
  done:
-    Log::Debug().Write("%s: lRetval %u\n", __func__, lRetval);
-
     return (lRetval);
 }
 
@@ -87,10 +73,9 @@ ConnectionSchemeIdentifierManager::IdentifierType
 ConnectionSchemeIdentifierManager :: ClaimSchemeIdentifier(const std::string &aScheme)
 {
     SchemeIdentifierMap::iterator  lIdentifiers;
+    IdentifierMapState *           lIdentifierMapState;
     IdentifierType                 lRetval = kInvalidIdentifier;
 
-
-    Log::Debug().Write("%s: aScheme '%s'\n", __func__, aScheme.c_str());
 
     nlREQUIRE(!aScheme.empty(), done);
 
@@ -105,39 +90,30 @@ ConnectionSchemeIdentifierManager :: ClaimSchemeIdentifier(const std::string &aS
 
     if (lIdentifiers == mSchemeIdentifierMap.end())
     {
-        Log::Debug().Write("%s: First time seeing scheme '%s'\n", __func__, aScheme.c_str());
-        constexpr IdentifierType  lIdentifier = kFirstIdentifier;
-        const auto                lResult     = mSchemeIdentifierMap[aScheme].mIdentifierMap.insert(lIdentifier);
+        lIdentifierMapState = &mSchemeIdentifierMap[aScheme];
 
-        if (lResult.second)
-        {
-            mSchemeIdentifierMap[aScheme].mNextIdentifier = lIdentifier + 1;
-
-            lRetval = lIdentifier;
-        }
+        lRetval = kFirstIdentifier;
     }
     else
     {
-        Log::Debug().Write("%s: We've seen scheme '%s' before!\n", __func__, aScheme.c_str());
-        const IdentifierType  lIdentifier = lIdentifiers->second.mNextIdentifier;
-        const auto            lResult     = lIdentifiers->second.mIdentifierMap.insert(lIdentifier);
+        lIdentifierMapState = &lIdentifiers->second;
+
+        lRetval = lIdentifiers->second.mNextIdentifier;
+    }
+
+    {
+        const auto lResult = lIdentifierMapState->mIdentifierMap.insert(lRetval);
 
         if (lResult.second)
         {
-            lIdentifiers->second.mNextIdentifier = lIdentifier + 1;
+            lIdentifierMapState->mNextIdentifier = lRetval + 1;
 
-            lRetval = lIdentifier;
-
-            while (lIdentifiers->second.mIdentifierMap.find(lIdentifiers->second.mNextIdentifier) != lIdentifiers->second.mIdentifierMap.end())
+            while (lIdentifierMapState->mIdentifierMap.find(lIdentifierMapState->mNextIdentifier) != lIdentifierMapState->mIdentifierMap.end())
             {
-                lIdentifiers->second.mNextIdentifier++;
+                lIdentifierMapState->mNextIdentifier++;
             }
         }
-
-        Log::Debug().Write("%s: the next identifier is %zu\n", __func__, lIdentifiers->second.mNextIdentifier);
     }
-
-    Log::Debug().Write("%s: lRetval %zu\n", __func__, lRetval);
 
  done:
     return (lRetval);
@@ -150,9 +126,6 @@ ConnectionSchemeIdentifierManager :: ReleaseSchemeIdentifier(const std::string &
     IdentifierMap::const_iterator  lIdentifier;
     bool                           lRetval = false;
 
-
-    Log::Debug().Write("%s: aScheme '%s' aIdentifier %zu\n",
-                       __func__, aScheme.c_str(), aIdentifier);
 
     nlREQUIRE(aIdentifier != kInvalidIdentifier, done);
     nlREQUIRE(!aScheme.empty(), done);
@@ -170,9 +143,6 @@ ConnectionSchemeIdentifierManager :: ReleaseSchemeIdentifier(const std::string &
     lRetval = (lIdentifier != lIdentifiers->second.mIdentifierMap.end());
     nlREQUIRE(lRetval == true, done);
 
-    Log::Debug().Write("%s: found identifier %zu\n", __func__, *lIdentifier);
-    Log::Debug().Write("%s: next identifier is %zu\n", __func__, lIdentifiers->second.mNextIdentifier);
-
     // Remove the identifier
 
     lIdentifiers->second.mIdentifierMap.erase(lIdentifier);
@@ -184,11 +154,7 @@ ConnectionSchemeIdentifierManager :: ReleaseSchemeIdentifier(const std::string &
     if (aIdentifier < lIdentifiers->second.mNextIdentifier)
     {
         lIdentifiers->second.mNextIdentifier = aIdentifier;
-
-        printf("%s: next identifier is now %zu\n", __func__, lIdentifiers->second.mNextIdentifier);
     }
-
-    Log::Debug().Write("%s: lRetval %u\n", __func__, lRetval);
 
  done:
     return (lRetval);

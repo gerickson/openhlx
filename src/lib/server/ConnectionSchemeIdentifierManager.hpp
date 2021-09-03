@@ -56,7 +56,6 @@ public:
 
     // Observers
 
-    bool IsSchemeIdentifierClaimed(const char *aScheme, const IdentifierType &aIdentifier) const;
     bool IsSchemeIdentifierClaimed(const std::string &aScheme, const IdentifierType &aIdentifier) const;
 
     // Mutators
