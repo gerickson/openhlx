@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file defines an object for...
+ *      This file defines a templated object for managing a collection
+ *      of HLX object controllers from an application controller.
  *
  */
 
@@ -40,6 +41,14 @@ namespace Common
 namespace Application
 {
 
+/**
+ *  @brief
+ *    A template object for managing a collection of HLX object
+ *    controllers from an application controller.
+ *
+ *  @tparam  T  The basis type of the object controllers to manage.
+ *
+ */
 template <typename T>
 class ObjectControllerContainerTemplate
 {
@@ -52,14 +61,31 @@ public:
 protected:
     ObjectControllerContainerTemplate(void) = default;
 
+    /**
+     *  @brief
+     *    This is a class initializer.
+     *
+     *  @retval  kStatus_Success  If successful.
+     *
+     */
     Common::Status Init(void)
     {
         return (kStatus_Success);
     }
 
 protected:
+    /**
+     *  @brief
+     *    A wrapper type for the object controller basis type
+     *    maintained by this object.
+     *
+     */
     struct ObjectControllerState
     {
+        /**
+         *  A pointer to the object controller basis type.
+         *
+         */
         ObjectControllerBasisType * mController;
     };
 

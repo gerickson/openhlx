@@ -66,6 +66,10 @@ public:
      *
      *  @param[in]  aConnectionManager  A reference to the connection
      *                                  manager that issued the delegation.
+     *  @param[in]  aRoles              An immutable reference to the roles
+     *                                  in which the connection manager
+     *                                  that issued the delegation is
+     *                                  acting.
      *  @param[in]  aHost               A pointer to a null-terminated C
      *                                  string containing the host
      *                                  name that will resolve.
@@ -80,6 +84,10 @@ public:
      *
      *  @param[in]  aConnectionManager  A reference to the connection
      *                                  manager that issued the delegation.
+     *  @param[in]  aRoles              An immutable reference to the roles
+     *                                  in which the connection manager
+     *                                  that issued the delegation is
+     *                                  acting.
      *  @param[in]  aHost               A pointer to a null-terminated C
      *                                  string containing the host
      *                                  name that is resolving.
@@ -99,6 +107,10 @@ public:
      *
      *  @param[in]  aConnectionManager  A reference to the connection
      *                                  manager that issued the delegation.
+     *  @param[in]  aRoles              An immutable reference to the roles
+     *                                  in which the connection manager
+     *                                  that issued the delegation is
+     *                                  acting.
      *  @param[in]  aHost               A pointer to a null-terminated C
      *                                  string containing the host
      *                                  name that did resolve.
@@ -116,6 +128,10 @@ public:
      *
      *  @param[in]  aConnectionManager  A reference to the connection
      *                                  manager that issued the delegation.
+     *  @param[in]  aRoles              An immutable reference to the roles
+     *                                  in which the connection manager
+     *                                  that issued the delegation is
+     *                                  acting.
      *  @param[in]  aHost               A pointer to a null-terminated C
      *                                  string containing the host
      *                                  name that did not resolve.
@@ -135,6 +151,10 @@ public:
      *
      *  @param[in]  aConnectionManager  A reference to the connection
      *                                  manager that issued the delegation.
+     *  @param[in]  aRoles              An immutable reference to the roles
+     *                                  in which the connection manager
+     *                                  that issued the delegation is
+     *                                  acting.
      *  @param[in]  aURLRef             The URL associated with the peer
      *                                  server.
      *
@@ -148,6 +168,10 @@ public:
      *
      *  @param[in]  aConnectionManager  A reference to the connection
      *                                  manager that issued the delegation.
+     *  @param[in]  aRoles              An immutable reference to the roles
+     *                                  in which the connection manager
+     *                                  that issued the delegation is
+     *                                  acting.
      *  @param[in]  aURLRef             The URL associated with the peer
      *                                  server.
      *  @param[in]  aError              An immutable reference to the error
@@ -163,6 +187,10 @@ public:
      *
      *  @param[in]  aConnectionManager  A reference to the connection
      *                                  manager that issued the delegation.
+     *  @param[in]  aRoles              An immutable reference to the roles
+     *                                  in which the connection manager
+     *                                  that issued the delegation is
+     *                                  acting.
      *  @param[in]  aURLRef             The URL associated with the peer
      *                                  server.
      *  @param[in]  aError              An immutable reference to the error
@@ -185,6 +213,10 @@ public:
      *
      *  @param[in]  aConnectionManager  A reference to the connection
      *                                  manager that issued the delegation.
+     *  @param[in]  aRoles              An immutable reference to the roles
+     *                                  in which the connection manager
+     *                                  that issued the delegation is
+     *                                  acting.
      *  @param[in]  aError              An immutable reference to the error
      *                                  associated with the event.
      *

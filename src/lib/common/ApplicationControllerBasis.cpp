@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file defines an object for...
+ *      This file implements a base object for all HLX application
+ *      controllers.
  *
  */
 
@@ -37,6 +38,15 @@ namespace Common
 namespace Application
 {
 
+/**
+ *  @brief
+ *    This is a class initializer.
+ *
+ *  This initializes the application controller basis.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
 Status
 ControllerBasis :: Init(void)
 {

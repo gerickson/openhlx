@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file defines an object for...
+ *      This file defines a base object for all HLX application
+ *      controllers.
  *
  */
 
@@ -40,6 +41,14 @@ namespace Common
 namespace Application
 {
 
+/**
+ *  @brief
+ *    A base object for all HLX application controllers.
+ *
+ *  @ingroup common
+ *  @ingroup application
+ *
+ */
 class ControllerBasis
 {
 public:
