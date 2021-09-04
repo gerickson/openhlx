@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file defines an object for...
+ *      This file implements an object for vending and managing
+ *      connection scheme (for example, 'telnet') identifiers.
  *
  */
 

@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file defines an object for...
+ *      This file defines an object for vending and managing
+ *      connection scheme (for example, 'telnet') identifiers.
  *
  */
 
@@ -40,6 +41,19 @@ namespace HLX
 namespace Server
 {
 
+/**
+ *  @brief
+ *    An object for for vending and managing connection scheme (for
+ *    example, 'telnet') identifiers.
+ *
+ *  This HLX protocol has a server-to-client connection confirmation
+ *  of the form '<scheme>_client_<identifier>: connected' that occurs
+ *  after the TCP connection but before the server accepts any command
+ *  requests from the client. This object vends and manages those
+ *  identifiers that connections use to format and send such
+ *  confirmations.
+ *
+ */
 class ConnectionSchemeIdentifierManager
 {
 public:
