@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file defines an object for...
+ *      This file defines a base object for realizing a HLX
+ *      infrared remote control interface controller, in a client.
  *
  */
 

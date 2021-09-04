@@ -52,7 +52,8 @@ namespace Command
  *    observation command request buffer.
  *
  *  A derivable object for a HLX client data model properties
- *  observation (that is, query) command request buffer.
+ *  observation (that is, query) command request buffer, taking a
+ *  free-form property representation.
  *
  *  @ingroup client
  *  @ingroup command
@@ -75,6 +76,20 @@ private:
     using RequestBasis::Init;
 };
 
+/**
+ *  @brief
+ *    A derivable object for a HLX client data model properties
+ *    observation command request buffer.
+ *
+ *  A derivable object for a HLX client data model properties
+ *  observation (that is, query) command request buffer, taking a
+ *  property representation as a single character or null-terminated C
+ *  string.
+ *
+ *  @ingroup client
+ *  @ingroup command
+ *
+ */
 class QueryPropertyRequestBasis :
     virtual public Client::Command::RequestBasis,
     public Common::Command::QueryBufferBasis

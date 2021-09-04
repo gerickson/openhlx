@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file implements an object for....
+ *      This file implements a base object for realizing a HLX
+ *      sources controller, in a client.
  *
  */
 

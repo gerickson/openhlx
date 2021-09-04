@@ -195,7 +195,7 @@ ConnectionBasis :: Disconnect(void)
  *
  */
 Status
-ConnectionBasis :: Disconnect(const Error &aError)
+ConnectionBasis :: Disconnect(const Common::Error &aError)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;

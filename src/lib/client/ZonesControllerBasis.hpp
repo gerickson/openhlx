@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file defines an object for...
+ *      This file defines a base object for realizing a HLX
+ *      zones controller, in a client.
  *
  */
 

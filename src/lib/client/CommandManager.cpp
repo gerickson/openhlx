@@ -785,6 +785,10 @@ Status CommandManager :: DispatchResponse(ConnectionBuffer::ImmutableCountedPoin
  *
  *  @param[in]  aConnectionManager  A reference to the connection
  *                                  manager that issued the delegation.
+ *  @param[in]  aRoles              An immutable reference to the roles
+ *                                  in which the connection manager
+ *                                  that issued the delegation is
+ *                                  acting.
  *  @param[in]  aHost               A pointer to a null-terminated C
  *                                  string containing the host
  *                                  name that will resolve.
@@ -805,6 +809,10 @@ CommandManager :: ConnectionManagerWillResolve(Common::ConnectionManagerBasis &a
  *
  *  @param[in]  aConnectionManager  A reference to the connection
  *                                  manager that issued the delegation.
+ *  @param[in]  aRoles              An immutable reference to the roles
+ *                                  in which the connection manager
+ *                                  that issued the delegation is
+ *                                  acting.
  *  @param[in]  aHost               A pointer to a null-terminated C
  *                                  string containing the host
  *                                  name that is resolving.
@@ -830,6 +838,10 @@ CommandManager :: ConnectionManagerIsResolving(Common::ConnectionManagerBasis &a
  *
  *  @param[in]  aConnectionManager  A reference to the connection
  *                                  manager that issued the delegation.
+ *  @param[in]  aRoles              An immutable reference to the roles
+ *                                  in which the connection manager
+ *                                  that issued the delegation is
+ *                                  acting.
  *  @param[in]  aHost               A pointer to a null-terminated C
  *                                  string containing the host
  *                                  name that did resolve.
@@ -854,6 +866,10 @@ CommandManager :: ConnectionManagerDidResolve(Common::ConnectionManagerBasis &aC
  *
  *  @param[in]  aConnectionManager  A reference to the connection
  *                                  manager that issued the delegation.
+ *  @param[in]  aRoles              An immutable reference to the roles
+ *                                  in which the connection manager
+ *                                  that issued the delegation is
+ *                                  acting.
  *  @param[in]  aHost               A pointer to a null-terminated C
  *                                  string containing the host
  *                                  name that did not resolve.
@@ -1079,6 +1095,10 @@ CommandManager :: ConnectionManagerDidReceiveApplicationData(Common::ConnectionM
  *
  *  @param[in]  aConnectionManager  A reference to the connection manager
  *                                  that issued the delegation.
+ *  @param[in]  aRoles              An immutable reference to the roles
+ *                                  in which the connection manager
+ *                                  that issued the delegation is
+ *                                  acting.
  *  @param[in]  aURLRef             The URL associated with the peer server.
  *
  */
@@ -1097,13 +1117,17 @@ CommandManager :: ConnectionManagerWillDisconnect(Common::ConnectionManagerBasis
  *
  *  @param[in]  aConnectionManager  A reference to the connection manager
  *                                  that issued the delegation.
+ *  @param[in]  aRoles              An immutable reference to the roles
+ *                                  in which the connection manager
+ *                                  that issued the delegation is
+ *                                  acting.
  *  @param[in]  aURLRef             The URL associated with the peer server.
  *  @param[in]  aError              An immutable reference to the error
  *                                  associated with the disconnection.
  *
  */
 void
-CommandManager :: ConnectionManagerDidDisconnect(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, CFURLRef aURLRef, const Common::Error &aError)
+CommandManager :: ConnectionManagerDidDisconnect(Common::ConnectionManagerBasis &aConnectionManager, const Common::ConnectionManagerBasis::Roles &aRoles, CFURLRef aURLRef, const Common::Error &aError)
 {
     (void)aConnectionManager;
     (void)aRoles;
@@ -1124,6 +1148,10 @@ CommandManager :: ConnectionManagerDidDisconnect(Common::ConnectionManagerBasis 
  *
  *  @param[in]  aConnectionManager  A reference to the connection manager
  *                                  that issued the delegation.
+ *  @param[in]  aRoles              An immutable reference to the roles
+ *                                  in which the connection manager
+ *                                  that issued the delegation is
+ *                                  acting.
  *  @param[in]  aURLRef             The URL associated with the peer server.
  *  @param[in]  aError              An immutable reference to the error
  *                                  associated with the failed
@@ -1131,7 +1159,7 @@ CommandManager :: ConnectionManagerDidDisconnect(Common::ConnectionManagerBasis 
  *
  */
 void
-CommandManager :: ConnectionManagerDidNotDisconnect(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, CFURLRef aURLRef, const Common::Error &aError)
+CommandManager :: ConnectionManagerDidNotDisconnect(Common::ConnectionManagerBasis &aConnectionManager, const Common::ConnectionManagerBasis::Roles &aRoles, CFURLRef aURLRef, const Common::Error &aError)
 {
     (void)aConnectionManager;
     (void)aRoles;
@@ -1152,12 +1180,16 @@ CommandManager :: ConnectionManagerDidNotDisconnect(Common::ConnectionManagerBas
  *
  *  @param[in]  aConnectionManager  A reference to the connection manager
  *                                  that issued the delegation.
+ *  @param[in]  aRoles              An immutable reference to the roles
+ *                                  in which the connection manager
+ *                                  that issued the delegation is
+ *                                  acting.
  *  @param[in]  aError              An immutable reference to the error
  *                                  associated with the event.
  *
  */
 void
-CommandManager :: ConnectionManagerError(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, const Common::Error &aError)
+CommandManager :: ConnectionManagerError(Common::ConnectionManagerBasis &aConnectionManager, const Common::ConnectionManagerBasis::Roles &aRoles, const Common::Error &aError)
 {
     (void)aConnectionManager;
     (void)aRoles;
