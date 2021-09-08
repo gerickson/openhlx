@@ -49,11 +49,40 @@ class ConnectionManager;
 class ListenerBasisAcceptDelegate
 {
 public:
+    // Con/destructor
+
     ListenerBasisAcceptDelegate(void) = default;
     ~ListenerBasisAcceptDelegate(void) = default;
 
-    // Accept
+    // Accept Method
 
+    /**
+     *  @brief
+     *    Delegation from a connection listener that it did accept a
+     *    connection from a peer client on the specified socket with
+     *    the specified address.
+     *
+     *  The delegate should create whatever management state is
+     *  necessary for tracking the accepted connection and return
+     *  successful status if it was successfully able to do so. If the
+     *  delegate is unable to successfully handle the accepted
+     *  connection, non-successful status should be returned and the
+     *  connection will be closed and discarded.
+     *
+     *  @param[in]  aListener  A reference to the connection listener
+     *                         that issued the delegation.
+     *  @param[in]  aSocket    An immutable reference to the socket
+     *                         associated with the accepted connection.
+     *  @param[in]  aAddress   An immutable reference to the socket
+     *                         address associated with the peer client
+     *                         at the remote end of the accepted
+     *                         connection.
+     *
+     *  @returns
+     *    kStatus_Success if the delegate successfully handled the
+     *    delegation; otherwise, non-successful status on error.
+     *
+     */
     virtual Common::Status ListenerDidAccept(ListenerBasis &aListener, const int &aSocket, const Common::SocketAddress &aAddress) = 0;
 };
 
