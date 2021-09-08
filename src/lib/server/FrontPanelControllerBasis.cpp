@@ -41,10 +41,18 @@ namespace HLX
 namespace Server
 {
 
-// Request data
+// Class-scoped Command Request Regular Expression Data
 
+//!< Class-scoped server front panel query command request regular
+//!< expression.
 Server::Command::FrontPanel::QueryRequest          FrontPanelControllerBasis::kQueryRequest;
+
+//!< Class-scoped server front panel set brightness level command
+//!< request regular expression.
 Server::Command::FrontPanel::SetBrightnessRequest  FrontPanelControllerBasis::kSetBrightnessRequest;
+
+//!< Class-scoped server front panel set locked state command request
+//!< regular expression.
 Server::Command::FrontPanel::SetLockedRequest      FrontPanelControllerBasis::kSetLockedRequest;
 
 /**
