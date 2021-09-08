@@ -41,8 +41,10 @@ namespace HLX
 namespace Server
 {
 
-// Request data
+// Class-scoped Command Request Regular Expression Data
 
+//!< Class-scoped server source set name command request regular
+//!< expression.
 Server::Command::Sources::SetNameRequest      SourcesControllerBasis::kSetNameRequest;
 
 /**
