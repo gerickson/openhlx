@@ -46,34 +46,145 @@ class ConnectionBasis;
  *    A delegate interface for the HLX server peer-to-peer network
  *    connection basis object.
  *
+ *  This delegate interface allows interested delegates to receive
+ *  notifications regarding the pending and stable state of a server
+ *  connection as it moves through its lifetime.
+ *
  *  @ingroup server
  *
  */
 class ConnectionBasisDelegate
 {
 public:
+    // Con/destructor
+
     ConnectionBasisDelegate(void) = default;
     ~ConnectionBasisDelegate(void) = default;
 
-    // Accept
+    // Accept Methods
 
+    /**
+     *  @brief
+     *    Delegation from a connection that it will accept a
+     *    connection from a peer client.
+     *
+     *  @param[in]  aConnection  A reference to the connection
+     *                           that issued the delegation.
+     *
+     */
     virtual void ConnectionWillAccept(ConnectionBasis &aConnection) = 0;
+
+    /**
+     *  @brief
+     *    Delegation from a connection that it is in the process of
+     *    accepting a connection from a peer client.
+     *
+     *  @param[in]  aConnection  A reference to the connection
+     *                           that issued the delegation.
+     *
+     */
     virtual void ConnectionIsAccepting(ConnectionBasis &aConnection) = 0;
+
+    /**
+     *  @brief
+     *    Delegation from a connection that it did accept a
+     *    connection from a peer client.
+     *
+     *  @param[in]  aConnection  A reference to the connection
+     *                           that issued the delegation.
+     *
+     */
     virtual void ConnectionDidAccept(ConnectionBasis &aConnection) = 0;
+
+    /**
+     *  @brief
+     *    Delegation from a connection that it did not accept a
+     *    connection from a peer client.
+     *
+     *  @param[in]  aConnection  A reference to the connection
+     *                           that issued the delegation.
+     *  @param[in]  aError       An immutable reference to the
+     *                           error associated with the
+     *                           failed accept.
+     *
+     */
     virtual void ConnectionDidNotAccept(ConnectionBasis &aConnection, const Common::Error &aError) = 0;
 
-    // Application Data
+    // MARK: Application Data Method
 
+    /**
+     *  @brief
+     *    Delegation from a connection that the connection has received
+     *    application data.
+     *
+     *  @param[in]  aConnection  A reference to the connection that
+     *                           issued the delegation.
+     *  @param[in]  aBuffer      The buffer containing the received
+     *                           application data.
+     *
+     */
     virtual void ConnectionDidReceiveApplicationData(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer aBuffer) = 0;
 
-    // Disconnect
+    // MARK: Disconnect Methods
 
+    /**
+     *  @brief
+     *    Delegation from a connection that the connection to a peer
+     *    will disconnect.
+     *
+     *  @param[in]  aConnection  A reference to the connection that
+     *                           issued the delegation.
+     *  @param[in]  aURLRef      The URL associated with the peer.
+     *
+     */
     virtual void ConnectionWillDisconnect(ConnectionBasis &aConnection, CFURLRef aURLRef) = 0;
+
+    /**
+     *  @brief
+     *    Delegation from a connection that the connection to a peer
+     *    did disconnect.
+     *
+     *  @param[in]  aConnection  A reference to the connection that
+     *                           issued the delegation.
+     *  @param[in]  aURLRef      The URL associated with the peer.
+     *  @param[in]  aError       An immutable reference to the error
+     *                           associated with the disconnection.
+     *
+     */
     virtual void ConnectionDidDisconnect(ConnectionBasis &aConnection, CFURLRef aURLRef, const Common::Error &aError) = 0;
+
+    /**
+     *  @brief
+     *    Delegation from a connection that the connection to a peer
+     *    did not disconnect.
+     *
+     *  @param[in]  aConnection  A reference to the connection that
+     *                           issued the delegation.
+     *  @param[in]  aURLRef      The URL associated with the peer.
+     *  @param[in]  aError       An immutable reference to the error
+     *                           associated with the failed
+     *                           disconnection.
+     *
+     */
     virtual void ConnectionDidNotDisconnect(ConnectionBasis &aConnection, CFURLRef aURLRef, const Common::Error &aError) = 0;
 
-    // Error
+    // MARK: Error Method
 
+    /**
+     *  @brief
+     *    Delegation from a connection that the connection to a
+     *    peer experienced an error.
+     *
+     *  @note
+     *    This delegation may occur along with other delegations with
+     *    respect to the same underlying event or cause.
+     *
+     *  @param[in]  aConnection  A reference to the connection that
+     *                           issued the delegation.
+     *  @param[in]  aError       An immutable reference to the error
+     *                           associated with the event.
+     *
+     */
     virtual void ConnectionError(ConnectionBasis &aConnection, const Common::Error &aError) = 0;
 };
 
