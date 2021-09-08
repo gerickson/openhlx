@@ -41,12 +41,26 @@ namespace HLX
 namespace Server
 {
 
-// Request data
+// Class-scoped Command Request Regular Expression Data
 
+//!< Class-scoped server equalizer preset decrease equalizer band level
+//!< command request regular expression.
 Server::Command::EqualizerPresets::DecreaseBandRequest  EqualizerPresetsControllerBasis::kDecreaseBandRequest;
+
+//!< Class-scoped server equalizer preset increase equalizer band level
+//!< command request regular expression.
 Server::Command::EqualizerPresets::IncreaseBandRequest  EqualizerPresetsControllerBasis::kIncreaseBandRequest;
+
+//!< Class-scoped server equalizer preset query command request regular
+//!< expression.
 Server::Command::EqualizerPresets::QueryRequest         EqualizerPresetsControllerBasis::kQueryRequest;
+
+//!< Class-scoped server equalizer preset set equalizer band level
+//!< command request regular expression.
 Server::Command::EqualizerPresets::SetBandRequest       EqualizerPresetsControllerBasis::kSetBandRequest;
+
+//!< Class-scoped server zone set name command request regular
+//!< expression.
 Server::Command::EqualizerPresets::SetNameRequest       EqualizerPresetsControllerBasis::kSetNameRequest;
 
 /**
