@@ -391,10 +391,14 @@ ConnectionTelnet :: CloseStreams(void)
 
 /**
  *  @brief
- *    Disconnect from the peer.
+ *    Disconnect from the HLX server peer with the specified error.
  *
  *  This attempts to asynchronously disconnect from the
- *  currently-connected peer, if any.
+ *  currently-connected HLX server peer, if any, with the specified
+ *  error (that is, reason for disconnection), for example -ETIMEDOUT.
+ *
+ *  @param[in]  aError  A reference to the error associated with the
+ *                      reason for the disconnection.
  *
  *  @retval  kStatus_Success  If successful.
  *
