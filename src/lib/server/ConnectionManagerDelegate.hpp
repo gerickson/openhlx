@@ -18,7 +18,7 @@
 
 /**
  *    @file
- *      This file defines a delegate interface for the server
+ *      This file defines a delegate interface for the HLX server
  *      connection manager object.
  *
  */
@@ -39,11 +39,11 @@ class ConnectionManager;
 
 /**
  *  @brief
- *    A delegate interface for the server connection manager object.
+ *    A delegate interface for the HLX server connection manager object.
  *
  *  This delegate interface allows interested delegates to receive
- *  notifications regarding the pending and stable state of a server
- *  connection as it moves through its lifetime.
+ *  notifications regarding the pending and stable state of server
+ *  connections as they move through their lifetime.
  *
  *  @ingroup server
  *
