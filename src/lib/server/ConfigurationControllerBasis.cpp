@@ -40,11 +40,22 @@ namespace HLX
 namespace Server
 {
 
-// Request data
+// Class-scoped Command Request Regular Expression Data
 
+//!< Class-scoped server load from backup configuration command request regular
+//!< expression.
 Server::Command::Configuration::LoadFromBackupRequest   ConfigurationControllerBasis::kLoadFromBackupRequest;
+
+//!< Class-scoped server query current configuration command request regular
+//!< expression.
 Server::Command::Configuration::QueryCurrentRequest     ConfigurationControllerBasis::kQueryCurrentRequest;
+
+//!< Class-scoped server reset to defaults configuration command request regular
+//!< expression.
 Server::Command::Configuration::ResetToDefaultsRequest  ConfigurationControllerBasis::kResetToDefaultsRequest;
+
+//!< Class-scoped server save to backup configuration command request regular
+//!< expression.
 Server::Command::Configuration::SaveToBackupRequest     ConfigurationControllerBasis::kSaveToBackupRequest;
 
 /**
