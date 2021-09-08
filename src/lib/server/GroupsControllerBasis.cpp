@@ -48,18 +48,49 @@ typedef std::vector<ZoneModel::IdentifierType>   ZoneIdentifiers;
 
 };
 
-// Request data
+// Class-scoped Command Request Regular Expression Data
 
+//!< Class-scoped server group add zone command request regular
+//!< expression.
 Server::Command::Groups::AddZoneRequest         GroupsControllerBasis::kAddZoneRequest;
+
+//!< Class-scoped server group remove (clear) all zones command
+//!< request regular expression.
 Server::Command::Groups::ClearZonesRequest      GroupsControllerBasis::kClearZonesRequest;
+
+//!< Class-scoped server group decrease volume level command request regular
+//!< expression.
 Server::Command::Groups::DecreaseVolumeRequest  GroupsControllerBasis::kDecreaseVolumeRequest;
+
+//!< Class-scoped server group increase volume level command request regular
+//!< expression.
 Server::Command::Groups::IncreaseVolumeRequest  GroupsControllerBasis::kIncreaseVolumeRequest;
+
+//!< Class-scoped server group volume mute state command request regular
+//!< expression.
 Server::Command::Groups::MuteRequest            GroupsControllerBasis::kMuteRequest;
+
+//!< Class-scoped server group query command request regular expression.
 Server::Command::Groups::QueryRequest           GroupsControllerBasis::kQueryRequest;
+
+//!< Class-scoped server group remove zone command request regular
+//!< expression.
 Server::Command::Groups::RemoveZoneRequest      GroupsControllerBasis::kRemoveZoneRequest;
+
+//!< Class-scoped server group set name command request regular
+//!< expression.
 Server::Command::Groups::SetNameRequest         GroupsControllerBasis::kSetNameRequest;
+
+//!< Class-scoped server group set source (input) command request
+//!< regular expression.
 Server::Command::Groups::SetSourceRequest       GroupsControllerBasis::kSetSourceRequest;
+
+//!< Class-scoped server group set volume level command request regular
+//!< expression.
 Server::Command::Groups::SetVolumeRequest       GroupsControllerBasis::kSetVolumeRequest;
+
+//!< Class-scoped server group toggle volume mute state command request regular
+//!< expression.
 Server::Command::Groups::ToggleMuteRequest      GroupsControllerBasis::kToggleMuteRequest;
 
 /**
