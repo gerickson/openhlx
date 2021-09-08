@@ -90,11 +90,12 @@ public:
     QueryCurrentResponse(void) = default;
     virtual ~QueryCurrentResponse(void) = default;
 
-    // Allow both the base and derived class initializers
+    Common::Status Init(void);
+
+private:
+    // Explicitly hide base class initializers
 
     using ResponseBasis::Init;
-
-    Common::Status Init(void);
 };
 
 // MARK: Configuration Mutator Requests, Responses, and Commands
@@ -142,11 +143,12 @@ public:
     LoadFromBackupResponse(void) = default;
     virtual ~LoadFromBackupResponse(void) = default;
 
-    // Allow both the base and derived class initializers
+    Common::Status Init(void);
+
+private:
+    // Explicitly hide base class initializers
 
     using ResponseBasis::Init;
-
-    Common::Status Init(void);
 };
 
 /**
@@ -192,11 +194,12 @@ public:
     ResetToDefaultsResponse(void) = default;
     virtual ~ResetToDefaultsResponse(void) = default;
 
-    // Allow both the base and derived class initializers
+    Common::Status Init(void);
+
+private:
+    // Explicitly hide base class initializers
 
     using ResponseBasis::Init;
-
-    Common::Status Init(void);
 };
 
 /**
@@ -242,11 +245,12 @@ public:
     SaveToBackupResponse(void) = default;
     virtual ~SaveToBackupResponse(void) = default;
 
-    // Allow both the base and derived class initializers
+    Common::Status Init(void);
+
+private:
+    // Explicitly hide base class initializers
 
     using ResponseBasis::Init;
-
-    Common::Status Init(void);
 };
 
 /**
@@ -266,11 +270,12 @@ public:
     SavingToBackupResponse(void) = default;
     virtual ~SavingToBackupResponse(void) = default;
 
-    // Allow both the base and derived class initializers
+    Common::Status Init(void);
+
+private:
+    // Explicitly hide base class initializers
 
     using ResponseBasis::Init;
-
-    Common::Status Init(void);
 };
 
 }; // namespace Configuration

@@ -43,11 +43,30 @@ namespace Configuration
 
 // MARK: Observer Requests, Responses, and Commands
 
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the query current command request regular
+ *  expression.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
 Status QueryCurrentRequest :: Init(void)
 {
     return (QueryCurrentRegularExpressionBasis::Init(*this));
 }
 
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the query current command response buffer.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
 Status QueryCurrentResponse :: Init(void)
 {
     static const char * const kConfigurationObject = "X";
@@ -57,11 +76,30 @@ Status QueryCurrentResponse :: Init(void)
 
 // MARK: Configuration Mutator Requests, Responses, and Commands
 
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the load from backup command request regular
+ *  expression.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
 Status LoadFromBackupRequest :: Init(void)
 {
     return (LoadFromBackupRegularExpressionBasis::Init(*this));
 }
 
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the load from backup command response buffer.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
 Status LoadFromBackupResponse :: Init(void)
 {
     static const char * const kBuffer = "LOAD";
@@ -69,11 +107,30 @@ Status LoadFromBackupResponse :: Init(void)
     return (ResponseBasis::Init(kBuffer));
 }
 
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the reset to defaults command request regular
+ *  expression.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
 Status ResetToDefaultsRequest :: Init(void)
 {
     return (ResetToDefaultsRegularExpressionBasis::Init(*this));
 }
 
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the reset to defaults command response buffer.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
 Status ResetToDefaultsResponse :: Init(void)
 {
     static const char * const kBuffer = "RESET";
@@ -81,11 +138,30 @@ Status ResetToDefaultsResponse :: Init(void)
     return (ResponseBasis::Init(kBuffer));
 }
 
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the save to backup command request regular
+ *  expression.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
 Status SaveToBackupRequest :: Init(void)
 {
     return (SaveToBackupRegularExpressionBasis::Init(*this));
 }
 
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the save to backup command response buffer.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
 Status SaveToBackupResponse :: Init(void)
 {
     static const char * const kBuffer = "SAVE";
@@ -93,6 +169,15 @@ Status SaveToBackupResponse :: Init(void)
     return (ResponseBasis::Init(kBuffer));
 }
 
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the saving to backup command response buffer.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
 Status SavingToBackupResponse :: Init(void)
 {
     static const char * const kBuffer = "SAVING...";
