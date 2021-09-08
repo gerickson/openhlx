@@ -41,9 +41,13 @@ namespace HLX
 namespace Server
 {
 
-// Request data
+// Class-scoped Command Request Regular Expression Data
 
+//!< Class-scoped server infrared query command request regular expression.
 Server::Command::Infrared::QueryRequest        InfraredControllerBasis::kQueryRequest;
+
+//!< Class-scoped server infrared set disabled state command request
+//!< regular expression.
 Server::Command::Infrared::SetDisabledRequest  InfraredControllerBasis::kSetDisabledRequest;
 
 /**
