@@ -57,7 +57,6 @@ class ConnectionBasis :
 public:
     virtual ~ConnectionBasis(void);
 
-public:
     virtual Common::Status Init(const Common::RunLoopParameters &aRunLoopParameters);
     virtual Common::Status Connect(CFURLRef aURLRef, const Common::Timeout &aTimeout);
     virtual Common::Status Disconnect(void);

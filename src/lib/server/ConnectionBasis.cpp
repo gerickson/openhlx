@@ -34,8 +34,9 @@
 #include <LogUtilities/LogUtilities.hpp>
 
 #include <OpenHLX/Common/Errors.hpp>
-#include <OpenHLX/Server/ConnectionBasisDelegate.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
+
+#include "ConnectionBasisDelegate.hpp"
 
 
 using namespace HLX::Common;
@@ -48,14 +49,33 @@ namespace HLX
 namespace Server
 {
 
+/**
+ *  @brief
+ *    This is a class default constructor.
+ *
+ *  This constructs an instance of the class with the specified URL
+ *  scheme.
+ *
+ *  @param[in]  aSchemeRef  A reference to a CoreFoundation string
+ *                          containing the protocol (for example,
+ *                          "telnet") scheme supported by the
+ *                          connection.
+ *
+ */
 ConnectionBasis :: ConnectionBasis(CFStringRef aSchemeRef) :
     Common::ConnectionBasis(aSchemeRef),
+    mIdentifier(0),
     mState(kState_Unknown),
     mDelegate(nullptr)
 {
     return;
 }
 
+/**
+ *  @brief
+ *    This is the class destructor.
+ *
+ */
 ConnectionBasis :: ~ConnectionBasis(void)
 {
     DeclareScopedFunctionTracer(lTracer);
@@ -67,7 +87,26 @@ ConnectionBasis :: ~ConnectionBasis(void)
     return;
 }
 
-Status ConnectionBasis :: Init(const RunLoopParameters &aRunLoopParameters, const IdentifierType &aIdentifier)
+/**
+ *  @brief
+ *    This is a class initializer.
+ *
+ *  This initializes the connection basis on a run loop with the
+ *  specified run loop parameters and connection scheme identifier.
+ *
+ *  @param[in]  aRunLoopParameters  An immutable reference to the run
+ *                                  loop parameters to initialize the
+ *                                  connection basis with.
+ *  @param[in]  aIdentifier         An immutable reference to the
+ *                                  identifier associated with this
+ *                                  connection and its protocol scheme
+ *                                  (for example, "telnet").
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+ConnectionBasis :: Init(const RunLoopParameters &aRunLoopParameters, const IdentifierType &aIdentifier)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
@@ -82,9 +121,34 @@ Status ConnectionBasis :: Init(const RunLoopParameters &aRunLoopParameters, cons
     return (lRetval);
 }
 
-Status ConnectionBasis :: Connect(const int &aSocket, const Common::SocketAddress &aPeerAddress)
+/**
+ *  @brief
+ *    Connect to the HLX client peer.
+ *
+ *  This establishes connection state for the HLX client peer at the
+ *  specified socket and peer address.
+ *
+ *  @param[in]  aSocket        An immutable reference to the native
+ *                             socket descriptor associated with the
+ *                             accepted connection.
+ *  @param[in]  aPeerAddress   An immutable reference to the socket
+ *                             address associated with the peer client
+ *                             at the remote end of the accepted
+ *                             connection.
+ *
+ *  @retval  kStatus_Success          If successful.
+ *  @retval  kStatus_ValueAlreadySet  If the peer address was already
+ *                                    set.
+ *  @retval  -EINVAL                  The socket was invalid or the
+ *                                    connection scheme is null or has
+ *                                    zero (0) length.
+ *  @retval  -ENOMEM                  If memory could not be allocated.
+ *
+ */
+Status
+ConnectionBasis :: Connect(const int &aSocket, const Common::SocketAddress &aPeerAddress)
 {
-    const bool      lIsHostOrder = true;
+    constexpr bool  kIsHostOrder = true;
     HostURLAddress  lPeerAddress;
     Status          lRetval = kStatus_Success;
 
@@ -93,7 +157,7 @@ Status ConnectionBasis :: Connect(const int &aSocket, const Common::SocketAddres
 
     // Initialize our peer address.
 
-    lRetval = lPeerAddress.Init(GetScheme(), aPeerAddress, !lIsHostOrder);
+    lRetval = lPeerAddress.Init(GetScheme(), aPeerAddress, !kIsHostOrder);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = SetPeerAddress(lPeerAddress);
@@ -103,7 +167,18 @@ Status ConnectionBasis :: Connect(const int &aSocket, const Common::SocketAddres
     return (lRetval);
 }
 
-Status ConnectionBasis :: Disconnect(void)
+/**
+ *  @brief
+ *    Disconnect from the HLX client peer.
+ *
+ *  This attempts to asynchronously disconnect from the
+ *  currently-connected HLX client peer, if any.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+ConnectionBasis :: Disconnect(void)
 {
     DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
@@ -111,12 +186,35 @@ Status ConnectionBasis :: Disconnect(void)
     return (lRetval);
 }
 
-ConnectionBasisDelegate * ConnectionBasis :: GetDelegate(void) const
+/**
+ *  @brief
+ *    Return the delegate for the connection basis.
+ *
+ *  @returns
+ *    A pointer to the delegate for the connection basis.
+ *
+ */
+ConnectionBasisDelegate *
+ConnectionBasis :: GetDelegate(void) const
 {
     return (mDelegate);
 }
 
-Status ConnectionBasis :: SetDelegate(ConnectionBasisDelegate *aDelegate)
+/**
+ *  @brief
+ *    Set the delegate for the connection basis.
+ *
+ *  This attempts to set a delegate for the connection basis.
+ *
+ *  @param[in]  aDelegate  A pointer to the delegate to set.
+ *
+ *  @retval  kStatus_Success          If successful.
+ *  @retval  kStatus_ValueAlreadySet  If the delegate was already set to
+ *                                    the specified value.
+ *
+ */
+Status
+ConnectionBasis :: SetDelegate(ConnectionBasisDelegate *aDelegate)
 {
     Status lRetval = kStatus_Success;
 
@@ -124,11 +222,23 @@ Status ConnectionBasis :: SetDelegate(ConnectionBasisDelegate *aDelegate)
 
     mDelegate = aDelegate;
 
- done:
+done:
     return (lRetval);
 }
 
-void ConnectionBasis :: OnWillAccept(void)
+// MARK: Connection Delegation Actions
+
+/**
+ *  @brief
+ *    Signals to connection delegates that a connection will accept.
+ *
+ *  This is invoked by a connection in response to a pending
+ *  connection to signal delegates that the connection is about to
+ *  accept.
+ *
+ */
+void
+ConnectionBasis :: OnWillAccept(void)
 {
     if (mDelegate != nullptr)
     {
@@ -136,7 +246,16 @@ void ConnectionBasis :: OnWillAccept(void)
     }
 }
 
-void ConnectionBasis :: OnIsAccepting(void)
+/**
+ *  @brief
+ *    Signals to connection delegates that a connection is accepting.
+ *
+ *  This is invoked by a connection in response to a pending
+ *  connection to signal delegates that the connection is accepting.
+ *
+ */
+void
+ConnectionBasis :: OnIsAccepting(void)
 {
     if (mDelegate != nullptr)
     {
@@ -144,7 +263,16 @@ void ConnectionBasis :: OnIsAccepting(void)
     }
 }
 
-void ConnectionBasis :: OnDidAccept(void)
+/**
+ *  @brief
+ *    Signals to connection delegates that a connection did accept.
+ *
+ *  This is invoked by a connection in response to a successful
+ *  connection to signal delegates that the connection did accept.
+ *
+ */
+void
+ConnectionBasis :: OnDidAccept(void)
 {
     if (mDelegate != nullptr)
     {
@@ -152,7 +280,21 @@ void ConnectionBasis :: OnDidAccept(void)
     }
 }
 
-void ConnectionBasis :: OnDidNotAccept(const Common::Error &aError)
+/**
+ *  @brief
+ *    Signals to connection delegates that a connection did not
+ *    accept.
+ *
+ *  This is invoked by a connection in response to a failed
+ *  connection to signal delegates that the connection did not
+ *  accept.
+ *
+ *  @param[in]  aError  An immutable reference to the error
+ *                      associated with the failed connection.
+ *
+ */
+void
+ConnectionBasis :: OnDidNotAccept(const Common::Error &aError)
 {
     if (mDelegate != nullptr)
     {
@@ -160,7 +302,20 @@ void ConnectionBasis :: OnDidNotAccept(const Common::Error &aError)
     }
 }
 
-void ConnectionBasis :: OnApplicationDataReceived(ConnectionBuffer::MutableCountedPointer aBuffer)
+/**
+ *  @brief
+ *    Signals to connection delegates that the connection received
+ *    application data.
+ *
+ *  This is invoked by a connection in response to the receipt of
+ *  application data to signal delegates of that data.
+ *
+ *  @param[in]  aBuffer  A shared pointer to a mutable buffer
+ *                       containing the application data.
+ *
+ */
+void
+ConnectionBasis :: OnApplicationDataReceived(ConnectionBuffer::MutableCountedPointer aBuffer)
 {
     if (mDelegate != nullptr)
     {
@@ -168,7 +323,18 @@ void ConnectionBasis :: OnApplicationDataReceived(ConnectionBuffer::MutableCount
     }
 }
 
-void ConnectionBasis :: OnWillDisconnect(void)
+/**
+ *  @brief
+ *    Signals to connection delegates that a connection will
+ *    disconnect.
+ *
+ *  This is invoked by a connection in response to a pending
+ *  disconnection to signal delegates that the connection will
+ *  disconnect.
+ *
+ */
+void
+ConnectionBasis :: OnWillDisconnect(void)
 {
     if (mDelegate != nullptr)
     {
@@ -176,7 +342,20 @@ void ConnectionBasis :: OnWillDisconnect(void)
     }
 }
 
-void ConnectionBasis :: OnDidDisconnect(const Common::Error &aError)
+/**
+ *  @brief
+ *    Signals to connection delegates that a connection did
+ *    disconnect.
+ *
+ *  This is invoked by a connection in response to a disconnection
+ *  to signal delegates that the connection did disconnect.
+ *
+ *  @param[in]  aError  An immutable reference to the error
+ *                      associated with the disconnection.
+ *
+ */
+void
+ConnectionBasis :: OnDidDisconnect(const Common::Error &aError)
 {
     if (mDelegate != nullptr)
     {
@@ -184,7 +363,21 @@ void ConnectionBasis :: OnDidDisconnect(const Common::Error &aError)
     }
 }
 
-void ConnectionBasis :: OnDidNotDisconnect(const Common::Error &aError)
+/**
+ *  @brief
+ *    Signals to connection delegates that a connection did
+ *    not disconnect.
+ *
+ *  This is invoked by a connection in response to a failed
+ *  disconnection to signal delegates that the connection did
+ *  not disconnect.
+ *
+ *  @param[in]  aError  An immutable reference to the error
+ *                      associated with the failed disconnection.
+ *
+ */
+void
+ConnectionBasis :: OnDidNotDisconnect(const Common::Error &aError)
 {
     if (mDelegate != nullptr)
     {
@@ -192,7 +385,24 @@ void ConnectionBasis :: OnDidNotDisconnect(const Common::Error &aError)
     }
 }
 
-void ConnectionBasis :: OnError(const Common::Error &aError)
+/**
+ *  @brief
+ *    Signals to connection delegates that a connection experienced an
+ *    error.
+ *
+ *  This is invoked by a connection in response to a connection error
+ *  to signal delegates that such a connection error occurred.
+ *
+ *  @note
+ *    This action may occur along with other actions with respect to
+ *    the same underlying event or cause.
+ *
+ *  @param[in]  aError  An immutable reference to the error associated
+ *                      with the event.
+ *
+ */
+void
+ConnectionBasis :: OnError(const Common::Error &aError)
 {
     if (mDelegate != nullptr)
     {
@@ -200,13 +410,33 @@ void ConnectionBasis :: OnError(const Common::Error &aError)
     }
 }
 
+/**
+ *  @brief
+ *    Returns the current connection scheme identifier.
+ *
+ *  @returns
+ *    The current connection scheme identifier.
+ *
+ */
 ConnectionBasis::IdentifierType
 ConnectionBasis :: GetIdentifier(void) const
 {
     return (mIdentifier);
 }
 
-bool ConnectionBasis :: IsState(State aState) const
+/**
+ *  @brief
+ *    Returns whether or not the connection is in the specified state.
+ *
+ *  @param[in]  aState  The state to confirm.
+ *
+ *  @returns
+ *    True if the connection is in the specified state; otherwise,
+ *    false.
+ *
+ */
+bool
+ConnectionBasis :: IsState(State aState) const
 {
     const bool lRetval = (mState == aState);
 
@@ -214,17 +444,35 @@ bool ConnectionBasis :: IsState(State aState) const
     return (lRetval);
 }
 
-ConnectionBasis::State ConnectionBasis :: GetState(void) const
+/**
+ *  @brief
+ *    Returns the current connection state.
+ *
+ *  @returns
+ *    The current connection state.
+ *
+ */
+ConnectionBasis::State
+ConnectionBasis :: GetState(void) const
 {
     return (mState);
 }
 
-Status ConnectionBasis :: SetState(State aState)
+/**
+ *  @brief
+ *    Sets the current connection state.
+ *
+ *  @param[in]  aState  The state to set the connection to.
+ *
+ *  @retval  kStatus_Success          If successful.
+ *  @retval  kStatus_ValueAlreadySet  If the state was already set to
+ *                                    the specified value.
+ *
+ */
+Status
+ConnectionBasis :: SetState(State aState)
 {
-    //DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
-
-    //Log::Debug().Write("mState %u aState %u\n", mState, aState);
 
     nlREQUIRE_ACTION(mState != aState, done, lRetval = kStatus_ValueAlreadySet);
 
