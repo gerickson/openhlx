@@ -109,24 +109,24 @@ public:
 
     // Connection Basis Delegate Methods
 
-    // Accept
+    // Accept Methods
 
     void ConnectionWillAccept(ConnectionBasis &aConnection) final;
     void ConnectionIsAccepting(ConnectionBasis &aConnection) final;
     void ConnectionDidAccept(ConnectionBasis &aConnection) final;
     void ConnectionDidNotAccept(ConnectionBasis &aConnection, const Common::Error &aError) final;
 
-    // Application Data
+    // Application Data Method
 
     void ConnectionDidReceiveApplicationData(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer aBuffer) final;
 
-    // Disconnect
+    // Disconnect Methods
 
     void ConnectionWillDisconnect(ConnectionBasis &aConnection, CFURLRef aURLRef) final;
     void ConnectionDidDisconnect(ConnectionBasis &aConnection, CFURLRef aURLRef, const Common::Error &aError) final;
     void ConnectionDidNotDisconnect(ConnectionBasis &aConnection, CFURLRef aURLRef, const Common::Error &aError) final;
 
-    // Error
+    // Error Method
 
     void ConnectionError(ConnectionBasis &aConnection, const Common::Error &aError) final;
 
@@ -145,8 +145,8 @@ private:
 
 private:
     typedef std::unordered_set<ConnectionManagerDelegate *> ConnectionManagerDelegates;
-    typedef std::vector<std::unique_ptr<ConnectionBasis>> Connections;
-    typedef std::vector<std::unique_ptr<ListenerBasis>> Listeners;
+    typedef std::vector<std::unique_ptr<ConnectionBasis>>   Connections;
+    typedef std::vector<std::unique_ptr<ListenerBasis>>     Listeners;
 
     ListenerFactory                             mListenerFactory;
     ConnectionFactory                           mConnectionFactory;
