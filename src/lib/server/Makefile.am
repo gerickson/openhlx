@@ -133,7 +133,6 @@ libopenhlx_server_a_SOURCES                                 = \
     InfraredControllerBasis.cpp                               \
     InfraredControllerCommands.cpp                            \
     ListenerBasis.cpp                                         \
-    ListenerBasisDelegate.cpp                                 \
     ListenerFactory.cpp                                       \
     ListenerTelnet.cpp                                        \
     NetworkControllerBasis.cpp                                \
