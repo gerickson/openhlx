@@ -46,16 +46,22 @@ class ConnectionBasis;
  *    A delegate interface for the HLX client peer-to-peer network
  *    connection basis object.
  *
+ *  This delegate interface allows interested delegates to receive
+ *  notifications regarding the pending and stable state of a server
+ *  connection as it moves through its lifetime.
+ *
  *  @ingroup client
  *
  */
 class ConnectionBasisDelegate
 {
 public:
+    // Con/destructor
+
     ConnectionBasisDelegate(void) = default;
     ~ConnectionBasisDelegate(void) = default;
 
-    // MARK: Connect
+    // MARK: Connect Methods
 
     /**
      *  @brief
@@ -109,7 +115,7 @@ public:
      */
     virtual void ConnectionDidNotConnect(ConnectionBasis &aConnection, CFURLRef aURLRef, const Common::Error &aError) = 0;
 
-    // MARK: Application Data
+    // MARK: Application Data Method
 
     /**
      *  @brief
@@ -124,7 +130,7 @@ public:
      */
     virtual void ConnectionDidReceiveApplicationData(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer aBuffer) = 0;
 
-    // MARK: Disconnect
+    // MARK: Disconnect Methods
 
     /**
      *  @brief
@@ -167,7 +173,7 @@ public:
      */
     virtual void ConnectionDidNotDisconnect(ConnectionBasis &aConnection, CFURLRef aURLRef, const Common::Error &aError) = 0;
 
-    // MARK: Error
+    // MARK: Error Method
 
     /**
      *  @brief
