@@ -18,7 +18,9 @@
 
 /**
  *    @file
- *      This file defines...
+ *      This file defines types and interfaces for calculating a fixed
+ *      pointer percentage from a fixed pointer numerator and
+ *      denominator.
  *
  */
 
@@ -34,9 +36,15 @@ namespace HLX
 namespace Utilities
 {
 
+/**
+ *  A type for a fixed point percentage in the range 0 to 100,
+ *  inclusive.
+ *
+ */
 typedef uint8_t Percentage;
 
-extern Percentage CalculatePercentage(const uint8_t &aNumerator, const uint8_t &aDenominator);
+extern Percentage CalculatePercentage(const uint8_t &aNumerator,
+                                      const uint8_t &aDenominator);
 
 }; // namespace Utilities
 

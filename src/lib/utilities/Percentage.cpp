@@ -18,13 +18,15 @@
 
 /**
  *    @file
- *      This file implements...
+ *      This file implements interfaces for calculating a fixed
+ *      pointer percentage from a fixed pointer numerator and
+ *      denominator.
  *
  */
 
 #include "Percentage.hpp"
 
-#include <stddef.h>
+#include <stdint.h>
 
 
 namespace HLX
@@ -33,14 +35,24 @@ namespace HLX
 namespace Utilities
 {
 
-typedef uint8_t Percentage;
-
+/**
+ *  @brief
+ *    Calculate a fixed point percentage.
+ *
+ *  This calculates a fixed point percentage, from 0 to 100, from a
+ *  fixed point numerator and denominator.
+ *
+ *  @param[in]  aNumerator    An immutable reference to the numerator.
+ *  @param[in]  aDenominator  An immutable reference to the denominator.
+ *
+ *  @returns
+ *     A percentage, in the range 0 to 100.
+ *
+ */
 Percentage
 CalculatePercentage(const uint8_t &aNumerator, const uint8_t &aDenominator)
 {
-    Percentage lRetval;
-
-    lRetval = static_cast<Percentage>(((static_cast<size_t>(aNumerator) * 100) / aDenominator));
+    const Percentage lRetval = static_cast<Percentage>(((static_cast<uint16_t>(aNumerator) * 100) / aDenominator));
 
     return (lRetval);
 }
