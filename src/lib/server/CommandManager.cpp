@@ -452,6 +452,10 @@ CommandManager :: DispatchRequest(ConnectionBasis &aConnection, ConnectionBuffer
  *
  *  @param[in]  aConnectionManager  A reference to the connection
  *                                  manager that issued the delegation.
+ *  @param[in]  aRoles              An immutable reference to the roles
+ *                                  in which the connection manager
+ *                                  that issued the delegation is
+ *                                  acting.
  *  @param[in]  aHost               A pointer to a null-terminated C
  *                                  string containing the host
  *                                  name that will resolve.
@@ -472,6 +476,10 @@ CommandManager :: ConnectionManagerWillResolve(Common::ConnectionManagerBasis &a
  *
  *  @param[in]  aConnectionManager  A reference to the connection
  *                                  manager that issued the delegation.
+ *  @param[in]  aRoles              An immutable reference to the roles
+ *                                  in which the connection manager
+ *                                  that issued the delegation is
+ *                                  acting.
  *  @param[in]  aHost               A pointer to a null-terminated C
  *                                  string containing the host
  *                                  name that is resolving.
@@ -497,6 +505,10 @@ CommandManager :: ConnectionManagerIsResolving(Common::ConnectionManagerBasis &a
  *
  *  @param[in]  aConnectionManager  A reference to the connection
  *                                  manager that issued the delegation.
+ *  @param[in]  aRoles              An immutable reference to the roles
+ *                                  in which the connection manager
+ *                                  that issued the delegation is
+ *                                  acting.
  *  @param[in]  aHost               A pointer to a null-terminated C
  *                                  string containing the host
  *                                  name that did resolve.
@@ -521,6 +533,10 @@ CommandManager :: ConnectionManagerDidResolve(Common::ConnectionManagerBasis &aC
  *
  *  @param[in]  aConnectionManager  A reference to the connection
  *                                  manager that issued the delegation.
+ *  @param[in]  aRoles              An immutable reference to the roles
+ *                                  in which the connection manager
+ *                                  that issued the delegation is
+ *                                  acting.
  *  @param[in]  aHost               A pointer to a null-terminated C
  *                                  string containing the host
  *                                  name that did not resolve.
@@ -540,6 +556,18 @@ CommandManager :: ConnectionManagerDidNotResolve(Common::ConnectionManagerBasis 
 
 // MARK: Connection Manager Listen Methods
 
+/**
+ *  @brief
+ *    Delegation from the connection manager that it will listen
+ *    for connections from peer clients at the specified URL.
+ *
+ *  @param[in]  aConnectionManager  A reference to the connection
+ *                                  manager that issued the
+ *                                  delegation.
+ *  @param[in]  aURLRef             The URL at which the server is
+ *                                  to listen at.
+ *
+ */
 void
 CommandManager :: ConnectionManagerWillListen(ConnectionManager &aConnectionManager, CFURLRef aURLRef)
 {
@@ -549,6 +577,19 @@ CommandManager :: ConnectionManagerWillListen(ConnectionManager &aConnectionMana
     return;
 }
 
+/**
+ *  @brief
+ *    Delegation from the connection manager that it is in the
+ *    processing of listening for connections from peer clients at
+ *    the specified URL.
+ *
+ *  @param[in]  aConnectionManager  A reference to the connection
+ *                                  manager that issued the
+ *                                  delegation.
+ *  @param[in]  aURLRef             The URL at which the server is
+ *                                  listening at.
+ *
+ */
 void
 CommandManager :: ConnectionManagerIsListening(ConnectionManager &aConnectionManager, CFURLRef aURLRef)
 {
@@ -558,6 +599,18 @@ CommandManager :: ConnectionManagerIsListening(ConnectionManager &aConnectionMan
     return;
 }
 
+/**
+ *  @brief
+ *    Delegation from the connection manager that it is listening
+ *    for connections from peer clients at the specified URL.
+ *
+ *  @param[in]  aConnectionManager  A reference to the connection
+ *                                  manager that issued the
+ *                                  delegation.
+ *  @param[in]  aURLRef             The URL at which the server is
+ *                                  listening at.
+ *
+ */
 void
 CommandManager :: ConnectionManagerDidListen(ConnectionManager &aConnectionManager, CFURLRef aURLRef)
 {
@@ -567,6 +620,22 @@ CommandManager :: ConnectionManagerDidListen(ConnectionManager &aConnectionManag
     return;
 }
 
+/**
+ *  @brief
+ *    Delegation from the connection manager that it did not
+ *    listen for connections from peer clients at the specified
+ *    URL.
+ *
+ *  @param[in]  aConnectionManager  A reference to the connection
+ *                                  manager that issued the
+ *                                  delegation.
+ *  @param[in]  aURLRef             The URL at which the server
+ *                                  was to listen at.
+ *  @param[in]  aError              An immutable reference to the
+ *                                  error associated with the
+ *                                  failed server listen.
+ *
+ */
 void
 CommandManager :: ConnectionManagerDidNotListen(ConnectionManager &aConnectionManager, CFURLRef aURLRef, const Common::Error &aError)
 {
@@ -579,6 +648,19 @@ CommandManager :: ConnectionManagerDidNotListen(ConnectionManager &aConnectionMa
 
 // MARK: Connection Manager Accept Methods
 
+/**
+ *  @brief
+ *    Delegation from the connection manager that it will accept
+ *    a connection from the peer client at the specified URL.
+ *
+ *  @param[in]  aConnectionManager  A reference to the connection
+ *                                  manager that issued the
+ *                                  delegation.
+ *  @param[in]  aURLRef             The URL for the client from
+ *                                  which the server will accept a
+ *                                  connection.
+ *
+ */
 void
 CommandManager :: ConnectionManagerWillAccept(ConnectionManager &aConnectionManager, CFURLRef aURLRef)
 {
@@ -586,6 +668,20 @@ CommandManager :: ConnectionManagerWillAccept(ConnectionManager &aConnectionMana
     (void)aURLRef;
 }
 
+/**
+ *  @brief
+ *    Delegation from the connection manager that it is in the
+ *    process of accepting a connection from the peer client at
+ *    the specified URL.
+ *
+ *  @param[in]  aConnectionManager  A reference to the connection
+ *                                  manager that issued the
+ *                                  delegation.
+ *  @param[in]  aURLRef             The URL for the client from
+ *                                  which the server is accepting
+ *                                  a connection.
+ *
+ */
 void
 CommandManager :: ConnectionManagerIsAccepting(ConnectionManager &aConnectionManager, CFURLRef aURLRef)
 {
@@ -593,6 +689,19 @@ CommandManager :: ConnectionManagerIsAccepting(ConnectionManager &aConnectionMan
     (void)aURLRef;
 }
 
+/**
+ *  @brief
+ *    Delegation from the connection manager that it did accept
+ *    a connection from the peer client at the specified URL.
+ *
+ *  @param[in]  aConnectionManager  A reference to the connection
+ *                                  manager that issued the
+ *                                  delegation.
+ *  @param[in]  aURLRef             The URL for the client from
+ *                                  which the server did accept a
+ *                                  connection.
+ *
+ */
 void
 CommandManager :: ConnectionManagerDidAccept(ConnectionManager &aConnectionManager, CFURLRef aURLRef)
 {
@@ -600,6 +709,23 @@ CommandManager :: ConnectionManagerDidAccept(ConnectionManager &aConnectionManag
     (void)aURLRef;
 }
 
+/**
+ *  @brief
+ *    Delegation from the connection manager that it did not
+ *    accept a connection from the peer client at the specified
+ *    URL.
+ *
+ *  @param[in]  aConnectionManager  A reference to the connection
+ *                                  manager that issued the
+ *                                  delegation.
+ *  @param[in]  aURLRef             The URL for the client from
+ *                                  which the server did not
+ *                                  accept a connection.
+ *  @param[in]  aError              An immutable reference to the
+ *                                  error associated with the
+ *                                  failed server accept.
+ *
+ */
 void
 CommandManager :: ConnectionManagerDidNotAccept(ConnectionManager &aConnectionManager, CFURLRef aURLRef, const Common::Error &aError)
 {
@@ -657,6 +783,10 @@ CommandManager :: ConnectionManagerDidReceiveApplicationData(Common::ConnectionM
  *
  *  @param[in]  aConnectionManager  A reference to the connection manager
  *                                  that issued the delegation.
+ *  @param[in]  aRoles              An immutable reference to the roles
+ *                                  in which the connection manager
+ *                                  that issued the delegation is
+ *                                  acting.
  *  @param[in]  aURLRef             The URL associated with the peer server.
  *
  */
@@ -675,6 +805,10 @@ CommandManager :: ConnectionManagerWillDisconnect(Common::ConnectionManagerBasis
  *
  *  @param[in]  aConnectionManager  A reference to the connection manager
  *                                  that issued the delegation.
+ *  @param[in]  aRoles              An immutable reference to the roles
+ *                                  in which the connection manager
+ *                                  that issued the delegation is
+ *                                  acting.
  *  @param[in]  aURLRef             The URL associated with the peer server.
  *  @param[in]  aError              An immutable reference to the error
  *                                  associated with the disconnection.
@@ -696,6 +830,10 @@ CommandManager :: ConnectionManagerDidDisconnect(Common::ConnectionManagerBasis 
  *
  *  @param[in]  aConnectionManager  A reference to the connection manager
  *                                  that issued the delegation.
+ *  @param[in]  aRoles              An immutable reference to the roles
+ *                                  in which the connection manager
+ *                                  that issued the delegation is
+ *                                  acting.
  *  @param[in]  aURLRef             The URL associated with the peer server.
  *  @param[in]  aError              An immutable reference to the error
  *                                  associated with the failed
@@ -724,6 +862,10 @@ CommandManager :: ConnectionManagerDidNotDisconnect(Common::ConnectionManagerBas
  *
  *  @param[in]  aConnectionManager  A reference to the connection manager
  *                                  that issued the delegation.
+ *  @param[in]  aRoles              An immutable reference to the roles
+ *                                  in which the connection manager
+ *                                  that issued the delegation is
+ *                                  acting.
  *  @param[in]  aError              An immutable reference to the error
  *                                  associated with the event.
  *
