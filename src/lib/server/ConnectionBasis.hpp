@@ -59,11 +59,16 @@ class ConnectionBasis :
     public Common::ConnectionBasis
 {
 public:
+    /**
+     *  A type for identifying a connection, uniquely when combined
+     *  with its protocol scheme (for example, "telnet").
+     *
+     */
     typedef size_t IdentifierType;
 
+public:
     virtual ~ConnectionBasis(void);
 
-public:
     virtual Common::Status Init(const Common::RunLoopParameters &aRunLoopParameters, const IdentifierType &aIdentifier);
     virtual Common::Status Connect(const int &aSocket, const Common::SocketAddress &aPeerAddress);
     virtual Common::Status Disconnect(void);
@@ -73,6 +78,16 @@ public:
     Common::Status SetDelegate(ConnectionBasisDelegate *aDelegate);
     ConnectionBasisDelegate *GetDelegate(void) const;
 
+    /**
+     *  @brief
+     *    Send the specified data to the connection peer.
+     *
+     *  @param[in]  aBuffer  An immutable shared pointer to the data to
+     *                       send to the connection peer.
+     *
+     *  @retval  kStatus_Success  If successful.
+     *
+     */
     virtual Common::Status Send(Common::ConnectionBuffer::ImmutableCountedPointer aBuffer) = 0;
 
 protected:
@@ -91,21 +106,26 @@ protected:
 
     void OnError(const Common::Error &aError);
 
+    /**
+     *  @brief
+     *    Enumeration of connection states.
+     *
+     */
     enum State
     {
-        kState_Unknown         = 0,
+        kState_Unknown       = 0,
 
-        kState_Ready           = 1,
+        kState_Ready         = 1,
 
-        kState_Listening       = 2,
+        kState_Listening     = 2,
 
-        kState_Accepting       = 3,
-        kState_Accepted        = 4,
+        kState_Accepting     = 3,
+        kState_Accepted      = 4,
 
-        kState_Connected       = kState_Accepted,
+        kState_Connected     = kState_Accepted,
 
-        kState_Disconnecting   = 5,
-        kState_Disconnected    = kState_Listening
+        kState_Disconnecting = 5,
+        kState_Disconnected  = kState_Listening
     };
 
     bool IsState(State aState) const;
@@ -114,9 +134,9 @@ protected:
     Common::Status SetState(State aState);
 
 private:
-    IdentifierType                 mIdentifier;
-    State                          mState;
-    ConnectionBasisDelegate *      mDelegate;
+    IdentifierType             mIdentifier;
+    State                      mState;
+    ConnectionBasisDelegate *  mDelegate;
 };
 
 }; // namespace Server
