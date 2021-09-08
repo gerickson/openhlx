@@ -43,8 +43,10 @@ namespace HLX
 namespace Server
 {
 
-// Request data
+// Class-scoped Command Request Regular Expression Data
 
+//!< Class-scoped server network interface query command request regular
+//!< expression.
 Server::Command::Network::QueryRequest  NetworkControllerBasis::kQueryRequest;
 
 /**
