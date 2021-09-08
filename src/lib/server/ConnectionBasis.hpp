@@ -63,9 +63,6 @@ public:
 
     virtual ~ConnectionBasis(void);
 
-    typedef void (* OnResponseCompleteFunc)(Common::ConnectionBuffer::ImmutableCountedPointer aResponseBuffer, const Common::RegularExpression::Matches &aResponseMatches, void *aContext);
-    typedef void (* OnResponseErrorFunc)(const Common::Error &aError, void *aContext);
-
 public:
     virtual Common::Status Init(const Common::RunLoopParameters &aRunLoopParameters, const IdentifierType &aIdentifier);
     virtual Common::Status Connect(const int &aSocket, const Common::SocketAddress &aPeerAddress);
