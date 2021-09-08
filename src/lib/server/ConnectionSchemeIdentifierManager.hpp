@@ -47,7 +47,7 @@ namespace Server
  *    example, 'telnet') identifiers.
  *
  *  This HLX protocol has a server-to-client connection confirmation
- *  of the form '<scheme>_client_<identifier>: connected' that occurs
+ *  of the form '\<scheme>_client_\<identifier>: connected' that occurs
  *  after the TCP connection but before the server accepts any command
  *  requests from the client. This object vends and manages those
  *  identifiers that connections use to format and send such
@@ -57,9 +57,17 @@ namespace Server
 class ConnectionSchemeIdentifierManager
 {
 public:
+    /**
+     *  A local convenience type for identifying a connection.
+     *
+     */
     typedef ConnectionBasis::IdentifierType IdentifierType;
 
 public:
+    /**
+     *  An invalid connection identifier.
+     *
+     */
     static constexpr IdentifierType kInvalidIdentifier = std::numeric_limits<IdentifierType>::min();
 
 public:

@@ -41,6 +41,24 @@ static constexpr ConnectionSchemeIdentifierManager::IdentifierType kFirstIdentif
 
 // MARK: Observers
 
+/**
+ *  @brief
+ *    Determine whether an identifier associated with a connection
+ *    scheme is claimed.
+ *
+ *  @param[in]  aScheme      An immutable reference to the connection
+ *                           scheme (for example, 'telnet') associated
+ *                           with the identifier, @a aIdentifier.
+ *  @param[in]  aIdentifier  An immutable reference to the identifier
+ *                           to check.
+ *
+ *  @returns
+ *    True if the identifier is claimed for the specified scheme;
+ *    otherwise, false.
+ *
+ *  @sa ClaimSchemeIdentifier
+ *
+ */
 bool
 ConnectionSchemeIdentifierManager :: IsSchemeIdentifierClaimed(const std::string &aScheme, const IdentifierType &aIdentifier) const
 {
@@ -62,6 +80,8 @@ ConnectionSchemeIdentifierManager :: IsSchemeIdentifierClaimed(const std::string
 
     lIdentifier = lIdentifiers->second.mIdentifierMap.find(aIdentifier);
 
+    // If we have a valid iterator result, it was found.
+
     lRetval = (lIdentifier != lIdentifiers->second.mIdentifierMap.end());
 
  done:
@@ -70,6 +90,24 @@ ConnectionSchemeIdentifierManager :: IsSchemeIdentifierClaimed(const std::string
 
 // MARK: Mutators
 
+/**
+ *  @brief
+ *    Request and claim a connection identifier associated with a
+ *    connection scheme.
+ *
+ *  @param[in]  aScheme      An immutable reference to the connection
+ *                           scheme (for example, 'telnet') for which
+ *                           an identifier is being requested and
+ *                           claimed.
+ *
+ *  @returns
+ *    A connection identifier associated with the specified scheme on
+ *    success; otherwise, #kInvalidIdentifier.
+ *
+ *  @sa IsSchemeIdentifierClaimed
+ *  @sa ReleaseSchemeIdentifier
+ *
+ */
 ConnectionSchemeIdentifierManager::IdentifierType
 ConnectionSchemeIdentifierManager :: ClaimSchemeIdentifier(const std::string &aScheme)
 {
@@ -120,6 +158,25 @@ ConnectionSchemeIdentifierManager :: ClaimSchemeIdentifier(const std::string &aS
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Relinquish a connection identifier associated with a connection
+ *    scheme.
+ *
+ *  @param[in]  aScheme      An immutable reference to the connection
+ *                           scheme (for example, 'telnet') for which
+ *                           the identifier is being relinquished.
+ *  @param[in]  aIdentifier  An immutable reference to the identifier
+ *                           to relinquish.
+ *
+ *  @returns
+ *    True if the identifier was successfully relinquished; otherwise,
+ *    false.
+ *
+ *  @sa IsSchemeIdentifierClaimed
+ *  @sa ClaimSchemeIdentifier
+ *
+ */
 bool
 ConnectionSchemeIdentifierManager :: ReleaseSchemeIdentifier(const std::string &aScheme, const IdentifierType &aIdentifier)
 {
