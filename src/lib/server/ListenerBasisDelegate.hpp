@@ -46,23 +46,86 @@ class ListenerBasis;
  *    A delegate interface for the HLX server peer-to-peer network
  *    connection listener basis object.
  *
+ *  This delegate interface allows interested delegates to receive
+ *  notifications regarding the pending and stable state of a server
+ *  connection listener as it moves through its lifetime.
+ *
  *  @ingroup server
  *
  */
 class ListenerBasisDelegate
 {
 public:
-    ListenerBasisDelegate(void);
-    ~ListenerBasisDelegate(void);
+    // Con/destructor
 
-    // Listen
+    ListenerBasisDelegate(void) = default;
+    ~ListenerBasisDelegate(void) = default;
 
+    // Listen Methods
+
+    /**
+     *  @brief
+     *    Delegation from a connection listener that it will listen
+     *    for connections from peer clients.
+     *
+     *  @param[in]  aListener  A reference to the connection listener
+     *                         that issued the delegation.
+     *
+     */
     virtual void ListenerWillListen(ListenerBasis &aListener) = 0;
-    virtual void ListenerIsListening(ListenerBasis &aListener) = 0;
-    virtual void ListenerDidListen(ListenerBasis &aListener) = 0;
-    virtual void ListenerDidNotListen(ListenerBasis &aListener, const Common::Error &aError) = 0;
-    // Error
 
+    /**
+     *  @brief
+     *    Delegation from a connection listener that it is in the
+     *    process of listening for connections from peer clients.
+     *
+     *  @param[in]  aListener  A reference to the connection listener
+     *                         that issued the delegation.
+     *
+     */
+    virtual void ListenerIsListening(ListenerBasis &aListener) = 0;
+
+    /**
+     *  @brief
+     *    Delegation from a connection listener that it is now
+     *    listening for connections from peer clients.
+     *
+     *  @param[in]  aListener  A reference to the connection listener
+     *                         that issued the delegation.
+     *
+     */
+    virtual void ListenerDidListen(ListenerBasis &aListener) = 0;
+
+    /**
+     *  @brief
+     *    Delegation from a connection listener that it did not listen
+     *    for connections from peer clients.
+     *
+     *  @param[in]  aListener  A reference to the connection listener
+     *                         that issued the delegation.
+     *  @param[in]  aError     An immutable reference to the error
+     *                         associated with the failed listen.
+     *
+     */
+    virtual void ListenerDidNotListen(ListenerBasis &aListener, const Common::Error &aError) = 0;
+
+    // Error Method
+
+    /**
+     *  @brief
+     *    Delegation from a connection listener that the listener
+     *    experienced an error.
+     *
+     *  @note
+     *    This delegation may occur along with other delegations with
+     *    respect to the same underlying event or cause.
+     *
+     *  @param[in]  aListener  A reference to the connection listener
+     *                         that issued the delegation.
+     *  @param[in]  aError     An immutable reference to the error
+     *                         associated with the event.
+     *
+     */
     virtual void ListenerError(ListenerBasis &aListener, const Common::Error &aError) = 0;
 };
 
