@@ -18,9 +18,9 @@
 
 /**
  *    @file
- *      This file implements a derivable object for a HLX client data
- *      model properties observation (that is, query) command request
- *      buffer.
+ *      This file implements a derivable object for composing HLX client
+ *      request buffers for commands that query a data model object or
+ *      property thereof.
  *
  */
 
