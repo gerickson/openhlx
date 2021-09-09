@@ -50,6 +50,14 @@ using namespace Nuovations;
 
 // Preprocessor Defintions
 
+/**
+ *  @def SOCK_FLAGS
+ *
+ *  @brief
+ *    A portability mnemonic to address platforms which have or have
+ *    not defined SOCK_CLOEXEC.
+ *
+ */
 #ifdef SOCK_CLOEXEC
 #define SOCK_FLAGS SOCK_CLOEXEC
 #else
@@ -63,6 +71,19 @@ namespace HLX
 namespace Server
 {
 
+/**
+ *  @brief
+ *    This is a class default constructor.
+ *
+ *  This constructs an instance of the class with the specified URL
+ *  scheme.
+ *
+ *  @param[in]  aSchemeRef  A reference to a CoreFoundation string
+ *                          containing the protocol (for example,
+ *                          "telnet") scheme supported by the
+ *                          connection listener.
+ *
+ */
 ListenerBasis :: ListenerBasis(CFStringRef aSchemeRef) :
     mSchemeRef(CFURetain(aSchemeRef)),
     mRunLoopParameters(),
@@ -76,6 +97,11 @@ ListenerBasis :: ListenerBasis(CFStringRef aSchemeRef) :
     return;
 }
 
+/**
+ *  @brief
+ *    This is the class destructor.
+ *
+ */
 ListenerBasis :: ~ListenerBasis(void)
 {
     Ignore();
@@ -85,7 +111,25 @@ ListenerBasis :: ~ListenerBasis(void)
     return;
 }
 
-Status ListenerBasis :: Init(in_port_t aDefaultPort, const RunLoopParameters &aRunLoopParameters)
+/**
+ *  @brief
+ *    This is a class initializer.
+ *
+ *  This initializes the connection listener basis on a run loop with the
+ *  specified port and run loop parameters.
+ *
+ *  @param[in]  aDefaultPort        The default port on which the listener
+ *                                  should listen if the port is not
+ *                                  otherwise specified.
+ *  @param[in]  aRunLoopParameters  An immutable reference to the run
+ *                                  loop parameters to initialize the
+ *                                  connection listener basis with.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+ListenerBasis :: Init(in_port_t aDefaultPort, const RunLoopParameters &aRunLoopParameters)
 {
     Status lRetval = kStatus_Success;
 
@@ -96,7 +140,34 @@ Status ListenerBasis :: Init(in_port_t aDefaultPort, const RunLoopParameters &aR
     return (lRetval);
 }
 
-Status ListenerBasis :: Listen(ListenerBasisAcceptDelegate *aAcceptDelegate, const SocketAddress &aAddress)
+/**
+ *  @brief
+ *    Listen for unsolicited, asynchronous connections from remote
+ *    peers at the specified socket address.
+ *
+ *  This attempts to asynchronously listen for unsolicited connections
+ *  from remote peers at the specified socket address and invokes the
+ *  specified delegate when a connection is accepted by the listener.
+ *
+ *  @param[in]  aAcceptDelegate  A pointer to the delegate to invoke
+ *                               when a connection is accepted by the
+ *                               listener.
+ *  @param[in]  aAddress         An immutable reference to the socket
+ *                               address to listen on.
+ *
+ *  @retval  kStatus_Success          If successful.
+ *  @retval  -EBUSY                   If the listener is already
+ *                                    listening.
+ *  @retval  -ENOMEM                  Resources could not be allocated
+ *                                    to listen.
+ *  @retval  -EPFNOSUPPORT            The @a aAddress specifies an
+ *                                    unsupported protocol family
+ *                                    other than PF_INET or PF_INET6.
+ *
+ */
+Status
+ListenerBasis :: Listen(ListenerBasisAcceptDelegate *aAcceptDelegate,
+                        const SocketAddress &aAddress)
 {
     Status               lRetval = kStatus_Success;
 
@@ -112,12 +183,35 @@ Status ListenerBasis :: Listen(ListenerBasisAcceptDelegate *aAcceptDelegate, con
     return (lRetval);
 }
 
-ListenerBasisDelegate * ListenerBasis :: GetDelegate(void) const
+/**
+ *  @brief
+ *    Return the delegate for the connection listener basis.
+ *
+ *  @returns
+ *    A pointer to the delegate for the connection listener basis.
+ *
+ */
+ListenerBasisDelegate *
+ListenerBasis :: GetDelegate(void) const
 {
     return (mDelegate);
 }
 
-Status ListenerBasis :: SetDelegate(ListenerBasisDelegate *aDelegate)
+/**
+ *  @brief
+ *    Set the delegate for the connection listener basis.
+ *
+ *  This attempts to set a delegate for the connection listener basis.
+ *
+ *  @param[in]  aDelegate  A pointer to the delegate to set.
+ *
+ *  @retval  kStatus_Success          If successful.
+ *  @retval  kStatus_ValueAlreadySet  If the delegate was already set to
+ *                                    the specified value.
+ *
+ */
+Status
+ListenerBasis :: SetDelegate(ListenerBasisDelegate *aDelegate)
 {
     Status lRetval = kStatus_Success;
 
@@ -125,25 +219,64 @@ Status ListenerBasis :: SetDelegate(ListenerBasisDelegate *aDelegate)
 
     mDelegate = aDelegate;
 
- done:
+done:
     return (lRetval);
 }
 
-CFStringRef ListenerBasis :: GetScheme(void) const
+/**
+ *  @brief
+ *    Return the connection scheme for the connection listener basis.
+ *
+ *  @returns
+ *    The connection scheme for the connection listener basis.
+ *
+ */
+CFStringRef
+ListenerBasis :: GetScheme(void) const
 {
     return (mSchemeRef);
 }
 
-const HostURLAddress &ListenerBasis :: GetAddress(void) const
+/**
+ *  @brief
+ *    Return the listen URL for the connection listener basis.
+ *
+ *  @returns
+ *    The listen URL for the connection listener basis.
+ *
+ */
+const HostURLAddress &
+ListenerBasis :: GetAddress(void) const
 {
     return (mHostURLAddress);
 }
 
-void ListenerBasis :: CFSocketAcceptCallback(CFSocketRef aSocketRef,
-                                             CFSocketCallBackType aSocketCallBackType,
-                                             CFDataRef aAddress,
-                                             const void *aData,
-                                             void *aInfo)
+/**
+ *  @brief
+ *    Callback trampoline to handle listener accept activity.
+ *
+ *  @param[in]  aSocketRef           A reference to the listener socket
+ *                                   that triggered the callback.
+ *  @param[in]  aSocketCallBackType  The type of event that triggered
+ *                                   the callback.
+ *  @param[in]  aAddress             A data object wrapping a SocketAddress
+ *                                   corresponding to the socket address of
+ *                                   the remote peer the listener is
+ *                                   accepting a connection from.
+ *  @param[in]  aData                A pointer to a native socket descriptor
+ *                                   for the pending accepted connection.
+ *  @param[in]  aInfo                A pointer to the listener class
+ *                                   instance that registered this
+ *                                   trampoline to call back into from
+ *                                   the trampoline.
+ *
+ */
+/* static */ void
+ListenerBasis :: CFSocketAcceptCallback(CFSocketRef aSocketRef,
+                                        CFSocketCallBackType aSocketCallBackType,
+                                        CFDataRef aAddress,
+                                        const void *aData,
+                                        void *aInfo)
 {
     ListenerBasis *  lListener = static_cast<ListenerBasis *>(aInfo);
 
@@ -153,7 +286,18 @@ void ListenerBasis :: CFSocketAcceptCallback(CFSocketRef aSocketRef,
     }
 }
 
-void ListenerBasis :: OnWillListen(void)
+// MARK: Listener Delegation Actions
+
+/**
+ *  @brief
+ *    Signals to listener delegates that a listener will listen.
+ *
+ *  This is invoked by a listener in response to a pending
+ *  listen to signal delegates that the listener will listen.
+ *
+ */
+void
+ListenerBasis :: OnWillListen(void)
 {
     if (mDelegate != nullptr)
     {
@@ -161,7 +305,18 @@ void ListenerBasis :: OnWillListen(void)
     }
 }
 
-void ListenerBasis :: OnIsListening(void)
+/**
+ *  @brief
+ *    Signals to listener delegates that a listener is in the
+ *    process of listening.
+ *
+ *  This is invoked by a listener in response to a pending
+ *  listen to signal delegates that the listener is in the
+ *  process of listening.
+ *
+ */
+void
+ListenerBasis :: OnIsListening(void)
 {
     if (mDelegate != nullptr)
     {
@@ -169,7 +324,18 @@ void ListenerBasis :: OnIsListening(void)
     }
 }
 
-void ListenerBasis :: OnDidListen(void)
+/**
+ *  @brief
+ *    Signals to listener delegates that a listener is now
+ *    listening.
+ *
+ *  This is invoked by a listener in response to a pending
+ *  listen to signal delegates that the listener is now
+ *  listening.
+ *
+ */
+void
+ListenerBasis :: OnDidListen(void)
 {
     if (mDelegate != nullptr)
     {
@@ -177,7 +343,21 @@ void ListenerBasis :: OnDidListen(void)
     }
 }
 
-void ListenerBasis :: OnDidNotListen(const Common::Error &aError)
+/**
+ *  @brief
+ *    Signals to listener delegates that a listener did not
+ *    listen.
+ *
+ *  This is invoked by a listener in response to a failed
+ *  listen to signal delegates that the listener did not
+ *  listen.
+ *
+ *  @param[in]  aError  An immutable reference to the error
+ *                      associated with the failed listen.
+ *
+ */
+void
+ListenerBasis :: OnDidNotListen(const Common::Error &aError)
 {
     if (mDelegate != nullptr)
     {
@@ -185,7 +365,24 @@ void ListenerBasis :: OnDidNotListen(const Common::Error &aError)
     }
 }
 
-void ListenerBasis :: OnError(const Common::Error &aError)
+/**
+ *  @brief
+ *    Signals to listener delegates that a listener experienced an
+ *    error.
+ *
+ *  This is invoked by a listener in response to a listen error
+ *  to signal delegates that such a listen error occurred.
+ *
+ *  @note
+ *    This action may occur along with other actions with respect to
+ *    the same underlying event or cause.
+ *
+ *  @param[in]  aError  An immutable reference to the error associated
+ *                      with the event.
+ *
+ */
+void
+ListenerBasis :: OnError(const Common::Error &aError)
 {
     if (mDelegate != nullptr)
     {
@@ -193,7 +390,19 @@ void ListenerBasis :: OnError(const Common::Error &aError)
     }
 }
 
-bool ListenerBasis :: IsState(State aState) const
+/**
+ *  @brief
+ *    Returns whether or not the listener is in the specified state.
+ *
+ *  @param[in]  aState  The state to confirm.
+ *
+ *  @returns
+ *    True if the listener is in the specified state; otherwise,
+ *    false.
+ *
+ */
+bool
+ListenerBasis :: IsState(State aState) const
 {
     const bool lRetval = (mState == aState);
 
@@ -201,12 +410,33 @@ bool ListenerBasis :: IsState(State aState) const
     return (lRetval);
 }
 
-ListenerBasis::State ListenerBasis :: GetState(void) const
+/**
+ *  @brief
+ *    Returns the current listener state.
+ *
+ *  @returns
+ *    The current listener state.
+ *
+ */
+ListenerBasis::State
+ListenerBasis :: GetState(void) const
 {
     return (mState);
 }
 
-Status ListenerBasis :: SetState(State aState)
+/**
+ *  @brief
+ *    Sets the current listener state.
+ *
+ *  @param[in]  aState  The state to set the listener to.
+ *
+ *  @retval  kStatus_Success          If successful.
+ *  @retval  kStatus_ValueAlreadySet  If the state was already set to
+ *                                    the specified value.
+ *
+ */
+Status
+ListenerBasis :: SetState(State aState)
 {
     Status lRetval = kStatus_Success;
 
@@ -219,12 +449,22 @@ Status ListenerBasis :: SetState(State aState)
     return (lRetval);
 }
 
-RunLoopParameters &ListenerBasis :: GetRunLoopParameters(void)
+/**
+ *  @brief
+ *    Return the run loop parameters for the connection.
+ *
+ *  @returns
+ *    The run loop parameters for the connection.
+ *
+ */
+RunLoopParameters &
+ListenerBasis :: GetRunLoopParameters(void)
 {
     return (mRunLoopParameters);
 }
 
-Status ListenerBasis :: Listen(const SocketAddress &aAddress)
+Status
+ListenerBasis :: Listen(const SocketAddress &aAddress)
 {
     DeclareLogIndentWithValue(lLogIndent, 0);
     DeclareLogLevelWithValue(lLogLevel, 1);
@@ -380,12 +620,14 @@ Status ListenerBasis :: Listen(const SocketAddress &aAddress)
     return (lRetval);
 }
 
-void ListenerBasis :: Ignore(void)
+void
+ListenerBasis :: Ignore(void)
 {
     Ignore(mRunLoopParameters, mSocketRef, mRunLoopSourceRef);
 }
 
-void ListenerBasis :: Ignore(const RunLoopParameters &aRunLoopParameters, CFSocketRef &aSocketRef, CFRunLoopSourceRef &aRunLoopSourceRef)
+void
+ListenerBasis :: Ignore(const RunLoopParameters &aRunLoopParameters, CFSocketRef &aSocketRef, CFRunLoopSourceRef &aRunLoopSourceRef)
 {
     Boolean lStatus;
 
@@ -422,19 +664,36 @@ void ListenerBasis :: Ignore(const RunLoopParameters &aRunLoopParameters, CFSock
     }
 }
 
-void ListenerBasis :: CFSocketAcceptCallback(CFSocketRef aSocketRef,
-                                             CFSocketCallBackType aSocketCallBackType,
-                                             CFDataRef aAddress,
-                                             const void *aData)
+/**
+ *  @brief
+ *    Callback to handle listener accept activity.
+ *
+ *  @param[in]  aSocketRef           A reference to the listener socket
+ *                                   that triggered the callback.
+ *  @param[in]  aSocketCallBackType  The type of event that triggered
+ *                                   the callback.
+ *  @param[in]  aAddress             A data object wrapping a SocketAddress
+ *                                   corresponding to the socket address of
+ *                                   the remote peer the listener is
+ *                                   accepting a connection from.
+ *  @param[in]  aData                A pointer to a native socket descriptor
+ *                                   for the pending accepted connection.
+ *
+ */
+void
+ListenerBasis :: CFSocketAcceptCallback(CFSocketRef aSocketRef,
+                                        CFSocketCallBackType aSocketCallBackType,
+                                        CFDataRef aAddress,
+                                        const void *aData)
 {
     DeclareLogIndentWithValue(lLogIndent, 0);
     DeclareLogLevelWithValue(lLogLevel, 1);
-    const State            lCurrentState = GetState();
+    const State            lCurrentState    = GetState();
 #if (defined(DEBUG) && DEBUG) && !defined(NDEBUG)
     CFSocketNativeHandle   lAcceptingSocket = CFSocketGetNative(aSocketRef);
 #endif // (defined(DEBUG) && DEBUG) && !defined(NDEBUG)
     CFSocketNativeHandle   lConnectedSocket = *static_cast<const CFSocketNativeHandle *>(aData);
-    Status                 lStatus = kStatus_Success;
+    Status                 lStatus          = kStatus_Success;
 
 
 #if ((!defined(DEBUG) && !DEBUG) || (defined(NDEBUG) && NDEBUG))

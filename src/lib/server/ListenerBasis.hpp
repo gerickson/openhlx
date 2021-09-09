@@ -62,6 +62,20 @@ class ListenerBasis
 public:
     virtual ~ListenerBasis(void);
 
+    /**
+     *  @brief
+     *    This is a class initializer.
+     *
+     *  This initializes the connection listener basis on a run loop
+     *  with the specified run loop parameters.
+     *
+     *  @param[in]  aRunLoopParameters  An immutable reference to the run
+     *                                  loop parameters to initialize the
+     *                                  connection listener basis with.
+     *
+     *  @retval  kStatus_Success  If successful.
+     *
+     */
     virtual Common::Status Init(const Common::RunLoopParameters &aRunLoopParameters) = 0;
     virtual Common::Status Listen(ListenerBasisAcceptDelegate *aAcceptDelegate, const Common::SocketAddress &aAddress);
 
@@ -94,6 +108,11 @@ protected:
 
     void OnError(const Common::Error &aError);
 
+    /**
+     *  @brief
+     *    Enumeration of listenerx states.
+     *
+     */
     enum State
     {
         kState_Unknown          = 0,
