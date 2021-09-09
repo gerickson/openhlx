@@ -18,18 +18,19 @@
 
 /**
  *    @file
- *      This file implements an object for composing HLX server response
- *      buffers for commands that query a data model object or
+ *      This file implements a derivable object for composing HLX server
+ *      response buffers for commands that query a data model object or
  *      property thereof.
  *
  */
+
+#include "CommandQueryResponseBasis.hpp"
 
 #include <string>
 
 #include <LogUtilities/LogUtilities.hpp>
 
 #include <OpenHLX/Utilities/Assert.hpp>
-#include <CommandQueryResponseBasis.hpp>
 
 
 using namespace HLX::Common;
@@ -46,12 +47,50 @@ namespace Server
 namespace Command
 {
 
-Status QueryResponseBasis :: Init(const char *aObject)
+/**
+ *  @brief
+ *    This is a class initializer.
+ *
+ *  This initializes an object observation (that is, query) response
+ *  against a specific object.
+ *
+ *  @param[in]      aObject      A pointer to a null-terminated C
+ *                               string representing the object for
+ *                               which the observation response
+ *                               is to formed. For example, "O" for
+ *                               a zone object.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+QueryResponseBasis :: Init(const char *aObject)
 {
     return (QueryBufferBasis::Init(*this, aObject));
 }
 
-Status QueryResponseBasis :: Init(const char *aObject, const IdentifierType &aIdentifier)
+/**
+ *  @brief
+ *    This is a class initializer.
+ *
+ *  This initializes an object observation (that is, query) response
+ *  operation against a specific object and identfier.
+ *
+ *  @param[in]      aObject      A pointer to a null-terminated C
+ *                               string representing the object for
+ *                               which the observation response
+ *                               is to formed. For example, "O" for
+ *                               a zone object.
+ *  @param[in]  aIdentifier      A reference to the specific object
+ *                               identifier for which the query
+ *                               response is to be formed.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+QueryResponseBasis :: Init(const char *aObject,
+                           const IdentifierType &aIdentifier)
 {
     return (QueryBufferBasis::Init(*this, aObject, aIdentifier));
 }
