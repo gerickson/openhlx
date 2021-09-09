@@ -292,8 +292,6 @@ done:
  *                               response.
  *
  *  @retval  kStatus_Success  If successful.
- *  @retval  -ENOMEM          If resources for the error response
- *                            could not be allocated.
  *
  */
 Status
