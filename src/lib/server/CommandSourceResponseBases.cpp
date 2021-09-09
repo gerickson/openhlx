@@ -45,19 +45,96 @@ namespace Server
 namespace Command
 {
 
-Status SourceResponseBasis :: Init(const char *aObject, const IdentifierModel::IdentifierType &aIdentifier, const char *aOperation)
+/**
+ *  @brief
+ *    This is the class initializer for a source (input) response.
+ *
+ *  This initializes a source (input) property response against a
+ *  specific object identifier.
+ *
+ *  @param[in]  aObject      A pointer to a null-terminated C string
+ *                           representing the object for which the
+ *                           source (input) response is to be
+ *                           formed. For example, "O" for a zone
+ *                           object.
+ *  @param[in]  aIdentifier  A reference to the specific object
+ *                           identifier which the source (input)
+ *                           response is to be formed.
+ *  @param[in]  aOperation   A pointer to a null-terminated C string
+ *                           representing the operation that triggered
+ *                           the response.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+SourceResponseBasis :: Init(const char *aObject,
+                            const IdentifierModel::IdentifierType &aIdentifier,
+                            const char *aOperation)
 {
-    return (SourceBufferBasis::Init(*this, aObject, aIdentifier, aOperation));
+    return (SourceBufferBasis::Init(*this,
+                                    aObject,
+                                    aIdentifier,
+                                    aOperation));
 }
 
-Status SourceAllResponseBasis :: Init(const char *aObject, const IdentifierModel::IdentifierType &aSourceIdentifier)
+/**
+ *  @brief
+ *    This is the class initializer for an all-object source (input)
+ *    response.
+ *
+ *  This initializes an all-object source (input) property response.
+ *
+ *  @param[in]  aObject            A pointer to a null-terminated C
+ *                                 string representing the objects for
+ *                                 which the source (input) response
+ *                                 is to be formed. For example, "O"
+ *                                 for zone objects.
+ *  @param[in]  aSourceIdentifier  An immutable reference to the
+ *                                 source (input) in the response.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+SourceAllResponseBasis :: Init(const char *aObject,
+                               const IdentifierModel::IdentifierType &aSourceIdentifier)
 {
-    return (SourceAllBufferBasis::Init(*this, aObject, aSourceIdentifier));
+    return (SourceAllBufferBasis::Init(*this,
+                                       aObject,
+                                       aSourceIdentifier));
 }
 
-Status SourceSetResponseBasis :: Init(const char *aObject, const IdentifierModel::IdentifierType &aIdentifier, const IdentifierModel::IdentifierType &aSource)
+/**
+ *  @brief
+ *    This is the class initializer for a source (input) respnse.
+ *
+ *  This initializes a source (input) property response against a
+ *  specific object identifier.
+ *
+ *  @param[in]  aObject            A pointer to a null-terminated C
+ *                                 string representing the object for
+ *                                 which the source (input) response
+ *                                 is to be formed. For example, "O"
+ *                                 for a zone object.
+ *  @param[in]  aIdentifier        A reference to the specific
+ *                                 object dentifier which the source
+ *                                 (input) response is to be formed.
+ *  @param[in]  aSourceIdentifier  An immutable reference to the
+ *                                 source (input) to set.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+SourceSetResponseBasis :: Init(const char *aObject,
+                               const IdentifierModel::IdentifierType &aIdentifier,
+                               const IdentifierModel::IdentifierType &aSourceIdentifier)
 {
-    return (SourceSetBufferBasis::Init(*this, aObject, aIdentifier, aSource));
+    return (SourceSetBufferBasis::Init(*this,
+                                       aObject,
+                                       aIdentifier,
+                                       aSourceIdentifier));
 }
 
 }; // namespace Command
