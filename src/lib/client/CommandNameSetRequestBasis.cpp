@@ -18,9 +18,8 @@
 
 /**
  *    @file
- *      This file implements a derived object for composing a HLX
- *      client command request buffer that performs a name data model
- *      set property mutation.
+ *      This file implements a derivable object for a HLX client name
+ *      data model set property mutation command request buffer.
  *
  */
 
