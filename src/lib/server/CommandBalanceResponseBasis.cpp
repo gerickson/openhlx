@@ -47,14 +47,87 @@ namespace Server
 namespace Command
 {
 
-Status BalanceResponseBasis :: Init(const char *aObject, const IdentifierType &aIdentifier, const ChannelType &aChannel, const BalanceType &aBalance)
+/**
+ *  @brief
+ *    This is the class initializer for a stereophonic channel balance
+ *    command response.
+ *
+ *  This initializes the sterephonic channel balance property command
+ *  response of a specified value against a specific object and
+ *  identifier.
+ *
+ *  @note
+ *    This operates with an interface that uses the HLX's native
+ *    L:{max, min} to {min, max}:R tagged discontinuous balance bias
+ *    model.
+ *
+ *  @param[in]  aObject      A pointer to a null-terminated C string
+ *                           representing the object for which the
+ *                           balance response is to be formed. For
+ *                           example, "O" for a zone object.
+ *  @param[in]  aIdentifier  A reference to the specific object
+ *                           identifier which the balance response is
+ *                           to be formed.
+ *  @param[in]  aChannel     An immutable reference to the
+ *                           stereophonic channel for the response.
+ *  @param[in]  aBalance     An immutable reference to the
+ *                           stereophonic channel balance bias for the
+ *                           response.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+BalanceResponseBasis :: Init(const char *aObject,
+                             const IdentifierModel::IdentifierType &aIdentifier,
+                             const BalanceModel::ChannelType &aChannel,
+                             const BalanceModel::BalanceType &aBalance)
 {
-    return (BalanceBufferBasis::Init(*this, aObject, aIdentifier, aChannel, aBalance));
+    return (BalanceBufferBasis::Init(*this,
+                                     aObject,
+                                     aIdentifier,
+                                     aChannel,
+                                     aBalance));
 }
 
-Status BalanceResponseBasis :: Init(const char *aObject, const IdentifierModel::IdentifierType &aIdentifier, const BalanceModel::BalanceType &aBalance)
+/**
+ *  @brief
+ *    This is the class initializer for a stereophonic channel balance
+ *    command response.
+ *
+ *  This initializes the sterephonic channel balance property command
+ *  response of a specified value against a specific object and
+ *  identifier.
+ *
+ *  @note
+ *    This operates with an interface that uses this stack's non-HLX
+ *    native L:{-max, max}:R non-tagged continuous balance bais model
+ *    that converts it into the HLX's native tagged discontinuous
+ *    model.
+ *
+ *  @param[in]  aObject      A pointer to a null-terminated C string
+ *                           representing the object for which the
+ *                           balance response is to be formed. For
+ *                           example, "O" for a zone object.
+ *  @param[in]  aIdentifier  A reference to the specific object
+ *                           identifier which the balance response is
+ *                           to be formed.
+ *  @param[in]  aBalance     An immutable reference to the
+ *                           stereophonic channel balance bias for the
+ *                           response.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+BalanceResponseBasis :: Init(const char *aObject,
+                             const IdentifierModel::IdentifierType &aIdentifier,
+                             const BalanceModel::BalanceType &aBalance)
 {
-    return (BalanceBufferBasis::Init(*this, aObject, aIdentifier, aBalance));
+    return (BalanceBufferBasis::Init(*this,
+                                     aObject,
+                                     aIdentifier,
+                                     aBalance));
 }
 
 }; // namespace Command
