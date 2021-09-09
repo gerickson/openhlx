@@ -61,11 +61,12 @@ protected:
     SourceResponseBasis(void) = default;
     virtual ~SourceResponseBasis(void) = default;
 
-    // Allow both the base and derived class initializers
+    Common::Status Init(const char *aObject, const IdentifierType &aIdentifier, const char *aOperation);
+
+private:
+    // Explicitly hide base class initializers
 
     using ResponseBasis::Init;
-
-    Common::Status Init(const char *aObject, const IdentifierType &aIdentifier, const char *aOperation);
 };
 
 /**
@@ -86,11 +87,12 @@ protected:
     SourceAllResponseBasis(void) = default;
     virtual ~SourceAllResponseBasis(void) = default;
 
-    // Allow both the base and derived class initializers
+    Common::Status Init(const char *aObject, const IdentifierType &aSourceIdentifier);
+
+private:
+    // Explicitly hide base class initializers
 
     using ResponseBasis::Init;
-
-    Common::Status Init(const char *aObject, const IdentifierType &aSourceIdentifier);
 };
 
 /**
@@ -111,11 +113,12 @@ protected:
     SourceSetResponseBasis(void) = default;
     virtual ~SourceSetResponseBasis(void) = default;
 
-    // Allow both the base and derived class initializers
+    Common::Status Init(const char *aObject, const IdentifierType &aIdentifier, const IdentifierType &aSourceIdentifier);
+
+private:
+    // Explicitly hide base class initializers
 
     using ResponseBasis::Init;
-
-    Common::Status Init(const char *aObject, const IdentifierType &aIdentifier, const IdentifierType &aSource);
 };
 
 }; // namespace Command
