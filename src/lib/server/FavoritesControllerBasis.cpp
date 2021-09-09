@@ -45,6 +45,7 @@ namespace Server
 
 //!< Class-scoped server favorite query command request regular expression.
 Server::Command::Favorites::QueryRequest    FavoritesControllerBasis::kQueryRequest;
+
 //!< Class-scoped server favorite set name command request regular
 //!< expression.
 Server::Command::Favorites::SetNameRequest  FavoritesControllerBasis::kSetNameRequest;
