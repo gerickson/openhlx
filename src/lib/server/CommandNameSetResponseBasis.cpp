@@ -44,12 +44,63 @@ namespace Server
 namespace Command
 {
 
-Status NameSetResponseBasis :: Init(const char *aObject, const IdentifierModel::IdentifierType &aIdentifier, const char *aName)
+/**
+ *  @brief
+ *    This is the class initializer for a name set command response.
+ *
+ *  This initializes the name property set command response of a
+ *  specified name against a specific object and identifier.
+ *
+ *  @param[in]      aObject      A pointer to a null-terminated C
+ *                               string representing the object for
+ *                               which the name set operation is to be
+ *                               made against. For example, "O" for a
+ *                               zone object.
+ *  @param[in]      aIdentifier  A reference to the specific object
+ *                               identifier for which the name response
+ *                               is to be formed.
+ *  @param[in]      aName        A pointer to the null-terminated C
+ *                               string name that was set.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+NameSetResponseBasis :: Init(const char *aObject,
+                             const IdentifierModel::IdentifierType &aIdentifier,
+                             const char *aName)
 {
     return (NameSetBufferBasis::Init(*this, aObject, aIdentifier, aName));
 }
 
-Status NameSetResponseBasis :: Init(const char *aObject, const IdentifierModel::IdentifierType &aIdentifier, const char *aName, const size_t &aNameLength)
+/**
+ *  @brief
+ *    This is the class initializer for a name set command response.
+ *
+ *  This initializes the name property set command response of a
+ *  specified name against a specific object and identifier.
+ *
+ *  @param[in]      aObject      A pointer to a null-terminated C
+ *                               string representing the object for
+ *                               which the name set operation is to be
+ *                               made against. For example, "O" for a
+ *                               zone object.
+ *  @param[in]      aIdentifier  A reference to the specific object
+ *                               identifier for which the name response
+ *                               is to be formed.
+ *  @param[in]      aName        A pointer to the start of the string
+ *                               name that was set.
+ *  @param[in]      aNameLength  An immutable reference to the length,
+ *                               in bytes, of @a aName.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+NameSetResponseBasis :: Init(const char *aObject,
+                             const IdentifierModel::IdentifierType &aIdentifier,
+                             const char *aName,
+                             const size_t &aNameLength)
 {
     return (NameSetBufferBasis::Init(*this, aObject, aIdentifier, aName, aNameLength));
 }

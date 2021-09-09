@@ -61,12 +61,13 @@ protected:
     NameSetResponseBasis(void) = default;
     virtual ~NameSetResponseBasis(void) = default;
 
-    // Allow both the base and derive class initializers
-
-    using ResponseBasis::Init;
-
     Common::Status Init(const char *aObject, const Model::IdentifierModel::IdentifierType &aIdentifier, const char *aName);
     Common::Status Init(const char *aObject, const Model::IdentifierModel::IdentifierType &aIdentifier, const char *aName, const size_t &aNameLength);
+
+private:
+    // Explicitly hide base class initializers
+
+    using ResponseBasis::Init;
 };
 
 }; // namespace Command
