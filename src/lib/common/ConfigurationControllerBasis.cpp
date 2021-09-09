@@ -40,6 +40,15 @@ namespace HLX
 namespace Common
 {
 
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the configuration controller basis.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
 Status
 ConfigurationControllerBasis :: Init(void)
 {
