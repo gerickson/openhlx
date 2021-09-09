@@ -62,12 +62,13 @@ protected:
     BalanceResponseBasis(void) = default;
     virtual ~BalanceResponseBasis(void) = default;
 
-    // Allow both the base and derived class initializers
-
-    using ResponseBasis::Init;
-
     Common::Status Init(const char *aObject, const IdentifierType &aIdentifier, const ChannelType &aChannel, const BalanceType &aBalance);
     Common::Status Init(const char *aObject, const IdentifierType &aIdentifier, const BalanceType &aBalance);
+
+private:
+    // Explicitly hide base class initializers
+
+    using ResponseBasis::Init;
 };
 
 }; // namespace Command

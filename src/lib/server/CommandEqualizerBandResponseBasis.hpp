@@ -59,14 +59,15 @@ protected:
     EqualizerBandResponseBasis(void) = default;
     virtual ~EqualizerBandResponseBasis(void) = default;
 
-    // Allow both the base and derived class initializers
-
-    using ResponseBasis::Init;
-
     Common::Status Init(const char *aObject, const Model::EqualizerBandsModel::IdentifierType &aEqualizerIdentifier, const Model::EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier, const LevelType &aLevel);
 
 private:
     Common::Status Init(const char *aObject, const Model::EqualizerBandsModel::IdentifierType &aEqualizerIdentifier, const Model::EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier, const char *aOperation);
+
+private:
+    // Explicitly hide base class initializers
+
+    using ResponseBasis::Init;
 };
 
 }; // namespace Command

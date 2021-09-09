@@ -61,11 +61,12 @@ protected:
     PropertyResponseBasis(void) = default;
     virtual ~PropertyResponseBasis(void) = default;
 
-    // Allow both the base and derived class initializers
+    Common::Status Init(char aProperty, const char *aObject, const IdentifierType &aIdentifier, const char *aOperation);
+
+private:
+    // Explicitly hide base class initializers
 
     using ResponseBasis::Init;
-
-    Common::Status Init(char aProperty, const char *aObject, const IdentifierType &aIdentifier, const char *aOperation);
 };
 
 /**
@@ -85,16 +86,17 @@ protected:
     PropertySetResponseBasis(void) = default;
     virtual ~PropertySetResponseBasis(void) = default;
 
-    // Allow both the base and derived class initializers
-
-    using ResponseBasis::Init;
-
     Common::Status Init(char aProperty, const char *aObject, const Model::IdentifierModel::IdentifierType &aIdentifier, char aOperation, const bool &aValue);
 
     Common::Status Init(char aProperty, const char *aObject, const Model::IdentifierModel::IdentifierType &aIdentifier, char aOperation, const uint8_t &aValue);
     Common::Status Init(char aProperty, const char *aObject, const Model::IdentifierModel::IdentifierType &aIdentifier, char aOperation, const int8_t &aValue);
 
     Common::Status Init(char aProperty, const char *aObject, const Model::IdentifierModel::IdentifierType &aIdentifier, const char *aOperation, const uint16_t &aValue);
+
+private:
+    // Explicitly hide base class initializers
+
+    using ResponseBasis::Init;
 };
 
 }; // namespace Command
