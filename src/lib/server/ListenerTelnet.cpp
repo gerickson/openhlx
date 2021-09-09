@@ -32,6 +32,7 @@
 
 #include <OpenHLX/Utilities/Assert.hpp>
 
+
 using namespace HLX::Common;
 using namespace Nuovations;
 
@@ -47,6 +48,12 @@ static const uint16_t kTelnetPort = 23;
 
 // Static Class Data Members
 
+/**
+ *  @brief
+ *    A CoreFoundation string constant for the URL protocol scheme
+ *    supported by this connection.
+ *
+ */
 CFStringRef ListenerTelnet :: kScheme = CFSTR("telnet");
 
 ListenerTelnet :: ListenerTelnet(void) :
