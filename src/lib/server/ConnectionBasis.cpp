@@ -474,6 +474,7 @@ ConnectionBasis :: SetState(State aState)
 {
     Status lRetval = kStatus_Success;
 
+
     nlREQUIRE_ACTION(mState != aState, done, lRetval = kStatus_ValueAlreadySet);
 
     mState = aState;
