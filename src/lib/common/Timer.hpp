@@ -63,12 +63,12 @@ public:
 
     // Equality
 
-    bool operator == (const Timer &aTimer) const;
+    bool operator ==(const Timer &aTimer) const;
 
     // Delegate Management
 
     TimerDelegate * GetDelegate(void) const;
-    Common::Status SetDelegate(TimerDelegate *aDelegate);
+    Common::Status  SetDelegate(TimerDelegate *aDelegate);
 
     // Timer Management
 

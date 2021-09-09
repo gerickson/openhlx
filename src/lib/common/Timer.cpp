@@ -16,6 +16,13 @@
  *
  */
 
+/**
+ *    @file
+ *      This file implements an object for specifying a run loop
+ *      timer.
+ *
+ */
+
 #include "Timer.hpp"
 
 #include <errno.h>
@@ -38,6 +45,11 @@ namespace HLX
 namespace Common
 {
 
+/**
+ *  @brief
+ *    This is the class default constructor.
+ *
+ */
 Timer :: Timer(void) :
     mRunLoopParameters(),
     mTimerRef(nullptr),
@@ -46,6 +58,11 @@ Timer :: Timer(void) :
     return;
 }
 
+/**
+ *  @brief
+ *    This is the class destructor.
+ *
+ */
 Timer :: ~Timer(void)
 {
     Destroy();
@@ -53,11 +70,41 @@ Timer :: ~Timer(void)
 
 // MARK: Initializer(s)
 
-Status Timer :: Init(const Common::RunLoopParameters &aRunLoopParameters,
-                     const Timeout &aTimeout)
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes a repeating interval timer to fire at the
+ *  specified millisecond timeout in the future.
+ *
+ *  @note
+ *    This only initializes the timer. The timer must be started with
+ *    #Start. Timer expiration events are handled through the delegate
+ *    interface by invoking #SetDelegate.
+ *
+ *  @param[in]  aRunLoopParameters  An immutable reference to the run
+ *                                  loop parameters to initialize the
+ *                                  timer with.
+ *  @param[in]  aTimeout            An immutable reference to a milli-
+ *                                  second timeout containing the
+ *                                  interval at which the timer should
+ *                                  fire, in milliseconds.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *  @retval  -ENOMEM          If resources could not be allocated for
+ *                            the timer.
+ *
+ *  @sa SetDelegate
+ *  @sa Start
+ *  @sa Destroy
+ *
+ */
+Status
+Timer :: Init(const Common::RunLoopParameters &aRunLoopParameters,
+              const Timeout &aTimeout)
 {
-    static constexpr CFOptionFlags  kFlags = 0;
-    static constexpr CFIndex        kOrder = 0;
+    static constexpr CFOptionFlags  kFlags           = 0;
+    static constexpr CFIndex        kOrder           = 0;
     const CFTimeInterval            lIntervalSeconds = aTimeout.GetMilliseconds() / 1000;
     const CFAbsoluteTime            lFirstFireDate   = CFAbsoluteTimeGetCurrent() + lIntervalSeconds;
     CFRunLoopTimerContext           lTimerContext    = { 0, this, 0, 0, 0 };
@@ -75,12 +122,24 @@ Status Timer :: Init(const Common::RunLoopParameters &aRunLoopParameters,
 
     mRunLoopParameters = aRunLoopParameters;
 
- done:
+done:
     return (lRetval);
 }
 
 // MARK: Equality
 
+/**
+ *  @brief
+ *    This is a class equality operator.
+ *
+ *  @param[in]  aTimer  An immutable reference to the timer compare
+ *                      against this timer for equality.
+ *
+ *  @returns
+ *    True if this timer is equal to the specified timer; otherwise,
+ *    false.
+ *
+ */
 bool
 Timer :: operator ==(const Timer &aTimer) const
 {
@@ -100,17 +159,37 @@ Timer :: operator ==(const Timer &aTimer) const
     }
 
     return (lRetval);
-
 }
 
 // MARK: Delegate Management
 
+/**
+ *  @brief
+ *    Return the delegate for the timer.
+ *
+ *  @returns
+ *    A pointer to the delegate for the timer.
+ *
+ */
 TimerDelegate *
 Timer :: GetDelegate(void) const
 {
     return (mDelegate);
 }
 
+/**
+ *  @brief
+ *    Set the delegate for the timer.
+ *
+ *  This attempts to set a delegate for the timer.
+ *
+ *  @param[in]  aDelegate  A pointer to the delegate to set.
+ *
+ *  @retval  kStatus_Success          If successful.
+ *  @retval  kStatus_ValueAlreadySet  If the delegate was already set to
+ *                                    the specified value.
+ *
+ */
 Status
 Timer :: SetDelegate(TimerDelegate *aDelegate)
 {
@@ -126,10 +205,25 @@ Timer :: SetDelegate(TimerDelegate *aDelegate)
 
 // MARK: Timer Management
 
+/**
+ *  @brief
+ *    Start the timer.
+ *
+ *  This starts the timer.
+ *    
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  kError_NotInitialized  If the timer has not yet been
+ *                                  initialized.
+ *
+ *  @sa Stop
+ *  @sa Destroy
+ *
+ */
 Status
 Timer :: Start(void)
 {
     Status  lRetval = kStatus_Success;
+
 
     nlREQUIRE_ACTION(mTimerRef != nullptr, done, lRetval = kError_NotInitialized);
 
@@ -141,10 +235,25 @@ Timer :: Start(void)
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Stop the timer.
+ *
+ *  This stops the timer.
+ *    
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  kError_NotInitialized  If the timer has not yet been
+ *                                  initialized.
+ *
+ *  @sa Start
+ *  @sa Destroy
+ *
+ */
 Status
 Timer :: Stop(void)
 {
     Status  lRetval = kStatus_Success;
+
 
     nlREQUIRE_ACTION(mTimerRef != nullptr, done, lRetval = kError_NotInitialized);
 
@@ -156,6 +265,16 @@ Timer :: Stop(void)
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Stop and release all resources associated with the timer.
+ *
+ *  This stops the timer and releases all resources associated with
+ *  the timer. The only usable method for the timer after invoking
+ *  this method is #Init.
+ *
+ *  @sa Init
+ */
 void
 Timer :: Destroy(void)
 {
@@ -173,6 +292,16 @@ Timer :: Destroy(void)
 
 // MARK: Timer Fired Handler
 
+/**
+ *  @brief
+ *    Callback to handle timer expiration activity.
+ *
+ *  This handles any activity associated with the timer expiration.
+ *
+ *  @param[in]  aTimerRef  A reference to the timer that
+ *                         triggered the callback.
+ *
+ */
 void
 Timer :: TimerFiredCallBack(CFRunLoopTimerRef aTimerRef)
 {
@@ -186,6 +315,20 @@ Timer :: TimerFiredCallBack(CFRunLoopTimerRef aTimerRef)
 
 // MARK: Timer Fired Handler Trampoline
 
+/**
+ *  @brief
+ *    Callback to handle timer expiration activity.
+ *
+ *  This handles any activity associated with the timer expiration.
+ *
+ *  @param[in]  aTimerRef  A reference to the timer that
+ *                         triggered the callback.
+ *  @param[in]  aContext   A pointer to the timer class
+ *                         instance that registered this
+ *                         trampoline to call back into from
+ *                         the trampoline.
+ *
+ */
 /* static */ void
 Timer :: TimerFiredCallBack(CFRunLoopTimerRef aTimerRef, void *aContext)
 {
