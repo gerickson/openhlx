@@ -18,8 +18,8 @@
 
 /**
  *    @file
- *      This file implements a base object for all client-side HLX
- *      object controllers.
+ *      This file implements a derivable object for all client-side
+ *      HLX object controllers.
  *
  */
 
@@ -147,6 +147,9 @@ ObjectControllerBasis :: Init(CommandManager &aCommandManager, const Timeout &aT
  *  @param[in]  aLastNotificationHandler   An iterator to the last
  *                                         notification handler to
  *                                         register or unregister.
+ *  @param[in]  aContext                   The context to register
+ *                                         which will be passed
+ *                                         back via the handler.
  *  @param[in]  aRegister                  Indicates whether to
  *                                         register (true) or unregister
  *                                         (false) the handlers.
@@ -628,6 +631,19 @@ ObjectControllerBasis :: OnStateDidChange(const StateChange::NotificationBasis &
 
 // MARK: Refresh State and Delegation Convenience Methods
 
+/**
+ *  @brief
+ *    If a refresh operation was requested, update the controller
+ *    refresh progress.
+ *
+ *  If a refresh operation was requested of the controller, update the
+ *  controller refresh progress with the specified numerator and
+ *  denominator to derive the percent completion.
+ *
+ *  @param[in]  aNumerator    An immutable reference to the numerator.
+ *  @param[in]  aDenominator  An immutable reference to the denominator.
+ *
+ */
 void
 ObjectControllerBasis :: MaybeUpdateRefreshIfRefreshWasRequested(const uint8_t &aNumerator, const uint8_t &aDenominator)
 {
@@ -644,6 +660,15 @@ ObjectControllerBasis :: MaybeUpdateRefreshIfRefreshWasRequested(const uint8_t &
     }
 }
 
+/**
+ *  @brief
+ *    If a refresh operation was requested, update the controller
+ *    refresh progress.
+ *
+ *  If a refresh operation was requested of the controller, update the
+ *  controller refresh progress completion.
+ *
+ */
 void
 ObjectControllerBasis :: MaybeUpdateRefreshIfRefreshWasRequested(void)
 {

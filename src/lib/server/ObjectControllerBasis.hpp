@@ -18,7 +18,7 @@
 
 /**
  *    @file
- *      This file defines a base object for all server-side HLX
+ *      This file defines a derivable object for all server-side HLX
  *      controllers.
  *
  */

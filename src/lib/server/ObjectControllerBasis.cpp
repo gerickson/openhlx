@@ -18,8 +18,8 @@
 
 /**
  *    @file
- *      This file implements a base object for all server-side HLX
- *      controllers.
+ *      This file implements a derivable object for all server-side
+ *      HLX controllers.
  *
  */
 
@@ -105,6 +105,9 @@ ObjectControllerBasis :: Init(CommandManager &aCommandManager)
  *  @param[in]  aLastRequestHandler   An iterator to the last
  *                                    comamnd request handler to
  *                                    register or unregister.
+ *  @param[in]  aContext              The context to register
+ *                                    which will be passed
+ *                                    back via the handler.
  *  @param[in]  aRegister             Indicates whether to
  *                                    register (true) or unregister
  *                                    (false) the handlers.
@@ -153,34 +156,90 @@ done:
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Send a server command response to all connected clients.
+ *
+ *  This attempts to send a server command response for a
+ *  previously-received command request to all connected (and,
+ *  consequently, subscribed) clients.
+ *
+ *  @param[in]  aBuffer  An immutable shared pointer to the
+ *                       buffer containing the command response to
+ *                       send.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  kError_NotInitialized  If the controller has not been
+ *                                  successfully initialized.
+ *
+ */
 Status
 ObjectControllerBasis :: SendResponse(ConnectionBuffer::ImmutableCountedPointer aBuffer) const
 {
-    Status lRetval = kStatus_Success;
+    Status  lRetval = kStatus_Success;
 
     nlREQUIRE_ACTION(mCommandManager != nullptr, done, lRetval = kError_NotInitialized);
 
     lRetval = mCommandManager->SendResponse(aBuffer);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Send a server command response to the specified connected
+ *    client.
+ *
+ *  This attempts to send a server command response for a
+ *  previously-received command request from the specified connected
+ *  client.
+ *
+ *  @param[in]  aConnection  A mutable reference to the connection
+ *                           over which to to send the response.
+ *  @param[in]  aBuffer      An immutable shared pointer to the
+ *                           buffer containing the command response to
+ *                           send.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  kError_NotInitialized  If the controller has not been
+ *                                  successfully initialized.
+ *
+ */
 Status
 ObjectControllerBasis :: SendResponse(ConnectionBasis &aConnection, ConnectionBuffer::ImmutableCountedPointer aBuffer) const
 {
-    Status lRetval = kStatus_Success;
+    Status  lRetval = kStatus_Success;
 
     nlREQUIRE_ACTION(mCommandManager != nullptr, done, lRetval = kError_NotInitialized);
 
     lRetval = mCommandManager->SendResponse(aConnection, aBuffer);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Send a server command error response to the specified connected
+ *    client.
+ *
+ *  This attempts to send a server command error response for a
+ *  previously-received command request from the specified connected
+ *  client.
+ *
+ *  @param[in]  aConnection  A mutable reference to the connection
+ *                           over which to to send the error response.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  kError_NotInitialized  If the controller has not been
+ *                                  successfully initialized.
+ *  @retval  -ENOMEM                If resources for the error response
+ *                                  could not be allocated.
+ *
+ */
 Status
 ObjectControllerBasis :: SendErrorResponse(ConnectionBasis &aConnection) const
 {
@@ -195,8 +254,29 @@ ObjectControllerBasis :: SendErrorResponse(ConnectionBasis &aConnection) const
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Send a server command error response to the specified connected
+ *    client using the provided buffer.
+ *
+ *  This attempts to send a server command error response for a
+ *  previously-received command request from the specified connected
+ *  client using the provided buffer.
+ *
+ *  @param[in]      aConnection  A mutable reference to the connection
+ *                               over which to to send the error response.
+ *  @param[in,out]  aBuffer      A reference to a shared pointer to the
+ *                               buffer in which to put the error
+ *                               response.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  kError_NotInitialized  If the controller has not been
+ *                                  successfully initialized.
+ *
+ */
 Status
-ObjectControllerBasis :: SendErrorResponse(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+ObjectControllerBasis :: SendErrorResponse(ConnectionBasis &aConnection,
+                                           Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     Status lRetval = kStatus_Success;
 
