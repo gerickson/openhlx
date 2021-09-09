@@ -529,7 +529,9 @@ void ConnectionManager :: FlushInactiveConnections(void)
 }
 
 Status
-ConnectionManager :: CreateConnection(CFStringRef aScheme, const int &aSocket, const Common::SocketAddress &aPeerAddress)
+ConnectionManager :: CreateConnection(CFStringRef aScheme,
+                                      const int &aSocket,
+                                      const Common::SocketAddress &aPeerAddress)
 {
     bool                                               lSchemeSupported;
     ConnectionSchemeIdentifierManager::IdentifierType  lIdentifier;
