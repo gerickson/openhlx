@@ -81,7 +81,7 @@ VolumeResponseBasis :: Init(const char *aObject, const IdentifierModel::Identifi
  *  This initializes an all-object volume level property response.
  *
  *  @param[in]  aObject      A pointer to a null-terminated C string
- *                           representing the objecst for which the
+ *                           representing the objects for which the
  *                           volume level response is to be
  *                           formed. For example, "O" for zone
  *                           objects.
