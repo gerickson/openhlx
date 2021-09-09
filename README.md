@@ -160,6 +160,14 @@ framework.
 If you want to modify or otherwise maintain the Open HLX build
 system, see "Maintaining Open HLX" below for more information.
 
+Some of the dependencies can be pulled in and are built by Open
+HLX itself. Most of the remaining dependencies can either be
+satisfied by building them directly from source, or on system
+such as Linux, installing them using a package management system.
+For example, on Debian systems:
+
+    % sudo apt-get install libboost-dev libtre-dev libcppunit-dev asciidoc xmlto
+
 ## Installing Open HLX
 
 To install Open HLX for your use simply invoke:
