@@ -18,9 +18,9 @@
 
 /**
  *    @file
- *      This file implements derivable objects for HLX client
- *      stereophonic channel balance data model property mutation
- *      command request buffers.
+ *      This file implements derived objects for composing HLX client
+ *      command request buffers for the stereophonic channel balance
+ *      data model property.
  *
  */
 
