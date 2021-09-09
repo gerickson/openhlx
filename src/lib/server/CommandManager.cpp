@@ -171,17 +171,32 @@ CommandManager :: Init(ConnectionManager &aConnectionManager,
     lRetval = mConnectionManager->AddDelegate(this);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    // Register one-and-only delegate interest in applicationd data.
+    // Register one-and-only delegate interest in application data.
 
     lRetval = mConnectionManager->SetApplicationDataDelegate(this);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     mRunLoopParameters = aRunLoopParameters;
 
- done:
+done:
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Send a server command response to all connected clients.
+ *
+ *  This attempts to send a server command response for a
+ *  previously-received command request to all connected (and,
+ *  consequently, subscribed) clients.
+ *
+ *  @param[in]  aBuffer  An immutable shared pointer to the
+ *                       buffer containing the command response to
+ *                       send.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
 Status
 CommandManager :: SendResponse(Common::ConnectionBuffer::ImmutableCountedPointer aBuffer) const
 {
@@ -190,11 +205,30 @@ CommandManager :: SendResponse(Common::ConnectionBuffer::ImmutableCountedPointer
     lRetval = mConnectionManager->Send(aBuffer);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
-Status CommandManager :: SendResponse(ConnectionBasis &aConnection, ConnectionBuffer::ImmutableCountedPointer aBuffer) const
+/**
+ *  @brief
+ *    Send a server command response to the specified connected
+ *    client.
+ *
+ *  This attempts to send a server command response for a
+ *  previously-received command request from the specified connected
+ *  client.
+ *
+ *  @param[in]  aConnection  A mutable reference to the connection
+ *                           over which to to send the response.
+ *  @param[in]  aBuffer      An immutable shared pointer to the
+ *                           buffer containing the command response to
+ *                           send.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+CommandManager :: SendResponse(ConnectionBasis &aConnection, ConnectionBuffer::ImmutableCountedPointer aBuffer) const
 {
     Status  lRetval = kStatus_Success;
 
@@ -205,7 +239,25 @@ Status CommandManager :: SendResponse(ConnectionBasis &aConnection, ConnectionBu
     return (lRetval);
 }
 
-Status CommandManager :: SendErrorResponse(ConnectionBasis &aConnection) const
+/**
+ *  @brief
+ *    Send a server command error response to the specified connected
+ *    client.
+ *
+ *  This attempts to send a server command error response for a
+ *  previously-received command request from the specified connected
+ *  client.
+ *
+ *  @param[in]  aConnection  A mutable reference to the connection
+ *                           over which to to send the error response.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *  @retval  -ENOMEM          If resources for the error response
+ *                            could not be allocated.
+ *
+ */
+Status
+CommandManager :: SendErrorResponse(ConnectionBasis &aConnection) const
 {
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lRetval;
@@ -220,17 +272,38 @@ Status CommandManager :: SendErrorResponse(ConnectionBasis &aConnection) const
     lRetval = SendErrorResponse(aConnection, lResponseBuffer);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Send a server command error response to the specified connected
+ *    client using the provided buffer.
+ *
+ *  This attempts to send a server command error response for a
+ *  previously-received command request from the specified connected
+ *  client using the provided buffer.
+ *
+ *  @param[in]      aConnection  A mutable reference to the connection
+ *                               over which to to send the error response.
+ *  @param[in,out]  aBuffer      A reference to a shared pointer to the
+ *                               buffer in which to put the error
+ *                               response.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *  @retval  -ENOMEM          If resources for the error response
+ *                            could not be allocated.
+ *
+ */
 Status
-CommandManager :: SendErrorResponse(ConnectionBasis &aConnection, ConnectionBuffer::MutableCountedPointer &aBuffer) const
+CommandManager :: SendErrorResponse(ConnectionBasis &aConnection,
+                                    ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
-    Command::ErrorResponse                   lErrorResponse;
-    const uint8_t *                          lBuffer;
-    size_t                                   lSize;
-    Status                                   lRetval;
+    Command::ErrorResponse  lErrorResponse;
+    const uint8_t *         lBuffer;
+    size_t                  lSize;
+    Status                  lRetval;
 
     lRetval = lErrorResponse.Init();
     nlREQUIRE_SUCCESS(lRetval, done);
@@ -288,12 +361,40 @@ done:
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Register a command request handler.
+ *
+ *  This registers the specified unsolicited command request handler and
+ *  context for the provided client command response regular
+ *  expression.
+ *
+ *  @param[in]  aRequest                        A mutable reference to
+ *                                              the server command
+ *                                              request regular
+ *                                              expression to register
+ *                                              the handler and
+ *                                              context for.
+ *  @param[in]  aContext                        The context to register
+ *                                              which will be passed
+ *                                              back via the handler.
+ *  @param[in]  aOnRequestReceivedHandler       The request handler
+ *                                              to register.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *  @retval  -EINVAL          If the @a aOnRequestReceivedHandler
+ *                            is null.
+ *  @retval  -EEXIST          If a registration already exists.
+ *
+ */
 Status
-CommandManager :: RegisterRequestHandler(HLX::Server::Command::RequestBasis &aRequest, void *aContext, OnRequestReceivedFunc aOnRequestReceivedHandler)
+CommandManager :: RegisterRequestHandler(HLX::Server::Command::RequestBasis &aRequest,
+                                         void *aContext,
+                                         OnRequestReceivedFunc aOnRequestReceivedHandler)
 {
-    RequestHandlerState lRequestHandlerState;
-    std::pair<std::set<RequestHandlerState>::iterator, bool> lStatus;
-    Status lRetval = kStatus_Success;
+    RequestHandlerState                                       lRequestHandlerState;
+    std::pair<std::set<RequestHandlerState>::iterator, bool>  lStatus;
+    Status                                                    lRetval = kStatus_Success;
 
     lRetval = lRequestHandlerState.Init(aRequest, aContext, aOnRequestReceivedHandler);
     nlREQUIRE_SUCCESS(lRetval, done);
@@ -305,6 +406,25 @@ CommandManager :: RegisterRequestHandler(HLX::Server::Command::RequestBasis &aRe
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Unregister a command request handler.
+ *
+ *  This unregisters any command request handler and context for the provided
+ *  server command request regular expression.
+ *
+ *  @param[in]  aRequest                        A mutable reference to
+ *                                              the server command
+ *                                              request regular
+ *                                              expression to unregister
+ *                                              the handler and
+ *                                              context for.
+ *  @param[in]  aContext                        The context to unregister.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *  @retval  -ENOENT          If there was no registration for @a aRequest.
+ *
+ */
 Status
 CommandManager :: UnregisterRequestHandler(const HLX::Server::Command::RequestBasis &aRequest, void *aContext)
 {

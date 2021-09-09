@@ -66,6 +66,14 @@ class CommandManager :
     public Common::ConnectionManagerApplicationDataDelegate
 {
 public:
+    /**
+     *  @brief
+     *    Notification callback function.
+     *
+     *  This defines a function to call on receipt of an unsolicited command
+     *   request.
+     *
+     */
     typedef void (* OnRequestReceivedFunc)(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 public:
