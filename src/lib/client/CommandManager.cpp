@@ -477,9 +477,9 @@ CommandManager :: RegisterNotificationHandler(Command::ResponseBasis &aResponse,
                                               void *aContext,
                                               OnNotificationReceivedFunc aOnNotificationReceivedHandler)
 {
-    NotificationHandlerState lNotificationHandlerState;
-    std::pair<std::set<NotificationHandlerState>::iterator, bool> lStatus;
-    Status lRetval = kStatus_Success;
+    NotificationHandlerState                                       lNotificationHandlerState;
+    std::pair<std::set<NotificationHandlerState>::iterator, bool>  lStatus;
+    Status                                                         lRetval = kStatus_Success;
 
     lRetval = lNotificationHandlerState.Init(aResponse, aContext, aOnNotificationReceivedHandler);
     nlREQUIRE_SUCCESS(lRetval, done);
@@ -514,7 +514,6 @@ CommandManager :: RegisterNotificationHandler(Command::ResponseBasis &aResponse,
 Status
 CommandManager :: UnregisterNotificationHandler(const Command::ResponseBasis &aResponse, void *aContext)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
     (void)aResponse;

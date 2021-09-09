@@ -196,7 +196,7 @@ private:
 
     class SendContext;
 
-    Common::Status         SetCurrentSendContext(SendContext &aSendContext);
+    Common::Status SetCurrentSendContext(SendContext &aSendContext);
     void           ClearCurrentSendContext(void);
     SendContext &  GetCurrentSendContext(void);
 
