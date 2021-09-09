@@ -532,10 +532,10 @@ ConnectionTelnet :: HandleStreamError(const CFStreamEventType &aType, const CFSt
         }
         break;
 
-     case kState_Unknown:
+    case kState_Unknown:
          break;
 
-     case kState_Connected:
+    case kState_Connected:
          {
              CloseStreams();
 
@@ -739,7 +739,8 @@ ConnectionTelnet :: CFWriteStreamCallback(CFWriteStreamRef aStream, CFStreamEven
  *                        the trampoline.
  *
  */
-void ConnectionTelnet :: CFReadStreamCallback(CFReadStreamRef aStream, CFStreamEventType aType, void *aContext)
+void
+ConnectionTelnet :: CFReadStreamCallback(CFReadStreamRef aStream, CFStreamEventType aType, void *aContext)
 {
     ConnectionTelnet *lConnection = static_cast<ConnectionTelnet *>(aContext);
 
@@ -765,7 +766,8 @@ void ConnectionTelnet :: CFReadStreamCallback(CFReadStreamRef aStream, CFStreamE
  *                        the trampoline.
  *
  */
-void ConnectionTelnet :: CFWriteStreamCallback(CFWriteStreamRef aStream, CFStreamEventType aType, void *aContext)
+void
+ConnectionTelnet :: CFWriteStreamCallback(CFWriteStreamRef aStream, CFStreamEventType aType, void *aContext)
 {
     ConnectionTelnet *lConnection = static_cast<ConnectionTelnet *>(aContext);
 
@@ -777,7 +779,8 @@ void ConnectionTelnet :: CFWriteStreamCallback(CFWriteStreamRef aStream, CFStrea
     return;
 }
 
-void ConnectionTelnet :: TryClientConfirmationDataReceived(void)
+void
+ConnectionTelnet :: TryClientConfirmationDataReceived(void)
 {
     const char *  lBuffer = reinterpret_cast<const char *>(mReceiveBuffer->GetHead());
     const size_t  lSize = mReceiveBuffer->GetSize();
@@ -810,7 +813,8 @@ void ConnectionTelnet :: TryClientConfirmationDataReceived(void)
     }
 }
 
-void ConnectionTelnet :: DidReceiveDataHandler(const uint8_t *aBuffer, const size_t &aSize)
+void
+ConnectionTelnet :: DidReceiveDataHandler(const uint8_t *aBuffer, const size_t &aSize)
 {
     DeclareLogIndentWithValue(lLogIndent, 0);
     DeclareLogLevelWithValue(lLogLevel, 1);
