@@ -166,7 +166,7 @@ satisfied by building them directly from source, or on system
 such as Linux, installing them using a package management system.
 For example, on Debian systems:
 
-    % sudo apt-get install libboost-dev libtre-dev libcppunit-dev asciidoc xmlto
+    % sudo apt-get install libboost-dev libboost-filesystem-dev libboost-system-dev libtre-dev libcppunit-dev asciidoc xmlto
 
 ## Installing Open HLX
 
