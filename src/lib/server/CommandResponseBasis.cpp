@@ -41,17 +41,67 @@ namespace Server
 namespace Command
 {
 
-Status ResponseBasis :: Init(const char *inBuffer)
+/**
+ *  @brief
+ *    This is a class initializer.
+ *
+ *  This initializes the server command response buffer with the
+ *  specified null-terminated C string content.
+ *
+ *  @param[in]  inBuffer  A pointer to the null-terminated C string
+ *                        to initialize the server command response
+ *                        buffer with.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+ResponseBasis :: Init(const char *inBuffer)
 {
     return (Init(inBuffer, strlen(inBuffer)));
 }
 
-Status ResponseBasis :: Init(const char *inBuffer, const size_t &inSize)
+/**
+ *  @brief
+ *    This is a class initializer.
+ *
+ *  This initializes the server command response buffer with the
+ *  specified string extent.
+ *
+ *  @param[in]  inBuffer  A pointer to the string
+ *                        to initialize the server command response
+ *                        buffer with.
+ *  @param[in]  inSize    An immutable reference to the length, in
+ *                        bytes, of @a inBuffer.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+ResponseBasis :: Init(const char *inBuffer, const size_t &inSize)
 {
     return (Init(inBuffer, inBuffer + inSize));
 }
 
-Status ResponseBasis :: Init(const char *inStart, const char *inEnd)
+/**
+ *  @brief
+ *    This is a class initializer.
+ *
+ *  This initializes the server command response buffer with the
+ *  specified string extent.
+ *
+ *  @param[in]  inStart   A pointer to the start of the string
+ *                        to initialize the server command response
+ *                        buffer with.
+ *  @param[in]  inEnd     A pointer to the end of the string
+ *                        to initialize the server command response
+ *                        buffer with.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+ResponseBasis :: Init(const char *inStart, const char *inEnd)
 {
     static constexpr Role kRole = Role::kResponder;
 
