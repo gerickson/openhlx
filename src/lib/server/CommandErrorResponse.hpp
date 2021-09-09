@@ -56,11 +56,12 @@ public:
     ErrorResponse(void) = default;
     virtual ~ErrorResponse(void) = default;
 
-    // Allow both the base and derived class initializers
+    Common::Status Init(void);
+
+private:
+    // Explicitly hide base class initializers
 
     using ResponseBasis::Init;
-
-    Common::Status Init(void);
 };
 
 }; // namespace Command

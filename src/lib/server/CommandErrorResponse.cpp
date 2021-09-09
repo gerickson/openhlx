@@ -38,7 +38,17 @@ namespace Server
 namespace Command
 {
 
-Status ErrorResponse :: Init(void)
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes a command error response buffer.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+ErrorResponse :: Init(void)
 {
     static const char * const kErrorResponse = "ERROR";
 
