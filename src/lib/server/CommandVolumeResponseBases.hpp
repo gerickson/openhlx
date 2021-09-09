@@ -61,11 +61,12 @@ protected:
     VolumeResponseBasis(void) = default;
     virtual ~VolumeResponseBasis(void) = default;
 
-    // Allow both the base and derived class initializers
+    Common::Status Init(const char *aObject, const IdentifierType &aIdentifier, const LevelType &aLevel);
+
+private:
+    // Explicitly hide base class initializers
 
     using ResponseBasis::Init;
-
-    Common::Status Init(const char *aObject, const IdentifierType &aIdentifier, const LevelType &aVolume);
 };
 
 /**
@@ -87,11 +88,12 @@ protected:
     VolumeAllResponseBasis(void) = default;
     virtual ~VolumeAllResponseBasis(void) = default;
 
-    // Allow both the base and derived class initializers
+    Common::Status Init(const char *aObject, const LevelType &aLevel);
+
+private:
+    // Explicitly hide base class initializers
 
     using ResponseBasis::Init;
-
-    Common::Status Init(const char *aObject, const LevelType &aVolume);
 };
 
 /**
@@ -112,11 +114,12 @@ protected:
     VolumeFixedResponseBasis(void) = default;
     virtual ~VolumeFixedResponseBasis(void) = default;
 
-    // Allow both the base and derived class initializers
+    Common::Status Init(const char *aObject, const IdentifierType &aIdentifier, const FixedType &aVolumeFixed);
+
+private:
+    // Explicitly hide base class initializers
 
     using ResponseBasis::Init;
-
-    Common::Status Init(const char *aObject, const IdentifierType &aIdentifier, const FixedType &aVolumeFixed);
 };
 
 /**
@@ -137,11 +140,12 @@ protected:
     VolumeMuteResponseBasis(void) = default;
     virtual ~VolumeMuteResponseBasis(void) = default;
 
-    // Allow both the base and derived class initializers
+    Common::Status Init(const char *aObject, const IdentifierType &aIdentifier, const MuteType &aMute);
+
+private:
+    // Explicitly hide base class initializers
 
     using ResponseBasis::Init;
-
-    Common::Status Init(const char *aObject, const IdentifierType &aIdentifier, const MuteType &aMute);
 };
 
 }; // namespace Command

@@ -68,9 +68,9 @@ namespace Command
  *
  */
 Status
-VolumeResponseBasis :: Init(const char *aObject, const IdentifierModel::IdentifierType &aIdentifier, const LevelType &aVolume)
+VolumeResponseBasis :: Init(const char *aObject, const IdentifierModel::IdentifierType &aIdentifier, const LevelType &aLevel)
 {
-    return (VolumeBufferBasis::Init(*this, aObject, aIdentifier, aVolume));
+    return (VolumeBufferBasis::Init(*this, aObject, aIdentifier, aLevel));
 }
 
 /**
@@ -92,9 +92,9 @@ VolumeResponseBasis :: Init(const char *aObject, const IdentifierModel::Identifi
  *
  */
 Status
-VolumeAllResponseBasis :: Init(const char *aObject, const LevelType &aVolume)
+VolumeAllResponseBasis :: Init(const char *aObject, const LevelType &aLevel)
 {
-    return (VolumeAllBufferBasis::Init(*this, aObject, aVolume));
+    return (VolumeAllBufferBasis::Init(*this, aObject, aLevel));
 }
 
 /**
@@ -104,17 +104,17 @@ VolumeAllResponseBasis :: Init(const char *aObject, const LevelType &aVolume)
  *  This initializes a volume fixed/locked state response against a
  *  specific object identifier
  *
- *  @param[in]  aObject      A pointer to a null-terminated C string
- *                           representing the object for which the
- *                           volume fixed/locked state response is to
- *                           be formed. For example, "O" for a zone
- *                           object.
- *  @param[in]  aIdentifier  A reference to the specific object
- *                           identifier for which the volume
- *                           fixed/locked state response is to be
- *                           formed.
- *  @param[in]  aMute        An immutable reference to the volume
- *                           fixed/locked state in the response.
+ *  @param[in]  aObject       A pointer to a null-terminated C string
+ *                            representing the object for which the
+ *                            volume fixed/locked state response is to
+ *                            be formed. For example, "O" for a zone
+ *                            object.
+ *  @param[in]  aIdentifier   A reference to the specific object
+ *                            identifier for which the volume
+ *                            fixed/locked state response is to be
+ *                            formed.
+ *  @param[in]  aVolumeFixed  An immutable reference to the volume
+ *                            fixed/locked state in the response.
  *
  *  @retval  kStatus_Success  If successful.
  *
