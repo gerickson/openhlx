@@ -18,8 +18,9 @@
 
 /**
  *    @file
- *      This file implements derivable objects for HLX client data model
- *      property mutation command request buffers.
+ *      This file implements derivable objects for composing HLX client
+ *      request buffers for commands that observe or set a data model
+ *      object property.
  *
  */
 
