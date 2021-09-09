@@ -50,9 +50,14 @@ namespace HLX
 namespace Client
 {
 
-// Notification response data
+// Class-scoped Notification Regular Expression Data
 
+//!< Class-scoped client save to backup configuration notification regular
+//!< expression.
 Command::Configuration::SaveToBackupResponse     ConfigurationControllerBasis::kSaveToBackupResponse;
+
+//!< Class-scoped client saving to backup configuration notification regular
+//!< expression.
 Command::Configuration::SavingToBackupResponse   ConfigurationControllerBasis::kSavingToBackupResponse;
 
 /**
@@ -105,7 +110,7 @@ Status
 ConfigurationControllerBasis :: Init(CommandManager &aCommandManager, const Timeout &aTimeout)
 {
     DeclareScopedFunctionTracer(lTracer);
-    Status          lRetval = kStatus_Success;
+    Status lRetval = kStatus_Success;
 
 
     lRetval = ResponseInit();

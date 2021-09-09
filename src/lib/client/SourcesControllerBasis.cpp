@@ -51,8 +51,9 @@ namespace HLX
 namespace Client
 {
 
-// Notification response data
+// Class-scoped Notification Regular Expression Data
 
+//!< Class-scoped server source name notification regular expression.
 Command::Sources::NameResponse      SourcesControllerBasis::kNameResponse;
 
 /**
@@ -108,7 +109,7 @@ Status
 SourcesControllerBasis :: Init(CommandManager &aCommandManager, const Timeout &aTimeout)
 {
     DeclareScopedFunctionTracer(lTracer);
-    Status          lRetval = kStatus_Success;
+    Status lRetval = kStatus_Success;
 
 
     lRetval = ResponseInit();

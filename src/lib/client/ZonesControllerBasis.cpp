@@ -52,22 +52,64 @@ namespace HLX
 namespace Client
 {
 
-// Notification response data
+// Class-scoped Notification Regular Expression Data
 
+//!< Class-scoped server zone stereophonic channel balance
+//!< notification regular expression.
 Command::Zones::BalanceResponse            ZonesControllerBasis::kBalanceResponse;
+
+//!< Class-scoped server zone equalizer band level notification
+//!< regular expression.
 Command::Zones::EqualizerBandResponse      ZonesControllerBasis::kEqualizerBandResponse;
+
+//!< Class-scoped server zone equalizer preset notification regular
+//!< expression.
 Command::Zones::EqualizerPresetResponse    ZonesControllerBasis::kEqualizerPresetResponse;
+
+//!< Class-scoped server zone highpass filter crossover frequency
+//!< notification regular expression.
 Command::Zones::HighpassCrossoverResponse  ZonesControllerBasis::kHighpassCrossoverResponse;
+
+//!< Class-scoped server zone lowpass filter crossover frequency
+//!< notification regular expression.
 Command::Zones::LowpassCrossoverResponse   ZonesControllerBasis::kLowpassCrossoverResponse;
+
+//!< Class-scoped server zone volume mute state notification regular
+//!< expression.
 Command::Zones::MuteResponse               ZonesControllerBasis::kMuteResponse;
+
+//!< Class-scoped server zone name notification regular expression.
 Command::Zones::NameResponse               ZonesControllerBasis::kNameResponse;
+
+//!< Class-scoped server zone query notification regular expression.
 Command::Zones::QueryResponse              ZonesControllerBasis::kQueryResponse;
+
+//!< Class-scoped server zone sound (equalizer) mode notification
+//!< regular expression.
 Command::Zones::SoundModeResponse          ZonesControllerBasis::kSoundModeResponse;
+
+//!< Class-scoped server zone source (input) notification regular
+//!< expression.
 Command::Zones::SourceResponse             ZonesControllerBasis::kSourceResponse;
+
+//!< Class-scoped server all zones source (input) notification regular
+//!< expression.
 Command::Zones::SourceAllResponse          ZonesControllerBasis::kSourceAllResponse;
+
+//!< Class-scoped server zone tone equalizer (bass/treble)
+//!< notification regular expression.
 Command::Zones::ToneResponse               ZonesControllerBasis::kToneResponse;
+
+//!< Class-scoped server zone volume level notification regular
+//!< expression.
 Command::Zones::VolumeResponse             ZonesControllerBasis::kVolumeResponse;
+
+//!< Class-scoped server all zones volume level notification regular
+//!< expression.
 Command::Zones::VolumeAllResponse          ZonesControllerBasis::kVolumeAllResponse;
+
+//!< Class-scoped server zone volume fixed/locked state notification
+//!< regular expression.
 Command::Zones::VolumeFixedResponse        ZonesControllerBasis::kVolumeFixedResponse;
 
 /**

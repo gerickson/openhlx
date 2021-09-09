@@ -49,8 +49,9 @@ namespace HLX
 namespace Client
 {
 
-// Notification response data
+// Class-scoped Notification Regular Expression Data
 
+//!< Class-scoped server network interface query notification regular expression.
 Command::Network::QueryResponse     NetworkControllerBasis::kQueryResponse;
 
 /**
@@ -104,7 +105,7 @@ Status
 NetworkControllerBasis :: Init(CommandManager &aCommandManager, const Timeout &aTimeout)
 {
     DeclareScopedFunctionTracer(lTracer);
-    Status          lRetval = kStatus_Success;
+    Status lRetval = kStatus_Success;
 
 
     lRetval = ResponseInit();

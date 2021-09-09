@@ -52,13 +52,24 @@ namespace HLX
 namespace Client
 {
 
-// Notification response data
+// Class-scoped Notification Regular Expression Data
 
+//!< Class-scoped server group volume mute state notification regular expression.
 Command::Groups::SetMuteResponse         GroupsControllerBasis::kSetMuteResponse;
+
+//!< Class-scoped server group name notification regular expression.
 Command::Groups::NameResponse            GroupsControllerBasis::kNameResponse;
+
+//!< Class-scoped server group query notification regular expression.
 Command::Groups::QueryResponse           GroupsControllerBasis::kQueryResponse;
+
+//!< Class-scoped server group source (input) notification regular expression.
 Command::Groups::SourceResponse          GroupsControllerBasis::kSourceResponse;
+
+//!< Class-scoped server group volume level notification regular expression.
 Command::Groups::SetVolumeResponse       GroupsControllerBasis::kSetVolumeResponse;
+
+//!< Class-scoped server group zone membership notification regular expression.
 Command::Groups::ZoneResponse            GroupsControllerBasis::kZoneResponse;
 
 /**
@@ -115,7 +126,7 @@ Status
 GroupsControllerBasis :: Init(CommandManager &aCommandManager, const Timeout &aTimeout)
 {
     DeclareScopedFunctionTracer(lTracer);
-    Status          lRetval = kStatus_Success;
+    Status lRetval = kStatus_Success;
 
 
     lRetval = ResponseInit();

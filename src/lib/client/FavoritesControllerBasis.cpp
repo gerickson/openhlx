@@ -52,9 +52,12 @@ namespace HLX
 namespace Client
 {
 
-// Notification response data
+// Class-scoped Notification Regular Expression Data
 
+//!< Class-scoped server favorite name notification regular expression.
 Command::Favorites::NameResponse      FavoritesControllerBasis::kNameResponse;
+
+//!< Class-scoped server favorite query notification regular expression.
 Command::Favorites::QueryResponse     FavoritesControllerBasis::kQueryResponse;
 
 /**

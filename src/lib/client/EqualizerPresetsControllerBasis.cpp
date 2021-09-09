@@ -52,10 +52,16 @@ namespace HLX
 namespace Client
 {
 
-// Notification response data
+// Class-scoped Notification Regular Expression Data
 
+//!< Class-scoped server equalizer preset equalizer band level notification
+//!< regular expression.
 Command::EqualizerPresets::EqualizerBandResponse  EqualizerPresetsControllerBasis::kEqualizerBandResponse;
+
+//!< Class-scoped server equalizer preset name notification regular expression.
 Command::EqualizerPresets::NameResponse           EqualizerPresetsControllerBasis::kNameResponse;
+
+//!< Class-scoped server equalizer preset query notification regular expression.
 Command::EqualizerPresets::QueryResponse          EqualizerPresetsControllerBasis::kQueryResponse;
 
 /**
