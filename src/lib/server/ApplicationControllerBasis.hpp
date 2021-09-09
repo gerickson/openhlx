@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file defines an object for...
+ *      This file defines a derivable object for creating HLX server
+ *      application controllers.
  *
  */
 
@@ -83,6 +84,11 @@ public:
     Common::Status Listen(const char *aMaybeURL, const Common::ConnectionManagerBasis::Versions &aVersions);
 
 protected:
+    /**
+     *  A convenience type for an object that manages a container of
+     *  server object controllers.
+     *
+     */
     typedef Common::Application::ObjectControllerContainerTemplate<Server::ObjectControllerBasis> ServerObjectControllerContainer;
 
 protected:

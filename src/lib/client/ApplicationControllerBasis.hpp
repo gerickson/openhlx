@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file defines an object for...
+ *      This file defines a derivable object for creating HLX client
+ *      application controllers.
  *
  */
 
@@ -103,6 +104,11 @@ public:
     void ControllerDidRefresh(Client::ObjectControllerBasis &aController) final;
 
 protected:
+    /**
+     *  A convenience type for an object that manages a container of
+     *  client object controllers.
+     *
+     */
     typedef Common::Application::ObjectControllerContainerTemplate<Client::ObjectControllerBasis> ClientObjectControllerContainer;
 
 protected:

@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file implements an object for...
+ *      This file implements a derivable object for creating HLX
+ *      server application controllers.
  *
  */
 
@@ -109,24 +110,60 @@ ControllerBasis :: Init(const Common::RunLoopParameters &aRunLoopParameters)
 
 // MARK: Accessors
 
+/**
+ *  @brief
+ *    Return the command manager for the controller.
+ *
+ *  @returns
+ *    An immutable reference to the command manager for the
+ *    controller.
+ *
+ */
 const Server::CommandManager &
 ControllerBasis :: GetCommandManager(void) const
 {
     return (mCommandManager);
 }
 
+/**
+ *  @brief
+ *    Return the command manager for the controller.
+ *
+ *  @returns
+ *    A mutable reference to the command manager for the
+ *    controller.
+ *
+ */
 Server::CommandManager &
 ControllerBasis :: GetCommandManager(void)
 {
     return (mCommandManager);
 }
 
+/**
+ *  @brief
+ *    Return the connection manager for the controller.
+ *
+ *  @returns
+ *    An immutable reference to the connection manager for the
+ *    controller.
+ *
+ */
 const Server::ConnectionManager &
 ControllerBasis :: GetConnectionManager(void) const
 {
     return (mConnectionManager);
 }
 
+/**
+ *  @brief
+ *    Return the connection manager for the controller.
+ *
+ *  @returns
+ *    A mutable reference to the connection manager for the
+ *    controller.
+ *
+ */
 Server::ConnectionManager &
 ControllerBasis :: GetConnectionManager(void)
 {
@@ -135,7 +172,26 @@ ControllerBasis :: GetConnectionManager(void)
 
 // MARK: Listen
 
-Status ControllerBasis :: Listen(void)
+/**
+ *  @brief
+ *    Listen for unsolicited, asynchronous connections from HLX client
+ *    peers.
+ *
+ *  This attempts to asynchronously listen for unsolicited connections
+ *  from HLX client peers at the IPv4 and IPv6 "any" addresses on the
+ *  default HLX port.
+ *
+ *  @retval  kStatus_Success          If successful.
+ *  @retval  kStatus_ValueAlreadySet  If the controller was already
+ *                                    added as an accept delegate.
+ *  @retval  -EBUSY                   If the controller is already
+ *                                    listening.
+ *  @retval  -ENOMEM                  Resources could not be allocated
+ *                                    to listen.
+ *
+ */
+Status
+ControllerBasis :: Listen(void)
 {
     Status lRetval = kStatus_Success;
 
@@ -146,6 +202,28 @@ done:
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Listen for unsolicited, asynchronous connections from HLX client
+ *    peers.
+ *
+ *  This attempts to asynchronously listen for unsolicited connections
+ *  from HLX client peers at the IPv4 and/or IPv6 "any" addresses on the
+ *  default HLX port.
+ *
+ *  @param[in]  aVersions  An immutable references to those IP address
+ *                         versions that should be used for resolving
+ *                         the listen host name(s).
+ *
+ *  @retval  kStatus_Success          If successful.
+ *  @retval  kStatus_ValueAlreadySet  If the controller was already
+ *                                    added as an accept delegate.
+ *  @retval  -EBUSY                   If the controller is already
+ *                                    listening.
+ *  @retval  -ENOMEM                  Resources could not be allocated
+ *                                    to listen.
+ *
+ */
 Status
 ControllerBasis :: Listen(const Common::ConnectionManagerBasis::Versions &aVersions)
 {
@@ -158,6 +236,30 @@ done:
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Listen for unsolicited, asynchronous connections from HLX client
+ *    peers at the specified listen URL, host name, or address.
+ *
+ *  This attempts to asynchronously listen for unsolicited connections
+ *  from HLX client peers at the IPv4 and IPv6 addresses associated
+ *  with the specified URL, host name, or host name and port.
+ *
+ *  @param[in]  aMaybeURL  A pointer to a null-terminated C string
+ *                         containing the URL, host name, or host name
+ *                         and port to listen on. The URL or host name
+ *                         may be a name to be resolved or a literal
+ *                         IP address.
+ *
+ *  @retval  kStatus_Success          If successful.
+ *  @retval  kStatus_ValueAlreadySet  If the controller was already
+ *                                    added as an accept delegate.
+ *  @retval  -EBUSY                   If the controller is already
+ *                                    listening.
+ *  @retval  -ENOMEM                  Resources could not be allocated
+ *                                    to listen.
+ *
+ */
 Status
 ControllerBasis :: Listen(const char *aMaybeURL)
 {
@@ -170,8 +272,36 @@ ControllerBasis :: Listen(const char *aMaybeURL)
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Listen for unsolicited, asynchronous connections from HLX client
+ *    peers at the specified listen URL, host name, or address.
+ *
+ *  This attempts to asynchronously listen for unsolicited connections
+ *  from HLX client peers at the IPv4 and/or IPv6 addresses associated
+ *  with the specified URL, host name, or host name and port.
+ *
+ *  @param[in]  aMaybeURL  A pointer to a null-terminated C string
+ *                         containing the URL, host name, or host name
+ *                         and port to listen on. The URL or host name
+ *                         may be a name to be resolved or a literal
+ *                         IP address.
+ *  @param[in]  aVersions  An immutable references to those IP address
+ *                         versions that should be used for resolving
+ *                         the listen host name(s).
+ *
+ *  @retval  kStatus_Success          If successful.
+ *  @retval  kStatus_ValueAlreadySet  If the controller was already
+ *                                    added as an accept delegate.
+ *  @retval  -EBUSY                   If the controller is already
+ *                                    listening.
+ *  @retval  -ENOMEM                  Resources could not be allocated
+ *                                    to listen.
+ *
+ */
 Status
-ControllerBasis :: Listen(const char *aMaybeURL, const Common::ConnectionManagerBasis::Versions &aVersions)
+ControllerBasis :: Listen(const char *aMaybeURL,
+                          const Common::ConnectionManagerBasis::Versions &aVersions)
 {
     Status lRetval = kStatus_Success;
 

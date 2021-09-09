@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file implements an object for...
+ *      This file implements a derivable object for creating HLX
+ *      client application controllers.
  *
  */
 
@@ -115,24 +116,60 @@ ControllerBasis :: Init(const Common::RunLoopParameters &aRunLoopParameters)
 
 // MARK: Accessors
 
+/**
+ *  @brief
+ *    Return the command manager for the controller.
+ *
+ *  @returns
+ *    An immutable reference to the command manager for the
+ *    controller.
+ *
+ */
 const Client::CommandManager &
 ControllerBasis :: GetCommandManager(void) const
 {
     return (mCommandManager);
 }
 
+/**
+ *  @brief
+ *    Return the command manager for the controller.
+ *
+ *  @returns
+ *    A mutable reference to the command manager for the
+ *    controller.
+ *
+ */
 Client::CommandManager &
 ControllerBasis :: GetCommandManager(void)
 {
     return (mCommandManager);
 }
 
+/**
+ *  @brief
+ *    Return the connection manager for the controller.
+ *
+ *  @returns
+ *    An immutable reference to the connection manager for the
+ *    controller.
+ *
+ */
 const Client::ConnectionManager &
 ControllerBasis :: GetConnectionManager(void) const
 {
     return (mConnectionManager);
 }
 
+/**
+ *  @brief
+ *    Return the connection manager for the controller.
+ *
+ *  @returns
+ *    A mutable reference to the connection manager for the
+ *    controller.
+ *
+ */
 Client::ConnectionManager &
 ControllerBasis :: GetConnectionManager(void)
 {
