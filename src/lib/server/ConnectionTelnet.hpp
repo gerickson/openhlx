@@ -71,9 +71,11 @@ public:
     ConnectionTelnet(void);
     virtual ~ConnectionTelnet(void);
 
-    Common::Status Init(const Common::RunLoopParameters &aRunLoopParameters, const IdentifierType &aIdentifier) final;
+    Common::Status Init(const Common::RunLoopParameters &aRunLoopParameters,
+                        const IdentifierType &aIdentifier) final;
 
-    Common::Status Connect(const int &aSocket, const Common::SocketAddress &aPeerAddress) final;
+    Common::Status Connect(const int &aSocket,
+                           const Common::SocketAddress &aPeerAddress) final;
     Common::Status Disconnect(void) final;
 
     Common::Status Send(Common::ConnectionBuffer::ImmutableCountedPointer aBuffer) final;

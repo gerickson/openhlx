@@ -66,8 +66,19 @@ static const char * const kServerConfirmationRegexp = "^telnet_client_[[:digit:]
 
 // Static Class Data Members
 
+/**
+ *  @brief
+ *    A CoreFoundation string constant for the URL protocol scheme
+ *    supported by this connection.
+ *
+ */
 CFStringRef ConnectionTelnet :: kScheme = CFSTR("telnet");
 
+/**
+ *  @brief
+ *    This is the class default constructor.
+ *
+ */
 ConnectionTelnet :: ConnectionTelnet(void) :
     ConnectionBasis(kScheme),
     mTelnet(nullptr),
@@ -85,6 +96,11 @@ ConnectionTelnet :: ConnectionTelnet(void) :
     return;
 }
 
+/**
+ *  @brief
+ *    This is the class destructor.
+ *
+ */
 ConnectionTelnet :: ~ConnectionTelnet(void)
 {
     DeclareScopedFunctionTracer(lTracer);
@@ -98,8 +114,28 @@ ConnectionTelnet :: ~ConnectionTelnet(void)
     return;
 }
 
-Status ConnectionTelnet :: Init(const RunLoopParameters &aRunLoopParameters,
-                                const IdentifierType &aIdentifier)
+/**
+ *  @brief
+ *    This is a class initializer.
+ *
+ *  This initializes the connection on a run loop with the specified
+ *  run loop parameters.
+ *
+ *  @param[in]  aRunLoopParameters  An immutable reference to the run
+ *                                  loop parameters to initialize the
+ *                                  connection with.
+ *  @param[in]  aIdentifier         An immutable reference to the
+ *                                  identifier to use for this
+ *                                  connection.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *  @retval  -ENOMEM          If the underlying telnet library
+ *                            instance could not be allocated.
+ *
+ */
+Status
+ConnectionTelnet :: Init(const RunLoopParameters &aRunLoopParameters,
+                         const IdentifierType &aIdentifier)
 {
     DeclareScopedFunctionTracer(lTracer);
     const size_t lExpectedMatchCount = 0;
@@ -124,7 +160,33 @@ Status ConnectionTelnet :: Init(const RunLoopParameters &aRunLoopParameters,
     return (lRetval);
 }
 
-Status ConnectionTelnet :: Connect(const int &aSocket, const Common::SocketAddress &aPeerAddress)
+/**
+ *  @brief
+ *    Connect to the HLX client peer.
+ *
+ *  This establishes connection state for the HLX client peer at the
+ *  specified socket and peer address.
+ *
+ *  @param[in]  aSocket        An immutable reference to the native
+ *                             socket descriptor associated with the
+ *                             accepted connection.
+ *  @param[in]  aPeerAddress   An immutable reference to the socket
+ *                             address associated with the peer client
+ *                             at the remote end of the accepted
+ *                             connection.
+ *
+ *  @retval  kStatus_Success          If successful.
+ *  @retval  kStatus_ValueAlreadySet  If the peer address was already
+ *                                    set.
+ *  @retval  -EINVAL                  The socket was invalid or the
+ *                                    connection scheme is null or has
+ *                                    zero (0) length.
+ *  @retval  -ENOMEM                  If memory could not be allocated.
+ *
+ */
+Status
+ConnectionTelnet :: Connect(const int &aSocket,
+                            const Common::SocketAddress &aPeerAddress)
 {
     DeclareLogIndentWithValue(lLogIndent, 0);
     DeclareLogLevelWithValue(lLogLevel, 1);
@@ -288,7 +350,8 @@ Status ConnectionTelnet :: Connect(const int &aSocket, const Common::SocketAddre
     return (lRetval);
 }
 
-Status ConnectionTelnet :: CloseStreams(void)
+Status
+ConnectionTelnet :: CloseStreams(void)
 {
     Status        lRetval = kStatus_Success;
     CFRunLoopRef  lRunLoop = GetRunLoopParameters().GetRunLoop();
@@ -326,11 +389,22 @@ Status ConnectionTelnet :: CloseStreams(void)
     return (lRetval);
 }
 
-Status ConnectionTelnet :: Disconnect(void)
+/**
+ *  @brief
+ *    Disconnect from the HLX client peer.
+ *
+ *  This attempts to asynchronously disconnect from the
+ *  currently-connected HLX client peer, if any.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+ConnectionTelnet :: Disconnect(void)
 {
     DeclareScopedFunctionTracer(lTracer);
     const State  lCurrentState = GetState();
-    Status       lRetval = kStatus_Success;
+    Status       lRetval       = kStatus_Success;
 
     OnWillDisconnect();
 
@@ -362,11 +436,21 @@ Status ConnectionTelnet :: Disconnect(void)
     return (lRetval);
 }
 
-Status ConnectionTelnet :: Send(ConnectionBuffer::ImmutableCountedPointer aBuffer)
+/**
+ *  @brief
+ *    Send the specified data to the connection peer.
+ *
+ *  @param[in]  aBuffer  An immutable shared pointer to the data to
+ *                       send to the connection peer.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+ConnectionTelnet :: Send(ConnectionBuffer::ImmutableCountedPointer aBuffer)
 {
-    //DeclareScopedFunctionTracer(lTracer);
     const uint8_t *  lBuffer = aBuffer->GetHead();
-    const size_t     lSize = aBuffer->GetSize();
+    const size_t     lSize   = aBuffer->GetSize();
     Status           lRetval = kStatus_Success;
 
     //Log::Debug().Write("Would send %zu bytes at %p...\n", lSize, lBuffer);
@@ -377,7 +461,8 @@ Status ConnectionTelnet :: Send(ConnectionBuffer::ImmutableCountedPointer aBuffe
     return (lRetval);
 }
 
-static void DecodeStreamError(const CFStreamEventType &aType, const CFStreamError &aStreamError, const char *aStreamDescription)
+static void
+DecodeStreamError(const CFStreamEventType &aType, const CFStreamError &aStreamError, const char *aStreamDescription)
 {
     Log::Error().Write("%s: received %s event type 0x%lx w/ error domain %lu code %d\n",
                        __func__,
@@ -423,11 +508,11 @@ void ConnectionTelnet :: HandleStreamError(const CFStreamEventType &aType, const
         break;
 
     case kState_Unknown:
-        break;
+         break;
 
     case kState_Accepted:
-        {
-            CloseStreams();
+         {
+             CloseStreams();
 
             if (mReceiveBuffer != nullptr)
             {
@@ -436,13 +521,13 @@ void ConnectionTelnet :: HandleStreamError(const CFStreamEventType &aType, const
 
             mWaitingForServerConfirmation = true;
 
-            SetState(kState_Disconnected);
+             SetState(kState_Disconnected);
 
-            OnDidDisconnect(lError);
+             OnDidDisconnect(lError);
 
-            OnError(lError);
-        }
-        break;
+             OnError(lError);
+         }
+         break;
 
     case kState_Disconnecting:
     case kState_Disconnected:
@@ -452,7 +537,21 @@ void ConnectionTelnet :: HandleStreamError(const CFStreamEventType &aType, const
     }
 }
 
-void ConnectionTelnet :: CFReadStreamCallback(CFReadStreamRef aStream, CFStreamEventType aType)
+/**
+ *  @brief
+ *    Callback to handle connection read stream activity.
+ *
+ *  This handles any read stream activity associated with the
+ *  connected peer.
+ *
+ *  @param[in]  aStream  A reference to the read stream that
+ *                       triggered the callback.
+ *  @param[in]  aType    The type of event that triggered the
+ *                       callback.
+ *
+ */
+void
+ConnectionTelnet :: CFReadStreamCallback(CFReadStreamRef aStream, CFStreamEventType aType)
 {
     //DeclareScopedFunctionTracer(lTracer);
     Boolean lStatus;
@@ -527,9 +626,22 @@ void ConnectionTelnet :: CFReadStreamCallback(CFReadStreamRef aStream, CFStreamE
     return;
 }
 
-void ConnectionTelnet :: CFWriteStreamCallback(CFWriteStreamRef aStream, CFStreamEventType aType)
+/**
+ *  @brief
+ *    Callback to handle connection read stream activity.
+ *
+ *  This handles any write stream activity associated with the
+ *  connected peer.
+ *
+ *  @param[in]  aStream  A reference to the write stream that
+ *                       triggered the callback.
+ *  @param[in]  aType    The type of event that triggered the
+ *                       callback.
+ *
+ */
+void
+ConnectionTelnet :: CFWriteStreamCallback(CFWriteStreamRef aStream, CFStreamEventType aType)
 {
-    //DeclareScopedFunctionTracer(lTracer);
     Boolean lStatus;
 
     //Log::Debug().Write("Received write event 0x%08lx\n", aType);
@@ -572,7 +684,22 @@ void ConnectionTelnet :: CFWriteStreamCallback(CFWriteStreamRef aStream, CFStrea
     return;
 }
 
-void ConnectionTelnet :: CFReadStreamCallback(CFReadStreamRef aStream, CFStreamEventType aType, void *aContext)
+/**
+ *  @brief
+ *    Callback trampoline to handle connection read stream activity.
+ *
+ *  @param[in]  aStream   A reference to the read stream that
+ *                        triggered the callback.
+ *  @param[in]  aType     The type of event that triggered the
+ *                        callback.
+ *  @param[in]  aContext  A pointer to the connection class
+ *                        instance that registered this
+ *                        trampoline to call back into from
+ *                        the trampoline.
+ *
+ */
+void
+ConnectionTelnet :: CFReadStreamCallback(CFReadStreamRef aStream, CFStreamEventType aType, void *aContext)
 {
     ConnectionTelnet *lConnection = static_cast<ConnectionTelnet *>(aContext);
 
@@ -584,7 +711,22 @@ void ConnectionTelnet :: CFReadStreamCallback(CFReadStreamRef aStream, CFStreamE
     return;
 }
 
-void ConnectionTelnet :: CFWriteStreamCallback(CFWriteStreamRef aStream, CFStreamEventType aType, void *aContext)
+/**
+ *  @brief
+ *    Callback trampoline to handle connection write stream activity.
+ *
+ *  @param[in]  aStream   A reference to the write stream that
+ *                        triggered the callback.
+ *  @param[in]  aType     The type of event that triggered the
+ *                        callback.
+ *  @param[in]  aContext  A pointer to the connection class
+ *                        instance that registered this
+ *                        trampoline to call back into from
+ *                        the trampoline.
+ *
+ */
+void
+ConnectionTelnet :: CFWriteStreamCallback(CFWriteStreamRef aStream, CFStreamEventType aType, void *aContext)
 {
     ConnectionTelnet *lConnection = static_cast<ConnectionTelnet *>(aContext);
 
@@ -596,7 +738,8 @@ void ConnectionTelnet :: CFWriteStreamCallback(CFWriteStreamRef aStream, CFStrea
     return;
 }
 
-void ConnectionTelnet :: TryServerConfirmationDataReceived(void)
+void
+ConnectionTelnet :: TryServerConfirmationDataReceived(void)
 {
     const char *  lBuffer = reinterpret_cast<const char *>(mReceiveBuffer->GetHead());
     const size_t  lSize = mReceiveBuffer->GetSize();
@@ -627,7 +770,8 @@ void ConnectionTelnet :: TryServerConfirmationDataReceived(void)
     }
 }
 
-void ConnectionTelnet :: DidReceiveDataHandler(const uint8_t *aBuffer, const size_t &aSize)
+void
+ConnectionTelnet :: DidReceiveDataHandler(const uint8_t *aBuffer, const size_t &aSize)
 {
     DeclareLogIndentWithValue(lLogIndent, 0);
     DeclareLogLevelWithValue(lLogLevel, 1);
@@ -695,7 +839,8 @@ void ConnectionTelnet :: DidReceiveDataHandler(const uint8_t *aBuffer, const siz
     return;
 }
 
-void ConnectionTelnet :: ShouldTransmitDataHandler(const uint8_t *aBuffer, const size_t &aSize)
+void
+ConnectionTelnet :: ShouldTransmitDataHandler(const uint8_t *aBuffer, const size_t &aSize)
 {
     CFIndex lResult = 0;
     CFIndex lStatus = 0;
@@ -726,7 +871,18 @@ void ConnectionTelnet :: ShouldTransmitDataHandler(const uint8_t *aBuffer, const
     }
 }
 
-void ConnectionTelnet :: TelnetEventHandler(telnet_t *aTelnet, telnet_event_t *aEvent)
+/**
+ *  @brief
+ *    Callback to handle connection telnet activity.
+ *
+ *  @param[in]  aTelnet   A pointer to the telnet instance that
+ *                        triggered the callback.
+ *  @param[in]  aEvent    A pointer to the type of event that
+ *                        triggered the callback.
+ *
+ */
+void
+ConnectionTelnet :: TelnetEventHandler(telnet_t *aTelnet, telnet_event_t *aEvent)
 {
     nlREQUIRE(aTelnet != nullptr, done);
     nlREQUIRE(aEvent != nullptr, done);
@@ -768,7 +924,22 @@ void ConnectionTelnet :: TelnetEventHandler(telnet_t *aTelnet, telnet_event_t *a
     return;
 }
 
-void ConnectionTelnet :: TelnetEventHandler(telnet_t *aTelnet, telnet_event_t *aEvent, void *aContext)
+/**
+ *  @brief
+ *    Callback trampoline to handle connection telnet activity.
+ *
+ *  @param[in]  aTelnet   A pointer to the telnet instance that
+ *                        triggered the callback.
+ *  @param[in]  aEvent    A pointer to the type of event that
+ *                        triggered the callback.
+ *  @param[in]  aContext  A pointer to the connection class
+ *                        instance that registered this
+ *                        trampoline to call back into from
+ *                        the trampoline.
+ *
+ */
+void
+ConnectionTelnet :: TelnetEventHandler(telnet_t *aTelnet, telnet_event_t *aEvent, void *aContext)
 {
     ConnectionTelnet *lConnection = static_cast<ConnectionTelnet *>(aContext);
 
