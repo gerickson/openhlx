@@ -275,8 +275,10 @@ done:
  *  @retval  kError_NotInitialized  If the groups model has
  *                                  not been completely and successfully
  *                                  initialized.
- *  @retval  -ERANGE                If a group identifier is smaller
- *                                  or larger than supported.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
  *
  */
 Status
@@ -317,6 +319,10 @@ GroupsControllerBasis :: HandleQueryReceived(Common::ConnectionBuffer::MutableCo
  *                                  initialized.
  *  @retval  -ERANGE                If a group identifier is smaller
  *                                  or larger than supported.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
  *
  */
 Status
@@ -395,7 +401,32 @@ GroupsControllerBasis :: HandleQueryReceived(const Model::GroupModel::Identifier
 
 // MARK: Command Response Class (Static) Handlers
 
-Status
+/**
+ *  @brief
+ *    Handle and generate the server command response for a group
+ *    adjust volume level request.
+ *
+ *  This handles and generates the server command response for a
+ *  group adjust volume level request.
+ *
+ *  @param[in]      aInputBuffer   An pointer to an immutable buffer
+ *                                 containing the adjust volume level
+ *                                 content to put into the response
+ *                                 buffer.
+ *  @param[in]      aInputSize     The size, in bytes, of the content
+ *                                 pointed to by @a aInputBuffer.
+ *  @param[in,out]  aOutputBuffer  A mutable reference to the shared
+ *                                 pointer into which the response is to
+ *                                 be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
 GroupsControllerBasis :: HandleAdjustVolumeResponse(const uint8_t *aInputBuffer, const size_t &aInputSize, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer)
 {
     Server::Command::Groups::AdjustVolumeResponse  lAdjustVolumeResponse;
@@ -420,8 +451,34 @@ GroupsControllerBasis :: HandleAdjustVolumeResponse(const uint8_t *aInputBuffer,
     return (lRetval);
 }
 
-Status
-GroupsControllerBasis :: HandleSetMuteResponse(const Model::GroupModel::IdentifierType &aGroupIdentifier, const VolumeModel::MuteType &aMute, ConnectionBuffer::MutableCountedPointer &aBuffer)
+/**
+ *  @brief
+ *    Handle and generate the server command response for a group
+ *    set volume mute state request.
+ *
+ *  This handles and generates the server command response for a
+ *  group set volume mute state request.
+ *
+ *  @param[in]      aGroupIdentifier  An immutable reference for the
+ *                                    group for which the volume mute
+ *                                    state was set.
+ *  @param[in]      aMute             An immutable reference to the
+ *                                    volume mute state that was set.
+ *  @param[in,out]  aBuffer           A mutable reference to the shared
+ *                                    pointer into which the response
+ *                                    is to be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
+GroupsControllerBasis :: HandleSetMuteResponse(const Model::GroupModel::IdentifierType &aGroupIdentifier,
+                                               const VolumeModel::MuteType &aMute,
+                                               ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     Server::Command::Groups::SetMuteResponse  lSetMuteResponse;
     const uint8_t *                           lBuffer;
@@ -441,8 +498,34 @@ GroupsControllerBasis :: HandleSetMuteResponse(const Model::GroupModel::Identifi
     return (lRetval);
 }
 
-Status
-GroupsControllerBasis :: HandleSetVolumeResponse(const Model::GroupModel::IdentifierType &aGroupIdentifier, const VolumeModel::LevelType &aVolume, ConnectionBuffer::MutableCountedPointer &aBuffer)
+/**
+ *  @brief
+ *    Handle and generate the server command response for a group
+ *    set volume level request.
+ *
+ *  This handles and generates the server command response for a
+ *  group set volume level request.
+ *
+ *  @param[in]      aGroupIdentifier  An immutable reference for the
+ *                                    group for which the volume mute
+ *                                    state was set.
+ *  @param[in]      aVolume           An immutable reference to the
+ *                                    volume level that was set.
+ *  @param[in,out]  aBuffer           A mutable reference to the shared
+ *                                    pointer into which the response
+ *                                    is to be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
+GroupsControllerBasis :: HandleSetVolumeResponse(const Model::GroupModel::IdentifierType &aGroupIdentifier,
+                                                 const VolumeModel::LevelType &aVolume,
+                                                 ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     Server::Command::Groups::SetVolumeResponse  lSetVolumeResponse;
     const uint8_t *                             lBuffer;
@@ -463,8 +546,35 @@ GroupsControllerBasis :: HandleSetVolumeResponse(const Model::GroupModel::Identi
     return (lRetval);
 }
 
-Status
-GroupsControllerBasis :: HandleToggleMuteResponse(const uint8_t *aInputBuffer, const size_t &aInputSize, ConnectionBuffer::MutableCountedPointer &aOutputBuffer)
+/**
+ *  @brief
+ *    Handle and generate the server command response for a group
+ *    toggle volume mute state request.
+ *
+ *  This handles and generates the server command response for a
+ *  group toggle volume mute state request.
+ *
+ *  @param[in]      aInputBuffer   An pointer to an immutable buffer
+ *                                 containing the toggle volume mute
+ *                                 state content to put into the
+ *                                 response buffer.
+ *  @param[in]      aInputSize     The size, in bytes, of the content
+ *                                 pointed to by @a aInputBuffer.
+ *  @param[in,out]  aOutputBuffer  A mutable reference to the shared
+ *                                 pointer into which the response is to
+ *                                 be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
+GroupsControllerBasis :: HandleToggleMuteResponse(const uint8_t *aInputBuffer,
+                                                  const size_t &aInputSize,
+                                                  ConnectionBuffer::MutableCountedPointer &aOutputBuffer)
 {
     Server::Command::Groups::ToggleMuteResponse  lToggleMuteResponse;
     const uint8_t *                              lBuffer;
