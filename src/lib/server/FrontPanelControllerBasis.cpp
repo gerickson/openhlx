@@ -178,16 +178,18 @@ done:
  *  @retval  kError_NotInitialized  If the front panels model has
  *                                  not been completely and successfully
  *                                  initialized.
- *  @retval  -ERANGE                If an front panel identifier is
- *                                  smaller or larger than supported.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
  *
  */
 Status
 FrontPanelControllerBasis :: HandleQueryReceived(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
-    FrontPanelModel::BrightnessType          lBrightness;
-    FrontPanelModel::LockedType              lLocked;
-    Status                                   lRetval;
+    FrontPanelModel::BrightnessType  lBrightness;
+    FrontPanelModel::LockedType      lLocked;
+    Status                           lRetval;
 
 
     lRetval = mFrontPanelModel.GetBrightness(lBrightness);
@@ -212,8 +214,31 @@ FrontPanelControllerBasis :: HandleQueryReceived(Common::ConnectionBuffer::Mutab
 
 // MARK: Command Response Class (Static) Handlers
 
-Status
-FrontPanelControllerBasis :: HandleBrightnessResponse(const FrontPanelModel::BrightnessType &aBrightness, ConnectionBuffer::MutableCountedPointer &aBuffer)
+/**
+ *  @brief
+ *    Handle and generate the server command response for a front panel
+ *    brightness level request.
+ *
+ *  This handles and generates the server command response for an
+ *  front panel brightness level request.
+ *
+ *  @param[in]      aBrightness  An immutable reference to the front
+ *                               panel brightness level for which the
+ *                               response is to be formed.
+ *  @param[in,out]  aBuffer      A mutable reference to the shared
+ *                               pointer into which the response is to
+ *                               be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
+FrontPanelControllerBasis :: HandleBrightnessResponse(const FrontPanelModel::BrightnessType &aBrightness,
+                                                      ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     Server::Command::FrontPanel::BrightnessResponse  lBrightnessResponse;
     const uint8_t *                                  lBuffer;
@@ -234,8 +259,31 @@ FrontPanelControllerBasis :: HandleBrightnessResponse(const FrontPanelModel::Bri
     return (lStatus);
 }
 
-Status
-FrontPanelControllerBasis :: HandleLockedResponse(const FrontPanelModel::LockedType &aLocked, ConnectionBuffer::MutableCountedPointer &aBuffer)
+/**
+ *  @brief
+ *    Handle and generate the server command response for a front panel
+ *    locked state request.
+ *
+ *  This handles and generates the server command response for an
+ *  front panel locked state request.
+ *
+ *  @param[in]      aLocked  An immutable reference to the front
+ *                           panel locked state for which the
+ *                           response is to be formed.
+ *  @param[in,out]  aBuffer  A mutable reference to the shared
+ *                           pointer into which the response is to
+ *                           be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
+FrontPanelControllerBasis :: HandleLockedResponse(const FrontPanelModel::LockedType &aLocked,
+                                                  ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     Server::Command::FrontPanel::LockedResponse  lLockedResponse;
     const uint8_t *                              lBuffer;
