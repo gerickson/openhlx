@@ -145,9 +145,12 @@ ConnectionManagerBasis :: ConnectionManagerBasis(void) :
  *  @brief
  *    This is a class initializer.
  *
- *  This initializes the connection manager with the specified run loop
- *  parameters.
+ *  This initializes the connection manager with the specified role(s)
+ *  and run loop parameters.
  *
+ *  @param[in]  aRoles              An immutable reference to the role(s)
+ *                                  in which the connection manager
+ *                                  will be acting.
  *  @param[in]  aRunLoopParameters  An immutable reference to the run
  *                                  loop parameters to initialize the
  *                                  connection manager with.
