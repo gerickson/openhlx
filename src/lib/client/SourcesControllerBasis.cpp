@@ -53,7 +53,10 @@ namespace Client
 
 // Class-scoped Notification Regular Expression Data
 
-//!< Class-scoped server source name notification regular expression.
+/**
+ *  Class-scoped server source name notification regular expression.
+ *
+ */
 Command::Sources::NameResponse      SourcesControllerBasis::kNameResponse;
 
 /**

@@ -51,7 +51,11 @@ namespace Client
 
 // Class-scoped Notification Regular Expression Data
 
-//!< Class-scoped server network interface query notification regular expression.
+/**
+ *  Class-scoped server network interface query notification regular
+ *  expression.
+ *
+ */
 Command::Network::QueryResponse     NetworkControllerBasis::kQueryResponse;
 
 /**

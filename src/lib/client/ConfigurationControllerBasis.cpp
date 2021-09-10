@@ -52,12 +52,18 @@ namespace Client
 
 // Class-scoped Notification Regular Expression Data
 
-//!< Class-scoped client save to backup configuration notification regular
-//!< expression.
+/**
+ *  Class-scoped client save to backup configuration notification regular
+ *  expression.
+ *
+ */
 Command::Configuration::SaveToBackupResponse     ConfigurationControllerBasis::kSaveToBackupResponse;
 
-//!< Class-scoped client saving to backup configuration notification regular
-//!< expression.
+/**
+ *  Class-scoped client saving to backup configuration notification regular
+ *  expression.
+ *
+ */
 Command::Configuration::SavingToBackupResponse   ConfigurationControllerBasis::kSavingToBackupResponse;
 
 /**

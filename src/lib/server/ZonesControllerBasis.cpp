@@ -44,115 +44,199 @@ namespace Server
 
 // Class-scoped Command Request Regular Expression Data
 
-//!< Class-scoped server zone adjust balance command request regular
-//!< expression.
+/**
+ *  Class-scoped server zone adjust balance command request regular
+ *  expression.
+ *
+ */
 Server::Command::Zones::AdjustBalanceRequest          ZonesControllerBasis::kAdjustBalanceRequest;
 
-//!< Class-scoped server zone tone equalizer decrease bass level
-//!< command request regular expression.
+/**
+ *  Class-scoped server zone tone equalizer decrease bass level
+ *  command request regular expression.
+ *
+ */
 Server::Command::Zones::DecreaseBassRequest           ZonesControllerBasis::kDecreaseBassRequest;
 
-//!< Class-scoped server zone tone equalizer increase bass level
-//!< command request regular expression.
+/**
+ *  Class-scoped server zone tone equalizer increase bass level
+ *  command request regular expression.
+ *
+ */
 Server::Command::Zones::IncreaseBassRequest           ZonesControllerBasis::kIncreaseBassRequest;
 
-//!< Class-scoped server zone tone equalizer decrease treble level
-//!< command request regular expression.
+/**
+ *  Class-scoped server zone tone equalizer decrease treble level
+ *  command request regular expression.
+ *
+ */
 Server::Command::Zones::DecreaseTrebleRequest         ZonesControllerBasis::kDecreaseTrebleRequest;
 
-//!< Class-scoped server zone tone equalizer increase treble level
-//!< command request regular expression.
+/**
+ *  Class-scoped server zone tone equalizer increase treble level
+ *  command request regular expression.
+ *
+ */
 Server::Command::Zones::IncreaseTrebleRequest         ZonesControllerBasis::kIncreaseTrebleRequest;
 
-//!< Class-scoped server zone equalizer decrease equalizer band level
-//!< command request regular expression.
+/**
+ *  Class-scoped server zone equalizer decrease equalizer band level
+ *  command request regular expression.
+ *
+ */
 Server::Command::Zones::DecreaseEqualizerBandRequest  ZonesControllerBasis::kDecreaseEqualizerBandRequest;
 
-//!< Class-scoped server zone equalizer increase equalizer band level
-//!< command request regular expression.
+/**
+ *  Class-scoped server zone equalizer increase equalizer band level
+ *  command request regular expression.
+ *
+ */
 Server::Command::Zones::IncreaseEqualizerBandRequest  ZonesControllerBasis::kIncreaseEqualizerBandRequest;
 
-//!< Class-scoped server zone decrease volume level command request regular
-//!< expression.
+/**
+ *  Class-scoped server zone decrease volume level command request regular
+ *  expression.
+ *
+ */
 Server::Command::Zones::DecreaseVolumeRequest         ZonesControllerBasis::kDecreaseVolumeRequest;
 
-//!< Class-scoped server zone increase volume level command request regular
-//!< expression.
+/**
+ *  Class-scoped server zone increase volume level command request regular
+ *  expression.
+ *
+ */
 Server::Command::Zones::IncreaseVolumeRequest         ZonesControllerBasis::kIncreaseVolumeRequest;
 
-//!< Class-scoped server zone volume mute state command request regular
-//!< expression.
+/**
+ *  Class-scoped server zone volume mute state command request regular
+ *  expression.
+ *
+ */
 Server::Command::Zones::MuteRequest                   ZonesControllerBasis::kMuteRequest;
 
-//!< Class-scoped server zone query command request regular expression.
+/**
+ *  Class-scoped server zone query command request regular expression.
+ *
+ */
 Server::Command::Zones::QueryRequest                  ZonesControllerBasis::kQueryRequest;
 
-//!< Class-scoped server zone query volume mute state command request regular
-//!< expression.
+/**
+ *  Class-scoped server zone query volume mute state command request regular
+ *  expression.
+ *
+ */
 Server::Command::Zones::QueryMuteRequest              ZonesControllerBasis::kQueryMuteRequest;
 
-//!< Class-scoped server zone query source (input) command request regular
-//!< expression.
+/**
+ *  Class-scoped server zone query source (input) command request regular
+ *  expression.
+ *
+ */
 Server::Command::Zones::QuerySourceRequest            ZonesControllerBasis::kQuerySourceRequest;
 
-//!< Class-scoped server zone query volume level command request regular
-//!< expression.
+/**
+ *  Class-scoped server zone query volume level command request regular
+ *  expression.
+ *
+ */
 Server::Command::Zones::QueryVolumeRequest            ZonesControllerBasis::kQueryVolumeRequest;
 
-//!< Class-scoped server zone set stereophonic channel balance command
-//!< request regular expression.
+/**
+ *  Class-scoped server zone set stereophonic channel balance command
+ *  request regular expression.
+ *
+ */
 Server::Command::Zones::SetBalanceRequest             ZonesControllerBasis::kSetBalanceRequest;
 
-//!< Class-scoped server zone equalizer set equalizer band level
-//!< command request regular expression.
+/**
+ *  Class-scoped server zone equalizer set equalizer band level
+ *  command request regular expression.
+ *
+ */
 Server::Command::Zones::SetEqualizerBandRequest       ZonesControllerBasis::kSetEqualizerBandRequest;
 
-//!< Class-scoped server zone preset equalizer set equalizer preset
-//!< command request regular expression.
+/**
+ *  Class-scoped server zone preset equalizer set equalizer preset
+ *  command request regular expression.
+ *
+ */
 Server::Command::Zones::SetEqualizerPresetRequest     ZonesControllerBasis::kSetEqualizerPresetRequest;
 
-//!< Class-scoped server zone highpass filter set crossover frequency
-//!< command request regular expression.
+/**
+ *  Class-scoped server zone highpass filter set crossover frequency
+ *  command request regular expression.
+ *
+ */
 Server::Command::Zones::SetHighpassCrossoverRequest   ZonesControllerBasis::kSetHighpassCrossoverRequest;
 
-//!< Class-scoped server zone lowpass filter set crossover frequency
-//!< command request regular expression.
+/**
+ *  Class-scoped server zone lowpass filter set crossover frequency
+ *  command request regular expression.
+ *
+ */
 Server::Command::Zones::SetLowpassCrossoverRequest    ZonesControllerBasis::kSetLowpassCrossoverRequest;
 
-//!< Class-scoped server zone set name command request regular
-//!< expression.
+/**
+ *  Class-scoped server zone set name command request regular
+ *  expression.
+ *
+ */
 Server::Command::Zones::SetNameRequest                ZonesControllerBasis::kSetNameRequest;
 
-//!< Class-scoped server zone set sound (that is, equalizer) mode
-//!< command request regular expression.
+/**
+ *  Class-scoped server zone set sound (that is, equalizer) mode
+ *  command request regular expression.
+ *
+ */
 Server::Command::Zones::SetSoundModeRequest           ZonesControllerBasis::kSetSoundModeRequest;
 
-//!< Class-scoped server zone set source (input) command request
-//!< regular expression.
+/**
+ *  Class-scoped server zone set source (input) command request
+ *  regular expression.
+ *
+ */
 Server::Command::Zones::SetSourceRequest              ZonesControllerBasis::kSetSourceRequest;
 
-//!< Class-scoped server all zones set source (input) command request
-//!< regular expression.
+/**
+ *  Class-scoped server all zones set source (input) command request
+ *  regular expression.
+ *
+ */
 Server::Command::Zones::SetSourceAllRequest           ZonesControllerBasis::kSetSourceAllRequest;
 
-//!< Class-scoped server zone tone equalizer set tone (bass/treble)
-//!< command request regular expression.
+/**
+ *  Class-scoped server zone tone equalizer set tone (bass/treble)
+ *  command request regular expression.
+ *
+ */
 Server::Command::Zones::SetToneRequest                ZonesControllerBasis::kSetToneRequest;
 
-//!< Class-scoped server zone set volume level command request regular
-//!< expression.
+/**
+ *  Class-scoped server zone set volume level command request regular
+ *  expression.
+ *
+ */
 Server::Command::Zones::SetVolumeRequest              ZonesControllerBasis::kSetVolumeRequest;
 
-//!< Class-scoped server all zones set volume level command request regular
-//!< expression.
+/**
+ *  Class-scoped server all zones set volume level command request regular
+ *  expression.
+ *
+ */
 Server::Command::Zones::SetVolumeAllRequest           ZonesControllerBasis::kSetVolumeAllRequest;
 
-//!< Class-scoped server zone query volume fixed/locked state command
-//!< request regular expression.
+/**
+ *  Class-scoped server zone query volume fixed/locked state command
+ *  request regular expression.
+ *
+ */
 Server::Command::Zones::SetVolumeFixedRequest         ZonesControllerBasis::kSetVolumeFixedRequest;
 
-//!< Class-scoped server zone toggle volume mute state command request regular
-//!< expression.
+/**
+ *  Class-scoped server zone toggle volume mute state command request regular
+ *  expression.
+ *
+ */
 Server::Command::Zones::ToggleMuteRequest             ZonesControllerBasis::kToggleMuteRequest;
 
 /**

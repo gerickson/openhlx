@@ -44,8 +44,11 @@ namespace Server
 
 // Class-scoped Command Request Regular Expression Data
 
-//!< Class-scoped server source set name command request regular
-//!< expression.
+/**
+ *  Class-scoped server source set name command request regular
+ *  expression.
+ *
+ */
 Server::Command::Sources::SetNameRequest      SourcesControllerBasis::kSetNameRequest;
 
 /**

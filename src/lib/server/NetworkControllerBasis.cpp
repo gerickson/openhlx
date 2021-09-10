@@ -46,8 +46,11 @@ namespace Server
 
 // Class-scoped Command Request Regular Expression Data
 
-//!< Class-scoped server network interface query command request regular
-//!< expression.
+/**
+ *  Class-scoped server network interface query command request regular
+ *  expression.
+ *
+ */
 Server::Command::Network::QueryRequest  NetworkControllerBasis::kQueryRequest;
 
 /**

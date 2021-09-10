@@ -52,11 +52,18 @@ namespace Client
 
 // Class-scoped Notification Regular Expression Data
 
-//!< Class-scoped server infrared disabled state notification regular
-//!< expression.
+/**
+ *  Class-scoped server infrared disabled state notification regular
+ *  expression.
+ *
+ */
 Command::Infrared::DisabledResponse      InfraredControllerBasis::kDisabledResponse;
 
-//!< Class-scoped server infrared query notification regular expression.
+/**
+ *  Class-scoped server infrared query notification regular
+ *  expression.
+ *
+ */
 Command::Infrared::QueryResponse         InfraredControllerBasis::kQueryResponse;
 
 /**

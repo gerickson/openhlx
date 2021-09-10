@@ -53,15 +53,24 @@ namespace Client
 
 // Class-scoped Notification Regular Expression Data
 
-//!< Class-scoped server front panel brightness level notification regular
-//!< expression.
+/**
+ *  Class-scoped server front panel brightness level notification regular
+ *  expression.
+ *
+ */
 Command::FrontPanel::BrightnessResponse  FrontPanelControllerBasis::kBrightnessResponse;
 
-//!< Class-scoped server front panel locked state notification regular
-//!< expression.
+/**
+ *  Class-scoped server front panel locked state notification regular
+ *  expression.
+ *
+ */
 Command::FrontPanel::LockedResponse      FrontPanelControllerBasis::kLockedResponse;
 
-//!< Class-scoped server front panel query notification regular expression.
+/**
+ *  Class-scoped server front panel query notification regular expression.
+ *
+ */
 Command::FrontPanel::QueryResponse       FrontPanelControllerBasis::kQueryResponse;
 
 /**
