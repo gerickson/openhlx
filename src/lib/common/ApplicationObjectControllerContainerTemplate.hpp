@@ -53,6 +53,10 @@ template <typename T>
 class ObjectControllerContainerTemplate
 {
 public:
+    /**
+     *  A local convenience type for the template parameter, @a T.
+     *
+     */
     typedef T ObjectControllerBasisType;
 
 public:
@@ -89,16 +93,37 @@ protected:
         ObjectControllerBasisType * mController;
     };
 
+    /**
+     *  A local convenience type for the container of controllers
+     *  managed by this object.
+     *
+     */
     typedef std::map<ObjectControllerBasisType *, ObjectControllerState> Controllers;
 
 protected:
     // Accessors
 
+    /**
+     *  @brief
+     *    Return the container of object controllers.
+     *
+     *  @returns
+     *    An immutable reference to the container of object controllers.
+     *
+     */
     const Controllers &  GetControllers(void) const
     {
         return (mObjectControllers);
     }
 
+    /**
+     *  @brief
+     *    Return the container of object controllers.
+     *
+     *  @returns
+     *    A mutable reference to the container of object controllers.
+     *
+     */
     Controllers &        GetControllers(void)
     {
         return (mObjectControllers);
@@ -106,6 +131,16 @@ protected:
 
     // Mutators
 
+    /**
+     *  @brief
+     *    Add a controller to the container.
+     *
+     *  This adds the specified controller to the container of object
+     *  controllers under management.
+     *
+     *  @param[in]  aController  A reference to the controller to add.
+     *
+     */
     void AddController(ObjectControllerBasisType &aController)
     {
         const ObjectControllerState lObjectControllerState = { &aController };
