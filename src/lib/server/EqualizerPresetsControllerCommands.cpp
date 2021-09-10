@@ -31,6 +31,7 @@
 using namespace HLX::Common;
 using namespace HLX::Model;
 
+
 namespace HLX
 {
 
@@ -45,30 +46,90 @@ namespace EqualizerPresets
 
 static const char * const kEqualizerPresetObject = "EP";
 
+/**
+ *  Equalizer preset decrease equalizer band level command request
+ *  regular expression pattern.
+ *
+ */
 const char * const DecreaseBandRequest::kRequestRegexp = "EP([[:digit:]]+)B([[:digit:]]+)(D)";
+
+/**
+ *  Equalizer preset increase equalizer band level command request
+ *  regular expression pattern.
+ *
+ */
 const char * const IncreaseBandRequest::kRequestRegexp = "EP([[:digit:]]+)B([[:digit:]]+)(U)";
 
+/**
+ *  Expected number of equalizer preset decrease equalizer band level
+ *  command request regular expression pattern matches.
+ *
+ */
 const size_t DecreaseBandRequest::kExpectedMatches     = 4;
+
+/**
+ *  Expected number of equalizer preset increase equalizer band level
+ *  command request regular expression pattern matches.
+ *
+ */
 const size_t IncreaseBandRequest::kExpectedMatches     = 4;
 
 // MARK: Observer Requests, Responses, and Commands
 
-Status QueryRequest :: Init(void)
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the query command request regular expression.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+QueryRequest :: Init(void)
 {
     return (QueryRegularExpressionBasis::Init(*this));
 }
 
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the equalizer preset query command response buffer.
+ *
+ *  @param[in]  aEqualizerPresetIdentifier  An immutable reference
+ *                                          to the identifier of
+ *                                          the equalizer preset
+ *                                          to query.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
 Status
-QueryResponse :: Init(const Model::EqualizerPresetModel::IdentifierType &aEqualizerPreset)
+QueryResponse :: Init(const Model::EqualizerPresetModel::IdentifierType &aEqualizerPresetIdentifier)
 {
-    return (QueryResponseBasis::Init(kEqualizerPresetObject, aEqualizerPreset));
+    return (QueryResponseBasis::Init(kEqualizerPresetObject,
+                                     aEqualizerPresetIdentifier));
 }
 
 // MARK: Mutator Requests, Responses, and Commands
 
 // MARK: Band Level Mutator Requests, Responses, and Commands
 
-Status DecreaseBandRequest :: Init(void)
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the decrease band level command request regular
+ *  expression.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+DecreaseBandRequest :: Init(void)
 {
     Status       lRetval = kStatus_Success;
 
@@ -79,7 +140,18 @@ Status DecreaseBandRequest :: Init(void)
     return (lRetval);
 }
 
-Status IncreaseBandRequest :: Init(void)
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the increase band level command request regular
+ *  expression.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+IncreaseBandRequest :: Init(void)
 {
     Status       lRetval = kStatus_Success;
 
@@ -90,36 +162,142 @@ Status IncreaseBandRequest :: Init(void)
     return (lRetval);
 }
 
-Status SetBandRequest :: Init(void)
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the set band level command request regular
+ *  expression.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+SetBandRequest :: Init(void)
 {
     return (BandLevelRegularExpressionBasis::Init(*this));
 }
 
-Status BandResponse :: Init(const Model::EqualizerPresetModel::IdentifierType &aEqualizerIdentifier, const Model::EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier, const Model::EqualizerBandModel::LevelType &aLevel)
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the equalizer preset band level command
+ *  response buffer.
+ *
+ *  @param[in]  aEqualizerPresetIdentifier  An immutable reference
+ *                                          to the equalizer preset
+ *                                          identifier for which to
+ *                                          form the band level response.
+ *  @param[in]  aEqualizerBandIdentifier    An immutable reference
+ *                                          to the equalizer band on
+ *                                          the equalizer preset for
+ *                                          which to form the band
+ *                                          level response.
+ *  @param[in]  aEqualizerBandLevel         An immutable reference to
+ *                                          band level for which to
+ *                                          form the response.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+BandResponse :: Init(const Model::EqualizerPresetModel::IdentifierType &aEqualizerPresetIdentifier,
+                     const Model::EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier,
+                     const Model::EqualizerBandModel::LevelType &aEqualizerBandLevel)
 {
     const char * const kPresetObject = kEqualizerPresetObject + 1;
 
-    return (EqualizerBandResponseBasis::Init(kPresetObject, aEqualizerIdentifier, aEqualizerBandIdentifier, aLevel));
+    return (EqualizerBandResponseBasis::Init(kPresetObject,
+                                             aEqualizerPresetIdentifier,
+                                             aEqualizerBandIdentifier,
+                                             aEqualizerBandLevel));
 }
 
 // MARK: Name Mutator Requests, Responses, and Commands
 
-Status SetNameRequest :: Init(void)
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the set name command request regular expression.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+SetNameRequest :: Init(void)
 {
     return (NameRegularExpressionBasis::Init(*this));
 }
 
-Status NameResponse :: Init(const Model::EqualizerPresetModel::IdentifierType &aEqualizerPreset, const char * aName)
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the equalizer preset name command response
+ *  buffer.
+ *
+ *  @param[in]  aEqualizerPresetIdentifier  An immutable reference
+ *                                          for the equalizer preset
+ *                                          identifier for which to
+ *                                          form the name response.
+ *  @param[in]  aName                       A pointer to the null-
+ *                                          terminated C string of the
+ *                                          equalizer preset name for
+ *                                          which to form the
+ *                                          response.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+NameResponse :: Init(const Model::EqualizerPresetModel::IdentifierType &aEqualizerPresetIdentifier,
+                     const char * aName)
 {
-    return (NameSetResponseBasis::Init(kEqualizerPresetObject, aEqualizerPreset, aName));
+    return (NameSetResponseBasis::Init(kEqualizerPresetObject,
+                                       aEqualizerPresetIdentifier,
+                                       aName));
 }
 
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the equalizer preset name command response
+ *  buffer.
+ *
+ *  @param[in]  aEqualizerPresetIdentifier  An immutable reference
+ *                                          for the equalizer preset
+ *                                          identifier for which to
+ *                                          form the name response.
+ *  @param[in]  aName                       A pointer to the null-
+ *                                          terminated C string of the
+ *                                          equalizer preset name for
+ *                                          which to form the
+ *                                          response.
+ *  @param[in]  aNameLength                 An immutable reference to
+ *                                          the length, in bytes, of
+ *                                          @a aName.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
 Status
-NameResponse :: Init(const Model::EqualizerPresetModel::IdentifierType &aEqualizerPreset,
+NameResponse :: Init(const Model::EqualizerPresetModel::IdentifierType &aEqualizerPresetIdentifier,
                      const char * aName,
                      const size_t &aNameLength)
 {
-    return (NameSetResponseBasis::Init(kEqualizerPresetObject, aEqualizerPreset, aName, aNameLength));
+    return (NameSetResponseBasis::Init(kEqualizerPresetObject,
+                                       aEqualizerPresetIdentifier,
+                                       aName,
+                                       aNameLength));
 }
 
 }; // namespace EqualizerPresets
