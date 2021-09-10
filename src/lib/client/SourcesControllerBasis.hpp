@@ -18,7 +18,7 @@
 
 /**
  *    @file
- *      This file defines a base object for realizing a HLX
+ *      This file defines a derivable object for realizing a HLX
  *      sources controller, in a client.
  *
  */

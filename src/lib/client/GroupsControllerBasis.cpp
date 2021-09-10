@@ -18,7 +18,7 @@
 
 /**
  *    @file
- *      This file implements a base object for realizing a HLX
+ *      This file implements a derivable object for realizing a HLX
  *      groups controller, in a client.
  *
  */
@@ -74,7 +74,20 @@ Command::Groups::ZoneResponse            GroupsControllerBasis::kZoneResponse;
 
 /**
  *  @brief
- *    This is the class default constructor.
+ *    This is a class constructor.
+ *
+ *  This constructs the groups controller with the specified groups
+ *  collection model and the maximum number of allowed groups.
+ *
+ *  @param[in]  aGroupsModel  A mutable reference to the groups
+ *                            collection model to construct the
+ *                            controller with. This is retained by a
+ *                            weak pointer reference and,
+ *                            consequently, must remain in scope for
+ *                            the lifetime of the controller.
+ *  @param[in]  aGroupsMax    An immutable reference to the maximum
+ *                            number of allowed groups managed by the
+ *                            controller.
  *
  */
 GroupsControllerBasis :: GroupsControllerBasis(Model::GroupsModel &aGroupsModel,

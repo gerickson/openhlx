@@ -18,7 +18,7 @@
 
 /**
  *    @file
- *      This file implements a base object for realizing a HLX
+ *      This file implements a derivable object for realizing a HLX
  *      configuration controller, in a client.
  *
  */

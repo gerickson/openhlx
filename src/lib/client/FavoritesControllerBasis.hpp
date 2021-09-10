@@ -18,7 +18,7 @@
 
 /**
  *    @file
- *      This file defines a base object for realizing a HLX
+ *      This file defines a derivable object for realizing a HLX
  *      favorites controller, in a client.
  *
  */

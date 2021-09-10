@@ -18,7 +18,7 @@
 
 /**
  *    @file
- *      This file implements a base object for realizing a HLX
+ *      This file implements a derivable object for realizing a HLX
  *      equalizer presets controller, in a client.
  *
  */
@@ -66,7 +66,24 @@ Command::EqualizerPresets::QueryResponse          EqualizerPresetsControllerBasi
 
 /**
  *  @brief
- *    This is the class default constructor.
+ *    This is a class constructor.
+ *
+ *  This constructs the equalizer presets controller with the
+ *  specified equalizer presets collection model and the maximum
+ *  number of allowed equalizer presets.
+ *
+ *  @param[in]  aEqualizerPresetsModel  A mutable reference to the
+ *                                      equalizer presets collection
+ *                                      model to construct the
+ *                                      controller with. This is
+ *                                      retained by a weak pointer
+ *                                      reference and, consequently,
+ *                                      must remain in scope for the
+ *                                      lifetime of the controller.
+ *  @param[in]  aEqualizerPresetsMax    An immutable reference to the
+ *                                      maximum number of allowed
+ *                                      equalizer presets managed by
+ *                                      the controller.
  *
  */
 EqualizerPresetsControllerBasis :: EqualizerPresetsControllerBasis(Model::EqualizerPresetsModel &aEqualizerPresetsModel,
@@ -118,7 +135,7 @@ Status
 EqualizerPresetsControllerBasis :: Init(CommandManager &aCommandManager, const Timeout &aTimeout)
 {
     DeclareScopedFunctionTracer(lTracer);
-    Status          lRetval = kStatus_Success;
+    Status lRetval = kStatus_Success;
 
 
     lRetval = ResponseInit();

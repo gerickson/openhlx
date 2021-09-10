@@ -18,7 +18,7 @@
 
 /**
  *    @file
- *      This file implements a base object for realizing a HLX
+ *      This file implements a derivable object for realizing a HLX
  *      infrared remote control interface controller, in a client.
  *
  */
@@ -61,7 +61,17 @@ Command::Infrared::QueryResponse         InfraredControllerBasis::kQueryResponse
 
 /**
  *  @brief
- *    This is the class default constructor.
+ *    This is a class constructor.
+ *
+ *  This constructs the infrared controller with the specified
+ *  infrared model.
+ *
+ *  @param[in]  aInfraredModel  A mutable reference to the infrared
+ *                              model to construct the controller
+ *                              with. This is retained by a weak
+ *                              pointer reference and, consequently,
+ *                              must remain in scope for the lifetime
+ *                              of the controller.
  *
  */
 InfraredControllerBasis :: InfraredControllerBasis(Model::InfraredModel &aInfraredModel) :

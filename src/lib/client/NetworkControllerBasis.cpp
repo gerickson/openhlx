@@ -18,7 +18,7 @@
 
 /**
  *    @file
- *      This file implements a base object for realizing a HLX
+ *      This file implements a derivable object for realizing a HLX
  *      Ethernet network interface controller, in a client.
  *
  */
@@ -56,7 +56,17 @@ Command::Network::QueryResponse     NetworkControllerBasis::kQueryResponse;
 
 /**
  *  @brief
- *    This is the class default constructor.
+ *    This is a class constructor.
+ *
+ *  This constructs the network interface controller with the
+ *  specified network interface model.
+ *
+ *  @param[in]  aNetworkModel  A mutable reference to the network
+ *                             interface model to construct the
+ *                             controller with. This is retained by a
+ *                             weak pointer reference and,
+ *                             consequently, must remain in scope for
+ *                             the lifetime of the controller.
  *
  */
 NetworkControllerBasis :: NetworkControllerBasis(Model::NetworkModel &aNetworkModel) :

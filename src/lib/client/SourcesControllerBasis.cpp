@@ -18,7 +18,7 @@
 
 /**
  *    @file
- *      This file implements a base object for realizing a HLX
+ *      This file implements a derivable object for realizing a HLX
  *      sources controller, in a client.
  *
  */
@@ -58,7 +58,20 @@ Command::Sources::NameResponse      SourcesControllerBasis::kNameResponse;
 
 /**
  *  @brief
- *    This is the class default constructor.
+ *    This is a class constructor.
+ *
+ *  This constructs the sources controller with the specified sources
+ *  collection model and the maximum number of allowed sources.
+ *
+ *  @param[in]  aSourcesModel  A mutable reference to the sources
+ *                             collection model to construct the
+ *                             controller with. This is retained by a
+ *                             weak pointer reference and,
+ *                             consequently, must remain in scope for
+ *                             the lifetime of the controller.
+ *  @param[in]  aSourcesMax    An immutable reference to the maximum
+ *                             number of allowed sources managed by
+ *                             the controller.
  *
  */
 SourcesControllerBasis :: SourcesControllerBasis(Model::SourcesModel &aSourcesModel,

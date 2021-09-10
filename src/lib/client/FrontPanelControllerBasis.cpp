@@ -18,7 +18,7 @@
 
 /**
  *    @file
- *      This file implements a base object for realizing a HLX
+ *      This file implements a derivable object for realizing a HLX
  *      physical front panel controller, in a client.
  *
  */
@@ -66,7 +66,17 @@ Command::FrontPanel::QueryResponse       FrontPanelControllerBasis::kQueryRespon
 
 /**
  *  @brief
- *    This is the class default constructor.
+ *    This is a class constructor.
+ *
+ *  This constructs the front panels controller with the specified
+ *  front panel model.
+ *
+ *  @param[in]  aFrontPanelModel  A mutable reference to the front
+ *                                panel model to construct the
+ *                                controller with. This is retained by
+ *                                a weak pointer reference and,
+ *                                consequently, must remain in scope
+ *                                for the lifetime of the controller.
  *
  */
 FrontPanelControllerBasis :: FrontPanelControllerBasis(Model::FrontPanelModel &aFrontPanelModel) :
@@ -115,7 +125,7 @@ Status
 FrontPanelControllerBasis :: Init(CommandManager &aCommandManager, const Timeout &aTimeout)
 {
     DeclareScopedFunctionTracer(lTracer);
-    Status          lRetval = kStatus_Success;
+    Status lRetval = kStatus_Success;
 
 
     lRetval = ResponseInit();
