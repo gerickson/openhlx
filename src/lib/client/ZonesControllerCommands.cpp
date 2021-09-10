@@ -73,7 +73,8 @@ static const char          kVolumeProperty = 'V';
 Status
 QueryRequest :: Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
 {
-    return (QueryRequestBasis::Init(kZoneObject, aZoneIdentifier));
+    return (QueryRequestBasis::Init(kZoneObject,
+                                    aZoneIdentifier));
 }
 
 /**
@@ -126,12 +127,40 @@ Query :: Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the zone query volume mute state command request buffer.
+ *
+ *  @param[in]  aZoneIdentifier   An immutable reference to the identifier
+ *                                of the zone for which to query the
+ *                                volume mute state.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
 Status
 QueryMuteRequest :: Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
 {
-    return (QueryPropertyRequestBasis::Init(kZoneObject, kMuteProperty, aZoneIdentifier));
+    return (QueryPropertyRequestBasis::Init(kZoneObject,
+                                            kMuteProperty,
+                                            aZoneIdentifier));
 }
 
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the zone query volume mute state command.
+ *
+ *  @param[in]  aZoneIdentifier   An immutable reference to the identifier
+ *                                of the zone for which to query the
+ *                                volume mute state.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
 Status
 QueryMute :: Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
 {
@@ -150,12 +179,40 @@ QueryMute :: Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the zone query volume mute state command request buffer.
+ *
+ *  @param[in]  aZoneIdentifier   An immutable reference to the identifier
+ *                                of the zone for which to query the
+ *                                source (input).
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
 Status
 QuerySourceRequest :: Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
 {
-    return (QueryPropertyRequestBasis::Init(kZoneObject, kSourceProperty, aZoneIdentifier));
+    return (QueryPropertyRequestBasis::Init(kZoneObject,
+                                            kSourceProperty,
+                                            aZoneIdentifier));
 }
 
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the zone query source (input) command.
+ *
+ *  @param[in]  aZoneIdentifier   An immutable reference to the identifier
+ *                                of the zone for which to query the
+ *                                source (input).
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
 Status
 QuerySource :: Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
 {
@@ -174,12 +231,41 @@ QuerySource :: Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the zone query volume level command request
+ *  buffer.
+ *
+ *  @param[in]  aZoneIdentifier   An immutable reference to the identifier
+ *                                of the zone for which to query the
+ *                                volume level.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
 Status
 QueryVolumeRequest :: Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
 {
-    return (QueryPropertyRequestBasis::Init(kZoneObject, kVolumeProperty, aZoneIdentifier));
+    return (QueryPropertyRequestBasis::Init(kZoneObject,
+                                            kVolumeProperty,
+                                            aZoneIdentifier));
 }
 
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the zone query volume level command.
+ *
+ *  @param[in]  aZoneIdentifier   An immutable reference to the identifier
+ *                                of the zone for which to query the
+ *                                volume level.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
 Status
 QueryVolume :: Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
 {
