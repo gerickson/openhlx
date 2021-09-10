@@ -29,6 +29,8 @@
 
 
 using namespace HLX::Common;
+using namespace HLX::Model;
+
 
 namespace HLX
 {
@@ -44,12 +46,34 @@ namespace Network
 
 // MARK: Observer Requests, Responses, and Commands
 
-Status QueryRequest :: Init(void)
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the network interface query command request regular expression.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+QueryRequest :: Init(void)
 {
     return (QueryRegularExpressionBasis::Init(*this));
 }
 
-Status QueryResponse :: Init(void)
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the network interface query command response buffer.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+QueryResponse :: Init(void)
 {
     static const char * const kNetworkObject = "E";
 
