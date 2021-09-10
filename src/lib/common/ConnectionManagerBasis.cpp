@@ -302,6 +302,14 @@ done:
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Return the roles in which the connection manager is acting.
+ *
+ *  @returns
+ *    The roles in which the connection manager is acting.
+ *
+ */
 const ConnectionManagerBasis::Roles &
 ConnectionManagerBasis :: GetRoles(void) const
 {
