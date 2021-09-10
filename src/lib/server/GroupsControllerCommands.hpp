@@ -101,7 +101,7 @@ public:
 
     using QueryResponseBasis::Init;
 
-    Common::Status Init(const Model::GroupModel::IdentifierType &aGroup);
+    Common::Status Init(const Model::GroupModel::IdentifierType &aGroupIdentifier);
 };
 
 // MARK: Mutator Requests, Responses, and Commands
@@ -177,7 +177,8 @@ public:
     SetMuteResponse(void) = default;
     virtual ~SetMuteResponse(void) = default;
 
-    Common::Status Init(const Model::GroupModel::IdentifierType &aGroup, const Model::VolumeModel::MuteType &aMute);
+    Common::Status Init(const Model::GroupModel::IdentifierType &aGroupIdentifier,
+                        const Model::VolumeModel::MuteType &aMute);
 };
 
 /**
@@ -249,8 +250,11 @@ public:
     NameResponse(void) = default;
     virtual ~NameResponse(void) = default;
 
-    Common::Status Init(const Model::GroupModel::IdentifierType &aGroup, const char * aName);
-    Common::Status Init(const Model::GroupModel::IdentifierType &aGroup, const char * aName, const size_t &aNameLength);
+    Common::Status Init(const Model::GroupModel::IdentifierType &aGroupIdentifier,
+                        const char * aName);
+    Common::Status Init(const Model::GroupModel::IdentifierType &aGroupIdentifier,
+                        const char * aName,
+                        const size_t &aNameLength);
 };
 
 // MARK: Source Mutator Requests, Responses, and Commands
@@ -298,7 +302,8 @@ public:
     SourceResponse(void) = default;
     virtual ~SourceResponse(void) = default;
 
-    Common::Status Init(const Model::GroupModel::IdentifierType &aGroup, const Model::SourceModel::IdentifierType &aSource);
+    Common::Status Init(const Model::GroupModel::IdentifierType &aGroupIdentifier,
+                        const Model::SourceModel::IdentifierType &aSourceIdentifier);
 };
 
 // MARK: Volume Mutator Requests, Responses, and Commands
@@ -422,7 +427,8 @@ public:
     SetVolumeResponse(void) = default;
     virtual ~SetVolumeResponse(void) = default;
 
-    Common::Status Init(const Model::GroupModel::IdentifierType &aGroup, const Model::VolumeModel::LevelType &aVolume);
+    Common::Status Init(const Model::GroupModel::IdentifierType &aGroupIdentifier,
+                        const Model::VolumeModel::LevelType &aVolume);
 };
 
 // MARK: Zone (Membership) Mutator Requests, Responses, and Commands
@@ -504,7 +510,9 @@ public:
 
     using ResponseBasis::Init;
 
-    Common::Status Init(const Model::GroupModel::IdentifierType &aGroup, char aOperation, const Model::ZoneModel::IdentifierType &aZone);
+    Common::Status Init(const Model::GroupModel::IdentifierType &aGroupIdentifier,
+                        char aOperation,
+                        const Model::ZoneModel::IdentifierType &aZoneIdentifier);
 };
 
 /**
@@ -524,7 +532,8 @@ public:
     AddZoneResponse(void) = default;
     virtual ~AddZoneResponse(void) = default;
 
-    Common::Status Init(const Model::GroupModel::IdentifierType &aGroup, const Model::ZoneModel::IdentifierType &aZone);
+    Common::Status Init(const Model::GroupModel::IdentifierType &aGroupIdentifier,
+                        const Model::ZoneModel::IdentifierType &aZoneIdentifier);
 };
 
 /**
@@ -544,7 +553,8 @@ public:
     RemoveZoneResponse(void) = default;
     virtual ~RemoveZoneResponse(void) = default;
 
-    Common::Status Init(const Model::GroupModel::IdentifierType &aGroup, const Model::ZoneModel::IdentifierType &aZone);
+    Common::Status Init(const Model::GroupModel::IdentifierType &aGroupIdentifier,
+                        const Model::ZoneModel::IdentifierType &aZoneIdentifier);
 };
 
 /**
