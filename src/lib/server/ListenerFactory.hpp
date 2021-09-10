@@ -54,8 +54,12 @@ class ListenerFactory
 {
 
 public:
+    // Con/destructor
+
     ListenerFactory(void);
     ~ListenerFactory(void);
+
+    // Intializer
 
     Common::Status Init(const Common::RunLoopParameters &aRunLoopParameters);
 

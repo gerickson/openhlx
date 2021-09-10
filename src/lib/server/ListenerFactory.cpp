@@ -18,11 +18,12 @@
 
 /**
  *    @file
- *      This file...
+ *      This file implements an object for creating HLX server
+ *      network connection listeners.
  *
  */
 
-#include <ListenerFactory.hpp>
+#include "ListenerFactory.hpp"
 
 #include <CFUtilities/CFString.hpp>
 #include <LogUtilities/LogUtilities.hpp>
@@ -42,6 +43,11 @@ namespace HLX
 namespace Server
 {
 
+/**
+ *  @brief
+ *    This is the class default constructor.
+ *
+ */
 ListenerFactory :: ListenerFactory(void) :
     mRunLoopParameters(),
     mListeners()
@@ -49,12 +55,37 @@ ListenerFactory :: ListenerFactory(void) :
     return;
 }
 
+/**
+ *  @brief
+ *    This is the class destructor.
+ *
+ */
 ListenerFactory :: ~ListenerFactory(void)
 {
     return;
 }
 
-Common::Status ListenerFactory :: Init(const Common::RunLoopParameters &aRunLoopParameters)
+/**
+ *  @brief
+ *    This is a class initializer.
+ *
+ *  This initializes the connection listener factory with the
+ *  specified run loop parameters.
+ *
+ *  @note
+ *    The connection listener factory itself is not a run loop source;
+ *    however, the connection listeners it allocates and instantiates
+ *    likely will be.
+ *
+ *  @param[in]  aRunLoopParameters  An immutable reference to the run
+ *                                  loop parameters to initialize the
+ *                                  connection listener factory with.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+ListenerFactory :: Init(const Common::RunLoopParameters &aRunLoopParameters)
 {
     Status lRetval = kStatus_Success;
 
@@ -63,7 +94,22 @@ Common::Status ListenerFactory :: Init(const Common::RunLoopParameters &aRunLoop
     return (lRetval);
 }
 
-bool ListenerFactory :: SupportsScheme(CFStringRef aSchemeRef) const
+/**
+ *  @brief
+ *    Determine whether the factory supports creating a connection
+ *    listener with the specified protocol scheme.
+ *
+ *  @param[in]  aSchemeRef  A reference to a CoreFoundation string
+ *                          containing the protocol (for example,
+ *                          "telnet") scheme for which to check
+ *                          support.
+ *
+ *  @returns
+ *     True if the scheme is supported; otherwise, false.
+ *
+ */
+bool
+ListenerFactory :: SupportsScheme(CFStringRef aSchemeRef) const
 {
     const CFString lRequestedScheme(aSchemeRef);
     bool lRetval = false;
@@ -76,7 +122,25 @@ bool ListenerFactory :: SupportsScheme(CFStringRef aSchemeRef) const
     return (lRetval);
 }
 
-std::unique_ptr<ListenerBasis> ListenerFactory :: CreateListener(CFStringRef aSchemeRef) const
+/**
+ *  @brief
+ *    Create a connection listener with the specified protocol scheme.
+ *
+ *  This attempts to create a connection listener with the specified
+ *  protocol scheme (for example, "telnet").
+ *
+ *  @param[in]  aSchemeRef  A reference to a CoreFoundation string
+ *                          containing the protocol (for example,
+ *                          "telnet") scheme for which to create
+ *                          a connection listener.
+ *
+ *  @returns
+ *    A valid unique pointer to the newly-created connection listener
+ *    on success; otherwise, an empty, invalid unique pointer.
+ *
+ */
+std::unique_ptr<ListenerBasis>
+ListenerFactory :: CreateListener(CFStringRef aSchemeRef) const
 {
     const CFString                  lRequestedScheme(aSchemeRef);
     std::unique_ptr<ListenerBasis>  lRetval;
