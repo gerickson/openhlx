@@ -55,7 +55,7 @@ const char * const QueryRequest::kRequestRegexp         = "QFPL";
 
 /**
  *  Expected number of front panel query command request regular
- *  expression pattern matches.
+ *  expression pattern substring matches.
  *
  */
 const size_t       QueryRequest::kExpectedMatches       = 1;

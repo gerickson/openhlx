@@ -55,7 +55,7 @@ namespace Infrared
 const char * const QueryRequest::kRequestRegexp   = "QIRL";
 /**
  *  Expected number of infrared query command request regular
- *  expression pattern matches.
+ *  expression pattern substring matches.
  *
  */
 const size_t       QueryRequest::kExpectedMatches = 1;

@@ -62,14 +62,14 @@ const char * const IncreaseBandRequest::kRequestRegexp = "EP([[:digit:]]+)B([[:d
 
 /**
  *  Expected number of equalizer preset decrease equalizer band level
- *  command request regular expression pattern matches.
+ *  command request regular expression pattern substring matches.
  *
  */
 const size_t DecreaseBandRequest::kExpectedMatches     = 4;
 
 /**
  *  Expected number of equalizer preset increase equalizer band level
- *  command request regular expression pattern matches.
+ *  command request regular expression pattern substring matches.
  *
  */
 const size_t IncreaseBandRequest::kExpectedMatches     = 4;
