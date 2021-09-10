@@ -93,11 +93,12 @@ public:
     QueryResponse(void) = default;
     virtual ~QueryResponse(void) = default;
 
-    // Allow both the base and derived class initializers
+    Common::Status Init(const Model::EqualizerPresetModel::IdentifierType &aEqualizerPresetIdentifier);
 
-    using QueryResponseBasis::Init;
+private:
+    // Explicitly hide base class initializers
 
-    Common::Status Init(const Model::EqualizerPresetModel::IdentifierType &aEqualizerPreset);
+    using ResponseBasis::Init;
 };
 
 // MARK: Mutator Requests, Responses, and Commands
@@ -203,7 +204,9 @@ public:
     BandResponse(void) = default;
     virtual ~BandResponse(void) = default;
 
-    Common::Status Init(const Model::EqualizerPresetModel::IdentifierType &aEqualizerIdentifier, const Model::EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier, const Model::EqualizerBandModel::LevelType &aLevel);
+    Common::Status Init(const Model::EqualizerPresetModel::IdentifierType &aEqualizerPresetIdentifier,
+                        const Model::EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier,
+                        const Model::EqualizerBandModel::LevelType &aEqualizerBandLevel);
 };
 
 // MARK: Name Mutator Requests, Responses, and Commands
@@ -251,8 +254,11 @@ public:
     NameResponse(void) = default;
     virtual ~NameResponse(void) = default;
 
-    Common::Status Init(const Model::EqualizerPresetModel::IdentifierType &aEqualizerPreset, const char * aName);
-    Common::Status Init(const Model::EqualizerPresetModel::IdentifierType &aEqualizerPreset, const char * aName, const size_t &aNameLength);
+    Common::Status Init(const Model::EqualizerPresetModel::IdentifierType &aEqualizerPresetIdentifier,
+                        const char * aName);
+    Common::Status Init(const Model::EqualizerPresetModel::IdentifierType &aEqualizerPresetIdentifier,
+                        const char * aName,
+                        const size_t &aNameLength);
 };
 
 }; // namespace EqualizerPresets
