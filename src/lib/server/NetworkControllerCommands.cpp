@@ -50,7 +50,8 @@ namespace Network
  *  @brief
  *    This is the class default initializer.
  *
- *  This initializes the network interface query command request regular expression.
+ *  This initializes the network interface query command request
+ *  regular expression.
  *
  *  @retval  kStatus_Success  If successful.
  *
