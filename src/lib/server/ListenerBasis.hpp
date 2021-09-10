@@ -101,11 +101,6 @@ protected:
     void OnDidListen(void);
     void OnDidNotListen(const Common::Error &aError);
 
-    void OnWillAccept(void);
-    void OnIsAccepting(void);
-    void OnDidAccept(void);
-    void OnDidNotAccept(const Common::Error &aError);
-
     void OnError(const Common::Error &aError);
 
     /**

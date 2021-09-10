@@ -736,8 +736,6 @@ ListenerBasis :: CFSocketAcceptCallback(CFSocketRef aSocketRef,
     {
         close(lConnectedSocket);
 
-        //OnDidNotAccept(lStatus);
-
         OnError(lStatus);
     }
 }
