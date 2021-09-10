@@ -95,6 +95,12 @@ namespace Simulator
 namespace Detail
 {
 
+/**
+ *  Internal collection of zone identifiers.
+ *
+ *  @private
+ *
+ */
 typedef std::vector<ZoneModel::IdentifierType>   ZoneIdentifiers;
 
 };
