@@ -18,7 +18,9 @@
 
 /**
  *    @file
- *      This file...
+ *      This file implements objects for HLX server infrared remote control
+ *      interface data model commands and their constituent requests and
+ *      responses.
  *
  */
 
@@ -31,6 +33,7 @@
 
 
 using namespace HLX::Common;
+using namespace HLX::Model;
 
 
 namespace HLX
@@ -45,12 +48,31 @@ namespace Command
 namespace Infrared
 {
 
+/**
+ *  Infrared query command request regular expression pattern.
+ *
+ */
 const char * const QueryRequest::kRequestRegexp   = "QIRL";
+/**
+ *  Expected number of infrared query command request regular
+ *  expression pattern matches.
+ *
+ */
 const size_t       QueryRequest::kExpectedMatches = 1;
 
 // MARK: Observer Requests, Responses, and Commands
 
-Status QueryRequest :: Init(void)
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the infrared query command request regular expression.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+QueryRequest :: Init(void)
 {
     Status       lRetval = kStatus_Success;
 
@@ -63,12 +85,38 @@ Status QueryRequest :: Init(void)
 
 // MARK: Infrared Mutator Requests, Responses, and Commands
 
-Common::Status SetDisabledRequest :: Init(void)
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the set infrared disabled state command request regular
+ *  expression.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+SetDisabledRequest :: Init(void)
 {
     return (DisabledRegularExpressionBasis::Init(*this));
 }
 
-Common::Status DisabledResponse :: Init(const Model::InfraredModel::DisabledType &aDisabled)
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the infrared disabled state command response buffer.
+ *
+ *  @param[in]  aDisabled  An immutable reference to the disabled state
+ *                         for which to form the response.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+DisabledResponse :: Init(const Model::InfraredModel::DisabledType &aDisabled)
 {
     static const char * const  kObject = "IRL";
     OutputStringStream         lDisabledStream;
