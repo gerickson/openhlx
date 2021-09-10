@@ -62,6 +62,11 @@ protected:
     const Model::FrontPanelModel &GetModel(void) const;
 
 protected:
+    /**
+     *  The front panel model for all client and server
+     *  controllers.
+     *
+     */
     Model::FrontPanelModel  mFrontPanelModel;
 };
 

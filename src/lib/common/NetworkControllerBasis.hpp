@@ -61,6 +61,11 @@ protected:
     const Model::NetworkModel &GetModel(void) const;
 
 protected:
+    /**
+     *  The Ethernet network interface model for all client and server
+     *  controllers.
+     *
+     */
     Model::NetworkModel  mNetworkModel;
 };
 

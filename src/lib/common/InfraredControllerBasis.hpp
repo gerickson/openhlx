@@ -62,6 +62,11 @@ protected:
     const Model::InfraredModel &GetModel(void) const;
 
 protected:
+    /**
+     *  The infrared remote control interface model for all client and server
+     *  controllers.
+     *
+     */
     Model::InfraredModel  mInfraredModel;
 };
 

@@ -72,6 +72,11 @@ protected:
     Common::Status Init(void);
 
 protected:
+    /**
+     *  The groups collection model for all client and server
+     *  controllers.
+     *
+     */
     Model::GroupsModel           mGroups;
 
 protected:

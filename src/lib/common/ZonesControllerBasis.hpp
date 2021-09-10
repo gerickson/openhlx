@@ -72,6 +72,11 @@ protected:
     Common::Status Init(void);
 
 protected:
+    /**
+     *  The zones collection model for all client and server
+     *  controllers.
+     *
+     */
     Model::ZonesModel            mZones;
 
 protected:

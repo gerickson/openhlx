@@ -72,6 +72,11 @@ protected:
     Common::Status Init(void);
 
 protected:
+    /**
+     *  The favorites collection model for all client and server
+     *  controllers.
+     *
+     */
     Model::FavoritesModel        mFavorites;
 
 protected:

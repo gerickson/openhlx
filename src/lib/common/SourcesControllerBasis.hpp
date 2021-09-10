@@ -72,6 +72,11 @@ protected:
     Common::Status Init(void);
 
 protected:
+    /**
+     *  The sources collection model for all client and server
+     *  controllers.
+     *
+     */
     Model::SourcesModel          mSources;
 
 protected:
