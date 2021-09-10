@@ -526,6 +526,18 @@ private:
     std::equal_to<const raw_type>  mCompare;
 };
 
+/**
+ *  @brief
+ *    Send a buffer to all connected clients.
+ *
+ *  This attempts to send a buffer to all connected clients.
+ *
+ *  @param[in]  aBuffer  An immutable shared pointer to the
+ *                       buffer to send.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
 Status
 ConnectionManager :: Send(Common::ConnectionBuffer::ImmutableCountedPointer aBuffer)
 {
@@ -546,8 +558,23 @@ ConnectionManager :: Send(Common::ConnectionBuffer::ImmutableCountedPointer aBuf
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Send a buffer preferrentially to one connected client but
+ *    subsequently to all other connected clients.
+ *
+ *  This attempts to send a buffer preferrentially to one connected
+ *  client but subsequently to all other connected clients.
+ *
+ *  @param[in]  aBuffer  An immutable shared pointer to the
+ *                       buffer to send.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
 Status
-ConnectionManager :: Send(ConnectionBasis &aConnection, ConnectionBuffer::ImmutableCountedPointer aBuffer)
+ConnectionManager :: Send(ConnectionBasis &aConnection,
+                          ConnectionBuffer::ImmutableCountedPointer aBuffer)
 {
     HeterogeneousCompare<ConnectionBasis>  lComparator(&aConnection);
     Connections::iterator                  lCurrent = mActiveConnections.begin();
@@ -555,7 +582,7 @@ ConnectionManager :: Send(ConnectionBasis &aConnection, ConnectionBuffer::Immuta
     Status                                 lRetval;
 
 
-    // First, send over the specified connection.
+    // First, preferrentially send over the specified connection.
 
     lRetval = aConnection.Send(aBuffer);
     nlREQUIRE_SUCCESS(lRetval, done);
