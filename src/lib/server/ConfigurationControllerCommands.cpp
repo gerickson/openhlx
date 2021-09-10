@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file...
+ *      This file implements objects for HLX server configuration data
+ *      model commands and their constituent requests and responses.
  *
  */
 
@@ -26,8 +27,10 @@
 
 #include <OpenHLX/Utilities/Assert.hpp>
 
+
 using namespace HLX::Common;
 using namespace HLX::Model;
+
 
 namespace HLX
 {
@@ -53,7 +56,8 @@ namespace Configuration
  *  @retval  kStatus_Success  If successful.
  *
  */
-Status QueryCurrentRequest :: Init(void)
+Status
+QueryCurrentRequest :: Init(void)
 {
     return (QueryCurrentRegularExpressionBasis::Init(*this));
 }
@@ -64,10 +68,13 @@ Status QueryCurrentRequest :: Init(void)
  *
  *  This initializes the query current command response buffer.
  *
- *  @retval  kStatus_Success  If successful.
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
  *
  */
-Status QueryCurrentResponse :: Init(void)
+Status
+QueryCurrentResponse :: Init(void)
 {
     static const char * const kConfigurationObject = "X";
 
@@ -86,7 +93,8 @@ Status QueryCurrentResponse :: Init(void)
  *  @retval  kStatus_Success  If successful.
  *
  */
-Status LoadFromBackupRequest :: Init(void)
+Status
+LoadFromBackupRequest :: Init(void)
 {
     return (LoadFromBackupRegularExpressionBasis::Init(*this));
 }
@@ -97,10 +105,13 @@ Status LoadFromBackupRequest :: Init(void)
  *
  *  This initializes the load from backup command response buffer.
  *
- *  @retval  kStatus_Success  If successful.
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
  *
  */
-Status LoadFromBackupResponse :: Init(void)
+Status
+LoadFromBackupResponse :: Init(void)
 {
     static const char * const kBuffer = "LOAD";
 
@@ -117,7 +128,8 @@ Status LoadFromBackupResponse :: Init(void)
  *  @retval  kStatus_Success  If successful.
  *
  */
-Status ResetToDefaultsRequest :: Init(void)
+Status
+ResetToDefaultsRequest :: Init(void)
 {
     return (ResetToDefaultsRegularExpressionBasis::Init(*this));
 }
@@ -128,10 +140,13 @@ Status ResetToDefaultsRequest :: Init(void)
  *
  *  This initializes the reset to defaults command response buffer.
  *
- *  @retval  kStatus_Success  If successful.
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
  *
  */
-Status ResetToDefaultsResponse :: Init(void)
+Status
+ResetToDefaultsResponse :: Init(void)
 {
     static const char * const kBuffer = "RESET";
 
@@ -148,7 +163,8 @@ Status ResetToDefaultsResponse :: Init(void)
  *  @retval  kStatus_Success  If successful.
  *
  */
-Status SaveToBackupRequest :: Init(void)
+Status
+SaveToBackupRequest :: Init(void)
 {
     return (SaveToBackupRegularExpressionBasis::Init(*this));
 }
@@ -159,10 +175,13 @@ Status SaveToBackupRequest :: Init(void)
  *
  *  This initializes the save to backup command response buffer.
  *
- *  @retval  kStatus_Success  If successful.
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
  *
  */
-Status SaveToBackupResponse :: Init(void)
+Status
+SaveToBackupResponse :: Init(void)
 {
     static const char * const kBuffer = "SAVE";
 
@@ -175,10 +194,13 @@ Status SaveToBackupResponse :: Init(void)
  *
  *  This initializes the saving to backup command response buffer.
  *
- *  @retval  kStatus_Success  If successful.
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
  *
  */
-Status SavingToBackupResponse :: Init(void)
+Status
+SavingToBackupResponse :: Init(void)
 {
     static const char * const kBuffer = "SAVING...";
 
