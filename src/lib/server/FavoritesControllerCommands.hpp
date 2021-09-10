@@ -96,7 +96,7 @@ public:
 
     using QueryResponseBasis::Init;
 
-    Common::Status Init(const Model::FavoriteModel::IdentifierType &aFavorite);
+    Common::Status Init(const Model::FavoriteModel::IdentifierType &aFavoriteIdentifier);
 };
 
 // MARK: Mutator Requests, Responses, and Commands
@@ -146,8 +146,11 @@ public:
     NameResponse(void) = default;
     virtual ~NameResponse(void) = default;
 
-    Common::Status Init(const Model::FavoriteModel::IdentifierType &aFavorite, const char * aName);
-    Common::Status Init(const Model::FavoriteModel::IdentifierType &aFavorite, const char * aName, const size_t &aNameLength);
+    Common::Status Init(const Model::FavoriteModel::IdentifierType &aFavoriteIdentifier,
+                        const char * aName);
+    Common::Status Init(const Model::FavoriteModel::IdentifierType &aFavoriteIdentifier,
+                        const char * aName,
+                        const size_t &aNameLength);
 };
 
 }; // namespace Favorites
