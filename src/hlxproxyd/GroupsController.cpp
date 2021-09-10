@@ -54,13 +54,6 @@ namespace HLX
 namespace Proxy
 {
 
-namespace Detail
-{
-
-typedef std::vector<ZoneModel::IdentifierType>   ZoneIdentifiers;
-
-};
-
 /**
  *  @brief
  *    This is the class default constructor.
