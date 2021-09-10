@@ -63,12 +63,28 @@ done:
 
 // MARK: Observers
 
+/**
+ *  @brief
+ *    Return the data model for the controller.
+ *
+ *  @returns
+ *    An immutable reference to the data model for the controller.
+ *
+ */
 Model::FrontPanelModel &
 FrontPanelControllerBasis :: GetModel(void)
 {
     return (mFrontPanelModel);
 }
 
+/**
+ *  @brief
+ *    Return the data model for the controller.
+ *
+ *  @returns
+ *    A mutable reference to the data model for the controller.
+ *
+ */
 const Model::FrontPanelModel &
 FrontPanelControllerBasis :: GetModel(void) const
 {
