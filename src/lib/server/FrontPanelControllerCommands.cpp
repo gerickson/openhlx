@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file...
+ *      This file implements objects for HLX server physical front panel
+ *      data model commands and their constituent requests and responses.
  *
  */
 
@@ -31,6 +32,7 @@
 
 
 using namespace HLX::Common;
+using namespace HLX::Model;
 
 
 namespace HLX
@@ -45,12 +47,32 @@ namespace Command
 namespace FrontPanel
 {
 
+/**
+ *  Front panel query command request regular expression pattern.
+ *
+ */
 const char * const QueryRequest::kRequestRegexp         = "QFPL";
+
+/**
+ *  Expected number of front panel query command request regular
+ *  expression pattern matches.
+ *
+ */
 const size_t       QueryRequest::kExpectedMatches       = 1;
 
 // MARK: Observer Requests, Responses, and Commands
 
-Status QueryRequest :: Init(void)
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the front panel query command request regular expression.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+QueryRequest :: Init(void)
 {
     Status       lRetval = kStatus_Success;
 
@@ -63,22 +85,72 @@ Status QueryRequest :: Init(void)
 
 // MARK: Front Panel Mutator Requests, Responses, and Commands
 
-Common::Status SetBrightnessRequest :: Init(void)
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the set front panel brightness command request regular expression.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+SetBrightnessRequest :: Init(void)
 {
     return (BrightnessRegularExpressionBasis::Init(*this));
 }
 
-Common::Status BrightnessResponse :: Init(const Model::FrontPanelModel::BrightnessType &aBrightness)
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the front panel brightness state command response buffer.
+ *
+ *  @param[in]  aBrightness  An immutable reference to the brightness level
+ *                           for which to form the response.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+BrightnessResponse :: Init(const Model::FrontPanelModel::BrightnessType &aBrightness)
 {
     return (BrightnessBufferBasis::Init(*this, aBrightness));
 }
 
-Common::Status SetLockedRequest :: Init(void)
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the set front panel locked state command request regular expression.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+SetLockedRequest :: Init(void)
 {
     return (LockedRegularExpressionBasis::Init(*this));
 }
 
-Common::Status LockedResponse :: Init(const Model::FrontPanelModel::LockedType &aLocked)
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the front panel locked state command response buffer.
+ *
+ *  @param[in]  aLocked  An immutable reference to the locked state
+ *                       for which to form the response.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+LockedResponse :: Init(const Model::FrontPanelModel::LockedType &aLocked)
 {
     return (LockedBufferBasis::Init(*this, aLocked));
 }
