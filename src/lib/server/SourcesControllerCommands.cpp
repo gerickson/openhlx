@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file...
+ *      This file implements objects for HLX server source data
+ *      model commands and their constituent requests and responses.
  *
  */
 
@@ -29,6 +30,7 @@
 
 using namespace HLX::Common;
 using namespace HLX::Model;
+
 
 namespace HLX
 {
@@ -48,22 +50,84 @@ static const char * const kSourceObject = "I";
 
 // MARK: Name Mutator Requests, Responses, and Commands
 
-Status SetNameRequest :: Init(void)
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the set name command request regular expression.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+SetNameRequest :: Init(void)
 {
     return (NameRegularExpressionBasis::Init(*this));
 }
 
-Status NameResponse :: Init(const Model::SourceModel::IdentifierType &aSource,
-                            const char * aName)
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the source name command response buffer.
+ *
+ *  @param[in]  aSourceIdentifier  An immutable reference
+ *                                 for the source identifier
+ *                                 for which to form the name
+ *                                 response.
+ *  @param[in]  aName              A pointer to the null-
+ *                                 terminated C string of the
+ *                                 source name for
+ *                                 which to form the
+ *                                 response.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+NameResponse :: Init(const Model::SourceModel::IdentifierType &aSourceIdentifier,
+                     const char * aName)
 {
-    return (NameSetResponseBasis::Init(kSourceObject, aSource, aName));
+    return (NameSetResponseBasis::Init(kSourceObject,
+                                       aSourceIdentifier,
+                                       aName));
 }
 
-Status NameResponse :: Init(const Model::SourceModel::IdentifierType &aSource,
-                            const char * aName,
-                            const size_t &aNameLength)
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the source name command response buffer.
+ *
+ *  @param[in]  aSourceIdentifier  An immutable reference
+ *                                 for the source
+ *                                 identifier for which to
+ *                                 form the name response.
+ *  @param[in]  aName              A pointer to the null-
+ *                                 terminated C string of the
+ *                                 source name for
+ *                                 which to form the
+ *                                 response.
+ *  @param[in]  aNameLength        An immutable reference to
+ *                                 the length, in bytes, of
+ *                                 @a aName.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+NameResponse :: Init(const Model::SourceModel::IdentifierType &aSourceIdentifier,
+                     const char * aName,
+                     const size_t &aNameLength)
 {
-    return (NameSetResponseBasis::Init(kSourceObject, aSource, aName, aNameLength));
+    return (NameSetResponseBasis::Init(kSourceObject,
+                                       aSourceIdentifier,
+                                       aName,
+                                       aNameLength));
 }
 
 }; // namespace Sources

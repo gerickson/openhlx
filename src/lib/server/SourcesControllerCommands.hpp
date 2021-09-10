@@ -92,8 +92,11 @@ public:
     NameResponse(void) = default;
     virtual ~NameResponse(void) = default;
 
-    Common::Status Init(const Model::SourceModel::IdentifierType &aSource, const char * aName);
-    Common::Status Init(const Model::SourceModel::IdentifierType &aSource, const char * aName, const size_t &aNameLength);
+    Common::Status Init(const Model::SourceModel::IdentifierType &aSourceIdentifier,
+                        const char * aName);
+    Common::Status Init(const Model::SourceModel::IdentifierType &aSourceIdentifier,
+                        const char * aName,
+                        const size_t &aNameLength);
 };
 
 }; // namespace Sources
