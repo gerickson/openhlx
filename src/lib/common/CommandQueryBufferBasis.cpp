@@ -128,7 +128,8 @@ QueryBufferBasis :: Init(BufferBasis &aBuffer,
  *    This is a class initializer.
  *
  *  This initializes an object observation (that is, query) operation
- *  against a specific object into the specified command buffer.
+ *  against a specific object, object property, and object identifier
+ *  into the specified command buffer.
  *
  *  @param[in,out]  aBuffer      A mutable reference to the command
  *                               buffer to compose the observation
@@ -175,7 +176,8 @@ QueryBufferBasis :: Init(BufferBasis &aBuffer,
  *    This is a class initializer.
  *
  *  This initializes an object observation (that is, query) operation
- *  against a specific object into the specified command buffer.
+ *  against a specific object, object property, and object identifier
+ *  into the specified command buffer.
  *
  *  @param[in,out]  aBuffer      A mutable reference to the command
  *                               buffer to compose the observation
