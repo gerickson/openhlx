@@ -31,6 +31,7 @@
 using namespace HLX::Common;
 using namespace HLX::Model;
 
+
 namespace HLX
 {
 
@@ -47,36 +48,126 @@ static const char * const kFavoriteObject = "F";
 
 // MARK: Observer Requests, Responses, and Commands
 
-Status QueryRequest :: Init(void)
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the favorite query command request regular expression.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+QueryRequest :: Init(void)
 {
     return (QueryRegularExpressionBasis::Init(*this));
 }
 
-Status QueryResponse :: Init(const Model::FavoriteModel::IdentifierType &aFavorite)
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the favorite query command response buffer.
+ *
+ *  @param[in]  aFavoriteIdentifier  An immutable reference to the
+ *                                   identifier of the favorite to
+ *                                   query.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+QueryResponse :: Init(const Model::FavoriteModel::IdentifierType &aFavoriteIdentifier)
 {
-    return (QueryResponseBasis::Init(kFavoriteObject, aFavorite));
+    return (QueryResponseBasis::Init(kFavoriteObject, aFavoriteIdentifier));
 }
 
 // MARK: Mutator Requests, Responses, and Commands
 
 // MARK: Name Mutator Requests, Responses, and Commands
 
-Status SetNameRequest :: Init(void)
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the set name command request regular expression.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+SetNameRequest :: Init(void)
 {
     return (NameRegularExpressionBasis::Init(*this));
 }
 
-Status NameResponse :: Init(const Model::FavoriteModel::IdentifierType &aFavorite, const char * aName)
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the favorite name command response
+ *  buffer.
+ *
+ *  @param[in]  aFavoriteIdentifier  An immutable reference
+ *                                          for the favorite
+ *                                          identifier for which to
+ *                                          form the name response.
+ *  @param[in]  aName                       A pointer to the null-
+ *                                          terminated C string of the
+ *                                          favorite name for
+ *                                          which to form the
+ *                                          response.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+NameResponse :: Init(const Model::FavoriteModel::IdentifierType &aFavoriteIdentifier,
+                     const char * aName)
 {
-    return (NameSetResponseBasis::Init(kFavoriteObject, aFavorite, aName));
+    return (NameSetResponseBasis::Init(kFavoriteObject,
+                                       aFavoriteIdentifier,
+                                       aName));
 }
 
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the favorite name command response
+ *  buffer.
+ *
+ *  @param[in]  aFavoriteIdentifier  An immutable reference
+ *                                   for the favorite
+ *                                   identifier for which to
+ *                                   form the name response.
+ *  @param[in]  aName                A pointer to the null-
+ *                                   terminated C string of the
+ *                                   favorite name for
+ *                                   which to form the
+ *                                   response.
+ *  @param[in]  aNameLength          An immutable reference to
+ *                                   the length, in bytes, of
+ *                                   @a aName.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
 Status
-NameResponse :: Init(const Model::FavoriteModel::IdentifierType &aFavorite,
+NameResponse :: Init(const Model::FavoriteModel::IdentifierType &aFavoriteIdentifier,
                      const char * aName,
                      const size_t &aNameLength)
 {
-    return (NameSetResponseBasis::Init(kFavoriteObject, aFavorite, aName, aNameLength));
+    return (NameSetResponseBasis::Init(kFavoriteObject,
+                                       aFavoriteIdentifier,
+                                       aName,
+                                       aNameLength));
 }
 
 }; // namespace Favorites
