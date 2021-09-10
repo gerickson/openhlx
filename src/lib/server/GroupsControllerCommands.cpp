@@ -174,7 +174,7 @@ ToggleMuteRequest :: Init(void)
  *                                group for which the volume mute
  *                                state was set.
  *  @param[in]  aMute             An immutable reference to the volume
- *                                state that was set.
+ *                                mute state that was set.
  *
  *  @retval  kStatus_Success              If successful.
  *  @retval  -ENOMEM                      If memory could not be allocated.
