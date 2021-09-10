@@ -132,6 +132,15 @@ ZonesControllerBasis :: ValidateIdentifier(const IdentifierType &aZoneIdentifier
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the zones controller basis.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
 Status
 ZonesControllerBasis :: Init(void)
 {

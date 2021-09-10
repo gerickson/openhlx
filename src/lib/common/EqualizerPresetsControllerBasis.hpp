@@ -73,6 +73,11 @@ protected:
     Common::Status Init(void);
 
 protected:
+    /**
+     *  The equalizer presets collection model for all client and
+     *  server controllers.
+     *
+     */
     Model::EqualizerPresetsModel mEqualizerPresets;
 
 protected:

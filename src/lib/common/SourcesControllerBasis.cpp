@@ -131,6 +131,15 @@ SourcesControllerBasis :: ValidateIdentifier(const IdentifierType &aSourceIdenti
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the sources controller basis.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
 Status
 SourcesControllerBasis :: Init(void)
 {

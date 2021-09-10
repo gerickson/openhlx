@@ -135,6 +135,15 @@ EqualizerPresetsControllerBasis :: ValidateIdentifier(const IdentifierType &aEqu
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the equalizer presets controller basis.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
 Status
 EqualizerPresetsControllerBasis :: Init(void)
 {

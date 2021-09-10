@@ -132,6 +132,15 @@ FavoritesControllerBasis :: ValidateIdentifier(const IdentifierType &aFavoriteId
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the favorites controller basis.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
 Status
 FavoritesControllerBasis :: Init(void)
 {

@@ -40,6 +40,15 @@ namespace Common
 
 // MARK: Initializer(s)
 
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the network interface controller basis.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
 Status
 NetworkControllerBasis :: Init(void)
 {

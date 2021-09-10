@@ -132,6 +132,15 @@ GroupsControllerBasis :: ValidateIdentifier(const IdentifierType &aGroupIdentifi
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the groups controller basis.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
 Status
 GroupsControllerBasis :: Init(void)
 {
