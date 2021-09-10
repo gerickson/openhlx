@@ -168,6 +168,10 @@ done:
  *  @retval  kError_NotInitialized  If the infrared model has
  *                                  not been completely and successfully
  *                                  initialized.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
  *
  */
 Status
@@ -193,7 +197,29 @@ InfraredControllerBasis :: HandleQueryReceived(Common::ConnectionBuffer::Mutable
 
 // MARK: Command Response Class (Static) Handlers
 
-Status
+/**
+ *  @brief
+ *    Handle and generate the server command response for a infrared
+ *    disabled state request.
+ *
+ *  This handles and generates the server command response for an
+ *  infrared disabled state request.
+ *
+ *  @param[in]      aDisabled  An immutable reference to the infrared
+ *                             disabled state for which the response
+ *                             is to be formed.
+ *  @param[in,out]  aBuffer    A mutable reference to the shared
+ *                             pointer into which the response is to
+ *                             be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
 InfraredControllerBasis :: HandleDisabledResponse(const InfraredModel::DisabledType &aDisabled, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     Server::Command::Infrared::DisabledResponse  lDisabledResponse;
