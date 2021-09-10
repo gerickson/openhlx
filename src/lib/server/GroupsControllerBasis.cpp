@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file implements an object for...
+ *      This file implements a derivable object for realizing a HLX
+ *      groups controller, in a server.
  *
  */
 
@@ -95,7 +96,20 @@ Server::Command::Groups::ToggleMuteRequest      GroupsControllerBasis::kToggleMu
 
 /**
  *  @brief
- *    This is the class default constructor.
+ *    This is a class constructor.
+ *
+ *  This constructs the groups controller with the specified groups
+ *  collection model and the maximum number of allowed groups.
+ *
+ *  @param[in]  aGroupsModel  A mutable reference to the groups
+ *                            collection model to construct the
+ *                            controller with. This is retained by a
+ *                            weak pointer reference and,
+ *                            consequently, must remain in scope for
+ *                            the lifetime of the controller.
+ *  @param[in]  aGroupsMax    An immutable reference to the maximum
+ *                            number of allowed groups managed by the
+ *                            controller.
  *
  */
 GroupsControllerBasis :: GroupsControllerBasis(Model::GroupsModel &aGroupsModel,
@@ -119,6 +133,25 @@ GroupsControllerBasis :: ~GroupsControllerBasis(void)
 
 // MARK: Initializer(s)
 
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the class with the specified command manager.
+ *
+ *  @param[in]  aCommandManager  A reference to the command manager
+ *                               instance to initialize the controller
+ *                               with.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -EINVAL                      If an internal parameter was
+ *                                        invalid.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_NotInitialized        The base class was not properly
+ *                                        initialized.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
 Status
 GroupsControllerBasis :: Init(CommandManager &aCommandManager)
 {
@@ -135,6 +168,8 @@ GroupsControllerBasis :: Init(CommandManager &aCommandManager)
 done:
     return (lRetval);
 }
+
+// MARK: Implementation
 
 Status
 GroupsControllerBasis :: RequestInit(void)
@@ -185,10 +220,31 @@ done:
 
 // MARK: Observation (Query) Command Request Instance Handlers
 
+/**
+ *  @brief
+ *    Handle and generate the server command response for a group
+ *    query request of all groups.
+ *
+ *  This handles and generates the server command response for a
+ *  group query request of all groups.
+ *
+ *  @param[in,out]  aBuffer  A mutable reference to the shared
+ *                           pointer into which the response is to be
+ *                           generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  kError_NotInitialized  If the groups model has
+ *                                  not been completely and successfully
+ *                                  initialized.
+ *  @retval  -ERANGE                If a group identifier is smaller
+ *                                  or larger than supported.
+ *
+ */
 Status
 GroupsControllerBasis :: HandleQueryReceived(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     Status lRetval = kStatus_Success;
+
 
     for (auto lGroupIdentifier = IdentifierModel::kIdentifierMin; lGroupIdentifier <= mGroupsMax; lGroupIdentifier++)
     {
@@ -200,8 +256,33 @@ GroupsControllerBasis :: HandleQueryReceived(Common::ConnectionBuffer::MutableCo
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Handle and generate the server command response for a group
+ *    query request of a specific group.
+ *
+ *  This handles and generates the server command response for a
+ *  group query request of a specific group.
+ *
+ *  @param[in]      aGroupIdentifier  An immutable reference
+ *                                    to the identifier of the
+ *                                    group queried.
+ *  @param[in,out]  aBuffer           A mutable reference to
+ *                                    the shared pointer into
+ *                                    which the response is
+ *                                    to be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  kError_NotInitialized  If the groups model has
+ *                                  not been completely and successfully
+ *                                  initialized.
+ *  @retval  -ERANGE                If a group identifier is smaller
+ *                                  or larger than supported.
+ *
+ */
 Status
-GroupsControllerBasis :: HandleQueryReceived(const Model::GroupModel::IdentifierType &aGroupIdentifier, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+GroupsControllerBasis :: HandleQueryReceived(const Model::GroupModel::IdentifierType &aGroupIdentifier,
+                                             Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     const GroupModel *                     lGroupModel;
     const char *                           lName;
@@ -268,7 +349,6 @@ GroupsControllerBasis :: HandleQueryReceived(const Model::GroupModel::Identifier
  done:
     return (lRetval);
 }
-
 
 // MARK: Observation (Query) Command Request Class (Static) Handlers
 

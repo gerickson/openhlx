@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file implements an object for...
+ *      This file implements a derivable object for realizing a HLX
+ *      equalizer presets controller, in a server.
  *
  */
 
@@ -65,7 +66,24 @@ Server::Command::EqualizerPresets::SetNameRequest       EqualizerPresetsControll
 
 /**
  *  @brief
- *    This is the class default constructor.
+ *    This is a class constructor.
+ *
+ *  This constructs the equalizer presets controller with the
+ *  specified equalizer presets collection model and the maximum
+ *  number of allowed equalizer presets.
+ *
+ *  @param[in]  aEqualizerPresetsModel  A mutable reference to the
+ *                                      equalizer presets collection
+ *                                      model to construct the
+ *                                      controller with. This is
+ *                                      retained by a weak pointer
+ *                                      reference and, consequently,
+ *                                      must remain in scope for the
+ *                                      lifetime of the controller.
+ *  @param[in]  aEqualizerPresetsMax    An immutable reference to the
+ *                                      maximum number of allowed
+ *                                      equalizer presets managed by
+ *                                      the controller.
  *
  */
 EqualizerPresetsControllerBasis :: EqualizerPresetsControllerBasis(Model::EqualizerPresetsModel &aEqualizerPresetsModel,
@@ -89,6 +107,25 @@ EqualizerPresetsControllerBasis :: ~EqualizerPresetsControllerBasis(void)
 
 // MARK: Initializer(s)
 
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the class with the specified command manager.
+ *
+ *  @param[in]  aCommandManager  A reference to the command manager
+ *                               instance to initialize the controller
+ *                               with.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -EINVAL                      If an internal parameter was
+ *                                        invalid.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_NotInitialized        The base class was not properly
+ *                                        initialized.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
 Status
 EqualizerPresetsControllerBasis :: Init(CommandManager &aCommandManager)
 {
@@ -105,6 +142,8 @@ EqualizerPresetsControllerBasis :: Init(CommandManager &aCommandManager)
 done:
     return (lRetval);
 }
+
+// MARK: Implementation
 
 Status
 EqualizerPresetsControllerBasis :: RequestInit(void)
@@ -137,6 +176,26 @@ done:
 
 // MARK: Observation (Query) Command Request Instance Handlers
 
+/**
+ *  @brief
+ *    Handle and generate the server command response for an equalizer
+ *    preset query request of all equalizer presets.
+ *
+ *  This handles and generates the server command response for an
+ *  equalizer preset query request of all equalizer presets.
+ *
+ *  @param[in,out]  aBuffer  A mutable reference to the shared
+ *                           pointer into which the response is to be
+ *                           generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  kError_NotInitialized  If the equalizer presets model has
+ *                                  not been completely and successfully
+ *                                  initialized.
+ *  @retval  -ERANGE                If an equalizer preset identifier is
+ *                                  smaller or larger than supported.
+ *
+ */
 Status
 EqualizerPresetsControllerBasis :: HandleQueryReceived(ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
@@ -153,9 +212,34 @@ EqualizerPresetsControllerBasis :: HandleQueryReceived(ConnectionBuffer::Mutable
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Handle and generate the server command response for an equalizer
+ *    preset query request of a specific equalizer preset.
+ *
+ *  This handles and generates the server command response for an
+ *  equalizer preset query request of a specific equalizer preset.
+ *
+ *  @param[in]      aEqualizerPresetIdentifier  An immutable reference
+ *                                              to the identifier of
+ *                                              the equalizer preset
+ *                                              queried.
+ *  @param[in,out]  aBuffer                     A mutable reference to
+ *                                              the shared pointer into
+ *                                              which the response is
+ *                                              to be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  kError_NotInitialized  If the equalizer presets model has
+ *                                  not been completely and successfully
+ *                                  initialized.
+ *  @retval  -ERANGE                If an equalizer preset identifier is
+ *                                  smaller or larger than supported.
+ *
+ */
 Status
 EqualizerPresetsControllerBasis :: HandleQueryReceived(const Model::EqualizerPresetModel::IdentifierType &aEqualizerPresetIdentifier,
-                                                       ConnectionBuffer::MutableCountedPointer &aBuffer) const
+                                                       Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     const EqualizerPresetModel *                     lEqualizerPresetModel;
     const char *                                     lName;
@@ -172,6 +256,8 @@ EqualizerPresetsControllerBasis :: HandleQueryReceived(const Model::EqualizerPre
     lRetval = mEqualizerPresetsModel.GetEqualizerPreset(aEqualizerPresetIdentifier, lEqualizerPresetModel);
     nlREQUIRE_SUCCESS(lRetval, done);
 
+    // Name Response
+
     lRetval = lEqualizerPresetModel->GetName(lName);
     nlREQUIRE_SUCCESS(lRetval, done);
 
@@ -183,6 +269,8 @@ EqualizerPresetsControllerBasis :: HandleQueryReceived(const Model::EqualizerPre
 
     lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
     nlREQUIRE_SUCCESS(lRetval, done);
+
+    // Band Response
 
     for (lEqualizerBandIdentifier = IdentifierModel::kIdentifierMin; lEqualizerBandIdentifier <= EqualizerBandsModel::kEqualizerBandsMax; lEqualizerBandIdentifier++)
     {
@@ -212,7 +300,39 @@ EqualizerPresetsControllerBasis :: HandleQueryReceived(const Model::EqualizerPre
 
 // MARK: Command Response Class (Static) Handlers
 
-Status
+/**
+ *  @brief
+ *    Handle and generate the server command response into the
+ *    specified buffer with the specified equalizer band identifier at
+ *    the provided level within the specified equalizer preset
+ *    identifier.
+ *
+ *  @param[in]      aEqualizerPresetIdentifier  A reference to the
+ *                                              specific equalizer
+ *                                              preset identifier
+ *                                              for which the response
+ *                                              buffer is to be
+ *                                              formed.
+ *  @param[in]      aEqualizerBandIdentifier    A reference to the
+ *                                              specific equalizer
+ *                                              band identifier
+ *                                              for which the response
+ *                                              buffer is to be formed.
+ *  @param[in]      aBandLevel                  An immutable reference
+ *                                              to the equalizer band
+ *                                              level for which the
+ *                                              response buffer is to
+ *                                              be formed.
+ *  @param[in,out]  aBuffer                     A mutable reference to
+ *                                              the shared pointer
+ *                                              into which the
+ *                                              response is to be
+ *                                              generated.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+/* static */ Status
 EqualizerPresetsControllerBasis :: HandleBandResponse(const Model::EqualizerPresetModel::IdentifierType &aEqualizerPresetIdentifier,
                                                       const EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier,
                                                       const EqualizerBandModel::LevelType &aBandLevel,

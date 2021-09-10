@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file implements an object for...
+ *      This file implements a derivable object for realizing a HLX
+ *      favorites controller, in a server.
  *
  */
 
@@ -52,7 +53,22 @@ Server::Command::Favorites::SetNameRequest  FavoritesControllerBasis::kSetNameRe
 
 /**
  *  @brief
- *    This is the class default constructor.
+ *    This is a class constructor.
+ *
+ *  This constructs the favorites controller with the specified
+ *  favorites collection model and the maximum number of allowed
+ *  favorites.
+ *
+ *  @param[in]  aFavoritesModel  A mutable reference to the
+ *                               favorites collection model to
+ *                               construct the controller with. This
+ *                               is retained by a weak pointer
+ *                               reference and, consequently, must
+ *                               remain in scope for the lifetime of
+ *                               the controller.
+ *  @param[in]  aFavoritesMax    An immutable reference to the
+ *                               maximum number of allowed favorites
+ *                               managed by the controller.
  *
  */
 FavoritesControllerBasis :: FavoritesControllerBasis(Model::FavoritesModel &aFavoritesModel,
@@ -76,6 +92,25 @@ FavoritesControllerBasis :: ~FavoritesControllerBasis(void)
 
 // MARK: Initializer(s)
 
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the class with the specified command manager.
+ *
+ *  @param[in]  aCommandManager  A reference to the command manager
+ *                               instance to initialize the controller
+ *                               with.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -EINVAL                      If an internal parameter was
+ *                                        invalid.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_NotInitialized        The base class was not properly
+ *                                        initialized.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
 Status
 FavoritesControllerBasis :: Init(CommandManager &aCommandManager)
 {
@@ -92,6 +127,8 @@ FavoritesControllerBasis :: Init(CommandManager &aCommandManager)
 done:
     return (lRetval);
 }
+
+// MARK: Implementation
 
 Status
 FavoritesControllerBasis :: RequestInit(void)
@@ -115,6 +152,26 @@ done:
 
 // MARK: Observation (Query) Command Request Instance Handlers
 
+/**
+ *  @brief
+ *    Handle and generate the server command response for a favorite
+ *    query request of all favorites.
+ *
+ *  This handles and generates the server command response for a
+ *  favorite query request of all favorites.
+ *
+ *  @param[in,out]  aBuffer  A mutable reference to the shared
+ *                           pointer into which the response is to be
+ *                           generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  kError_NotInitialized  If the favorites model has not
+ *                                  been completely and successfully
+ *                                  initialized.
+ *  @retval  -ERANGE                If a favorite identifier is
+ *                                  smaller or larger than supported.
+ *
+ */
 Status
 FavoritesControllerBasis :: HandleQueryReceived(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
@@ -131,12 +188,36 @@ FavoritesControllerBasis :: HandleQueryReceived(Common::ConnectionBuffer::Mutabl
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Handle and generate the server command response for a favorite
+ *    query request of a specific favorite.
+ *
+ *  This handles and generates the server command response for a
+ *  favorite query request of a specific favorite.
+ *
+ *  @param[in]      aFavoriteIdentifier  An immutable reference
+ *                                       to the identifier of
+ *                                       the favorite queried.
+ *  @param[in,out]  aBuffer              A mutable reference to
+ *                                       the shared pointer into
+ *                                       which the response is
+ *                                       to be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  kError_NotInitialized  If the favorites model has not
+ *                                  been completely and successfully
+ *                                  initialized.
+ *  @retval  -ERANGE                If a favorite identifier is
+ *                                  smaller or larger than supported.
+ *
+ */
 Status
 FavoritesControllerBasis :: HandleQueryReceived(const Model::FavoriteModel::IdentifierType &aFavoriteIdentifier, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     const FavoriteModel *                     lFavoriteModel;
     const char *                              lName;
-    Server::Command::Favorites::NameResponse  lResponse;
+    Server::Command::Favorites::NameResponse  lNameResponse;
     const uint8_t *                           lBuffer;
     size_t                                    lSize;
     Status                                    lRetval;
@@ -148,11 +229,11 @@ FavoritesControllerBasis :: HandleQueryReceived(const Model::FavoriteModel::Iden
     lRetval = lFavoriteModel->GetName(lName);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = lResponse.Init(aFavoriteIdentifier, lName);
+    lRetval = lNameResponse.Init(aFavoriteIdentifier, lName);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lBuffer = lResponse.GetBuffer();
-    lSize = lResponse.GetSize();
+    lBuffer = lNameResponse.GetBuffer();
+    lSize = lNameResponse.GetSize();
 
     lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
     nlREQUIRE_SUCCESS(lRetval, done);

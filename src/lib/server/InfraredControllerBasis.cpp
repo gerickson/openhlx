@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file implements an object for...
+ *      This file implements a derivable object for realizing a HLX
+ *      infrared remote control interface controller, in a server.
  *
  */
 
@@ -52,7 +53,17 @@ Server::Command::Infrared::SetDisabledRequest  InfraredControllerBasis::kSetDisa
 
 /**
  *  @brief
- *    This is the class default constructor.
+ *    This is a class constructor.
+ *
+ *  This constructs the infrared controller with the specified
+ *  infrared model.
+ *
+ *  @param[in]  aInfraredModel  A mutable reference to the infrared
+ *                              model to construct the controller
+ *                              with. This is retained by a weak
+ *                              pointer reference and, consequently,
+ *                              must remain in scope for the lifetime
+ *                              of the controller.
  *
  */
 InfraredControllerBasis :: InfraredControllerBasis(Model::InfraredModel &aInfraredModel) :
@@ -74,6 +85,25 @@ InfraredControllerBasis :: ~InfraredControllerBasis(void)
 
 // MARK: Initializer(s)
 
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the class with the specified command manager.
+ *
+ *  @param[in]  aCommandManager  A reference to the command manager
+ *                               instance to initialize the controller
+ *                               with.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -EINVAL                      If an internal parameter was
+ *                                        invalid.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_NotInitialized        The base class was not properly
+ *                                        initialized.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
 Status
 InfraredControllerBasis :: Init(CommandManager &aCommandManager)
 {
@@ -90,6 +120,8 @@ InfraredControllerBasis :: Init(CommandManager &aCommandManager)
 done:
     return (lRetval);
 }
+
+// MARK: Implementation
 
 Status
 InfraredControllerBasis :: RequestInit(void)
@@ -113,6 +145,24 @@ done:
 
 // MARK: Observation (Query) Command Request Instance Handlers
 
+/**
+ *  @brief
+ *    Handle and generate the server command response for an infrared
+ *    query request.
+ *
+ *  This handles and generates the server command response for an
+ *  infrared query request.
+ *
+ *  @param[in,out]  aBuffer  A mutable reference to the shared
+ *                           pointer into which the response is to be
+ *                           generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  kError_NotInitialized  If the infrared model has
+ *                                  not been completely and successfully
+ *                                  initialized.
+ *
+ */
 Status
 InfraredControllerBasis :: HandleQueryReceived(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {

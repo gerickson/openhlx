@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file defines an object for...
+ *      This file defines a derivable object for realizing a HLX
+ *      groups controller, in a server.
  *
  */
 

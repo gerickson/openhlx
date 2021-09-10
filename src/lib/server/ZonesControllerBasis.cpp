@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file implements an object for...
+ *      This file implements a derivable object for realizing a HLX
+ *      zones controller, in a server.
  *
  */
 
@@ -156,7 +157,20 @@ Server::Command::Zones::ToggleMuteRequest             ZonesControllerBasis::kTog
 
 /**
  *  @brief
- *    This is the class default constructor.
+ *    This is a class constructor.
+ *
+ *  This constructs the zones controller with the specified zones
+ *  collection model and the maximum number of allowed zones.
+ *
+ *  @param[in]  aZonesModel  A mutable reference to the zones
+ *                           collection model to construct the
+ *                           controller with. This is retained by a
+ *                           weak pointer reference and, consequently,
+ *                           must remain in scope for the lifetime of
+ *                           the controller.
+ *  @param[in]  aZonesMax    An immutable reference to the maximum
+ *                           number of allowed zones managed by the
+ *                           controller.
  *
  */
 ZonesControllerBasis :: ZonesControllerBasis(Model::ZonesModel &aZonesModel,
@@ -180,6 +194,25 @@ ZonesControllerBasis :: ~ZonesControllerBasis(void)
 
 // MARK: Initializer(s)
 
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the class with the specified command manager.
+ *
+ *  @param[in]  aCommandManager  A reference to the command manager
+ *                               instance to initialize the controller
+ *                               with.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -EINVAL                      If an internal parameter was
+ *                                        invalid.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_NotInitialized        The base class was not properly
+ *                                        initialized.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
 Status
 ZonesControllerBasis :: Init(CommandManager &aCommandManager)
 {
@@ -196,6 +229,8 @@ ZonesControllerBasis :: Init(CommandManager &aCommandManager)
 done:
     return (lRetval);
 }
+
+// MARK: Implementation
 
 Status
 ZonesControllerBasis :: RequestInit(void)
@@ -297,14 +332,41 @@ done:
 
 // MARK: Observation (Query) Command Request Instance Handlers
 
+/**
+ *  @brief
+ *    Handle and generate the server command response for a zone query
+ *    request of all zones.
+ *
+ *  This handles and generates the server command response for a zone
+ *  query request of all zones.
+ *
+ *  @param[in]      aIsConfiguration  An immutable reference to a Boolean
+ *                                    indicating whether the query
+ *                                    request is coming from a query
+ *                                    current configuration (true) or
+ *                                    a zone query (false) request.
+ *  @param[in,out]  aBuffer           A mutable reference to the shared
+ *                                    pointer into which the response is
+ *                                    to be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  kError_NotInitialized  If the zones model has
+ *                                  not been completely and successfully
+ *                                  initialized.
+ *  @retval  -ERANGE                If a zone identifier is smaller
+ *                                  or larger than supported.
+ *
+ */
 Status
-ZonesControllerBasis :: HandleQueryReceived(const bool &aIsConfiguration, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer) const
+ZonesControllerBasis :: HandleQueryReceived(const bool &aIsConfiguration,
+                                            Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     Status lRetval = kStatus_Success;
 
+
     for (auto lZoneIdentifier = IdentifierModel::kIdentifierMin; lZoneIdentifier <= mZonesMax; lZoneIdentifier++)
     {
-        lRetval = HandleQueryReceived(aIsConfiguration, lZoneIdentifier, aOutputBuffer);
+        lRetval = HandleQueryReceived(aIsConfiguration, lZoneIdentifier, aBuffer);
         nlREQUIRE_SUCCESS(lRetval, done);
     }
 
@@ -312,8 +374,37 @@ ZonesControllerBasis :: HandleQueryReceived(const bool &aIsConfiguration, Common
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Handle and generate the server command response for a zone query
+ *    request of a specific zone.
+ *
+ *  This handles and generates the server command response for a zone
+ *  query request of a specific zone.
+ *
+ *  @param[in]      aIsConfiguration  An immutable reference to a Boolean
+ *                                    indicating whether the query
+ *                                    request is coming from a query
+ *                                    current configuration (true) or
+ *                                    a zone query (false) request.
+ *  @param[in]      aZoneIdentifier   An immutable reference to the
+ *                                    identifier of the zone queried.
+ *  @param[in,out]  aBuffer           A mutable reference to the
+ *                                    shared pointer into which the
+ *                                    response is to be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  kError_NotInitialized  If the zones model has not been
+ *                                  completely and successfully
+ *                                  initialized.
+ *  @retval  -ERANGE                If a zone identifier is smaller
+ *                                  or larger than supported.
+ *
+ */
 Status
-ZonesControllerBasis :: HandleQueryReceived(const bool &aIsConfiguration, const Model::ZoneModel::IdentifierType &aZoneIdentifier, ConnectionBuffer::MutableCountedPointer &aOutputBuffer) const
+ZonesControllerBasis :: HandleQueryReceived(const bool &aIsConfiguration,
+                                            const Model::ZoneModel::IdentifierType &aZoneIdentifier,
+                                            ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     const ZoneModel *                        lZoneModel;
     const char *                             lName;
@@ -339,35 +430,35 @@ ZonesControllerBasis :: HandleQueryReceived(const bool &aIsConfiguration, const 
     lBuffer = lNameResponse.GetBuffer();
     lSize = lNameResponse.GetSize();
 
-    lRetval = Common::Utilities::Put(*aOutputBuffer.get(), lBuffer, lSize);
+    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // Source Response
 
-    lRetval = HandleQuerySourceReceived(aZoneIdentifier, *lZoneModel, aOutputBuffer);
+    lRetval = HandleQuerySourceReceived(aZoneIdentifier, *lZoneModel, aBuffer);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // Volume Response
 
-    lRetval = HandleQueryVolumeReceived(aZoneIdentifier, *lZoneModel, aOutputBuffer);
+    lRetval = HandleQueryVolumeReceived(aZoneIdentifier, *lZoneModel, aBuffer);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // Volume Fixed Response (include if for configuration)
 
     if (aIsConfiguration)
     {
-        lRetval = HandleQueryVolumeFixed(aZoneIdentifier, *lZoneModel, aOutputBuffer);
+        lRetval = HandleQueryVolumeFixed(aZoneIdentifier, *lZoneModel, aBuffer);
         nlREQUIRE_SUCCESS(lRetval, done);
     }
 
     // Mute Response
 
-    lRetval = HandleQueryMuteReceived(aZoneIdentifier, *lZoneModel, aOutputBuffer);
+    lRetval = HandleQueryMuteReceived(aZoneIdentifier, *lZoneModel, aBuffer);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // Sound Mode Response
 
-    lRetval = HandleQuerySoundMode(aZoneIdentifier, *lZoneModel, aOutputBuffer);
+    lRetval = HandleQuerySoundMode(aZoneIdentifier, *lZoneModel, aBuffer);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // Balance Response
@@ -381,7 +472,7 @@ ZonesControllerBasis :: HandleQueryReceived(const bool &aIsConfiguration, const 
     lBuffer = lBalanceResponse.GetBuffer();
     lSize = lBalanceResponse.GetSize();
 
-    lRetval = Common::Utilities::Put(*aOutputBuffer.get(), lBuffer, lSize);
+    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
     nlREQUIRE_SUCCESS(lRetval, done);
 
  done:
@@ -446,8 +537,8 @@ ZonesControllerBasis :: HandleQueryVolumeReceived(const Model::ZoneModel::Identi
 
 Status
 ZonesControllerBasis :: HandleQueryEqualizerPreset(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
-                                              const ZoneModel &aZoneModel,
-                                              ConnectionBuffer::MutableCountedPointer &aBuffer)
+                                                   const ZoneModel &aZoneModel,
+                                                   ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     EqualizerPresetModel::IdentifierType  lEqualizerPresetIdentifier;
     Status                                lRetval;

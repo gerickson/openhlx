@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file implements an object for...
+ *      This file implements a derivable object for realizing a HLX
+ *      physical front panel controller, in a server.
  *
  */
 
@@ -57,7 +58,17 @@ Server::Command::FrontPanel::SetLockedRequest      FrontPanelControllerBasis::kS
 
 /**
  *  @brief
- *    This is the class default constructor.
+ *    This is a class constructor.
+ *
+ *  This constructs the front panels controller with the specified
+ *  front panel model.
+ *
+ *  @param[in]  aFrontPanelModel  A mutable reference to the front
+ *                                panel model to construct the
+ *                                controller with. This is retained by
+ *                                a weak pointer reference and,
+ *                                consequently, must remain in scope
+ *                                for the lifetime of the controller.
  *
  */
 FrontPanelControllerBasis :: FrontPanelControllerBasis(Model::FrontPanelModel &aFrontPanelModel) :
@@ -79,6 +90,25 @@ FrontPanelControllerBasis :: ~FrontPanelControllerBasis(void)
 
 // MARK: Initializer(s)
 
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the class with the specified command manager.
+ *
+ *  @param[in]  aCommandManager  A reference to the command manager
+ *                               instance to initialize the controller
+ *                               with.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -EINVAL                      If an internal parameter was
+ *                                        invalid.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_NotInitialized        The base class was not properly
+ *                                        initialized.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
 Status
 FrontPanelControllerBasis :: Init(CommandManager &aCommandManager)
 {
@@ -95,6 +125,8 @@ FrontPanelControllerBasis :: Init(CommandManager &aCommandManager)
 done:
     return (lRetval);
 }
+
+// MARK: Implementation
 
 Status
 FrontPanelControllerBasis :: RequestInit(void)
@@ -121,6 +153,26 @@ done:
 
 // MARK: Observation (Query) Command Request Instance Handlers
 
+/**
+ *  @brief
+ *    Handle and generate the server command response for a front panel
+ *    query request.
+ *
+ *  This handles and generates the server command response for an
+ *  front panel query request.
+ *
+ *  @param[in,out]  aBuffer  A mutable reference to the shared
+ *                           pointer into which the response is to be
+ *                           generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  kError_NotInitialized  If the front panels model has
+ *                                  not been completely and successfully
+ *                                  initialized.
+ *  @retval  -ERANGE                If an front panel identifier is
+ *                                  smaller or larger than supported.
+ *
+ */
 Status
 FrontPanelControllerBasis :: HandleQueryReceived(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {

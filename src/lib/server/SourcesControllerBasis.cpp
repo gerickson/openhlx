@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file implements an object for...
+ *      This file implements a derivable object for realizing a HLX
+ *      sources controller, in a server.
  *
  */
 
@@ -49,7 +50,20 @@ Server::Command::Sources::SetNameRequest      SourcesControllerBasis::kSetNameRe
 
 /**
  *  @brief
- *    This is the class default constructor.
+ *    This is a class constructor.
+ *
+ *  This constructs the sources controller with the specified sources
+ *  collection model and the maximum number of allowed sources.
+ *
+ *  @param[in]  aSourcesModel  A mutable reference to the sources
+ *                             collection model to construct the
+ *                             controller with. This is retained by a
+ *                             weak pointer reference and,
+ *                             consequently, must remain in scope for
+ *                             the lifetime of the controller.
+ *  @param[in]  aSourcesMax    An immutable reference to the maximum
+ *                             number of allowed sources managed by
+ *                             the controller.
  *
  */
 SourcesControllerBasis :: SourcesControllerBasis(Model::SourcesModel &aSourcesModel,
@@ -73,6 +87,25 @@ SourcesControllerBasis :: ~SourcesControllerBasis(void)
 
 // MARK: Initializer(s)
 
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the class with the specified command manager.
+ *
+ *  @param[in]  aCommandManager  A reference to the command manager
+ *                               instance to initialize the controller
+ *                               with.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -EINVAL                      If an internal parameter was
+ *                                        invalid.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_NotInitialized        The base class was not properly
+ *                                        initialized.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
 Status
 SourcesControllerBasis :: Init(CommandManager &aCommandManager)
 {
@@ -89,6 +122,8 @@ SourcesControllerBasis :: Init(CommandManager &aCommandManager)
 done:
     return (lRetval);
 }
+
+// MARK: Implementation
 
 Status
 SourcesControllerBasis :: RequestInit(void)
@@ -109,10 +144,31 @@ done:
 
 // MARK: Observation (Query) Command Request Instance Handlers
 
+/**
+ *  @brief
+ *    Handle and generate the server command response for a source
+ *    query request of all sources.
+ *
+ *  This handles and generates the server command response for an
+ *  source query request of all sources.
+ *
+ *  @param[in,out]  aBuffer  A mutable reference to the shared
+ *                           pointer into which the response is to be
+ *                           generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  kError_NotInitialized  If the sources model has
+ *                                  not been completely and successfully
+ *                                  initialized.
+ *  @retval  -ERANGE                If a source identifier is smaller
+ *                                  or larger than supported.
+ *
+ */
 Status
 SourcesControllerBasis :: HandleQueryReceived(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     Status lRetval = kStatus_Success;
+
 
     for (auto lSourceIdentifier = IdentifierModel::kIdentifierMin; lSourceIdentifier <= mSourcesMax; lSourceIdentifier++)
     {
@@ -124,12 +180,37 @@ SourcesControllerBasis :: HandleQueryReceived(Common::ConnectionBuffer::MutableC
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Handle and generate the server command response for a source
+ *    query request of a specific source.
+ *
+ *  This handles and generates the server command response for an
+ *  source query request of a specific source.
+ *
+ *  @param[in]      aSourceIdentifier  An immutable reference
+ *                                              to the identifier of
+ *                                              the source
+ *                                              queried.
+ *  @param[in,out]  aBuffer                     A mutable reference to
+ *                                              the shared pointer into
+ *                                              which the response is
+ *                                              to be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  kError_NotInitialized  If the sources model has
+ *                                  not been completely and successfully
+ *                                  initialized.
+ *  @retval  -ERANGE                If a source identifier is smaller
+ *                                  or larger than supported.
+ *
+ */
 Status
 SourcesControllerBasis :: HandleQueryReceived(const Model::SourceModel::IdentifierType &aSourceIdentifier, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     const SourceModel *                       lSourceModel;
     const char *                              lName;
-    Server::Command::Sources::NameResponse    lResponse;
+    Server::Command::Sources::NameResponse    lNameResponse;
     const uint8_t *                           lBuffer;
     size_t                                    lSize;
     Status                                    lRetval;
@@ -138,14 +219,16 @@ SourcesControllerBasis :: HandleQueryReceived(const Model::SourceModel::Identifi
     lRetval = mSourcesModel.GetSource(aSourceIdentifier, lSourceModel);
     nlREQUIRE_SUCCESS(lRetval, done);
 
+    // Name Response
+
     lRetval = lSourceModel->GetName(lName);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = lResponse.Init(aSourceIdentifier, lName);
+    lRetval = lNameResponse.Init(aSourceIdentifier, lName);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lBuffer = lResponse.GetBuffer();
-    lSize = lResponse.GetSize();
+    lBuffer = lNameResponse.GetBuffer();
+    lSize = lNameResponse.GetSize();
 
     lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
     nlREQUIRE_SUCCESS(lRetval, done);

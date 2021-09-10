@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file defines an object for...
+ *      This file defines a derivable object for realizing a HLX
+ *      configuration controller, in a server.
  *
  */
 

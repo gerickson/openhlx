@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file implements an object for...
+ *      This file implements a derivable object for realizing a HLX
+ *      Ethernet network interface controller, in a server.
  *
  */
 
@@ -51,7 +52,17 @@ Server::Command::Network::QueryRequest  NetworkControllerBasis::kQueryRequest;
 
 /**
  *  @brief
- *    This is the class default constructor.
+ *    This is a class constructor.
+ *
+ *  This constructs the network interface controller with the
+ *  specified network interface model.
+ *
+ *  @param[in]  aNetworkModel  A mutable reference to the network
+ *                             interface model to construct the
+ *                             controller with. This is retained by a
+ *                             weak pointer reference and,
+ *                             consequently, must remain in scope for
+ *                             the lifetime of the controller.
  *
  */
 NetworkControllerBasis :: NetworkControllerBasis(Model::NetworkModel &aNetworkModel) :
@@ -73,6 +84,25 @@ NetworkControllerBasis :: ~NetworkControllerBasis(void)
 
 // MARK: Initializer(s)
 
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the class with the specified command manager.
+ *
+ *  @param[in]  aCommandManager  A reference to the command manager
+ *                               instance to initialize the controller
+ *                               with.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -EINVAL                      If an internal parameter was
+ *                                        invalid.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_NotInitialized        The base class was not properly
+ *                                        initialized.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
 Status
 NetworkControllerBasis :: Init(CommandManager &aCommandManager)
 {
@@ -111,6 +141,27 @@ done:
 
 // MARK: Observation (Query) Command Request Class (Static) Handlers
 
+/**
+ *  @brief
+ *    Handle and generate the server command response for a network
+ *    interface query request.
+ *
+ *  This handles and generates the server command response for an
+ *  network interface query request.
+ *
+ *  @param[in]      aInputBuffer   A pointer to a null-terminated
+ *                                 C string containing the content to
+ *                                 place into the response buffer.
+ *  @param[in,out]  aOutputBuffer  A mutable reference to the shared
+ *                                 pointer into which the response is
+ *                                 to be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  kError_NotInitialized  If the network interface model has
+ *                                  not been completely and successfully
+ *                                  initialized.
+ *
+ */
 Status
 NetworkControllerBasis :: HandleQueryReceived(const char *aInputBuffer, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer)
 {

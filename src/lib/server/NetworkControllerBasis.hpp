@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file defines an object for...
+ *      This file defines a derivable object for realizing a HLX
+ *      Ethernet network interface controller, in a server.
  *
  */
 

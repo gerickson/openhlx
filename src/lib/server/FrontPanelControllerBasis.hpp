@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file defines an object for...
+ *      This file defines a derivable object for realizing a HLX
+ *      physical front panel controller, in a server.
  *
  */
 
@@ -41,7 +42,7 @@ namespace Server
  *    An object for...
  *
  *  @ingroup server
- *  @ingroup frontpanel
+ *  @ingroup front-panel
  *
  */
 class FrontPanelControllerBasis :
