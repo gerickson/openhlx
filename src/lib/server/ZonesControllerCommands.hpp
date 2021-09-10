@@ -105,7 +105,7 @@ public:
 
     using QueryResponseBasis::Init;
 
-    Common::Status Init(const Model::ZoneModel::IdentifierType &aZone);
+    Common::Status Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier);
 };
 
 /**
@@ -374,7 +374,9 @@ public:
     EqualizerBandResponse(void) = default;
     virtual ~EqualizerBandResponse(void) = default;
 
-    Common::Status Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const Model::EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier, const Model::EqualizerBandModel::LevelType &aBandLevel);
+    Common::Status Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
+                        const Model::EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier,
+                        const Model::EqualizerBandModel::LevelType &aEqualizerBandLevel);
 };
 
 // MARK: (Sound Mode) Equalizer Preset Mutator Requests, Responses, and Commands
