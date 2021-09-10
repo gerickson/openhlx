@@ -130,7 +130,24 @@ done:
 
 // MARK: Observer Methods
 
-
+/**
+ *  @brief
+ *    Query the current volume mute state of a zone.
+ *
+ *  This queries the current volume mute state of the specified HLX
+ *  server zone.
+ *
+ *  @param[in]  aZoneIdentifier  An immutable reference to the identifier
+ *                               of the zone to query.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ERANGE                      If the zone identifier is
+ *                                        smaller or larger than supported.
+ *  @retval  -ENOMEM                      If memory could not be allocated
+ *                                        for the command exchange or
+ *                                        exchange state.
+ *
+ */
 Status
 ZonesController :: QueryMute(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
 {
@@ -157,6 +174,24 @@ done:
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Query the current source (input) of a zone.
+ *
+ *  This queries the current source (input) of the specified HLX
+ *  server zone.
+ *
+ *  @param[in]  aZoneIdentifier  An immutable reference to the identifier
+ *                               of the zone to query.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ERANGE                      If the zone identifier is
+ *                                        smaller or larger than supported.
+ *  @retval  -ENOMEM                      If memory could not be allocated
+ *                                        for the command exchange or
+ *                                        exchange state.
+ *
+ */
 Status
 ZonesController :: QuerySource(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
 {
@@ -183,6 +218,24 @@ done:
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Query the current volume level of a zone.
+ *
+ *  This queries the current volume level of the specified HLX server
+ *  zone.
+ *
+ *  @param[in]  aZoneIdentifier  An immutable reference to the identifier
+ *                               of the zone to query.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ERANGE                      If the zone identifier is
+ *                                        smaller or larger than supported.
+ *  @retval  -ENOMEM                      If memory could not be allocated
+ *                                        for the command exchange or
+ *                                        exchange state.
+ *
+ */
 Status
 ZonesController :: QueryVolume(const Model::ZoneModel::IdentifierType &aZoneIdentifier)
 {
