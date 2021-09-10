@@ -2739,6 +2739,10 @@ Controller :: HandleGroupZoneStateChangeInteractions(const StateChange::GroupsNo
  *
  *  @param[in]  aConnectionManager  A reference to the connection
  *                                  manager that issued the delegation.
+ *  @param[in]  aRoles              An immutable reference to the roles
+ *                                  in which the connection manager
+ *                                  that issued the delegation is
+ *                                  acting.
  *  @param[in]  aHost               A pointer to a null-terminated C
  *                                  string containing the host
  *                                  name that will resolve.
@@ -2763,6 +2767,10 @@ Controller :: ConnectionManagerWillResolve(Common::ConnectionManagerBasis &aConn
  *
  *  @param[in]  aConnectionManager  A reference to the connection
  *                                  manager that issued the delegation.
+ *  @param[in]  aRoles              An immutable reference to the roles
+ *                                  in which the connection manager
+ *                                  that issued the delegation is
+ *                                  acting.
  *  @param[in]  aHost               A pointer to a null-terminated C
  *                                  string containing the host
  *                                  name that is resolving.
@@ -2792,6 +2800,10 @@ Controller :: ConnectionManagerIsResolving(Common::ConnectionManagerBasis &aConn
  *
  *  @param[in]  aConnectionManager  A reference to the connection
  *                                  manager that issued the delegation.
+ *  @param[in]  aRoles              An immutable reference to the roles
+ *                                  in which the connection manager
+ *                                  that issued the delegation is
+ *                                  acting.
  *  @param[in]  aHost               A pointer to a null-terminated C
  *                                  string containing the host
  *                                  name that did resolve.
@@ -2819,6 +2831,10 @@ Controller :: ConnectionManagerDidResolve(Common::ConnectionManagerBasis &aConne
  *
  *  @param[in]  aConnectionManager  A reference to the connection
  *                                  manager that issued the delegation.
+ *  @param[in]  aRoles              An immutable reference to the roles
+ *                                  in which the connection manager
+ *                                  that issued the delegation is
+ *                                  acting.
  *  @param[in]  aHost               A pointer to a null-terminated C
  *                                  string containing the host
  *                                  name that did not resolve.
@@ -2942,6 +2958,10 @@ Controller :: ConnectionManagerDidNotConnect(ConnectionManager &aConnectionManag
  *
  *  @param[in]  aConnectionManager  A reference to the connection
  *                                  manager that issued the delegation.
+ *  @param[in]  aRoles              An immutable reference to the roles
+ *                                  in which the connection manager
+ *                                  that issued the delegation is
+ *                                  acting.
  *  @param[in]  aURLRef             The URL associated with the peer
  *                                  server.
  *
@@ -2965,6 +2985,10 @@ Controller :: ConnectionManagerWillDisconnect(Common::ConnectionManagerBasis &aC
  *
  *  @param[in]  aConnectionManager  A reference to the connection
  *                                  manager that issued the delegation.
+ *  @param[in]  aRoles              An immutable reference to the roles
+ *                                  in which the connection manager
+ *                                  that issued the delegation is
+ *                                  acting.
  *  @param[in]  aURLRef             The URL associated with the peer
  *                                  server.
  *  @param[in]  aError              An immutable reference to the error
@@ -2990,6 +3014,10 @@ Controller :: ConnectionManagerDidDisconnect(Common::ConnectionManagerBasis &aCo
  *
  *  @param[in]  aConnectionManager  A reference to the connection
  *                                  manager that issued the delegation.
+ *  @param[in]  aRoles              An immutable reference to the roles
+ *                                  in which the connection manager
+ *                                  that issued the delegation is
+ *                                  acting.
  *  @param[in]  aURLRef             The URL associated with the peer
  *                                  server.
  *  @param[in]  aError              An immutable reference to the error
@@ -3022,6 +3050,10 @@ Controller :: ConnectionManagerDidNotDisconnect(Common::ConnectionManagerBasis &
  *
  *  @param[in]  aConnectionManager  A reference to the connection
  *                                  manager that issued the delegation.
+ *  @param[in]  aRoles              An immutable reference to the roles
+ *                                  in which the connection manager
+ *                                  that issued the delegation is
+ *                                  acting.
  *  @param[in]  aError              An immutable reference to the error
  *                                  associated with the event.
  *
