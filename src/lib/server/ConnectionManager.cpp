@@ -566,8 +566,11 @@ ConnectionManager :: Send(Common::ConnectionBuffer::ImmutableCountedPointer aBuf
  *  This attempts to send a buffer preferrentially to one connected
  *  client but subsequently to all other connected clients.
  *
- *  @param[in]  aBuffer  An immutable shared pointer to the
- *                       buffer to send.
+ *  @param[in]  aConnection  A reference to the connection to
+ *                           preferentially send the specified buffer
+ *                           to.
+ *  @param[in]  aBuffer      An immutable shared pointer to the
+ *                           buffer to send.
  *
  *  @retval  kStatus_Success  If successful.
  *
