@@ -437,8 +437,6 @@ done:
  *  @retval  kError_NotInitialized  If the zones model has
  *                                  not been completely and successfully
  *                                  initialized.
- *  @retval  -ERANGE                If a zone identifier is smaller
- *                                  or larger than supported.
  *
  */
 Status
@@ -563,12 +561,34 @@ ZonesControllerBasis :: HandleQueryReceived(const bool &aIsConfiguration,
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Handle and generate the server command response for a zone query
+ *    volume mute state request of a specific zone.
+ *
+ *  This handles and generates the server command response for a zone
+ *  query volume mute state request of a specific zone.
+ *
+ *  @param[in]      aZoneIdentifier   An immutable reference to the
+ *                                    identifier of the zone queried.
+ *  @param[in,out]  aBuffer           A mutable reference to the
+ *                                    shared pointer into which the
+ *                                    response is to be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  kError_NotInitialized  If the zones model has not been
+ *                                  completely and successfully
+ *                                  initialized.
+ *  @retval  -ERANGE                If a zone identifier is smaller
+ *                                  or larger than supported.
+ *
+ */
 Status
 ZonesControllerBasis :: HandleQueryMuteReceived(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
-                                           Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+                                                Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
-    const ZoneModel *                  lZoneModel;
-    Status                             lRetval;
+    const ZoneModel *  lZoneModel;
+    Status             lRetval;
 
 
     lRetval = mZonesModel.GetZone(aZoneIdentifier, lZoneModel);
@@ -581,12 +601,34 @@ ZonesControllerBasis :: HandleQueryMuteReceived(const Model::ZoneModel::Identifi
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Handle and generate the server command response for a zone query
+ *    source (input) request of a specific zone.
+ *
+ *  This handles and generates the server command response for a zone
+ *  query source (input) request of a specific zone.
+ *
+ *  @param[in]      aZoneIdentifier   An immutable reference to the
+ *                                    identifier of the zone queried.
+ *  @param[in,out]  aBuffer           A mutable reference to the
+ *                                    shared pointer into which the
+ *                                    response is to be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  kError_NotInitialized  If the zones model has not been
+ *                                  completely and successfully
+ *                                  initialized.
+ *  @retval  -ERANGE                If a zone identifier is smaller
+ *                                  or larger than supported.
+ *
+ */
 Status
 ZonesControllerBasis :: HandleQuerySourceReceived(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
-                                             Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+                                                  Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
-    const ZoneModel *                  lZoneModel;
-    Status                             lRetval;
+    const ZoneModel *  lZoneModel;
+    Status             lRetval;
 
 
     lRetval = mZonesModel.GetZone(aZoneIdentifier, lZoneModel);
@@ -599,12 +641,34 @@ ZonesControllerBasis :: HandleQuerySourceReceived(const Model::ZoneModel::Identi
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Handle and generate the server command response for a zone query
+ *    volume level request of a specific zone.
+ *
+ *  This handles and generates the server command response for a zone
+ *  query volume level request of a specific zone.
+ *
+ *  @param[in]      aZoneIdentifier   An immutable reference to the
+ *                                    identifier of the zone queried.
+ *  @param[in,out]  aBuffer           A mutable reference to the
+ *                                    shared pointer into which the
+ *                                    response is to be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  kError_NotInitialized  If the zones model has not been
+ *                                  completely and successfully
+ *                                  initialized.
+ *  @retval  -ERANGE                If a zone identifier is smaller
+ *                                  or larger than supported.
+ *
+ */
 Status
 ZonesControllerBasis :: HandleQueryVolumeReceived(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
-                                             Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+                                                  Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
-    const ZoneModel *                  lZoneModel;
-    Status                             lRetval;
+    const ZoneModel *  lZoneModel;
+    Status             lRetval;
 
 
     lRetval = mZonesModel.GetZone(aZoneIdentifier, lZoneModel);
@@ -619,7 +683,30 @@ ZonesControllerBasis :: HandleQueryVolumeReceived(const Model::ZoneModel::Identi
 
 // MARK: Observation (Query) Command Request Class (Static) Handlers
 
-Status
+/**
+ *  @brief
+ *    Handle and generate the server command response for a zone query
+ *    equalizer preset identifier request of a specific zone.
+ *
+ *  This handles and generates the server command response for a zone
+ *  query equalizer preset identifier request of a specific zone.
+ *
+ *  @param[in]      aZoneIdentifier   An immutable reference to the
+ *                                    identifier of the zone queried.
+ *  @param[in]      aZoneModel        An immutable reference to the
+ *                                    zone model of the zone queried.
+ *  @param[in,out]  aBuffer           A mutable reference to the
+ *                                    shared pointer into which the
+ *                                    response is to be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
 ZonesControllerBasis :: HandleQueryEqualizerPreset(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                                    const ZoneModel &aZoneModel,
                                                    ConnectionBuffer::MutableCountedPointer &aBuffer)
@@ -637,10 +724,33 @@ ZonesControllerBasis :: HandleQueryEqualizerPreset(const Model::ZoneModel::Ident
     return (lRetval);
 }
 
-Status
+/**
+ *  @brief
+ *    Handle and generate the server command response for a zone query
+ *    highpass filter crossover frequency request of a specific zone.
+ *
+ *  This handles and generates the server command response for a zone
+ *  query highpass filter crossover frequency request of a specific zone.
+ *
+ *  @param[in]      aZoneIdentifier   An immutable reference to the
+ *                                    identifier of the zone queried.
+ *  @param[in]      aZoneModel        An immutable reference to the
+ *                                    zone model of the zone queried.
+ *  @param[in,out]  aBuffer           A mutable reference to the
+ *                                    shared pointer into which the
+ *                                    response is to be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
 ZonesControllerBasis :: HandleQueryHighpassCrossover(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
-                                                const ZoneModel &aZoneModel,
-                                                ConnectionBuffer::MutableCountedPointer &aBuffer)
+                                                     const ZoneModel &aZoneModel,
+                                                     ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     CrossoverModel::FrequencyType      lHighpassFrequency;
     Status                             lRetval;
@@ -655,10 +765,33 @@ ZonesControllerBasis :: HandleQueryHighpassCrossover(const Model::ZoneModel::Ide
     return (lRetval);
 }
 
-Status
+/**
+ *  @brief
+ *    Handle and generate the server command response for a zone query
+ *    lowpass filter crossover frequency request of a specific zone.
+ *
+ *  This handles and generates the server command response for a zone
+ *  query lowpass filter crossover frequency request of a specific zone.
+ *
+ *  @param[in]      aZoneIdentifier   An immutable reference to the
+ *                                    identifier of the zone queried.
+ *  @param[in]      aZoneModel        An immutable reference to the
+ *                                    zone model of the zone queried.
+ *  @param[in,out]  aBuffer           A mutable reference to the
+ *                                    shared pointer into which the
+ *                                    response is to be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
 ZonesControllerBasis :: HandleQueryLowpassCrossover(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
-                                               const ZoneModel &aZoneModel,
-                                               ConnectionBuffer::MutableCountedPointer &aBuffer)
+                                                    const ZoneModel &aZoneModel,
+                                                    ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     CrossoverModel::FrequencyType      lLowpassFrequency;
     Status                             lRetval;
@@ -673,10 +806,33 @@ ZonesControllerBasis :: HandleQueryLowpassCrossover(const Model::ZoneModel::Iden
     return (lRetval);
 }
 
-Status
+/**
+ *  @brief
+ *    Handle and generate the server command response for a zone query
+ *    volume mute state request of a specific zone.
+ *
+ *  This handles and generates the server command response for a zone
+ *  query volume mute state request of a specific zone.
+ *
+ *  @param[in]      aZoneIdentifier   An immutable reference to the
+ *                                    identifier of the zone queried.
+ *  @param[in]      aZoneModel        An immutable reference to the
+ *                                    zone model of the zone queried.
+ *  @param[in,out]  aBuffer           A mutable reference to the
+ *                                    shared pointer into which the
+ *                                    response is to be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
 ZonesControllerBasis :: HandleQueryMuteReceived(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
-                                           const Model::ZoneModel &aZoneModel,
-                                           Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
+                                                const Model::ZoneModel &aZoneModel,
+                                                Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     VolumeModel::MuteType              lMute;
     Status                             lRetval;
@@ -692,10 +848,33 @@ ZonesControllerBasis :: HandleQueryMuteReceived(const Model::ZoneModel::Identifi
     return (lRetval);
 }
 
-Status
+/**
+ *  @brief
+ *    Handle and generate the server command response for a zone query
+ *    sound (equalizer) mode request of a specific zone.
+ *
+ *  This handles and generates the server command response for a zone
+ *  query sound (equalizer) mode request of a specific zone.
+ *
+ *  @param[in]      aZoneIdentifier   An immutable reference to the
+ *                                    identifier of the zone queried.
+ *  @param[in]      aZoneModel        An immutable reference to the
+ *                                    zone model of the zone queried.
+ *  @param[in,out]  aBuffer           A mutable reference to the
+ *                                    shared pointer into which the
+ *                                    response is to be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
 ZonesControllerBasis :: HandleQuerySoundMode(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
-                                        const ZoneModel &aZoneModel,
-                                        ConnectionBuffer::MutableCountedPointer &aBuffer)
+                                             const ZoneModel &aZoneModel,
+                                             ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     SoundModel::SoundMode              lSoundMode;
     Status                             lRetval;
@@ -740,10 +919,33 @@ ZonesControllerBasis :: HandleQuerySoundMode(const Model::ZoneModel::IdentifierT
     return (lRetval);
 }
 
-Status
+/**
+ *  @brief
+ *    Handle and generate the server command response for a zone query
+ *    source (input) request of a specific zone.
+ *
+ *  This handles and generates the server command response for a zone
+ *  query source (input) request of a specific zone.
+ *
+ *  @param[in]      aZoneIdentifier   An immutable reference to the
+ *                                    identifier of the zone queried.
+ *  @param[in]      aZoneModel        An immutable reference to the
+ *                                    zone model of the zone queried.
+ *  @param[in,out]  aBuffer           A mutable reference to the
+ *                                    shared pointer into which the
+ *                                    response is to be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
 ZonesControllerBasis :: HandleQuerySourceReceived(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
-                                             const Model::ZoneModel &aZoneModel,
-                                             Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
+                                                  const Model::ZoneModel &aZoneModel,
+                                                  Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     SourceModel::IdentifierType             lSourceIdentifier;
     Server::Command::Zones::SourceResponse  lSourceResponse;
@@ -768,14 +970,38 @@ ZonesControllerBasis :: HandleQuerySourceReceived(const Model::ZoneModel::Identi
     return (lRetval);
 }
 
-Status
+/**
+ *  @brief
+ *    Handle and generate the server command response for a zone query
+ *    tone equalizer bass and treble levels request of a specific zone.
+ *
+ *  This handles and generates the server command response for a zone
+ *  query tone equalizer bass and treble levels request of a specific
+ *  zone.
+ *
+ *  @param[in]      aZoneIdentifier   An immutable reference to the
+ *                                    identifier of the zone queried.
+ *  @param[in]      aZoneModel        An immutable reference to the
+ *                                    zone model of the zone queried.
+ *  @param[in,out]  aBuffer           A mutable reference to the
+ *                                    shared pointer into which the
+ *                                    response is to be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
 ZonesControllerBasis :: HandleQueryTone(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
-                                   const ZoneModel &aZoneModel,
-                                   ConnectionBuffer::MutableCountedPointer &aBuffer)
+                                        const ZoneModel &aZoneModel,
+                                        ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    ToneModel::LevelType               lBass;
-    ToneModel::LevelType               lTreble;
-    Status                             lRetval;
+    ToneModel::LevelType  lBass;
+    ToneModel::LevelType  lTreble;
+    Status                lRetval;
 
     lRetval = aZoneModel.GetTone(lBass, lTreble);
     nlREQUIRE_SUCCESS(lRetval, done);
@@ -787,13 +1013,36 @@ ZonesControllerBasis :: HandleQueryTone(const Model::ZoneModel::IdentifierType &
     return (lRetval);
 }
 
-Status
+/**
+ *  @brief
+ *    Handle and generate the server command response for a zone query
+ *    volume level request of a specific zone.
+ *
+ *  This handles and generates the server command response for a zone
+ *  query volume level request of a specific zone.
+ *
+ *  @param[in]      aZoneIdentifier   An immutable reference to the
+ *                                    identifier of the zone queried.
+ *  @param[in]      aZoneModel        An immutable reference to the
+ *                                    zone model of the zone queried.
+ *  @param[in,out]  aBuffer           A mutable reference to the
+ *                                    shared pointer into which the
+ *                                    response is to be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
 ZonesControllerBasis :: HandleQueryVolumeReceived(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
-                                             const Model::ZoneModel &aZoneModel,
-                                             Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
+                                                  const Model::ZoneModel &aZoneModel,
+                                                  Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    VolumeModel::LevelType            lVolume;
-    Status                             lRetval;
+    VolumeModel::LevelType  lVolume;
+    Status                  lRetval;
 
 
     lRetval = aZoneModel.GetVolume(lVolume);
@@ -806,10 +1055,33 @@ ZonesControllerBasis :: HandleQueryVolumeReceived(const Model::ZoneModel::Identi
     return (lRetval);
 }
 
-Status
+/**
+ *  @brief
+ *    Handle and generate the server command response for a zone query
+ *    volume fixed/locked state request of a specific zone.
+ *
+ *  This handles and generates the server command response for a zone
+ *  query volume fixed/locked state request of a specific zone.
+ *
+ *  @param[in]      aZoneIdentifier   An immutable reference to the
+ *                                    identifier of the zone queried.
+ *  @param[in]      aZoneModel        An immutable reference to the
+ *                                    zone model of the zone queried.
+ *  @param[in,out]  aBuffer           A mutable reference to the
+ *                                    shared pointer into which the
+ *                                    response is to be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
 ZonesControllerBasis :: HandleQueryVolumeFixed(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
-                                          const ZoneModel &aZoneModel,
-                                          ConnectionBuffer::MutableCountedPointer &aBuffer)
+                                               const ZoneModel &aZoneModel,
+                                               ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     VolumeModel::FixedType             lVolumeFixed;
     Status                             lRetval;
@@ -825,26 +1097,48 @@ ZonesControllerBasis :: HandleQueryVolumeFixed(const Model::ZoneModel::Identifie
     return (lRetval);
 }
 
-Status
+/**
+ *  @brief
+ *    Handle and generate the server command response for a zone query
+ *    zone equalizer band levels request of a specific zone.
+ *
+ *  This handles and generates the server command response for a zone
+ *  zone equalizer band levels request of a specific zone.
+ *
+ *  @param[in]      aZoneIdentifier   An immutable reference to the
+ *                                    identifier of the zone queried.
+ *  @param[in]      aZoneModel        An immutable reference to the
+ *                                    zone model of the zone queried.
+ *  @param[in,out]  aBuffer           A mutable reference to the
+ *                                    shared pointer into which the
+ *                                    response is to be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
 ZonesControllerBasis :: HandleQueryZoneEqualizer(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
-                                            const ZoneModel &aZoneModel,
-                                            ConnectionBuffer::MutableCountedPointer &aBuffer)
+                                                 const ZoneModel &aZoneModel,
+                                                 ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    EqualizerBandModel::IdentifierType       lEqualizerBandIdentifier;
-    const EqualizerBandModel *               lEqualizerBandModel;
-    EqualizerBandModel::LevelType            lBandLevel;
-    Status                                   lRetval;
+    const EqualizerBandModel *     lEqualizerBandModel;
+    EqualizerBandModel::LevelType  lEqualizerBandLevel;
+    Status                         lRetval;
 
 
-    for (lEqualizerBandIdentifier = IdentifierModel::kIdentifierMin; lEqualizerBandIdentifier <= EqualizerBandsModel::kEqualizerBandsMax; lEqualizerBandIdentifier++)
+    for (auto lEqualizerBandIdentifier = IdentifierModel::kIdentifierMin; lEqualizerBandIdentifier <= EqualizerBandsModel::kEqualizerBandsMax; lEqualizerBandIdentifier++)
     {
         lRetval = aZoneModel.GetEqualizerBand(lEqualizerBandIdentifier, lEqualizerBandModel);
         nlREQUIRE_SUCCESS(lRetval, done);
 
-        lRetval = lEqualizerBandModel->GetLevel(lBandLevel);
+        lRetval = lEqualizerBandModel->GetLevel(lEqualizerBandLevel);
         nlREQUIRE_SUCCESS(lRetval, done);
 
-        lRetval = HandleEqualizerBandResponse(aZoneIdentifier, lEqualizerBandIdentifier, lBandLevel, aBuffer);
+        lRetval = HandleEqualizerBandResponse(aZoneIdentifier, lEqualizerBandIdentifier, lEqualizerBandLevel, aBuffer);
         nlREQUIRE_SUCCESS(lRetval, done);
     }
 
@@ -856,18 +1150,48 @@ ZonesControllerBasis :: HandleQueryZoneEqualizer(const Model::ZoneModel::Identif
 
 // MARK: Command Response Class (Static) Handlers
 
-Status
+/**
+ *  @brief
+ *    Handle and generate the server command response for a zone
+ *    equalizer band level request.
+ *
+ *  This handles and generates the server command response for a
+ *  zone equalizer band level request.
+ *
+ *  @param[in]      aZoneIdentifier           An immutable reference
+ *                                            for the zone for which
+ *                                            the zone equalizer band
+ *                                            level state was set.
+ *  @param[in]      aEqualizerBandIdentifier  An immutable reference
+ *                                            to the equalizer band on
+ *                                            the zone equalizer that
+ *                                            was set.
+ *  @param[in]      aEqualizerBandLevel       An immutable reference to
+ *                                            band level that was set.
+ *  @param[in,out]  aBuffer                   A mutable reference to
+ *                                            the shared pointer into
+ *                                            which the response is to
+ *                                            be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
 ZonesControllerBasis :: HandleEqualizerBandResponse(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
-                                               const EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier,
-                                               const EqualizerBandModel::LevelType &aBandLevel,
-                                               ConnectionBuffer::MutableCountedPointer &aBuffer)
+                                                    const EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier,
+                                                    const EqualizerBandModel::LevelType &aEqualizerBandLevel,
+                                                    ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     Server::Command::Zones::EqualizerBandResponse  lEqualizerBandResponse;
     const uint8_t *                                lBuffer;
     size_t                                         lSize;
     Status                                         lRetval;
 
-    lRetval = lEqualizerBandResponse.Init(aZoneIdentifier, aEqualizerBandIdentifier, aBandLevel);
+    lRetval = lEqualizerBandResponse.Init(aZoneIdentifier, aEqualizerBandIdentifier, aEqualizerBandLevel);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lBuffer = lEqualizerBandResponse.GetBuffer();
@@ -880,10 +1204,39 @@ ZonesControllerBasis :: HandleEqualizerBandResponse(const Model::ZoneModel::Iden
     return (lRetval);
 }
 
-Status
+/**
+ *  @brief
+ *    Handle and generate the server command response for a zone
+ *    equalizer preset identifier request.
+ *
+ *  This handles and generates the server command response for a
+ *  zone equalizer preset identifier request.
+ *
+ *  @param[in]      aZoneIdentifier             An immutable reference
+ *                                              for the zone for which
+ *                                              the zone equalizer
+ *                                              preset identifier was
+ *                                              set.
+ *  @param[in]      aEqualizerPresetIdentifier  An immutable reference
+ *                                              to the equalizer preset
+ *                                              identifier that was set.
+ *  @param[in,out]  aBuffer                     A mutable reference to
+ *                                              the shared pointer
+ *                                              into which the
+ *                                              response is to be
+ *                                              generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
 ZonesControllerBasis :: HandleEqualizerPresetResponse(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
-                                                 const EqualizerPresetModel::IdentifierType &aEqualizerPresetIdentifier,
-                                                 ConnectionBuffer::MutableCountedPointer &aBuffer)
+                                                      const EqualizerPresetModel::IdentifierType &aEqualizerPresetIdentifier,
+                                                      ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     Server::Command::Zones::EqualizerPresetResponse  lEqualizerPresetResponse;
     const uint8_t *                                  lBuffer;
@@ -903,10 +1256,36 @@ ZonesControllerBasis :: HandleEqualizerPresetResponse(const Model::ZoneModel::Id
     return (lRetval);
 }
 
-Status
+/**
+ *  @brief
+ *    Handle and generate the server command response for a zone
+ *    highpass filter crossover frequency request.
+ *
+ *  This handles and generates the server command response for a
+ *  zone highpass filter crossover frequency request.
+ *
+ *  @param[in]      aZoneIdentifier     An immutable reference for the
+ *                                      zone for which the highpass
+ *                                      filter crossover frequency was
+ *                                      set.
+ *  @param[in]      aHighpassFrequency  An immutable reference to the
+ *                                      highpass filter crossover
+ *                                      frequency that was set.
+ *  @param[in,out]  aBuffer             A mutable reference to the
+ *                                      shared pointer into which the
+ *                                      response is to be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
 ZonesControllerBasis :: HandleHighpassCrossoverResponse(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
-                                                   const CrossoverModel::FrequencyType &aHighpassFrequency,
-                                                   ConnectionBuffer::MutableCountedPointer &aBuffer)
+                                                        const CrossoverModel::FrequencyType &aHighpassFrequency,
+                                                        ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     Server::Command::Zones::HighpassCrossoverResponse  lHighpassCrossoverResponse;
     const uint8_t *                                    lBuffer;
@@ -926,10 +1305,36 @@ ZonesControllerBasis :: HandleHighpassCrossoverResponse(const Model::ZoneModel::
     return (lRetval);
 }
 
-Status
+/**
+ *  @brief
+ *    Handle and generate the server command response for a zone
+ *    lowpass filter crossover frequency request.
+ *
+ *  This handles and generates the server command response for a
+ *  zone lowpass filter crossover frequency request.
+ *
+ *  @param[in]      aZoneIdentifier    An immutable reference for the
+ *                                     zone for which the lowpass
+ *                                     filter crossover frequency was
+ *                                     set.
+ *  @param[in]      aLowpassFrequency  An immutable reference to the
+ *                                     lowpass filter crossover
+ *                                     frequency that was set.
+ *  @param[in,out]  aBuffer            A mutable reference to the
+ *                                     shared pointer into which the
+ *                                     response is to be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
 ZonesControllerBasis :: HandleLowpassCrossoverResponse(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
-                                                  const CrossoverModel::FrequencyType &aLowpassFrequency,
-                                                  ConnectionBuffer::MutableCountedPointer &aBuffer)
+                                                       const CrossoverModel::FrequencyType &aLowpassFrequency,
+                                                       ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     Server::Command::Zones::LowpassCrossoverResponse  lLowpassCrossoverResponse;
     const uint8_t *                                   lBuffer;
@@ -949,10 +1354,34 @@ ZonesControllerBasis :: HandleLowpassCrossoverResponse(const Model::ZoneModel::I
     return (lRetval);
 }
 
-Status
+/**
+ *  @brief
+ *    Handle and generate the server command response for a zone
+ *    volume mute state request.
+ *
+ *  This handles and generates the server command response for a
+ *  zone volume mute state request.
+ *
+ *  @param[in]      aZoneIdentifier   An immutable reference for the
+ *                                    zone for which the volume mute
+ *                                    state was set.
+ *  @param[in]      aMute             An immutable reference to the
+ *                                    volume mute state that was set.
+ *  @param[in,out]  aBuffer           A mutable reference to the
+ *                                    shared pointer into which the
+ *                                    response is to be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
 ZonesControllerBasis :: HandleMuteResponse(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
-                                      const VolumeModel::MuteType &aMute,
-                                      ConnectionBuffer::MutableCountedPointer &aBuffer)
+                                           const VolumeModel::MuteType &aMute,
+                                           ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     Server::Command::Zones::MuteResponse  lMuteResponse;
     const uint8_t *                       lBuffer;
@@ -972,10 +1401,35 @@ ZonesControllerBasis :: HandleMuteResponse(const Model::ZoneModel::IdentifierTyp
     return (lRetval);
 }
 
-Status
+/**
+ *  @brief
+ *    Handle and generate the server command response for a zone
+ *    sound (equalizer) mode request.
+ *
+ *  This handles and generates the server command response for a
+ *  zone sound (equalizer) request.
+ *
+ *  @param[in]      aZoneIdentifier   An immutable reference for the
+ *                                    zone for which the sound
+ *                                    (equalizer) mode was set.
+ *  @param[in]      aSoundMode        An immutable reference to the
+ *                                    sound (equalizer) mode that was
+ *                                    set.
+ *  @param[in,out]  aBuffer           A mutable reference to the
+ *                                    shared pointer into which the
+ *                                    response is to be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
 ZonesControllerBasis :: HandleSoundModeResponse(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
-                                           const SoundModel::SoundMode &aSoundMode,
-                                           ConnectionBuffer::MutableCountedPointer &aBuffer)
+                                                const SoundModel::SoundMode &aSoundMode,
+                                                ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     Server::Command::Zones::SoundModeResponse  lSoundModeResponse;
     const uint8_t *                            lBuffer;
@@ -996,11 +1450,39 @@ ZonesControllerBasis :: HandleSoundModeResponse(const Model::ZoneModel::Identifi
     return (lRetval);
 }
 
-    Status
+/**
+ *  @brief
+ *    Handle and generate the server command response for a zone
+ *    tone equalizer bass and treble levels request.
+ *
+ *  This handles and generates the server command response for a
+ *  zone tone equalizer bass and treble levels request.
+ *
+ *  @param[in]      aZoneIdentifier   An immutable reference for the
+ *                                    zone for which the tone equalizer
+ *                                    levels were set.
+ *  @param[in]      aBass             An immutable reference to the
+ *                                    tone equalizer bass level that
+ *                                    was set.
+ *  @param[in]      aTreble           An immutable reference to the tone
+ *                                    equalizer treble level that was
+ *                                    set.
+ *  @param[in,out]  aBuffer           A mutable reference to the
+ *                                    shared pointer into which the
+ *                                    response is to be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
 ZonesControllerBasis :: HandleToneResponse(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
-                                      const Model::ToneModel::LevelType &aBass,
-                                      Model::ToneModel::LevelType &aTreble,
-                                      ConnectionBuffer::MutableCountedPointer &aBuffer)
+                                           const Model::ToneModel::LevelType &aBass,
+                                           Model::ToneModel::LevelType &aTreble,
+                                           ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     Server::Command::Zones::ToneResponse  lToneResponse;
     const uint8_t *                       lBuffer;
@@ -1021,10 +1503,34 @@ ZonesControllerBasis :: HandleToneResponse(const Model::ZoneModel::IdentifierTyp
     return (lRetval);
 }
 
-Status
+/**
+ *  @brief
+ *    Handle and generate the server command response for a zone
+ *    volume level request.
+ *
+ *  This handles and generates the server command response for a
+ *  zone volume level request.
+ *
+ *  @param[in]      aZoneIdentifier   An immutable reference for the
+ *                                    zone for which the volume level
+ *                                    was set.
+ *  @param[in]      aVolume           An immutable reference to the
+ *                                    volume level that was set.
+ *  @param[in,out]  aBuffer           A mutable reference to the
+ *                                    shared pointer into which the
+ *                                    response is to be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
 ZonesControllerBasis :: HandleVolumeResponse(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
-                                        const VolumeModel::LevelType &aVolume,
-                                        ConnectionBuffer::MutableCountedPointer &aBuffer)
+                                             const VolumeModel::LevelType &aVolume,
+                                             ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     Server::Command::Zones::VolumeResponse  lVolumeResponse;
     const uint8_t *                         lBuffer;
@@ -1045,10 +1551,35 @@ ZonesControllerBasis :: HandleVolumeResponse(const Model::ZoneModel::IdentifierT
     return (lRetval);
 }
 
-Status
+/**
+ *  @brief
+ *    Handle and generate the server command response for a zone
+ *    volume fixed/locked state request.
+ *
+ *  This handles and generates the server command response for a
+ *  zone volume fixed/locked state request.
+ *
+ *  @param[in]      aZoneIdentifier   An immutable reference for the
+ *                                    zone for which the volume fixed/
+ *                                    locked state was set.
+ *  @param[in]      aVolumeFixed      An immutable reference to the
+ *                                    volume fixed/locked state that
+ *                                    was set.
+ *  @param[in,out]  aBuffer           A mutable reference to the
+ *                                    shared pointer into which the
+ *                                    response is to be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
 ZonesControllerBasis :: HandleVolumeFixedResponse(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
-                                             const VolumeModel::FixedType &aVolumeFixed,
-                                             ConnectionBuffer::MutableCountedPointer &aBuffer)
+                                                  const VolumeModel::FixedType &aVolumeFixed,
+                                                  ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     Server::Command::Zones::VolumeFixedResponse  lVolumeFixedResponse;
     const uint8_t *                              lBuffer;

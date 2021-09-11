@@ -74,10 +74,10 @@ protected:
     // Observation (Query) Command Request Instance Handlers
 
     Common::Status        HandleQueryReceived(const bool &aIsConfiguration,
-                                              Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer) const;
+                                              Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
     Common::Status        HandleQueryReceived(const bool &aIsConfiguration,
                                               const Model::ZoneModel::IdentifierType &aZoneIdentifier,
-                                              Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer) const;
+                                              Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
     Common::Status        HandleQueryMuteReceived(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                                   Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
     Common::Status        HandleQuerySourceReceived(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
@@ -126,7 +126,7 @@ protected:
 
     static Common::Status HandleEqualizerBandResponse(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                                       const Model::EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier,
-                                                      const Model::EqualizerBandModel::LevelType &aBandLevel,
+                                                      const Model::EqualizerBandModel::LevelType &aEqualizerBandLevel,
                                                       Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
     static Common::Status HandleEqualizerPresetResponse(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                                         const Model::EqualizerPresetModel::IdentifierType &aEqualizerPresetIdentifier,
