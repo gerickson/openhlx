@@ -1129,11 +1129,6 @@ public:
     virtual ~VolumeAllResponse(void) = default;
 
     Common::Status Init(const Model::VolumeModel::LevelType &aVolume);
-
-    // Explicitly hide base class initializers
-
-private:
-    using ResponseBasis::Init;
 };
 
 /**
