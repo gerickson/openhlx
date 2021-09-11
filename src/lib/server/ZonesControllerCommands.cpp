@@ -791,7 +791,7 @@ SetSoundModeRequest :: Init(void)
  *  @param[in]  aZoneIdentifier   An immutable reference for the
  *                                zone for which the sound (equalizer)
  *                                mode was set.
- *  @param[in]  aMode             An immutable reference to the sound
+ *  @param[in]  aSoundMode        An immutable reference to the sound
  *                                (equalizer) mode that was set.
  *
  *  @retval  kStatus_Success              If successful.
@@ -801,12 +801,12 @@ SetSoundModeRequest :: Init(void)
  */ 
 Status
 SoundModeResponse :: Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
-                          const Model::SoundModel::SoundMode &aMode)
+                          const Model::SoundModel::SoundMode &aSoundMode)
 {
     return (EqualizerSoundModeBufferBasis::Init(*this,
                                                 kZoneObject,
                                                 aZoneIdentifier,
-                                                aMode));
+                                                aSoundMode));
 }
 
 // MARK: Source Mutator Requests, Responses, and Commands
@@ -1180,8 +1180,8 @@ SetVolumeFixedRequest :: Init(void)
  *  response buffer.
  *
  *  @param[in]  aZoneIdentifier   An immutable reference for the
- *                                zone for which the volume mute
- *                                state was set.
+ *                                zone for which the volume fixed/
+ *                                locked state was set.
  *  @param[in]  aVolumeFixed      An immutable reference to the volume
  *                                fixed/locked state that was set.
  *

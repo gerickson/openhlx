@@ -713,7 +713,7 @@ public:
     SoundModeResponse(void) = default;
     virtual ~SoundModeResponse(void) = default;
 
-    Common::Status Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const Model::SoundModel::SoundMode &aMode);
+    Common::Status Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const Model::SoundModel::SoundMode &aSoundMode);
 
     // Explicitly hide base class initializers
 
