@@ -210,7 +210,7 @@ Timer :: SetDelegate(TimerDelegate *aDelegate)
  *    Start the timer.
  *
  *  This starts the timer.
- *    
+ *
  *  @retval  kStatus_Success        If successful.
  *  @retval  kError_NotInitialized  If the timer has not yet been
  *                                  initialized.
@@ -240,7 +240,7 @@ Timer :: Start(void)
  *    Stop the timer.
  *
  *  This stops the timer.
- *    
+ *
  *  @retval  kStatus_Success        If successful.
  *  @retval  kError_NotInitialized  If the timer has not yet been
  *                                  initialized.

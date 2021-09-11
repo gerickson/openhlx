@@ -382,7 +382,7 @@ SetBalanceRequest :: Init(void)
  *  @retval  -ENOMEM                      If memory could not be allocated.
  *  @retval  kError_InitializationFailed  If initialization otherwise failed.
  *
- */ 
+ */
 Status
 BalanceResponse :: Init(const Model::ZoneModel::IdentifierType & aZoneIdentifier,
                         const Model::BalanceModel::BalanceType & aBalance)
@@ -472,7 +472,7 @@ SetEqualizerBandRequest :: Init(void)
  *  @retval  -ENOMEM                      If memory could not be allocated.
  *  @retval  kError_InitializationFailed  If initialization otherwise failed.
  *
- */ 
+ */
 Status
 EqualizerBandResponse :: Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                               const Model::EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier,
@@ -520,7 +520,7 @@ SetEqualizerPresetRequest :: Init(void)
  *  @retval  -ENOMEM                      If memory could not be allocated.
  *  @retval  kError_InitializationFailed  If initialization otherwise failed.
  *
- */ 
+ */
 Status
 EqualizerPresetResponse :: Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                 const Model::EqualizerPresetModel::IdentifierType &aEqualizerPresetIdentifier)
@@ -567,7 +567,7 @@ SetHighpassCrossoverRequest :: Init(void)
  *  @retval  -ENOMEM                      If memory could not be allocated.
  *  @retval  kError_InitializationFailed  If initialization otherwise failed.
  *
- */ 
+ */
 Status
 HighpassCrossoverResponse :: Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                   const Model::CrossoverModel::FrequencyType &aHighpassFrequency)
@@ -611,7 +611,7 @@ SetLowpassCrossoverRequest :: Init(void)
  *  @retval  -ENOMEM                      If memory could not be allocated.
  *  @retval  kError_InitializationFailed  If initialization otherwise failed.
  *
- */ 
+ */
 Status
 LowpassCrossoverResponse :: Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                                  const Model::CrossoverModel::FrequencyType &aLowpassFrequency)
@@ -798,7 +798,7 @@ SetSoundModeRequest :: Init(void)
  *  @retval  -ENOMEM                      If memory could not be allocated.
  *  @retval  kError_InitializationFailed  If initialization otherwise failed.
  *
- */ 
+ */
 Status
 SoundModeResponse :: Init(const Model::ZoneModel::IdentifierType &aZoneIdentifier,
                           const Model::SoundModel::SoundMode &aSoundMode)
@@ -1018,7 +1018,7 @@ SetToneRequest :: Init(void)
  *  @retval  -ENOMEM                      If memory could not be allocated.
  *  @retval  kError_InitializationFailed  If initialization otherwise failed.
  *
- */ 
+ */
 Status
 ToneResponse :: Init(const Model::ZoneModel::IdentifierType & aZoneIdentifier,
                      const Model::ToneModel::LevelType &      aBass,

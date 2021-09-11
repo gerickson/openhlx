@@ -335,7 +335,7 @@ SetSourceRequest :: Init(void)
  *
  */
 Status
-SourceResponse :: Init(const Model::GroupModel::IdentifierType &aGroupIdentifier, 
+SourceResponse :: Init(const Model::GroupModel::IdentifierType &aGroupIdentifier,
                        const Model::SourceModel::IdentifierType &aSourceIdentifier)
 {
     return (SourceSetResponseBasis::Init(kGroupObject,
