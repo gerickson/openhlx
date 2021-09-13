@@ -43,7 +43,8 @@ namespace Server
 
 /**
  *  @brief
- *    An object for...
+ *    A derivable object for realizing a HLX zones controller, in a
+ *    server.
  *
  *  @ingroup server
  *  @ingroup zones

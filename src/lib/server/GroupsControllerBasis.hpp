@@ -40,7 +40,8 @@ namespace Server
 
 /**
  *  @brief
- *    An object for...
+ *    A derivable object for realizing a HLX groups controller, in a
+ *    server.
  *
  *  @ingroup server
  *  @ingroup groups

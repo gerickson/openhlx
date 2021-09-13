@@ -47,7 +47,8 @@ namespace Application
 
 /**
  *  @brief
- *    An object for...
+ *    A derivable object for realizing a HLX zones controller, in a
+ *    client.
  *
  *  @ingroup client
  *  @ingroup zone

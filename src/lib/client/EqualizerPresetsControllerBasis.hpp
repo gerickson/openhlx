@@ -42,7 +42,8 @@ namespace Client
 
 /**
  *  @brief
- *    An object for...
+ *    A derivable object for realizing a HLX equalizer presets
+ *    controller, in a client.
  *
  *  @ingroup client
  *  @ingroup equalizer-preset

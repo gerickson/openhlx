@@ -39,7 +39,8 @@ namespace Server
 
 /**
  *  @brief
- *    An object for...
+ *    A derivable object for realizing a HLX infrared remote control
+ *    interface controller, in a server.
  *
  *  @ingroup server
  *  @ingroup infrared

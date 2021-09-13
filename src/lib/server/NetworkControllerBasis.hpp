@@ -39,7 +39,8 @@ namespace Server
 
 /**
  *  @brief
- *    An object for...
+ *    A derivable object for realizing a HLX Ethernet network
+ *    interface controller, in a server.
  *
  *  @ingroup server
  *  @ingroup network

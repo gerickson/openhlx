@@ -49,7 +49,8 @@ namespace Application
 
 /**
  *  @brief
- *    An object for...
+ *    A derivable object for realizing a HLX groups controller, in a
+ *    client.
  *
  *  @ingroup client
  *  @ingroup group

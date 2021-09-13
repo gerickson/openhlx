@@ -42,7 +42,8 @@ namespace Client
 
 /**
  *  @brief
- *    An object for...
+ *    A derivable object for realizing a HLX sources controller, in a
+ *    client.
  *
  *  @ingroup client
  *  @ingroup source

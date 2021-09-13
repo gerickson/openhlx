@@ -38,7 +38,8 @@ namespace Client
 
 /**
  *  @brief
- *    An object for...
+ *    A derivable object for realizing a HLX physical front panel
+ *    controller, in a client.
  *
  *  @ingroup client
  *  @ingroup front-panel

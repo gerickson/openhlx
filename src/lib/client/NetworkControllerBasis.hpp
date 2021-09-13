@@ -38,7 +38,8 @@ namespace Client
 
 /**
  *  @brief
- *    An object for...
+ *    A derivable object for realizing a HLX Ethernet network
+ *    interface controller, in a client.
  *
  *  @ingroup client
  *  @ingroup network

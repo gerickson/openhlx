@@ -38,7 +38,8 @@ namespace Client
 
 /**
  *  @brief
- *    An object for...
+ *    A derivable object for realizing a HLX infrared remote control
+ *    interface controller, in a client.
  *
  *  @ingroup client
  *  @ingroup infrared

@@ -42,7 +42,8 @@ namespace Client
 
 /**
  *  @brief
- *    An object for....
+ *    A derivable object for realizing a HLX favorites controller, in
+ *    a client.
  *
  *  @ingroup client
  *  @ingroup favorite
