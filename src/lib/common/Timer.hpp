@@ -45,7 +45,7 @@ class TimerDelegate;
 
 /**
  *  @brief
- *    An object for...
+ *    An object for a run loop-based repeating interval timer.
  *
  *  @ingroup common
  *
@@ -53,6 +53,8 @@ class TimerDelegate;
 class Timer
 {
 public:
+    // Con/destructor
+
     Timer(void);
     ~Timer(void);
 
