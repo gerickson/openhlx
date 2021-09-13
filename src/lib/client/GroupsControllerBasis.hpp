@@ -28,7 +28,6 @@
 
 #include <stddef.h>
 
-#include <OpenHLX/Client/ApplicationController.hpp>
 #include <OpenHLX/Client/GroupsControllerCommands.hpp>
 #include <OpenHLX/Client/ObjectControllerBasis.hpp>
 #include <OpenHLX/Model/GroupModel.hpp>
@@ -40,6 +39,13 @@ namespace HLX
 
 namespace Client
 {
+
+namespace Application
+{
+
+    class Controller;
+
+}; // namespace Application
 
 /**
  *  @brief
