@@ -42,6 +42,20 @@
  */
 
 /**
+ *  @namespace HLX::Client::Application
+ *
+ *  @brief
+ *    Interfaces for working with or building a %HLX client application.
+ *
+ *  The @a Application namespace includes classes, types, and
+ *  functions specifically for directly working with or building a
+ *  %HLX client, whether a command line interface (CLI) client or a
+ *  mobile app, rather than the internal workings of such an
+ *  application.
+ *
+ */
+
+/**
  *  @namespace HLX::Client::Command
  *
  *  @brief
@@ -311,6 +325,121 @@
  *  The @a Server namespace includes classes, types, and functions for
  *  working with or building a %HLX server, whether a simulator, a
  *  proxy, or a bridge to or from another protocol.
+ *
+ */
+
+/**
+ *  @namespace HLX::Server::Application
+ *
+ *  @brief
+ *    Interfaces for working with or building a %HLX server application.
+ *
+ *  The @a Application namespace includes classes, types, and
+ *  functions specifically for directly working with or building a
+ *  %HLX server, whether a proxy or a simulator, rather than the
+ *  internal workings of such an application.
+ *
+ */
+
+/**
+ *  @namespace HLX::Server::Command
+ *
+ *  @brief
+ *    Interfaces for working with %HLX server protocol commands.
+ *
+ *  The @a HLX::Server::Command namespace includes classes, types, and
+ *  functions for building, sending, receiving, requesting, responding
+ *  to, handling, and processing %HLX server protocol commands.
+ *
+ */
+
+/**
+ *  @namespace HLX::Server::Command::Configuration
+ *
+ *  @brief
+ *    Interfaces for working with and managing the %HLX configuration
+ *    server controller and data model object and commands to observe
+ *    and mutate them.
+ *
+ */
+
+/**
+ *  @namespace HLX::Server::Command::EqualizerPresets
+ *
+ *  @brief
+ *    Interfaces for working with and managing the %HLX equalizer
+ *    presets server controller and data model object and commands to
+ *    observe and mutate them.
+ *
+ */
+
+/**
+ *  @namespace HLX::Server::Command::Favorites
+ *
+ *  @brief
+ *    Interfaces for working with and managing the %HLX favorites
+ *    server controller and data model object and commands to observe
+ *    and mutate them.
+ *
+ */
+
+/**
+ *  @namespace HLX::Server::Command::FrontPanel
+ *
+ *  @brief
+ *    Interfaces for working with and managing the %HLX physical front
+ *    panel display and controls server controller and data model
+ *    object and commands to observe and mutate them.
+ *
+ */
+
+/**
+ *  @namespace HLX::Server::Command::Groups
+ *
+ *  @brief
+ *    Interfaces for working with and managing the %HLX groups server
+ *    controller and data model object and commands to observe and
+ *    mutate them.
+ *
+ */
+
+/**
+ *  @namespace HLX::Server::Command::Infrared
+ *
+ *  @brief
+ *    Interfaces for working with and managing the %HLX physical
+ *    infrared remote control interface server controller and data
+ *    model object and commands to observe and mutate them.
+ *
+ */
+
+/**
+ *  @namespace HLX::Server::Command::Network
+ *
+ *  @brief
+ *    Interfaces for working with and managing the %HLX Ethernet
+ *    network interface server controller and data model object and
+ *    commands to observe and mutate them.
+ *
+ */
+
+/**
+ *  @namespace HLX::Server::Command::Sources
+ *
+ *  @brief
+ *    Interfaces for working with and managing the %HLX sources (that
+ *    is, inputs) server controller and data model object and commands
+ *    to observe and mutate them.
+ *
+ */
+
+/**
+ *  @namespace HLX::Server::Command::Zones
+ *
+ *  @brief
+ *    Interfaces for working with and managing the %HLX zones (that is,
+ *    outputs) server controller and data model object and commands to
+ *    observe and mutate them.
  *
  */
 
