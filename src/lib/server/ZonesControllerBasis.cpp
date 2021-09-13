@@ -486,7 +486,7 @@ ZonesControllerBasis :: HandleQueryReceived(const bool &aIsConfiguration,
 Status
 ZonesControllerBasis :: HandleQueryReceived(const bool &aIsConfiguration,
                                             const Model::ZoneModel::IdentifierType &aZoneIdentifier,
-                                            ConnectionBuffer::MutableCountedPointer &aBuffer) const
+                                            Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     const ZoneModel *                        lZoneModel;
     const char *                             lName;
