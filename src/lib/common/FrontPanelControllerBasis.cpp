@@ -18,7 +18,9 @@
 
 /**
  *    @file
- *      This file implements...
+ *      This file implements a base object for realizing a HLX physical
+ *      front panel interface controller, either in a client or server
+ *      context.
  *
  */
 
