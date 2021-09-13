@@ -18,7 +18,9 @@
 
 /**
  *    @file
- *      This file implements...
+ *      This file implements a base object for realizing a HLX infrared
+ *      remote control interface controller, either in a client or
+ *      server context.
  *
  */
 
