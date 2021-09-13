@@ -73,28 +73,10 @@ Command::EqualizerPresets::NameResponse           EqualizerPresetsControllerBasi
  */
 Command::EqualizerPresets::QueryResponse          EqualizerPresetsControllerBasis::kQueryResponse;
 
-/**
- *  @brief
- *    This is a class constructor.
- *
- *  This constructs the equalizer presets controller with the
- *  specified equalizer presets collection model and the maximum
- *  number of allowed equalizer presets.
- *
- *  @param[in]  aEqualizerPresetsModel  A mutable reference to the
- *                                      equalizer presets collection
- *                                      model to construct the
- *                                      controller with. This is
- *                                      retained by a weak pointer
- *                                      reference and, consequently,
- *                                      must remain in scope for the
- *                                      lifetime of the controller.
- *  @param[in]  aEqualizerPresetsMax    An immutable reference to the
- *                                      maximum number of allowed
- *                                      equalizer presets managed by
- *                                      the controller.
- *
- */
+// Note: This is documented in the header, rather than in the source
+// as preferred, because Doxygen (1.9.x) does not seem to want to find
+// and match it as documented when done in the source.
+
 EqualizerPresetsControllerBasis :: EqualizerPresetsControllerBasis(Model::EqualizerPresetsModel &aEqualizerPresetsModel,
                                                                    const Model::EqualizerPresetModel::IdentifierType &aEqualizerPresetsMax) :
     Client::ObjectControllerBasis(),

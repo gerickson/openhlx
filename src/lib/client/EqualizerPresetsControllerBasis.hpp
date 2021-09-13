@@ -55,6 +55,28 @@ public:
     virtual ~EqualizerPresetsControllerBasis(void);
 
 protected:
+    /**
+     *  @brief
+     *    This is a class constructor.
+     *
+     *  This constructs the equalizer presets controller with the
+     *  specified equalizer presets collection model and the maximum
+     *  number of allowed equalizer presets.
+     *
+     *  @param[in]  aEqualizerPresetsModel  A mutable reference to the
+     *                                      equalizer presets collection
+     *                                      model to construct the
+     *                                      controller with. This is
+     *                                      retained by a weak pointer
+     *                                      reference and, consequently,
+     *                                      must remain in scope for the
+     *                                      lifetime of the controller.
+     *  @param[in]  aEqualizerPresetsMax    An immutable reference to the
+     *                                      maximum number of allowed
+     *                                      equalizer presets managed by
+     *                                      the controller.
+     *
+     */
     EqualizerPresetsControllerBasis(Model::EqualizerPresetsModel &aEqualizerPresetsModel,
                                     const Model::EqualizerPresetModel::IdentifierType &aEqualizerPresetsMax);
 

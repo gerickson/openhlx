@@ -66,26 +66,10 @@ Command::Favorites::NameResponse      FavoritesControllerBasis::kNameResponse;
  */
 Command::Favorites::QueryResponse     FavoritesControllerBasis::kQueryResponse;
 
-/**
- *  @brief
- *    This is a class constructor.
- *
- *  This constructs the favorites controller with the specified
- *  favorites collection model and the maximum number of allowed
- *  favorites.
- *
- *  @param[in]  aFavoritesModel  A mutable reference to the
- *                               favorites collection model to
- *                               construct the controller with. This
- *                               is retained by a weak pointer
- *                               reference and, consequently, must
- *                               remain in scope for the lifetime of
- *                               the controller.
- *  @param[in]  aFavoritesMax    An immutable reference to the
- *                               maximum number of allowed favorites
- *                               managed by the controller.
- *
- */
+// Note: This is documented in the header, rather than in the source
+// as preferred, because Doxygen (1.9.x) does not seem to want to find
+// and match it as documented when done in the source.
+
 FavoritesControllerBasis :: FavoritesControllerBasis(Model::FavoritesModel &aFavoritesModel,
                                                      const Model::FavoriteModel::IdentifierType &aFavoritesMax) :
     Client::ObjectControllerBasis(),

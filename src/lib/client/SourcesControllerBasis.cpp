@@ -59,24 +59,10 @@ namespace Client
  */
 Command::Sources::NameResponse      SourcesControllerBasis::kNameResponse;
 
-/**
- *  @brief
- *    This is a class constructor.
- *
- *  This constructs the sources controller with the specified sources
- *  collection model and the maximum number of allowed sources.
- *
- *  @param[in]  aSourcesModel  A mutable reference to the sources
- *                             collection model to construct the
- *                             controller with. This is retained by a
- *                             weak pointer reference and,
- *                             consequently, must remain in scope for
- *                             the lifetime of the controller.
- *  @param[in]  aSourcesMax    An immutable reference to the maximum
- *                             number of allowed sources managed by
- *                             the controller.
- *
- */
+// Note: This is documented in the header, rather than in the source
+// as preferred, because Doxygen (1.9.x) does not seem to want to find
+// and match it as documented when done in the source.
+
 SourcesControllerBasis :: SourcesControllerBasis(Model::SourcesModel &aSourcesModel,
                                                  const Model::SourceModel::IdentifierType &aSourcesMax) :
     Client::ObjectControllerBasis(),

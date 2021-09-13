@@ -55,6 +55,26 @@ public:
     virtual ~FavoritesControllerBasis(void);
 
 protected:
+    /**
+     *  @brief
+     *    This is a class constructor.
+     *
+     *  This constructs the favorites controller with the specified
+     *  favorites collection model and the maximum number of allowed
+     *  favorites.
+     *
+     *  @param[in]  aFavoritesModel  A mutable reference to the
+     *                               favorites collection model to
+     *                               construct the controller with. This
+     *                               is retained by a weak pointer
+     *                               reference and, consequently, must
+     *                               remain in scope for the lifetime of
+     *                               the controller.
+     *  @param[in]  aFavoritesMax    An immutable reference to the
+     *                               maximum number of allowed favorites
+     *                               managed by the controller.
+     *
+     */
     FavoritesControllerBasis(Model::FavoritesModel &aFavoritesModel,
                              const Model::FavoriteModel::IdentifierType &aFavoritesMax);
 

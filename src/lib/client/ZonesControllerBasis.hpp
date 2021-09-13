@@ -60,6 +60,24 @@ public:
     virtual ~ZonesControllerBasis(void);
 
 protected:
+    /**
+     *  @brief
+     *    This is a class constructor.
+     *
+     *  This constructs the zones controller with the specified zones
+     *  collection model and the maximum number of allowed zones.
+     *
+     *  @param[in]  aZonesModel  A mutable reference to the zones
+     *                           collection model to construct the
+     *                           controller with. This is retained by a
+     *                           weak pointer reference and, consequently,
+     *                           must remain in scope for the lifetime of
+     *                           the controller.
+     *  @param[in]  aZonesMax    An immutable reference to the maximum
+     *                           number of allowed zones managed by the
+     *                           controller.
+     *
+     */
     ZonesControllerBasis(Model::ZonesModel &aZonesModel,
                          const Model::ZoneModel::IdentifierType &aZonesMax);
 
