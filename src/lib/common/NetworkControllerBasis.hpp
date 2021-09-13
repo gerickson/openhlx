@@ -18,8 +18,9 @@
 
 /**
  *    @file
- *      This file defines a base object for realizing a HLX network
- *      controller, either in a client or server context.
+ *      This file defines a base object for realizing a HLX Ethernet
+ *      network interface controller, either in a client or server
+ *      context.
  *
  */
 

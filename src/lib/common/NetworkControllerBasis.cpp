@@ -18,7 +18,9 @@
 
 /**
  *    @file
- *      This file implements...
+ *      This file implements a base object for realizing a HLX Ethernet
+ *      network interface controller, either in a client or server
+ *      context.
  *
  */
 
