@@ -37,6 +37,7 @@
 #include <OpenHLX/Client/CommandExchangeBasis.hpp>
 #include <OpenHLX/Client/ConnectionManager.hpp>
 #include <OpenHLX/Client/ConnectionManagerDelegate.hpp>
+#include <OpenHLX/Common/ConnectionBasis.hpp>
 #include <OpenHLX/Common/ConnectionBuffer.hpp>
 #include <OpenHLX/Common/ConnectionManagerApplicationDataDelegate.hpp>
 #include <OpenHLX/Common/Errors.hpp>
@@ -48,12 +49,6 @@
 
 namespace HLX
 {
-
-namespace Common
-{
-    class ConnectionBasis;
-
-};
 
 namespace Client
 {
@@ -130,10 +125,39 @@ public:
 
     // Resolve Methods
 
-    void ConnectionManagerWillResolve(Common::ConnectionManagerBasis &aConnectionManager, const Common::ConnectionManagerBasis::Roles &aRoles, const char *aHost) final;
-    void ConnectionManagerIsResolving(Common::ConnectionManagerBasis &aConnectionManager, const Common::ConnectionManagerBasis::Roles &aRoles, const char *aHost) final;
-    void ConnectionManagerDidResolve(Common::ConnectionManagerBasis &aConnectionManager, const Common::ConnectionManagerBasis::Roles &aRoles, const char *aHost, const Common::IPAddress &aIPAddress) final;
-    void ConnectionManagerDidNotResolve(Common::ConnectionManagerBasis &aConnectionManager, const Common::ConnectionManagerBasis::Roles &aRoles, const char *aHost, const Common::Error &aError) final;
+    void ConnectionManagerWillResolve(Common::ConnectionManagerBasis &aConnectionManager,
+                                      const Common::ConnectionManagerBasis::Roles &aRoles,
+                                      const char *aHost) final;
+    void ConnectionManagerIsResolving(Common::ConnectionManagerBasis &aConnectionManager,
+                                      const Common::ConnectionManagerBasis::Roles &aRoles,
+                                      const char *aHost) final;
+    void ConnectionManagerDidResolve(Common::ConnectionManagerBasis &aConnectionManager,
+                                     const Common::ConnectionManagerBasis::Roles &aRoles,
+                                     const char *aHost, const Common::IPAddress &aIPAddress) final;
+
+    /**
+     *  @brief
+     *    Delegation from the connection manager that a host name did
+     *    not resolve.
+     *
+     *  @param[in]  aConnectionManager  A reference to the connection
+     *                                  manager that issued the delegation.
+     *  @param[in]  aRoles              An immutable reference to the roles
+     *                                  in which the connection manager
+     *                                  that issued the delegation is
+     *                                  acting.
+     *  @param[in]  aHost               A pointer to a null-terminated C
+     *                                  string containing the host
+     *                                  name that did not resolve.
+     *  @param[in]  aError              An immutable reference to the error
+     *                                  associated with the failed
+     *                                  resolution.
+     *
+     */
+    void ConnectionManagerDidNotResolve(Common::ConnectionManagerBasis &aConnectionManager,
+                                        const Common::ConnectionManagerBasis::Roles &aRoles,
+                                        const char *aHost,
+                                        const Common::Error &aError) final;
 
     // Connect Methods
 
@@ -151,11 +175,73 @@ public:
     // Disconnect Methods
 
     void ConnectionManagerWillDisconnect(Common::ConnectionManagerBasis &aConnectionManager, const Common::ConnectionManagerBasis::Roles &aRoles, CFURLRef aURLRef) final;
-    void ConnectionManagerDidDisconnect(Common::ConnectionManagerBasis &aConnectionManager, const Common::ConnectionManagerBasis::Roles &aRoles, CFURLRef aURLRef, const Common::Error &aError) final;
-    void ConnectionManagerDidNotDisconnect(Common::ConnectionManagerBasis &aConnectionManager, const Common::ConnectionManagerBasis::Roles &aRoles, CFURLRef aURLRef, const Common::Error &aError) final;
+
+    /**
+     *  @brief
+     *    Delegation from the connection manager that a connection to a
+     *    peer server did disconnect.
+     *
+     *  @param[in]  aConnectionManager  A reference to the connection manager
+     *                                  that issued the delegation.
+     *  @param[in]  aRoles              An immutable reference to the roles
+     *                                  in which the connection manager
+     *                                  that issued the delegation is
+     *                                  acting.
+     *  @param[in]  aURLRef             The URL associated with the peer
+     *                                  server.
+     *  @param[in]  aError              An immutable reference to the error
+     *                                  associated with the disconnection.
+     *
+     */
+    void ConnectionManagerDidDisconnect(Common::ConnectionManagerBasis &aConnectionManager,
+                                        const Common::ConnectionManagerBasis::Roles &aRoles,
+                                        CFURLRef aURLRef,
+                                        const Common::Error &aError) final;
+
+    /**
+     *  @brief
+     *    Delegation from the connection manager that a connection to a
+     *    peer server did not disconnect.
+     *
+     *  @param[in]  aConnectionManager  A reference to the connection manager
+     *                                  that issued the delegation.
+     *  @param[in]  aRoles              An immutable reference to the roles
+     *                                  in which the connection manager
+     *                                  that issued the delegation is
+     *                                  acting.
+     *  @param[in]  aURLRef             The URL associated with the peer
+                                        server.
+     *  @param[in]  aError              An immutable reference to the error
+     *                                  associated with the failed
+     *                                  disconnection.
+     *
+     */
+    void ConnectionManagerDidNotDisconnect(Common::ConnectionManagerBasis &aConnectionManager,
+                                           const Common::ConnectionManagerBasis::Roles &aRoles,
+                                           CFURLRef aURLRef,
+                                           const Common::Error &aError) final;
 
     // Error Method
 
+    /**
+     *  @brief
+     *    Delegation from the connection manager that a connection to a
+     *    peer server experienced an error.
+     *
+     *  @note
+     *    This delegation may occur along with other delegations with
+     *    respect to the same underlying event or cause.
+     *
+     *  @param[in]  aConnectionManager  A reference to the connection manager
+     *                                  that issued the delegation.
+     *  @param[in]  aRoles              An immutable reference to the roles
+     *                                  in which the connection manager
+     *                                  that issued the delegation is
+     *                                  acting.
+     *  @param[in]  aError              An immutable reference to the error
+     *                                  associated with the event.
+     *
+     */
     void ConnectionManagerError(Common::ConnectionManagerBasis &aConnectionManager, const Common::ConnectionManagerBasis::Roles &aRoles, const Common::Error &aError) final;
 
     // Run Loop Queue Delegate Methods
