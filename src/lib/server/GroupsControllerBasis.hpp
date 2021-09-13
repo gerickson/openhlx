@@ -53,6 +53,24 @@ public:
     virtual ~GroupsControllerBasis(void);
 
 protected:
+    /**
+     *  @brief
+     *    This is a class constructor.
+     *
+     *  This constructs the groups controller with the specified groups
+     *  collection model and the maximum number of allowed groups.
+     *
+     *  @param[in]  aGroupsModel  A mutable reference to the groups
+     *                            collection model to construct the
+     *                            controller with. This is retained by a
+     *                            weak pointer reference and,
+     *                            consequently, must remain in scope for
+     *                            the lifetime of the controller.
+     *  @param[in]  aGroupsMax    An immutable reference to the maximum
+     *                            number of allowed groups managed by the
+     *                            controller.
+     *
+     */
     GroupsControllerBasis(Model::GroupsModel &aGroupsModel,
                           const Model::GroupModel::IdentifierType &aGroupsMax);
 

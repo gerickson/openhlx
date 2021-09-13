@@ -65,6 +65,11 @@ public:
     static Common::Status ValidateIdentifier(const IdentifierType &aGroupIdentifier);
 
 protected:
+    /**
+     *  @brief
+     *    This is the class default constructor.
+     *
+     */
     GroupsControllerBasis(void) = default;
 
     // Initializer(s)

@@ -133,24 +133,10 @@ Server::Command::Groups::SetVolumeRequest       GroupsControllerBasis::kSetVolum
  */
 Server::Command::Groups::ToggleMuteRequest      GroupsControllerBasis::kToggleMuteRequest;
 
-/**
- *  @brief
- *    This is a class constructor.
- *
- *  This constructs the groups controller with the specified groups
- *  collection model and the maximum number of allowed groups.
- *
- *  @param[in]  aGroupsModel  A mutable reference to the groups
- *                            collection model to construct the
- *                            controller with. This is retained by a
- *                            weak pointer reference and,
- *                            consequently, must remain in scope for
- *                            the lifetime of the controller.
- *  @param[in]  aGroupsMax    An immutable reference to the maximum
- *                            number of allowed groups managed by the
- *                            controller.
- *
- */
+// Note: This is documented in the header, rather than in the source
+// as preferred, because Doxygen (1.9.x) does not seem to want to find
+// and match it as documented when done in the source.
+
 GroupsControllerBasis :: GroupsControllerBasis(Model::GroupsModel &aGroupsModel,
                                                const Model::GroupsModel::IdentifierType &aGroupsMax) :
     Server::ObjectControllerBasis(),
