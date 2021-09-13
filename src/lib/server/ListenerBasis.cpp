@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file...
+ *      This file implements a base, derivable object for HLX server
+ *      network connection listeners.
  *
  */
 
