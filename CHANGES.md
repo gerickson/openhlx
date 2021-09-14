@@ -1,4 +1,4 @@
-1.1 (2021-09-03)
+1.1 (2021-09-13)
 
         * Added hlxproxyd, a caching proxy daemon for the HLX control
           protocl and hardware.
