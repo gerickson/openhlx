@@ -1,7 +1,7 @@
 1.1 (2021-09-13)
 
         * Added hlxproxyd, a caching proxy daemon for the HLX control
-          protocl and hardware.
+          protocol and hardware.
 
         * Correctly observe and honor in hlxc the value passed via -t
           or --timeout.
