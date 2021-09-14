@@ -51,6 +51,39 @@ const ZonesControllerBasis::IdentifierType  ZonesControllerBasis::kZonesMax = 24
 
 /**
  *  @brief
+ *    Get the maximum number of supported HLX zones.
+ *
+ *  @param[out]  aZones  The maximum number of HLX zones on success.
+ *
+ *  @retval  kStatus_Success  Unconditionally.
+ *
+ */
+Status
+ZonesControllerBasis :: GetZonesMax(IdentifierType &aZones)
+{
+    Status  lRetval = kStatus_Success;
+
+    aZones = GetZonesMax();
+
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Get the maximum number of supported HLX zones.
+ *
+ *  @returns
+ *    The maximum number of supported HLX zones.
+ *
+ */
+ZonesControllerBasis::IdentifierType
+ZonesControllerBasis :: GetZonesMax(void)
+{
+    return (kZonesMax);
+}
+
+/**
+ *  @brief
  *    Determine whether or not an zone identifier is valid.
  *
  *  This determines whether or not the specified zone
@@ -96,6 +129,27 @@ ZonesControllerBasis :: ValidateIdentifier(const IdentifierType &aZoneIdentifier
     nlREQUIRE_ACTION(aZoneIdentifier <= kZonesMax, done, lRetval = -ERANGE);
 
  done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the zones controller basis.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+ZonesControllerBasis :: Init(void)
+{
+    Status lRetval = kStatus_Success;
+
+    lRetval = mZones.Init(kZonesMax);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
     return (lRetval);
 }
 

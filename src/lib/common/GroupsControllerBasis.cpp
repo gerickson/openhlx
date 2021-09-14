@@ -51,6 +51,39 @@ const GroupsControllerBasis::IdentifierType  GroupsControllerBasis::kGroupsMax =
 
 /**
  *  @brief
+ *    Get the maximum number of supported HLX groups.
+ *
+ *  @param[out]  aGroups  The maximum number of HLX groups on success.
+ *
+ *  @retval  kStatus_Success  Unconditionally.
+ *
+ */
+Status
+GroupsControllerBasis :: GetGroupsMax(IdentifierType &aGroups)
+{
+    Status  lRetval = kStatus_Success;
+
+    aGroups = GetGroupsMax();
+
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Get the maximum number of supported HLX groups.
+ *
+ *  @returns
+ *    The maximum number of supported HLX groups.
+ *
+ */
+GroupsControllerBasis::IdentifierType
+GroupsControllerBasis :: GetGroupsMax(void)
+{
+    return (kGroupsMax);
+}
+
+/**
+ *  @brief
  *    Determine whether or not an group identifier is valid.
  *
  *  This determines whether or not the specified group
@@ -96,6 +129,27 @@ GroupsControllerBasis :: ValidateIdentifier(const IdentifierType &aGroupIdentifi
     nlREQUIRE_ACTION(aGroupIdentifier <= kGroupsMax, done, lRetval = -ERANGE);
 
  done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the groups controller basis.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+GroupsControllerBasis :: Init(void)
+{
+    Status lRetval = kStatus_Success;
+
+    lRetval = mGroups.Init(kGroupsMax);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
     return (lRetval);
 }
 

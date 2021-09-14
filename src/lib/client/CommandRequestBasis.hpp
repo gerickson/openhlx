@@ -23,16 +23,17 @@
  *
  */
 
-#ifndef HLXCLIENTCOMMANDREQUESTBASIS_HPP
-#define HLXCLIENTCOMMANDREQUESTBASIS_HPP
+#ifndef OPENHLXCLIENTCOMMANDREQUESTBASIS_HPP
+#define OPENHLXCLIENTCOMMANDREQUESTBASIS_HPP
 
 #include <vector>
 
 #include <stddef.h>
 
-#include <CommandBufferBasis.hpp>
-#include <CommandRoleDelimitedBuffer.hpp>
+#include <OpenHLX/Common/CommandBufferBasis.hpp>
+#include <OpenHLX/Common/CommandRoleDelimitedBuffer.hpp>
 #include <OpenHLX/Common/Errors.hpp>
+
 
 namespace HLX
 {
@@ -56,7 +57,7 @@ class RequestBasis :
     public Common::Command::BufferBasis,
     public Common::Command::RoleDelimitedBuffer
 {
-protected:
+public:
     RequestBasis(void) = default;
     virtual ~RequestBasis(void) = default;
 
@@ -71,4 +72,4 @@ protected:
 
 }; // namespace HLX
 
-#endif // HLXCLIENTCOMMANDREQUESTBASIS_HPP
+#endif // OPENHLXCLIENTCOMMANDREQUESTBASIS_HPP

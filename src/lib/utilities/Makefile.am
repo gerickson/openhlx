@@ -51,8 +51,7 @@ libopenhlx_utilities_a_include_HEADERS                      = \
     Assert.hpp                                                \
     ElementsOf.hpp                                            \
     Parse.hpp                                                 \
-    RunLoopQueue.hpp                                          \
-    RunLoopQueueDelegate.hpp                                  \
+    Percentage.hpp                                            \
     Utilities.hpp                                             \
     strntol.h                                                 \
     strntoul.h                                                \
@@ -66,7 +65,7 @@ libopenhlx_utilities_a_CPPFLAGS                             = \
 
 libopenhlx_utilities_a_SOURCES                              = \
     Parse.cpp                                                 \
-    RunLoopQueue.cpp                                          \
+    Percentage.cpp                                            \
     strntol.cpp                                               \
     strntoul.cpp                                              \
     $(NULL)

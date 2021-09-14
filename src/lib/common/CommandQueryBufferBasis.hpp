@@ -24,8 +24,8 @@
  *
  */
 
-#ifndef HLXCOMMONCOMMANDQUERYBUFFERBASIS_HPP
-#define HLXCOMMONCOMMANDQUERYBUFFERBASIS_HPP
+#ifndef OPENHLXCOMMONCOMMANDQUERYBUFFERBASIS_HPP
+#define OPENHLXCOMMONCOMMANDQUERYBUFFERBASIS_HPP
 
 #include <vector>
 
@@ -71,6 +71,8 @@ protected:
 
     static Common::Status Init(BufferBasis &aBuffer, const char *aObject);
     static Common::Status Init(BufferBasis &aBuffer, const char *aObject, const IdentifierType &aIdentifier);
+    static Common::Status Init(BufferBasis &aBuffer, const char *aObject, const char *aProperty, const IdentifierType &aIdentifier);
+    static Common::Status Init(BufferBasis &aBuffer, const char *aObject, const char &aProperty, const IdentifierType &aIdentifier);
 };
 
 }; // namespace Command
@@ -79,4 +81,4 @@ protected:
 
 }; // namespace HLX
 
-#endif // HLXCOMMONCOMMANDQUERYBUFFERBASIS_HPP
+#endif // OPENHLXCOMMONCOMMANDQUERYBUFFERBASIS_HPP

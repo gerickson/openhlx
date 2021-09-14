@@ -594,11 +594,11 @@ static void TestSoundModeObservation(nlTestSuite *inSuite, void *inContext __att
 
 static void TestEqualizerBandObservation(nlTestSuite *inSuite, void *inContext __attribute__((unused)))
 {
-    ZoneModel                          lZoneModel_1;
-    ZoneModel                          lZoneModel_2;
+    ZoneModel                           lZoneModel_1;
+    ZoneModel                           lZoneModel_2;
     EqualizerBandModel::IdentifierType  lEqualizerBandIdentifier;
-    const EqualizerBandModel *          lImmutableEqualizerBandModel;
-    EqualizerBandModel *                lMutableEqualizerBandModel;
+    const EqualizerBandModel *          lImmutableEqualizerBandModel = nullptr;
+    EqualizerBandModel *                lMutableEqualizerBandModel = nullptr;
     Status                              lStatus;
 
 
@@ -609,11 +609,11 @@ static void TestEqualizerBandObservation(nlTestSuite *inSuite, void *inContext _
 
     lStatus = lZoneModel_1.GetEqualizerBand(lEqualizerBandIdentifier, lImmutableEqualizerBandModel);
     NL_TEST_ASSERT(inSuite, lStatus == kError_NotInitialized);
-    NL_TEST_ASSERT(inSuite, lImmutableEqualizerBandModel != nullptr);
+    NL_TEST_ASSERT(inSuite, lImmutableEqualizerBandModel == nullptr);
 
     lStatus = lZoneModel_1.GetEqualizerBand(lEqualizerBandIdentifier, lMutableEqualizerBandModel);
     NL_TEST_ASSERT(inSuite, lStatus == kError_NotInitialized);
-    NL_TEST_ASSERT(inSuite, lMutableEqualizerBandModel != nullptr);
+    NL_TEST_ASSERT(inSuite, lMutableEqualizerBandModel == nullptr);
 
     // Test 2: Ensure that a default initialized model returns success
     //         on observation.

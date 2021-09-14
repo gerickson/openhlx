@@ -23,12 +23,13 @@
  *
  */
 
-#ifndef HLXCLIENTCOMMANDEQUALIZERBANDREQUESTBASIS_HPP
-#define HLXCLIENTCOMMANDEQUALIZERBANDREQUESTBASIS_HPP
+#ifndef OPENHLXCLIENTCOMMANDEQUALIZERBANDREQUESTBASIS_HPP
+#define OPENHLXCLIENTCOMMANDEQUALIZERBANDREQUESTBASIS_HPP
 
-#include <CommandRequestBasis.hpp>
-#include <CommandEqualizerBufferBases.hpp>
+#include <OpenHLX/Client/CommandRequestBasis.hpp>
+#include <OpenHLX/Common/CommandEqualizerBufferBases.hpp>
 #include <OpenHLX/Common/Errors.hpp>
+
 
 namespace HLX
 {
@@ -131,4 +132,4 @@ protected:
 
 }; // namespace HLX
 
-#endif // HLXCLIENTCOMMANDEQUALIZERBANDREQUESTBASIS_HPP
+#endif // OPENHLXCLIENTCOMMANDEQUALIZERBANDREQUESTBASIS_HPP

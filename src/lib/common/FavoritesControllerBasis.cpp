@@ -51,6 +51,39 @@ const FavoritesControllerBasis::IdentifierType  FavoritesControllerBasis::kFavor
 
 /**
  *  @brief
+ *    Get the maximum number of supported HLX favorites.
+ *
+ *  @param[out]  aFavorites  The maximum number of HLX favorites on success.
+ *
+ *  @retval  kStatus_Success  Unconditionally.
+ *
+ */
+Status
+FavoritesControllerBasis :: GetFavoritesMax(IdentifierType &aFavorites)
+{
+    Status  lRetval = kStatus_Success;
+
+    aFavorites = GetFavoritesMax();
+
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Get the maximum number of supported HLX favorites.
+ *
+ *  @returns
+ *    The maximum number of supported HLX favorites.
+ *
+ */
+FavoritesControllerBasis::IdentifierType
+FavoritesControllerBasis :: GetFavoritesMax(void)
+{
+    return (kFavoritesMax);
+}
+
+/**
+ *  @brief
  *    Determine whether or not an favorite identifier is valid.
  *
  *  This determines whether or not the specified favorite
@@ -96,6 +129,27 @@ FavoritesControllerBasis :: ValidateIdentifier(const IdentifierType &aFavoriteId
     nlREQUIRE_ACTION(aFavoriteIdentifier <= kFavoritesMax, done, lRetval = -ERANGE);
 
  done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the favorites controller basis.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+FavoritesControllerBasis :: Init(void)
+{
+    Status lRetval = kStatus_Success;
+
+    lRetval = mFavorites.Init(kFavoritesMax);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
     return (lRetval);
 }
 

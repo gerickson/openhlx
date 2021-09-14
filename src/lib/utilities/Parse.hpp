@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXPARSE_HPP
-#define HLXPARSE_HPP
+#ifndef OPENHLXPARSE_HPP
+#define OPENHLXPARSE_HPP
 
 #include <stddef.h>
 #include <stdint.h>
@@ -41,11 +41,13 @@ extern Common::Status Parse(const char *aBuffer, const size_t &aBufferLength, bo
 extern Common::Status Parse(const char *aBuffer, const size_t &aBufferLength, int8_t &aValue);
 extern Common::Status Parse(const char *aBuffer, const size_t &aBufferLength, uint8_t &aValue);
 extern Common::Status Parse(const char *aBuffer, const size_t &aBufferLength, uint16_t &aValue);
+extern Common::Status Parse(const char *aBuffer, const size_t &aBufferLength, uint32_t &aValue);
 
 extern Common::Status Parse(const char *aString, bool &aValue);
 extern Common::Status Parse(const char *aString, int8_t &aValue);
-extern Common::Status Parse(const char *aString, uint16_t &aValue);
 extern Common::Status Parse(const char *aString, uint8_t &aValue);
+extern Common::Status Parse(const char *aString, uint16_t &aValue);
+extern Common::Status Parse(const char *aString, uint32_t &aValue);
 
 /**
  *  @brief
@@ -222,4 +224,4 @@ inline Common::Status Parse(const uint8_t *aString, uint8_t &aValue)
 
 }; // namespace HLX
 
-#endif // HLXPARSE_HPP
+#endif // OPENHLXPARSE_HPP

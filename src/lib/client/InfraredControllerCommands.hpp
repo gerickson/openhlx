@@ -23,16 +23,15 @@
  *
  */
 
-#ifndef HLXCLIENTINFRAREDCONTROLLERCOMMANDS_HPP
-#define HLXCLIENTINFRAREDCONTROLLERCOMMANDS_HPP
+#ifndef OPENHLXCLIENTINFRAREDCONTROLLERCOMMANDS_HPP
+#define OPENHLXCLIENTINFRAREDCONTROLLERCOMMANDS_HPP
 
+#include <OpenHLX/Client/CommandExchangeBasis.hpp>
+#include <OpenHLX/Client/CommandQueryRequestBasis.hpp>
+#include <OpenHLX/Client/CommandResponseBasis.hpp>
+#include <OpenHLX/Common/CommandInfraredBufferBases.hpp>
+#include <OpenHLX/Common/CommandInfraredRegularExpressionBases.hpp>
 #include <OpenHLX/Common/Errors.hpp>
-
-#include <CommandExchangeBasis.hpp>
-#include <CommandInfraredBufferBases.hpp>
-#include <CommandInfraredRegularExpressionBases.hpp>
-#include <CommandQueryRequestBasis.hpp>
-#include <CommandResponseBasis.hpp>
 #include <OpenHLX/Model/InfraredModel.hpp>
 
 
@@ -212,4 +211,4 @@ private:
 
 }; // namespace HLX
 
-#endif // HLXCLIENTINFRAREDCONTROLLERCOMMANDS_HPP
+#endif // OPENHLXCLIENTINFRAREDCONTROLLERCOMMANDS_HPP

@@ -23,21 +23,23 @@
  *
  */
 
-#ifndef HLXSERVERFAVORITESCONTROLLER_HPP
-#define HLXSERVERFAVORITESCONTROLLER_HPP
+#ifndef OPENHLXSIMULATORFAVORITESCONTROLLER_HPP
+#define OPENHLXSIMULATORFAVORITESCONTROLLER_HPP
 
-#include <ContainerControllerBasis.hpp>
-#include <ControllerBasis.hpp>
-#include <FavoritesControllerBasis.hpp>
-#include <FavoritesControllerCommands.hpp>
+#include <OpenHLX/Common/FavoritesControllerBasis.hpp>
 #include <OpenHLX/Model/FavoriteModel.hpp>
 #include <OpenHLX/Model/FavoritesModel.hpp>
+#include <OpenHLX/Server/FavoritesControllerBasis.hpp>
+#include <OpenHLX/Server/FavoritesControllerCommands.hpp>
+
+#include "ContainerControllerBasis.hpp"
+#include "ObjectControllerBasis.hpp"
 
 
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
 
 /**
@@ -50,52 +52,46 @@ namespace Server
  *
  */
 class FavoritesController :
-    public ControllerBasis,
-    public ContainerControllerBasis,
-    public Common::FavoritesControllerBasis
+    public Common::FavoritesControllerBasis,
+    public Server::FavoritesControllerBasis,
+    public Simulator::ContainerControllerBasis,
+    public Simulator::ObjectControllerBasis
 {
 public:
     FavoritesController(void);
     virtual ~FavoritesController(void);
 
-    Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
+    // Initializer(s)
+
+    Common::Status Init(Server::CommandManager &aCommandManager) final;
 
     // Configuration Management Methods
 
     Common::Status LoadFromBackupConfiguration(CFDictionaryRef aBackupDictionary) final;
-    void QueryCurrentConfiguration(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const final;
+    void QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const final;
     void ResetToDefaultConfiguration(void) final;
     void SaveToBackupConfiguration(CFMutableDictionaryRef aBackupDictionary) final;
 
     // Command Request Handler Trampolines
 
-    static void QueryRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SetNameRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
-    Common::Status RequestInit(void);
     Common::Status DoRequestHandlers(const bool &aRegister);
 
     Common::Status ElementLoadFromBackupConfiguration(CFDictionaryRef aFavoritesDictionary, const IdentifierType &aFavoriteIdentifier) final;
     Common::Status ElementSaveToBackupConfiguration(CFMutableDictionaryRef aFavoritesDictionary, const IdentifierType &aFavoriteIdentifier) const final;
 
-    Common::Status HandleQueryReceived(const IdentifierType &aFavoriteIdentifier, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
-
     // Command Completion Handlers
 
-    void QueryRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void SetNameRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 
-private:
-    Model::FavoritesModel                      mFavorites;
-
-private:
-    static Command::Favorites::QueryRequest    kQueryRequest;
-    static Command::Favorites::SetNameRequest  kSetNameRequest;
 };
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX
 
-#endif // HLXSERVERFAVORITESCONTROLLER_HPP
+#endif // OPENHLXSIMULATORFAVORITESCONTROLLER_HPP

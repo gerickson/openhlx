@@ -18,12 +18,14 @@
 
 /**
  *    @file
- *      This file...
+ *      This file defines an object for working with Internet Protocol
+ *      version 4 (that is, IPv4) and version 6 (that is, IPv6)
+ *      addresses.
  *
  */
 
-#ifndef HLXCOMMONIPADDRESS_HPP
-#define HLXCOMMONIPADDRESS_HPP
+#ifndef OPENHLXCOMMONIPADDRESS_HPP
+#define OPENHLXCOMMONIPADDRESS_HPP
 
 #include <stdint.h>
 
@@ -94,4 +96,4 @@ private:
 
 }; // namespace HLX
 
-#endif // HLXCOMMONIPADDRESS_HPP
+#endif // OPENHLXCOMMONIPADDRESS_HPP

@@ -24,24 +24,26 @@
  *
  */
 
-#ifndef HLXSERVEREQUALIZERPRESETSCONTROLLER_HPP
-#define HLXSERVEREQUALIZERPRESETSCONTROLLER_HPP
+#ifndef OPENHLXSIMULATOREQUALIZERPRESETSCONTROLLER_HPP
+#define OPENHLXSIMULATOREQUALIZERPRESETSCONTROLLER_HPP
 
 #include <stddef.h>
 #include <stdint.h>
 
-#include <ContainerControllerBasis.hpp>
-#include <ControllerBasis.hpp>
-#include <EqualizerPresetsControllerBasis.hpp>
-#include <EqualizerPresetsControllerCommands.hpp>
+#include <OpenHLX/Common/EqualizerPresetsControllerBasis.hpp>
 #include <OpenHLX/Model/EqualizerPresetModel.hpp>
 #include <OpenHLX/Model/EqualizerPresetsModel.hpp>
+#include <OpenHLX/Server/EqualizerPresetsControllerBasis.hpp>
+#include <OpenHLX/Server/EqualizerPresetsControllerCommands.hpp>
+
+#include "ContainerControllerBasis.hpp"
+#include "ObjectControllerBasis.hpp"
 
 
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
 
 /**
@@ -54,33 +56,35 @@ namespace Server
  *
  */
 class EqualizerPresetsController :
-    public ControllerBasis,
-    public ContainerControllerBasis,
-    public Common::EqualizerPresetsControllerBasis
+    public Common::EqualizerPresetsControllerBasis,
+    public Server::EqualizerPresetsControllerBasis,
+    public Simulator::ContainerControllerBasis,
+    public Simulator::ObjectControllerBasis
 {
 public:
     EqualizerPresetsController(void);
     virtual ~EqualizerPresetsController(void);
 
-    Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
+    // Initializer(s)
+
+    Common::Status Init(Server::CommandManager &aCommandManager) final;
 
     // Configuration Management Methods
 
     Common::Status LoadFromBackupConfiguration(CFDictionaryRef aBackupDictionary) final;
-    void QueryCurrentConfiguration(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const final;
+    void QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const final;
     void ResetToDefaultConfiguration(void) final;
     void SaveToBackupConfiguration(CFMutableDictionaryRef aBackupDictionary) final;
 
     // Command Request Handler Trampolines
 
-    static void DecreaseBandRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void IncreaseBandRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void QueryRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SetBandRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SetNameRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void DecreaseBandRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void IncreaseBandRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void SetBandRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
-    Common::Status RequestInit(void);
     Common::Status DoRequestHandlers(const bool &aRegister);
 
     Common::Status EqualizerPresetEqualizerLoadFromBackupConfiguration(CFDictionaryRef aEqualizerPresetDictionary, Model::EqualizerPresetModel &aEqualizerPresetModel);
@@ -90,35 +94,23 @@ private:
 
     Common::Status GetEqualizerBand(const IdentifierType &aEqualizerPresetIdentifier, const Model::EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier, Model::EqualizerBandModel *&aEqualizerBandModel);
 
-    Common::Status HandleQueryReceived(const IdentifierType &aEqualizerPresetIdentifier, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
 
-    Common::Status HandleAdjustBandReceived(ConnectionBasis &aConnection, const IdentifierType &aEqualizerPresetIdentifier, const Model::EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier, const Model::EqualizerBandModel::LevelType &aBandAdjustment);
+    Common::Status HandleAdjustBandReceived(Server::ConnectionBasis &aConnection, const IdentifierType &aEqualizerPresetIdentifier, const Model::EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier, const Model::EqualizerBandModel::LevelType &aBandAdjustment);
     Common::Status HandleAdjustBandReceived(const IdentifierType &aEqualizerPresetIdentifier, const Model::EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier, const Model::EqualizerBandModel::LevelType &aBandAdjustment, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
     Common::Status HandleSetBandReceived(const IdentifierType &aEqualizerPresetIdentifier, const Model::EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier, const Model::EqualizerBandModel::LevelType &aBandLevel, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
 
-    static Common::Status HandleBandResponse(const IdentifierType &aEqualizerPresetIdentifier, const Model::EqualizerBandModel::IdentifierType &aEqualizerBandIdentifier, const Model::EqualizerBandModel::LevelType &aBandLevel, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
 
     // Command Completion Handlers
 
-    void DecreaseBandRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void IncreaseBandRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void QueryRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void SetBandRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void SetNameRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-
-private:
-    Model::EqualizerPresetsModel                           mEqualizerPresets;
-
-private:
-    static Command::EqualizerPresets::DecreaseBandRequest  kDecreaseBandRequest;
-    static Command::EqualizerPresets::IncreaseBandRequest  kIncreaseBandRequest;
-    static Command::EqualizerPresets::QueryRequest         kQueryRequest;
-    static Command::EqualizerPresets::SetBandRequest       kSetBandRequest;
-    static Command::EqualizerPresets::SetNameRequest       kSetNameRequest;
+    void DecreaseBandRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void IncreaseBandRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void SetBandRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 };
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX
 
-#endif // HLXSERVEREQUALIZERPRESETSCONTROLLER_HPP
+#endif // OPENHLXSIMULATOREQUALIZERPRESETSCONTROLLER_HPP

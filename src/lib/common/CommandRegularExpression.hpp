@@ -24,8 +24,8 @@
  *
  */
 
-#ifndef HLXCOMMONCOMMANDREGULAREXPRESSION_HPP
-#define HLXCOMMONCOMMANDREGULAREXPRESSION_HPP
+#ifndef OPENHLXCOMMONCOMMANDREGULAREXPRESSION_HPP
+#define OPENHLXCOMMONCOMMANDREGULAREXPRESSION_HPP
 
 #include <vector>
 
@@ -56,11 +56,13 @@ namespace Command
  */
 class RegularExpression
 {
-protected:
-    RegularExpression(void) = default;
+public:
     virtual ~RegularExpression(void) = default;
 
     Status Init(const char *aRegexp, const size_t &aExpectedMatchCount);
+
+protected:
+    RegularExpression(void) = default;
 
 public:
     const Common::RegularExpression &          GetRegularExpression(void) const;
@@ -81,4 +83,4 @@ private:
 
 }; // namespace HLX
 
-#endif // HLXCOMMONCOMMANDREGULAREXPRESSION_HPP
+#endif // OPENHLXCOMMONCOMMANDREGULAREXPRESSION_HPP

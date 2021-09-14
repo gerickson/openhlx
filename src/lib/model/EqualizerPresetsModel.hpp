@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXMMODELEQUALIZERPRESETSMODEL_HPP
-#define HLXMMODELEQUALIZERPRESETSMODEL_HPP
+#ifndef OPENHLXMMODELEQUALIZERPRESETSMODEL_HPP
+#define OPENHLXMMODELEQUALIZERPRESETSMODEL_HPP
 
 #include <map>
 
@@ -62,7 +62,7 @@ public:
     EqualizerPresetsModel(const EqualizerPresetsModel &aEqualizerPresetsModel);
     virtual ~EqualizerPresetsModel(void) = default;
 
-    Common::Status Init(const size_t &aEqualizerPresetsMax);
+    Common::Status Init(const IdentifierType &aEqualizerPresetsMax);
     Common::Status Init(const EqualizerPresetsModel &aEqualizerPresetsModel);
 
     EqualizerPresetsModel &operator =(const EqualizerPresetsModel &aEqualizerPresetsModel);
@@ -81,7 +81,7 @@ private:
 private:
     typedef std::map<IdentifierType, EqualizerPresetModel> EqualizerPresets;
 
-    size_t            mEqualizerPresetsMax;
+    IdentifierType    mEqualizerPresetsMax;
     EqualizerPresets  mEqualizerPresets;
 };
 
@@ -89,4 +89,4 @@ private:
 
 }; // namespace HLX
 
-#endif // HLXMMODELEQUALIZERPRESETSMODEL_HPP
+#endif // OPENHLXMMODELEQUALIZERPRESETSMODEL_HPP

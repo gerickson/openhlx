@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXCOMMONCONNECTIONMANAGERBASIS_HPP
-#define HLXCOMMONCONNECTIONMANAGERBASIS_HPP
+#ifndef OPENHLXCOMMONCONNECTIONMANAGERBASIS_HPP
+#define OPENHLXCOMMONCONNECTIONMANAGERBASIS_HPP
 
 #include <string>
 #include <vector>
@@ -59,6 +59,30 @@ class ConnectionManagerBasis
 {
 public:
     /**
+     *  Possible role(s) to act in. Use with #Roles.
+     *
+     *  @sa #Roles
+     *
+     */
+    enum Role
+    {
+        kRoleNone   = 0x00, //!< Act in no role.
+        kRoleClient = 0x01, //!< Act in a client or initiator role.
+        kRoleServer = 0x02  //!< Act in a server or responder role.
+    };
+
+    /**
+     *  Type for indicating which role to act in.
+     *
+     *  This is particularly use for disambiguating common delegation
+     *  methods.
+     *
+     *  @sa #Role
+     *
+     */
+    typedef uint8_t Roles;
+
+    /**
      *  Possible IP address versions to use when resolving host names
      *  to IP addresses. Use with #Versions.
      *
@@ -83,7 +107,10 @@ public:
 public:
     virtual ~ConnectionManagerBasis(void) = default;
 
-    Common::Status Init(const Common::RunLoopParameters &aRunLoopParameters);
+    Common::Status Init(const Roles &aRoles,
+                        const Common::RunLoopParameters &aRunLoopParameters);
+
+    const Roles & GetRoles(void) const;
 
     ConnectionManagerApplicationDataDelegate *GetApplicationDataDelegate(void) const;
     Common::Status SetApplicationDataDelegate(ConnectionManagerApplicationDataDelegate *aDelegate);
@@ -156,11 +183,19 @@ protected:
     virtual void OnDidNotResolve(const char *aHost, const Common::Error &aError) = 0;
 
 private:
+    Roles                                       mRoles;
     ConnectionManagerApplicationDataDelegate *  mApplicationDataDelegate;
 };
+
+namespace Utilities
+{
+
+extern ConnectionManagerBasis::Versions GetVersions(const bool &aUseIPv6, const bool &aUseIPv4);
+
+}; // namespace Utilities
 
 }; // namespace Common
 
 }; // namespace HLX
 
-#endif // HLXCOMMONCONNECTIONMANAGERBASIS_HPP
+#endif // OPENHLXCOMMONCONNECTIONMANAGERBASIS_HPP

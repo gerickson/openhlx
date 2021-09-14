@@ -25,11 +25,11 @@
  *
  */
 
-#ifndef HLXCOMMONCOMMANDROLEDELIMITEDREGULAREXPRESSION_HPP
-#define HLXCOMMONCOMMANDROLEDELIMITEDREGULAREXPRESSION_HPP
+#ifndef OPENHLXCOMMONCOMMANDROLEDELIMITEDREGULAREXPRESSION_HPP
+#define OPENHLXCOMMONCOMMANDROLEDELIMITEDREGULAREXPRESSION_HPP
 
-#include <CommandDelimitedRegularExpression.hpp>
-#include <CommandRole.hpp>
+#include <OpenHLX/Common/CommandDelimitedRegularExpression.hpp>
+#include <OpenHLX/Common/CommandRole.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 
 namespace HLX
@@ -71,4 +71,4 @@ protected:
 
 }; // namespace HLX
 
-#endif // HLXCOMMONCOMMANDDELIMITEDREGULAREXPRESSION_HPP
+#endif // OPENHLXCOMMONCOMMANDDELIMITEDREGULAREXPRESSION_HPP

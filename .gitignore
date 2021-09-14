@@ -1,12 +1,15 @@
 *.a
 *.o
 .deps
+.libs
 .dirstamp
 aclocal.m4
 autom4te.cache
+config.cache
 config.log
 config.status
 configure
 libtool
 src/include/openhlx-config.h.in
+Makefile
 Makefile.in

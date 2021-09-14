@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXCOMMONERRORS_HPP
-#define HLXCOMMONERRORS_HPP
+#ifndef OPENHLXCOMMONERRORS_HPP
+#define OPENHLXCOMMONERRORS_HPP
 
 #include <stdint.h>
 
@@ -114,6 +114,16 @@ enum
      */
     kError_HostNameResolution   = -(7 << 8),
 
+    /**
+     *  The peer server disconnected.
+     */
+    kError_ServerDisconnected   = -(8 << 8),
+
+    /**
+     *  An unknown error occurred.
+     */
+    kError_Unknown              = -(255 << 8),
+
     // Positive, non-error status
 
     /**
@@ -131,4 +141,4 @@ enum
 
 }; // namespace HLX
 
-#endif // HLXCOMMONERRORS_HPP
+#endif // OPENHLXCOMMONERRORS_HPP

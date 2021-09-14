@@ -23,11 +23,12 @@
  *
  */
 
-#ifndef HLXCOMMONCONNECTIONMANAGERDELEGATEBASIS_HPP
-#define HLXCOMMONCONNECTIONMANAGERDELEGATEBASIS_HPP
+#ifndef OPENHLXCOMMONCONNECTIONMANAGERDELEGATEBASIS_HPP
+#define OPENHLXCOMMONCONNECTIONMANAGERDELEGATEBASIS_HPP
 
 #include <CoreFoundation/CFURL.h>
 
+#include <OpenHLX/Common/ConnectionManagerBasis.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/IPAddress.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
@@ -38,8 +39,6 @@ namespace HLX
 
 namespace Common
 {
-
-class ConnectionManagerBasis;
 
 /**
  *  @brief
@@ -67,12 +66,16 @@ public:
      *
      *  @param[in]  aConnectionManager  A reference to the connection
      *                                  manager that issued the delegation.
+     *  @param[in]  aRoles              An immutable reference to the roles
+     *                                  in which the connection manager
+     *                                  that issued the delegation is
+     *                                  acting.
      *  @param[in]  aHost               A pointer to a null-terminated C
      *                                  string containing the host
      *                                  name that will resolve.
      *
      */
-    virtual void ConnectionManagerWillResolve(ConnectionManagerBasis &aConnectionManager, const char *aHost) = 0;
+    virtual void ConnectionManagerWillResolve(ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, const char *aHost) = 0;
 
     /**
      *  @brief
@@ -81,12 +84,16 @@ public:
      *
      *  @param[in]  aConnectionManager  A reference to the connection
      *                                  manager that issued the delegation.
+     *  @param[in]  aRoles              An immutable reference to the roles
+     *                                  in which the connection manager
+     *                                  that issued the delegation is
+     *                                  acting.
      *  @param[in]  aHost               A pointer to a null-terminated C
      *                                  string containing the host
      *                                  name that is resolving.
      *
      */
-    virtual void ConnectionManagerIsResolving(ConnectionManagerBasis &aConnectionManager, const char *aHost) = 0;
+    virtual void ConnectionManagerIsResolving(ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, const char *aHost) = 0;
 
     /**
      *  @brief
@@ -100,6 +107,10 @@ public:
      *
      *  @param[in]  aConnectionManager  A reference to the connection
      *                                  manager that issued the delegation.
+     *  @param[in]  aRoles              An immutable reference to the roles
+     *                                  in which the connection manager
+     *                                  that issued the delegation is
+     *                                  acting.
      *  @param[in]  aHost               A pointer to a null-terminated C
      *                                  string containing the host
      *                                  name that did resolve.
@@ -108,7 +119,7 @@ public:
      *                                  resolved to.
      *
      */
-    virtual void ConnectionManagerDidResolve(ConnectionManagerBasis &aConnectionManager, const char *aHost, const Common::IPAddress &aIPAddress) = 0;
+    virtual void ConnectionManagerDidResolve(ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, const char *aHost, const Common::IPAddress &aIPAddress) = 0;
 
     /**
      *  @brief
@@ -117,6 +128,10 @@ public:
      *
      *  @param[in]  aConnectionManager  A reference to the connection
      *                                  manager that issued the delegation.
+     *  @param[in]  aRoles              An immutable reference to the roles
+     *                                  in which the connection manager
+     *                                  that issued the delegation is
+     *                                  acting.
      *  @param[in]  aHost               A pointer to a null-terminated C
      *                                  string containing the host
      *                                  name that did not resolve.
@@ -125,7 +140,7 @@ public:
      *                                  resolution.
      *
      */
-    virtual void ConnectionManagerDidNotResolve(ConnectionManagerBasis &aConnectionManager, const char *aHost, const Common::Error &aError) = 0;
+    virtual void ConnectionManagerDidNotResolve(ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, const char *aHost, const Common::Error &aError) = 0;
 
     // Disconnect
 
@@ -136,11 +151,15 @@ public:
      *
      *  @param[in]  aConnectionManager  A reference to the connection
      *                                  manager that issued the delegation.
+     *  @param[in]  aRoles              An immutable reference to the roles
+     *                                  in which the connection manager
+     *                                  that issued the delegation is
+     *                                  acting.
      *  @param[in]  aURLRef             The URL associated with the peer
      *                                  server.
      *
      */
-    virtual void ConnectionManagerWillDisconnect(ConnectionManagerBasis &aConnectionManager, CFURLRef aURLRef) = 0;
+    virtual void ConnectionManagerWillDisconnect(ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, CFURLRef aURLRef) = 0;
 
     /**
      *  @brief
@@ -149,13 +168,17 @@ public:
      *
      *  @param[in]  aConnectionManager  A reference to the connection
      *                                  manager that issued the delegation.
+     *  @param[in]  aRoles              An immutable reference to the roles
+     *                                  in which the connection manager
+     *                                  that issued the delegation is
+     *                                  acting.
      *  @param[in]  aURLRef             The URL associated with the peer
      *                                  server.
      *  @param[in]  aError              An immutable reference to the error
      *                                  associated with the disconnection.
      *
      */
-    virtual void ConnectionManagerDidDisconnect(ConnectionManagerBasis &aConnectionManager, CFURLRef aURLRef, const Common::Error &aError) = 0;
+    virtual void ConnectionManagerDidDisconnect(ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, CFURLRef aURLRef, const Common::Error &aError) = 0;
 
     /**
      *  @brief
@@ -164,6 +187,10 @@ public:
      *
      *  @param[in]  aConnectionManager  A reference to the connection
      *                                  manager that issued the delegation.
+     *  @param[in]  aRoles              An immutable reference to the roles
+     *                                  in which the connection manager
+     *                                  that issued the delegation is
+     *                                  acting.
      *  @param[in]  aURLRef             The URL associated with the peer
      *                                  server.
      *  @param[in]  aError              An immutable reference to the error
@@ -171,7 +198,7 @@ public:
      *                                  disconnection.
      *
      */
-    virtual void ConnectionManagerDidNotDisconnect(ConnectionManagerBasis &aConnectionManager, CFURLRef aURLRef, const Common::Error &aError) = 0;
+    virtual void ConnectionManagerDidNotDisconnect(ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, CFURLRef aURLRef, const Common::Error &aError) = 0;
 
     // Error
 
@@ -186,15 +213,19 @@ public:
      *
      *  @param[in]  aConnectionManager  A reference to the connection
      *                                  manager that issued the delegation.
+     *  @param[in]  aRoles              An immutable reference to the roles
+     *                                  in which the connection manager
+     *                                  that issued the delegation is
+     *                                  acting.
      *  @param[in]  aError              An immutable reference to the error
      *                                  associated with the event.
      *
      */
-    virtual void ConnectionManagerError(ConnectionManagerBasis &aConnectionManager, const Common::Error &aError) = 0;
+    virtual void ConnectionManagerError(ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, const Common::Error &aError) = 0;
 };
 
 }; // namespace Common
 
 }; // namespace HLX
 
-#endif // HLXCOMMONCONNECTIONMANAGERDELEGATEBASIS_HPP
+#endif // OPENHLXCOMMONCONNECTIONMANAGERDELEGATEBASIS_HPP

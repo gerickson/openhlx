@@ -23,10 +23,12 @@
  *
  */
 
-#ifndef HLXCOMMONGROUPSCONTROLLERBASIS_HPP
-#define HLXCOMMONGROUPSCONTROLLERBASIS_HPP
+#ifndef OPENHLXCOMMONGROUPSCONTROLLERBASIS_HPP
+#define OPENHLXCOMMONGROUPSCONTROLLERBASIS_HPP
 
 #include <OpenHLX/Model/GroupModel.hpp>
+#include <OpenHLX/Model/GroupsModel.hpp>
+
 
 namespace HLX
 {
@@ -56,11 +58,31 @@ public:
 
     // Observer Methods
 
+    static Common::Status GetGroupsMax(IdentifierType &aGroups);
+    static IdentifierType GetGroupsMax(void);
+
     static bool           IsValidIdentifier(const IdentifierType &aGroupIdentifier);
     static Common::Status ValidateIdentifier(const IdentifierType &aGroupIdentifier);
 
 protected:
+    /**
+     *  @brief
+     *    This is the class default constructor.
+     *
+     */
     GroupsControllerBasis(void) = default;
+
+    // Initializer(s)
+
+    Common::Status Init(void);
+
+protected:
+    /**
+     *  The groups collection model for all client and server
+     *  controllers.
+     *
+     */
+    Model::GroupsModel           mGroups;
 
 protected:
     static const IdentifierType  kGroupsMax;
@@ -70,4 +92,4 @@ protected:
 
 }; // namespace HLX
 
-#endif // HLXCOMMONGROUPSCONTROLLERBASIS_HPP
+#endif // OPENHLXCOMMONGROUPSCONTROLLERBASIS_HPP

@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXCOMMONHOSTURL_HPP
-#define HLXCOMMONHOSTURL_HPP
+#ifndef OPENHLXCOMMONHOSTURL_HPP
+#define OPENHLXCOMMONHOSTURL_HPP
 
 #include <CoreFoundation/CFURL.h>
 
@@ -74,4 +74,4 @@ private:
 
 }; // namespace HLX
 
-#endif // HLXCOMMONHOSTURL_HPP
+#endif // OPENHLXCOMMONHOSTURL_HPP

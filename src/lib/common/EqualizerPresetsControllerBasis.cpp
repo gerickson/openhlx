@@ -51,6 +51,40 @@ const EqualizerPresetsControllerBasis::IdentifierType  EqualizerPresetsControlle
 
 /**
  *  @brief
+ *    Get the maximum number of supported HLX equalizer presets.
+ *
+ *  @param[out]  aEqualizerPresets  The maximum number of HLX
+ *                                  equalizer presets on success.
+ *
+ *  @retval  kStatus_Success  Unconditionally.
+ *
+ */
+Status
+EqualizerPresetsControllerBasis :: GetEqualizerPresetsMax(IdentifierType &aEqualizerPresets)
+{
+    Status  lRetval = kStatus_Success;
+
+    aEqualizerPresets = GetEqualizerPresetsMax();
+
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Get the maximum number of supported HLX equalizer presets.
+ *
+ *  @returns
+ *    The maximum number of supported HLX equalizer presets.
+ *
+ */
+EqualizerPresetsControllerBasis::IdentifierType
+EqualizerPresetsControllerBasis :: GetEqualizerPresetsMax(void)
+{
+    return (kEqualizerPresetsMax);
+}
+
+/**
+ *  @brief
  *    Determine whether or not an equalizer preset identifier is valid.
  *
  *  This determines whether or not the specified equalizer preset
@@ -98,6 +132,27 @@ EqualizerPresetsControllerBasis :: ValidateIdentifier(const IdentifierType &aEqu
     nlREQUIRE_ACTION(aEqualizerPresetIdentifier <= kEqualizerPresetsMax, done, lRetval = -ERANGE);
 
  done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the equalizer presets controller basis.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+EqualizerPresetsControllerBasis :: Init(void)
+{
+    Status lRetval = kStatus_Success;
+
+    lRetval = mEqualizerPresets.Init(kEqualizerPresetsMax);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
     return (lRetval);
 }
 

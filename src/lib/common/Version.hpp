@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXCOMMONVERSION_HPP
-#define HLXCOMMONVERSION_HPP
+#ifndef OPENHLXCOMMONVERSION_HPP
+#define OPENHLXCOMMONVERSION_HPP
 
  #include <stdint.h>
 
@@ -57,4 +57,4 @@ extern Version::Component GetVersionPatch(const Version::Code &aCode);
 
 }; // namespace HLX
 
-#endif // HLXCOMMONVERSION_HPP
+#endif // OPENHLXCOMMONVERSION_HPP

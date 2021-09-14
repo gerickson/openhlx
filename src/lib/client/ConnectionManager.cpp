@@ -143,8 +143,10 @@ done:
  */
 ConnectionManager :: ConnectionManager(void) :
     ConnectionManagerBasis(),
+    mRunLoopParameters(),
     mConnectionFactory(),
     mConnection(nullptr),
+    mConnectionTimer(),
     mDelegates()
 {
     return;
@@ -169,14 +171,17 @@ ConnectionManager :: ConnectionManager(void) :
 Status
 ConnectionManager :: Init(const RunLoopParameters &aRunLoopParameters)
 {
+    static const ConnectionManagerBasis::Roles kRoles = kRoleClient;
     Status lRetval = kStatus_Success;
 
 
-    lRetval = ConnectionManagerBasis::Init(aRunLoopParameters);
+    lRetval = ConnectionManagerBasis::Init(kRoles, aRunLoopParameters);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mConnectionFactory.Init(aRunLoopParameters);
     nlREQUIRE_SUCCESS(lRetval, done);
+
+    mRunLoopParameters = aRunLoopParameters;
 
 done:
     return (lRetval);
@@ -380,6 +385,7 @@ ConnectionManager :: Connect(CFURLRef aURLRef,
     ConnectionBasis * lConnection = nullptr;
     Status            lRetval = kStatus_Success;
 
+
     // If there is already a non-null connection, then there is an
     // active connection or one in flight. If that's the case, return
     // the appropriate error.
@@ -400,8 +406,23 @@ ConnectionManager :: Connect(CFURLRef aURLRef,
         nlREQUIRE_SUCCESS(lRetval, done);
     }
 
+    if (aTimeout.IsMilliseconds())
+    {
+        lRetval = mConnectionTimer.Init(mRunLoopParameters, aTimeout);
+        nlREQUIRE_SUCCESS(lRetval, done);
+
+        lRetval = mConnectionTimer.SetDelegate(this);
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
+
     lRetval = mConnection->Connect(aURLRef, aTimeout);
     nlREQUIRE_SUCCESS(lRetval, done);
+
+    if (aTimeout.IsMilliseconds())
+    {
+        lRetval = mConnectionTimer.Start();
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
 
 done:
     return (lRetval);
@@ -557,7 +578,7 @@ ConnectionManager :: OnWillResolve(const char *aHost)
 
         while (begin != end)
         {
-            (*begin)->ConnectionManagerWillResolve(*this, aHost);
+            (*begin)->ConnectionManagerWillResolve(*this, GetRoles(), aHost);
 
             ++begin;
         }
@@ -574,7 +595,7 @@ ConnectionManager :: OnIsResolving(const char *aHost)
 
         while (begin != end)
         {
-            (*begin)->ConnectionManagerIsResolving(*this, aHost);
+            (*begin)->ConnectionManagerIsResolving(*this, GetRoles(), aHost);
 
             ++begin;
         }
@@ -591,7 +612,7 @@ ConnectionManager :: OnDidResolve(const char *aHost, const IPAddress &aIPAddress
 
         while (begin != end)
         {
-            (*begin)->ConnectionManagerDidResolve(*this, aHost, aIPAddress);
+            (*begin)->ConnectionManagerDidResolve(*this, GetRoles(), aHost, aIPAddress);
 
             ++begin;
         }
@@ -608,7 +629,7 @@ ConnectionManager :: OnDidNotResolve(const char *aHost, const Common::Error &aEr
 
         while (begin != end)
         {
-            (*begin)->ConnectionManagerDidNotResolve(*this, aHost, aError);
+            (*begin)->ConnectionManagerDidNotResolve(*this, GetRoles(), aHost, aError);
 
             ++begin;
         }
@@ -694,6 +715,8 @@ ConnectionManager :: ConnectionDidConnect(ConnectionBasis &aConnection, CFURLRef
 {
     (void)aConnection;
 
+    mConnectionTimer.Destroy();
+
     if (!mDelegates.empty())
     {
         ConnectionManagerDelegates::iterator begin = mDelegates.begin();
@@ -724,6 +747,8 @@ void
 ConnectionManager :: ConnectionDidNotConnect(ConnectionBasis &aConnection, CFURLRef aURLRef, const Common::Error &aError)
 {
     (void)aConnection;
+
+    mConnectionTimer.Destroy();
 
     if (!mDelegates.empty())
     {
@@ -787,7 +812,7 @@ ConnectionManager :: ConnectionWillDisconnect(ConnectionBasis &aConnection, CFUR
 
         while (begin != end)
         {
-            (*begin)->ConnectionManagerWillDisconnect(*this, aURLRef);
+            (*begin)->ConnectionManagerWillDisconnect(*this, GetRoles(), aURLRef);
             ++begin;
         }
     }
@@ -817,7 +842,7 @@ ConnectionManager :: ConnectionDidDisconnect(ConnectionBasis &aConnection, CFURL
 
         while (begin != end)
         {
-            (*begin)->ConnectionManagerDidDisconnect(*this, aURLRef, aError);
+            (*begin)->ConnectionManagerDidDisconnect(*this, GetRoles(), aURLRef, aError);
 
             ++begin;
         }
@@ -849,7 +874,7 @@ ConnectionManager :: ConnectionDidNotDisconnect(ConnectionBasis &aConnection, CF
 
         while (begin != end)
         {
-            (*begin)->ConnectionManagerDidNotDisconnect(*this, aURLRef, aError);
+            (*begin)->ConnectionManagerDidNotDisconnect(*this, GetRoles(), aURLRef, aError);
 
             ++begin;
         }
@@ -885,11 +910,29 @@ ConnectionManager :: ConnectionError(ConnectionBasis &aConnection, const Common:
 
         while (begin != end)
         {
-            (*begin)->ConnectionManagerError(*this, aError);
+            (*begin)->ConnectionManagerError(*this, GetRoles(), aError);
 
             ++begin;
         }
     }
+}
+
+// MARK: Timer Delegate Method
+
+void
+ConnectionManager :: TimerDidFire(Common::Timer &aTimer)
+{
+    if (aTimer == mConnectionTimer)
+    {
+        if (mConnection != nullptr)
+        {
+            const Status lStatus = mConnection->Disconnect(-ETIMEDOUT);
+            nlREQUIRE_SUCCESS(lStatus, done);
+        }
+    }
+
+ done:
+    return;
 }
 
 }; // namespace Client

@@ -24,6 +24,7 @@ include $(abs_top_nlbuild_autotools_dir)/automake/pre.am
 
 man1_MANS                    = \
    hlxc.1                      \
+   hlxproxyd.1                 \
    hlxsimd.1                   \
    $(NULL)
 
@@ -34,6 +35,7 @@ man1_XMLS                    = $(patsubst %.1,%.xml,$(man1_MANS))
 EXTRA_DIST                   = \
     asciidoc.conf              \
     hlxc.txt                   \
+    hlxproxyd.txt              \
     hlxsimd.txt                \
     manpage-base-url.xsl.in    \
     manpage-bold-literal.xsl   \

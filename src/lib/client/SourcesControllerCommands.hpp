@@ -23,16 +23,15 @@
  *
  */
 
-#ifndef HLXCLIENTSOURCESCONTROLLERCOMMANDS_HPP
-#define HLXCLIENTSOURCESCONTROLLERCOMMANDS_HPP
+#ifndef OPENHLXCLIENTSOURCESCONTROLLERCOMMANDS_HPP
+#define OPENHLXCLIENTSOURCESCONTROLLERCOMMANDS_HPP
 
+#include <OpenHLX/Client/CommandExchangeBasis.hpp>
+#include <OpenHLX/Client/CommandNameSetRequestBasis.hpp>
+#include <OpenHLX/Client/CommandQueryRequestBasis.hpp>
+#include <OpenHLX/Client/CommandResponseBasis.hpp>
+#include <OpenHLX/Common/CommandSourcesRegularExpressionBases.hpp>
 #include <OpenHLX/Common/Errors.hpp>
-
-#include <CommandExchangeBasis.hpp>
-#include <CommandNameSetRequestBasis.hpp>
-#include <CommandQueryRequestBasis.hpp>
-#include <CommandResponseBasis.hpp>
-#include <CommandSourcesRegularExpressionBases.hpp>
 #include <OpenHLX/Model/SourceModel.hpp>
 
 
@@ -134,4 +133,4 @@ private:
 
 }; // namespace HLX
 
-#endif // HLXCLIENTSOURCESCONTROLLERCOMMANDS_HPP
+#endif // OPENHLXCLIENTSOURCESCONTROLLERCOMMANDS_HPP

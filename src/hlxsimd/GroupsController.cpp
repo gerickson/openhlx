@@ -68,6 +68,7 @@
 
 #include <OpenHLX/Model/IdentifierModel.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
+#include <OpenHLX/Utilities/ElementsOf.hpp>
 #include <OpenHLX/Utilities/Utilities.hpp>
 
 #include <CommandManager.hpp>
@@ -80,34 +81,29 @@
 
 using namespace HLX::Common;
 using namespace HLX::Model;
+using namespace HLX::Server;
+using namespace HLX::Utilities;
 using namespace Nuovations;
+
 
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
 
 namespace Detail
 {
 
+/**
+ *  Internal collection of zone identifiers.
+ *
+ *  @private
+ *
+ */
 typedef std::vector<ZoneModel::IdentifierType>   ZoneIdentifiers;
 
 };
-
-// Request data
-
-Command::Groups::AddZoneRequest         GroupsController::kAddZoneRequest;
-Command::Groups::ClearZonesRequest      GroupsController::kClearZonesRequest;
-Command::Groups::DecreaseVolumeRequest  GroupsController::kDecreaseVolumeRequest;
-Command::Groups::IncreaseVolumeRequest  GroupsController::kIncreaseVolumeRequest;
-Command::Groups::MuteRequest            GroupsController::kMuteRequest;
-Command::Groups::QueryRequest           GroupsController::kQueryRequest;
-Command::Groups::RemoveZoneRequest      GroupsController::kRemoveZoneRequest;
-Command::Groups::SetNameRequest         GroupsController::kSetNameRequest;
-Command::Groups::SetSourceRequest       GroupsController::kSetSourceRequest;
-Command::Groups::SetVolumeRequest       GroupsController::kSetVolumeRequest;
-Command::Groups::ToggleMuteRequest      GroupsController::kToggleMuteRequest;
 
 /**
  *  @brief
@@ -140,63 +136,34 @@ static CFStringRef      kNameSchemaKey   = CFSTR("Name");
 static CFStringRef      kZonesSchemaKey  = CFSTR("Zones");
 
 
+/**
+ *  @brief
+ *    This is the class default constructor.
+ *
+ */
 GroupsController :: GroupsController(void) :
-    ControllerBasis(),
-    ContainerControllerBasis(),
-    GroupsControllerBasis(),
-    mGroups(),
+    Common::GroupsControllerBasis(),
+    Server::GroupsControllerBasis(Common::GroupsControllerBasis::mGroups,
+                                  Common::GroupsControllerBasis::kGroupsMax),
+    Simulator::ContainerControllerBasis(),
+    Simulator::ObjectControllerBasis(),
     mDelegate(nullptr)
 {
     return;
 }
 
+/**
+ *  @brief
+ *    This is the class destructor.
+ *
+ */
 GroupsController :: ~GroupsController(void)
 {
     return;
 }
 
-Status GroupsController :: RequestInit(void)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = kAddZoneRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kClearZonesRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kDecreaseVolumeRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kIncreaseVolumeRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kMuteRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kQueryRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kRemoveZoneRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSetNameRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSetSourceRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSetVolumeRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kToggleMuteRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status GroupsController :: DoRequestHandlers(const bool &aRegister)
+Status
+GroupsController :: DoRequestHandlers(const bool &aRegister)
 {
     static const RequestHandlerBasis  lRequestHandlers[] = {
         {
@@ -254,39 +221,62 @@ Status GroupsController :: DoRequestHandlers(const bool &aRegister)
             GroupsController::ToggleMuteRequestReceivedHandler
         }
     };
-    static const size_t               lRequestHandlerCount = sizeof (lRequestHandlers) / sizeof (lRequestHandlers[0]);
-    Status                            lRetval = kStatus_Success;
+    static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
+    Status                   lRetval = kStatus_Success;
 
-    lRetval = ControllerBasis::DoRequestHandlers(&lRequestHandlers[0], &lRequestHandlers[lRequestHandlerCount], aRegister);
+    lRetval = Server::ObjectControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
+                                                               &lRequestHandlers[lRequestHandlerCount],
+                                                               this,
+                                                               aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
-Status GroupsController :: Init(CommandManager &aCommandManager)
+// MARK: Initializer(s)
+
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the class with the specified command manager and
+ *  timeout.
+ *
+ *  @param[in]  aCommandManager  A reference to the command manager
+ *                               instance to initialize the controller
+ *                               with.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -EINVAL                      If an internal parameter was
+ *                                        invalid.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_NotInitialized        The base class was not properly
+ *                                        initialized.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+GroupsController :: Init(CommandManager &aCommandManager)
 {
     DeclareScopedFunctionTracer(lTracer);
-    const bool  lRegister = true;
-    Status      lRetval = kStatus_Success;
+    constexpr bool  kRegister = true;
+    Status          lRetval = kStatus_Success;
 
 
-    lRetval = RequestInit();
+    lRetval = Common::GroupsControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mGroups.Init(kGroupsMax);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = ControllerBasis::Init(aCommandManager);
+    lRetval = Server::GroupsControllerBasis::Init(aCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // This MUST come AFTER the base class initialization due to a
     // dependency on the command manager instance.
 
-    lRetval = DoRequestHandlers(lRegister);
+    lRetval = DoRequestHandlers(kRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
@@ -302,74 +292,6 @@ Status GroupsController :: SetDelegate(GroupsControllerDelegate *aDelegate)
     nlEXPECT_ACTION(aDelegate != mDelegate, done, lRetval = kStatus_ValueAlreadySet);
 
     mDelegate = aDelegate;
-
- done:
-    return (lRetval);
-}
-
-Status GroupsController :: HandleQueryReceived(const IdentifierType &aGroupIdentifier, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
-{
-    const GroupModel *                lGroupModel;
-    const char *                      lName;
-    Command::Groups::NameResponse     lNameResponse;
-    const uint8_t *                   lBuffer;
-    size_t                            lSize;
-    size_t                            lZoneCount;
-    Status                            lRetval;
-
-
-    lRetval = mGroups.GetGroup(aGroupIdentifier, lGroupModel);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    // Name Response
-
-    lRetval = lGroupModel->GetName(lName);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = lNameResponse.Init(aGroupIdentifier, lName);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lBuffer = lNameResponse.GetBuffer();
-    lSize = lNameResponse.GetSize();
-
-    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    // Zone Membership Response
-
-    lRetval = lGroupModel->GetZones(lZoneCount);
-    nlEXPECT_SUCCESS(lRetval, done);
-
-    if (lZoneCount > 0)
-    {
-        Detail::ZoneIdentifiers                  lZoneIdentifiers;
-        Detail::ZoneIdentifiers::const_iterator  lZoneIdentifierCurrent;
-        Detail::ZoneIdentifiers::const_iterator  lZoneIdentifierEnd;
-
-        lZoneIdentifiers.resize(lZoneCount);
-
-        lRetval = lGroupModel->GetZones(&lZoneIdentifiers[0], lZoneCount);
-        nlREQUIRE_SUCCESS(lRetval, done);
-
-        lZoneIdentifierCurrent = lZoneIdentifiers.begin();
-        lZoneIdentifierEnd     = lZoneIdentifiers.end();
-
-        while (lZoneIdentifierCurrent != lZoneIdentifierEnd)
-        {
-            Command::Groups::ZoneResponse  lZoneResponse;
-
-            lRetval = lZoneResponse.Init(aGroupIdentifier, *lZoneIdentifierCurrent);
-            nlREQUIRE_SUCCESS(lRetval, done);
-
-            lBuffer = lZoneResponse.GetBuffer();
-            lSize = lZoneResponse.GetSize();
-
-            lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
-            nlREQUIRE_SUCCESS(lRetval, done);
-
-            lZoneIdentifierCurrent++;
-        }
-    }
 
  done:
     return (lRetval);
@@ -430,114 +352,22 @@ Status GroupsController :: HandleSetVolumeReceived(const IdentifierType &aGroupI
     lRetval = HandleSetVolumeResponse(aGroupIdentifier, aVolume, aBuffer);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
-    return (lRetval);
-}
-
-Status GroupsController :: HandleAdjustVolumeResponse(const uint8_t *aInputBuffer, const size_t &aInputSize, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer)
-{
-    Command::Groups::AdjustVolumeResponse  lAdjustVolumeResponse;
-    const uint8_t *                        lBuffer;
-    size_t                                 lSize;
-    Status                                 lRetval;
-
-
-    // Strip the incoming request delimiters '[' and ']' by adjusting
-    // the buffer pointer by one (1) and size by two (2).
-
-    lRetval = lAdjustVolumeResponse.Init(aInputBuffer + 1, aInputSize - 2);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lBuffer = lAdjustVolumeResponse.GetBuffer();
-    lSize = lAdjustVolumeResponse.GetSize();
-
-    lRetval = Common::Utilities::Put(*aOutputBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status GroupsController :: HandleSetMuteResponse(const IdentifierType &aGroupIdentifier, const VolumeModel::MuteType &aMute, ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    Command::Groups::SetMuteResponse  lSetMuteResponse;
-    const uint8_t *                   lBuffer;
-    size_t                            lSize;
-    Status                            lRetval;
-
-    lRetval = lSetMuteResponse.Init(aGroupIdentifier, aMute);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lBuffer = lSetMuteResponse.GetBuffer();
-    lSize = lSetMuteResponse.GetSize();
-
-    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status GroupsController :: HandleSetVolumeResponse(const IdentifierType &aGroupIdentifier, const VolumeModel::LevelType &aVolume, ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    Command::Groups::SetVolumeResponse  lSetVolumeResponse;
-    const uint8_t *                     lBuffer;
-    size_t                              lSize;
-    Status                              lRetval;
-
-
-    lRetval = lSetVolumeResponse.Init(aGroupIdentifier, aVolume);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lBuffer = lSetVolumeResponse.GetBuffer();
-    lSize = lSetVolumeResponse.GetSize();
-
-    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status GroupsController :: HandleToggleMuteResponse(const uint8_t *aInputBuffer, const size_t &aInputSize, ConnectionBuffer::MutableCountedPointer &aOutputBuffer)
-{
-    Command::Groups::ToggleMuteResponse  lToggleMuteResponse;
-    const uint8_t *                      lBuffer;
-    size_t                               lSize;
-    Status                               lRetval;
-
-
-    // Strip the incoming request delimiters '[' and ']' by adjusting
-    // the buffer pointer by one (1) and size by two (2).
-
-    lRetval = lToggleMuteResponse.Init(aInputBuffer + 1, aInputSize - 2);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lBuffer = lToggleMuteResponse.GetBuffer();
-    lSize = lToggleMuteResponse.GetSize();
-
-    lRetval = Common::Utilities::Put(*aOutputBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
+done:
     return (lRetval);
 }
 
 // MARK: Configuration Management Methods
 
-void GroupsController :: QueryCurrentConfiguration(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+void
+GroupsController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
-    IdentifierType  lGroupIdentifier;
     Status          lStatus;
 
 
     (void)aConnection;
 
-    for (lGroupIdentifier = IdentifierModel::kIdentifierMin; lGroupIdentifier <= kGroupsMax; lGroupIdentifier++)
-    {
-        lStatus = HandleQueryReceived(lGroupIdentifier, aBuffer);
-        nlREQUIRE_SUCCESS(lStatus, done);
-    }
+    lStatus = HandleQueryReceived(aBuffer);
+    nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
     return;
@@ -625,7 +455,7 @@ Status GroupsController :: ElementLoadFromBackupConfiguration(CFDictionaryRef aG
 
     // Attempt to form the group identifier key.
 
-    lGroupIdentifierKey = Utilities::Configuration::CreateCFString(aGroupIdentifier);
+    lGroupIdentifierKey = Simulator::Utilities::Configuration::CreateCFString(aGroupIdentifier);
     nlREQUIRE_ACTION(lGroupIdentifierKey != nullptr, done, lRetval = -ENOMEM);
 
     // Attempt to retrieve the group dictionary.
@@ -737,7 +567,7 @@ Status GroupsController :: ElementSaveToBackupConfiguration(CFMutableDictionaryR
     lRetval = mGroups.GetGroup(aGroupIdentifier, lGroupModel);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lGroupIdentifierKey = Utilities::Configuration::CreateCFString(aGroupIdentifier);
+    lGroupIdentifierKey = Simulator::Utilities::Configuration::CreateCFString(aGroupIdentifier);
     nlREQUIRE_ACTION(lGroupIdentifierKey != nullptr, done, lRetval = -ENOMEM);
 
     lGroupDictionary = CFDictionaryCreateMutable(kCFAllocatorDefault,
@@ -777,23 +607,23 @@ void GroupsController :: SaveToBackupConfiguration(CFMutableDictionaryRef aBacku
                                                         kGroupsSchemaKey);
 }
 
-// MARK: Command Completion Handlers
+// MARK: Command Request Completion Handlers
 
-void GroupsController :: AddZoneRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void GroupsController :: AddZoneRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    IdentifierType                           lGroupIdentifier;
-    ZoneModel::IdentifierType                lZoneIdentifier;
-    GroupModel *                             lGroupModel;
-    Command::Groups::AddZoneResponse         lAddZoneResponse;
-    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
-    const uint8_t *                          lBuffer;
-    size_t                                   lSize;
-    Status                                   lStatus;
+    IdentifierType                            lGroupIdentifier;
+    ZoneModel::IdentifierType                 lZoneIdentifier;
+    GroupModel *                              lGroupModel;
+    Server::Command::Groups::AddZoneResponse  lAddZoneResponse;
+    ConnectionBuffer::MutableCountedPointer   lResponseBuffer;
+    const uint8_t *                           lBuffer;
+    size_t                                    lSize;
+    Status                                    lStatus;
 
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Groups::AddZoneRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Groups::AddZoneRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/3: Group Identifier
     //
@@ -858,21 +688,21 @@ void GroupsController :: AddZoneRequestReceivedHandler(ConnectionBasis &aConnect
     return;
 }
 
-void GroupsController :: ClearZonesRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void GroupsController :: ClearZonesRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    IdentifierType                           lGroupIdentifier;
-    GroupModel *                             lGroupModel;
-    Command::Groups::ClearZonesResponse      lClearZonesResponse;
-    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
-    const uint8_t *                          lBuffer;
-    size_t                                   lSize;
-    Status                                   lStatus;
+    IdentifierType                               lGroupIdentifier;
+    GroupModel *                                 lGroupModel;
+    Server::Command::Groups::ClearZonesResponse  lClearZonesResponse;
+    ConnectionBuffer::MutableCountedPointer      lResponseBuffer;
+    const uint8_t *                              lBuffer;
+    size_t                                       lSize;
+    Status                                       lStatus;
 
 
     (void)aBuffer;
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Groups::ClearZonesRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Groups::ClearZonesRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     lResponseBuffer.reset(new ConnectionBuffer);
     nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
@@ -940,15 +770,15 @@ void GroupsController :: ClearZonesRequestReceivedHandler(ConnectionBasis &aConn
  * do is acknowledge the request by reflecting it back in the response
  * to the initiator.
  */
-void GroupsController :: DecreaseVolumeRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void GroupsController :: DecreaseVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    static const VolumeModel::LevelType     kAdjustment = -1;
+    static const VolumeModel::LevelType      kAdjustment = -1;
     IdentifierType                           lGroupIdentifier;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
 
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Groups::DecreaseVolumeRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Groups::DecreaseVolumeRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/3: Group Identifier
     //
@@ -1006,15 +836,15 @@ void GroupsController :: DecreaseVolumeRequestReceivedHandler(ConnectionBasis &a
  * do is acknowledge the request by reflecting it back in the response
  * to the initiator.
  */
-void GroupsController :: IncreaseVolumeRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void GroupsController :: IncreaseVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    static const VolumeModel::LevelType     kAdjustment = 1;
+    static const VolumeModel::LevelType      kAdjustment = 1;
     IdentifierType                           lGroupIdentifier;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
 
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Groups::IncreaseVolumeRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Groups::IncreaseVolumeRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/3: Group Identifier
     //
@@ -1072,7 +902,7 @@ void GroupsController :: IncreaseVolumeRequestReceivedHandler(ConnectionBasis &a
  * do is acknowledge the request by reflecting it back in the response
  * to the initiator.
  */
-void GroupsController :: MuteRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void GroupsController :: MuteRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     const char *                             lMutep;
     IdentifierType                           lGroupIdentifier;
@@ -1083,7 +913,7 @@ void GroupsController :: MuteRequestReceivedHandler(ConnectionBasis &aConnection
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Groups::MuteRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Groups::MuteRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/3: Muted/Unmuted
 
@@ -1124,10 +954,10 @@ void GroupsController :: MuteRequestReceivedHandler(ConnectionBasis &aConnection
     return;
 }
 
-void GroupsController :: QueryRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void GroupsController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     IdentifierType                           lGroupIdentifier;
-    Command::Groups::QueryResponse           lResponse;
+    Server::Command::Groups::QueryResponse   lResponse;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
     const uint8_t *                          lBuffer;
@@ -1136,7 +966,7 @@ void GroupsController :: QueryRequestReceivedHandler(ConnectionBasis &aConnectio
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Groups::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Groups::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/2: Group Identifier
     //
@@ -1185,21 +1015,21 @@ void GroupsController :: QueryRequestReceivedHandler(ConnectionBasis &aConnectio
     return;
 }
 
-void GroupsController :: RemoveZoneRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void GroupsController :: RemoveZoneRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    IdentifierType                           lGroupIdentifier;
-    ZoneModel::IdentifierType                lZoneIdentifier;
-    GroupModel *                             lGroupModel;
-    Command::Groups::RemoveZoneResponse      lRemoveZoneResponse;
-    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
-    const uint8_t *                          lBuffer;
-    size_t                                   lSize;
-    Status                                   lStatus;
+    IdentifierType                               lGroupIdentifier;
+    ZoneModel::IdentifierType                    lZoneIdentifier;
+    GroupModel *                                 lGroupModel;
+    Server::Command::Groups::RemoveZoneResponse  lRemoveZoneResponse;
+    ConnectionBuffer::MutableCountedPointer      lResponseBuffer;
+    const uint8_t *                              lBuffer;
+    size_t                                       lSize;
+    Status                                       lStatus;
 
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Groups::RemoveZoneRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Groups::RemoveZoneRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/3: Group Identifier
     //
@@ -1264,13 +1094,13 @@ void GroupsController :: RemoveZoneRequestReceivedHandler(ConnectionBasis &aConn
     return;
 }
 
-void GroupsController :: SetNameRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void GroupsController :: SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     IdentifierType                           lGroupIdentifier;
     const char *                             lName;
     size_t                                   lNameSize;
     GroupModel *                             lGroupModel;
-    Command::Groups::NameResponse            lNameResponse;
+    Server::Command::Groups::NameResponse    lNameResponse;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
     const uint8_t *                          lBuffer;
@@ -1279,7 +1109,7 @@ void GroupsController :: SetNameRequestReceivedHandler(ConnectionBasis &aConnect
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Groups::SetNameRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Groups::SetNameRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/3: Group Identifier
     //
@@ -1368,12 +1198,12 @@ void GroupsController :: SetNameRequestReceivedHandler(ConnectionBasis &aConnect
  * do is acknowledge the request by reflecting it back in the response
  * to the initiator.
  */
-void GroupsController :: SetSourceRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void GroupsController :: SetSourceRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     IdentifierType                           lGroupIdentifier;
     SourceModel::IdentifierType              lSourceIdentifier;
     GroupModel *                             lGroupModel;
-    Command::Groups::SourceResponse          lSourceResponse;
+    Server::Command::Groups::SourceResponse  lSourceResponse;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
     const uint8_t *                          lBuffer;
@@ -1382,7 +1212,7 @@ void GroupsController :: SetSourceRequestReceivedHandler(ConnectionBasis &aConne
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Groups::SetSourceRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Groups::SetSourceRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/3: Group Identifier
     //
@@ -1464,17 +1294,17 @@ void GroupsController :: SetSourceRequestReceivedHandler(ConnectionBasis &aConne
  * do is acknowledge the request by reflecting it back in the response
  * to the initiator.
  */
-void GroupsController :: SetVolumeRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void GroupsController :: SetVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     IdentifierType                           lGroupIdentifier;
-    VolumeModel::LevelType                  lVolume;
+    VolumeModel::LevelType                   lVolume;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
 
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Groups::SetVolumeRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Groups::SetVolumeRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/3: Group Identifier
     //
@@ -1542,7 +1372,7 @@ void GroupsController :: SetVolumeRequestReceivedHandler(ConnectionBasis &aConne
  * do is acknowledge the request by reflecting it back in the response
  * to the initiator.
  */
-void GroupsController :: ToggleMuteRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void GroupsController :: ToggleMuteRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     IdentifierType                           lGroupIdentifier;
     GroupModel *                             lGroupModel;
@@ -1550,7 +1380,7 @@ void GroupsController :: ToggleMuteRequestReceivedHandler(ConnectionBasis &aConn
     Status                                   lStatus;
 
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Groups::ToggleMuteRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Groups::ToggleMuteRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/2: Group Identifier
     //
@@ -1656,7 +1486,7 @@ Status GroupsController :: OnToggleMute(const IdentifierType &aGroupIdentifier, 
 
 // MARK: Command Request Handler Trampolines
 
-void GroupsController :: AddZoneRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void GroupsController :: AddZoneRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     GroupsController *lController = static_cast<GroupsController *>(aContext);
 
@@ -1666,7 +1496,7 @@ void GroupsController :: AddZoneRequestReceivedHandler(ConnectionBasis &aConnect
     }
 }
 
-void GroupsController :: ClearZonesRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void GroupsController :: ClearZonesRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     GroupsController *lController = static_cast<GroupsController *>(aContext);
 
@@ -1676,7 +1506,7 @@ void GroupsController :: ClearZonesRequestReceivedHandler(ConnectionBasis &aConn
     }
 }
 
-void GroupsController :: DecreaseVolumeRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void GroupsController :: DecreaseVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     GroupsController *lController = static_cast<GroupsController *>(aContext);
 
@@ -1686,7 +1516,7 @@ void GroupsController :: DecreaseVolumeRequestReceivedHandler(ConnectionBasis &a
     }
 }
 
-void GroupsController :: IncreaseVolumeRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void GroupsController :: IncreaseVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     GroupsController *lController = static_cast<GroupsController *>(aContext);
 
@@ -1696,7 +1526,7 @@ void GroupsController :: IncreaseVolumeRequestReceivedHandler(ConnectionBasis &a
     }
 }
 
-void GroupsController :: MuteRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void GroupsController :: MuteRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     GroupsController *lController = static_cast<GroupsController *>(aContext);
 
@@ -1706,7 +1536,7 @@ void GroupsController :: MuteRequestReceivedHandler(ConnectionBasis &aConnection
     }
 }
 
-void GroupsController :: QueryRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void GroupsController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     GroupsController *lController = static_cast<GroupsController *>(aContext);
 
@@ -1716,7 +1546,7 @@ void GroupsController :: QueryRequestReceivedHandler(ConnectionBasis &aConnectio
     }
 }
 
-void GroupsController :: RemoveZoneRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void GroupsController :: RemoveZoneRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     GroupsController *lController = static_cast<GroupsController *>(aContext);
 
@@ -1726,7 +1556,7 @@ void GroupsController :: RemoveZoneRequestReceivedHandler(ConnectionBasis &aConn
     }
 }
 
-void GroupsController :: SetNameRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void GroupsController :: SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     GroupsController *lController = static_cast<GroupsController *>(aContext);
 
@@ -1736,7 +1566,7 @@ void GroupsController :: SetNameRequestReceivedHandler(ConnectionBasis &aConnect
     }
 }
 
-void GroupsController :: SetSourceRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void GroupsController :: SetSourceRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     GroupsController *lController = static_cast<GroupsController *>(aContext);
 
@@ -1746,7 +1576,7 @@ void GroupsController :: SetSourceRequestReceivedHandler(ConnectionBasis &aConne
     }
 }
 
-void GroupsController :: SetVolumeRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void GroupsController :: SetVolumeRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     GroupsController *lController = static_cast<GroupsController *>(aContext);
 
@@ -1756,7 +1586,7 @@ void GroupsController :: SetVolumeRequestReceivedHandler(ConnectionBasis &aConne
     }
 }
 
-void GroupsController :: ToggleMuteRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void GroupsController :: ToggleMuteRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     GroupsController *lController = static_cast<GroupsController *>(aContext);
 
@@ -1766,6 +1596,6 @@ void GroupsController :: ToggleMuteRequestReceivedHandler(ConnectionBasis &aConn
     }
 }
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX

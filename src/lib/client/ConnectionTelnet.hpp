@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXCLIENTCONNECTIONTELNET_HPP
-#define HLXCLIENTCONNECTIONTELNET_HPP
+#ifndef OPENHLXCLIENTCONNECTIONTELNET_HPP
+#define OPENHLXCLIENTCONNECTIONTELNET_HPP
 
 #include <CoreFoundation/CFStream.h>
 #include <CoreFoundation/CFURL.h>
@@ -73,7 +73,7 @@ public:
     Common::Status Init(const Common::RunLoopParameters &aRunLoopParameters) final;
 
     Common::Status Connect(CFURLRef aURLRef, const Common::Timeout &aTimeout) final;
-    Common::Status Disconnect(void) final;
+    Common::Status Disconnect(const Common::Error &aError) final;
 
     Common::Status Send(Common::ConnectionBuffer::ImmutableCountedPointer &aBuffer) final;
 
@@ -110,4 +110,4 @@ private:
 
 }; // namespace HLX
 
-#endif // HLXCLIENTCONNECTIONTELNET_HPP
+#endif // OPENHLXCLIENTCONNECTIONTELNET_HPP

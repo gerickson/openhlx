@@ -84,6 +84,20 @@ General Options
 --version::
     Print the `hlxc` version, then exit.
 
+Client Options
+~~~~~~~~~~~~~~
+-4::
+--ipv4-only::
+    Force `hlxc` to use IPv4 addresses only.
+
+-6::
+--ipv6-only::
+    Force `hlxc` to use IPv6 addresses only.
+
+-t::
+--timeout 'MILLISECONDS'::
+    Set a connection timeout of MILLISECONDS milliseconds.
+
 Identifier Options
 ~~~~~~~~~~~~~~~~~~
 --equalizer-preset 'PRESET'::          

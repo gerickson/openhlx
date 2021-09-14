@@ -24,8 +24,8 @@
  *
  */
 
-#ifndef HLXASSERT_HPP
-#define HLXASSERT_HPP
+#ifndef OPENHLXASSERT_HPP
+#define OPENHLXASSERT_HPP
 
 /**
  *  @def NL_ASSERT_USE_FLAGS_DEFAULT
@@ -47,4 +47,4 @@
 
 #include <nlassert.h>
 
-#endif // HLXASSERT_HPP
+#endif // OPENHLXASSERT_HPP

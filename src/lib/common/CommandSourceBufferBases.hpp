@@ -24,14 +24,14 @@
  *
  */
 
-#ifndef HLXCOMMONCOMMANDSOURCEBUFFERBASES_HPP
-#define HLXCOMMONCOMMANDSOURCEBUFFERBASES_HPP
+#ifndef OPENHLXCOMMONCOMMANDSOURCEBUFFERBASES_HPP
+#define OPENHLXCOMMONCOMMANDSOURCEBUFFERBASES_HPP
 
 #include <stdint.h>
 
+#include <OpenHLX/Common/CommandPropertyBufferBases.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 
-#include <CommandPropertyBufferBases.hpp>
 
 namespace HLX
 {
@@ -118,4 +118,4 @@ protected:
 
 }; // namespace HLX
 
-#endif // HLXCOMMONCOMMANDSOURCEBUFFERBASES_HPP
+#endif // OPENHLXCOMMONCOMMANDSOURCEBUFFERBASES_HPP

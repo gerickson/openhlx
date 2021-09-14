@@ -23,11 +23,13 @@
  *
  */
 
-#ifndef HLXCLIENTNETWORKCONTROLLER_HPP
-#define HLXCLIENTNETWORKCONTROLLER_HPP
+#ifndef OPENHLXCLIENTNETWORKCONTROLLER_HPP
+#define OPENHLXCLIENTNETWORKCONTROLLER_HPP
 
-#include <ControllerBasis.hpp>
-#include <NetworkControllerCommands.hpp>
+#include <OpenHLX/Common/NetworkControllerBasis.hpp>
+#include <OpenHLX/Client/NetworkControllerBasis.hpp>
+#include <OpenHLX/Client/NetworkControllerCommands.hpp>
+
 
 namespace HLX
 {
@@ -45,41 +47,21 @@ namespace Client
  *
  */
 class NetworkController :
-    public ControllerBasis
+    public Common::NetworkControllerBasis,
+    public Client::NetworkControllerBasis
 {
 public:
     NetworkController(void);
-    ~NetworkController(void);
+    virtual ~NetworkController(void);
+
+    // Initializer(s)
 
     Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
 
-    Common::Status Refresh(const Common::Timeout &aTimeout) final;
-
-    // Observer Methods
-
-    Common::Status Query(void);
-
-    // Command Completion Handler Trampolines
-
-    static void QueryCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-
-    static void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError, void *aContext);
-
-private:
-    Common::Status ResponseInit(void);
-
-    // Command Completion Handlers
-
-    void QueryCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-
-    void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError);
-
-private:
-    static Command::Network::QueryResponse          kQueryResponse;
 };
 
 }; // namespace Client
 
 }; // namespace HLX
 
-#endif // HLXCLIENTNETWORKCONTROLLER_HPP
+#endif // OPENHLXCLIENTNETWORKCONTROLLER_HPP

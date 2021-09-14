@@ -50,6 +50,9 @@ libopenhlx_common_a_includedir                              = \
 # Public library headers to distribute and install.
 
 libopenhlx_common_a_include_HEADERS                         = \
+    ApplicationControllerBasis.hpp                            \
+    ApplicationControllerErrorDelegate.hpp                    \
+    ApplicationObjectControllerContainerTemplate.hpp          \
     CommandBalanceBufferBasis.hpp                             \
     CommandBuffer.hpp                                         \
     CommandBufferBasis.hpp                                    \
@@ -80,6 +83,7 @@ libopenhlx_common_a_include_HEADERS                         = \
     CommandToneBufferBasis.hpp                                \
     CommandVolumeBufferBases.hpp                              \
     CommandZonesRegularExpressionBases.hpp                    \
+    ConfigurationControllerBasis.hpp                          \
     ConnectionBasis.hpp                                       \
     ConnectionBuffer.hpp                                      \
     ConnectionManagerApplicationDataDelegate.hpp              \
@@ -88,16 +92,23 @@ libopenhlx_common_a_include_HEADERS                         = \
     EqualizerPresetsControllerBasis.hpp                       \
     Errors.hpp                                                \
     FavoritesControllerBasis.hpp                              \
+    FrontPanelControllerBasis.hpp                             \
     GroupsControllerBasis.hpp                                 \
     HostURL.hpp                                               \
     HostURLAddress.hpp                                        \
+    InfraredControllerBasis.hpp                               \
     IPAddress.hpp                                             \
+    NetworkControllerBasis.hpp                                \
     OutputStringStream.hpp                                    \
     RegularExpression.hpp                                     \
     RunLoopParameters.hpp                                     \
+    RunLoopQueue.hpp                                          \
+    RunLoopQueueDelegate.hpp                                  \
     SocketAddress.hpp                                         \
     SourcesControllerBasis.hpp                                \
     Timeout.hpp                                               \
+    Timer.hpp                                                 \
+    TimerDelegate.hpp                                         \
     Version.hpp                                               \
     ZonesControllerBasis.hpp                                  \
     $(NULL)
@@ -111,6 +122,7 @@ libopenhlx_common_a_CPPFLAGS                                = \
     $(NULL)
 
 libopenhlx_common_a_SOURCES                                 = \
+    ApplicationControllerBasis.cpp                            \
     CommandBalanceBufferBasis.cpp                             \
     CommandBuffer.cpp                                         \
     CommandConfigurationRegularExpressionBases.cpp            \
@@ -137,21 +149,27 @@ libopenhlx_common_a_SOURCES                                 = \
     CommandToneBufferBasis.cpp                                \
     CommandVolumeBufferBases.cpp                              \
     CommandZonesRegularExpressionBases.cpp                    \
+    ConfigurationControllerBasis.cpp                          \
     ConnectionBasis.cpp                                       \
     ConnectionBuffer.cpp                                      \
     ConnectionManagerBasis.cpp                                \
     EqualizerPresetsControllerBasis.cpp                       \
     FavoritesControllerBasis.cpp                              \
+    FrontPanelControllerBasis.cpp                             \
     GroupsControllerBasis.cpp                                 \
     HostURL.cpp                                               \
     HostURLAddress.cpp                                        \
+    InfraredControllerBasis.cpp                               \
     IPAddress.cpp                                             \
+    NetworkControllerBasis.cpp                                \
     OutputStringStream.cpp                                    \
     RegularExpression.cpp                                     \
     RunLoopParameters.cpp                                     \
+    RunLoopQueue.cpp                                          \
     SocketAddress.cpp                                         \
     SourcesControllerBasis.cpp                                \
     Timeout.cpp                                               \
+    Timer.cpp                                                 \
     Version.cpp                                               \
     ZonesControllerBasis.cpp                                  \
     $(NULL)

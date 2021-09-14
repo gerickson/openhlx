@@ -18,9 +18,9 @@
 
 /**
  *    @file
- *      This file implements a derivable object for a HLX client data
- *      model properties observation (that is, query) command request
- *      buffer.
+ *      This file implements a derivable object for composing HLX client
+ *      request buffers for commands that query a data model object or
+ *      property thereof.
  *
  */
 
@@ -94,6 +94,72 @@ QueryRequestBasis :: Init(const char *aObject,
                           const IdentifierType &aIdentifier)
 {
     return (QueryBufferBasis::Init(*this, aObject, aIdentifier));
+}
+
+/**
+ *  @brief
+ *    This is a class initializer.
+ *
+ *  This initializes an object observation (that is, query) request operation
+ *  against a specific object, object property, and object identifier.
+ *
+ *  @param[in]      aObject      A pointer to a null-terminated C
+ *                               string representing the object for
+ *                               which the observation operation is to
+ *                               be made against. For example, "O" for
+ *                               a zone object.
+ *  @param[in]      aProperty    A pointer to a null-terminated C
+ *                               string representing the property on
+ *                               the object to observe (query).
+ *  @param[in]      aIdentifier  A reference to the specific object
+ *                               identifier which the observation
+ *                               operation is to be made against.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+QueryPropertyRequestBasis :: Init(const char *aObject,
+                                  const char *aProperty,
+                                  const Model::IdentifierModel::IdentifierType &aIdentifier)
+{
+    return (QueryBufferBasis::Init(*this,
+                                   aObject,
+                                   aProperty,
+                                   aIdentifier));
+}
+
+/**
+ *  @brief
+ *    This is a class initializer.
+ *
+ *  This initializes an object observation (that is, query) request operation
+ *  against a specific object, object property, and object identifier.
+ *
+ *  @param[in]      aObject      A pointer to a null-terminated C
+ *                               string representing the object for
+ *                               which the observation operation is to
+ *                               be made against. For example, "O" for
+ *                               a zone object.
+ *  @param[in]      aProperty    An immutable reference to a character
+ *                               representing the property on the
+ *                               object to observe (query).
+ *  @param[in]      aIdentifier  A reference to the specific object
+ *                               identifier which the observation
+ *                               operation is to be made against.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+QueryPropertyRequestBasis :: Init(const char *aObject,
+                                  const char &aProperty,
+                                  const Model::IdentifierModel::IdentifierType &aIdentifier)
+{
+    return (QueryBufferBasis::Init(*this,
+                                   aObject,
+                                   aProperty,
+                                   aIdentifier));
 }
 
 }; // namespace Command

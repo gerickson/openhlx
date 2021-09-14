@@ -23,21 +23,23 @@
  *
  */
 
-#ifndef HLXSERVERSOURCESCONTROLLER_HPP
-#define HLXSERVERSOURCESCONTROLLER_HPP
+#ifndef OPENHLXSIMULATORSOURCESCONTROLLER_HPP
+#define OPENHLXSIMULATORSOURCESCONTROLLER_HPP
 
-#include <ContainerControllerBasis.hpp>
-#include <ControllerBasis.hpp>
-#include <SourcesControllerBasis.hpp>
-#include <SourcesControllerCommands.hpp>
+#include <OpenHLX/Common/SourcesControllerBasis.hpp>
 #include <OpenHLX/Model/SourceModel.hpp>
 #include <OpenHLX/Model/SourcesModel.hpp>
+#include <OpenHLX/Server/SourcesControllerBasis.hpp>
+#include <OpenHLX/Server/SourcesControllerCommands.hpp>
+
+#include "ContainerControllerBasis.hpp"
+#include "ObjectControllerBasis.hpp"
 
 
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
 
 /**
@@ -50,48 +52,43 @@ namespace Server
  *
  */
 class SourcesController :
-    public ControllerBasis,
-    public ContainerControllerBasis,
-    public Common::SourcesControllerBasis
+    public Common::SourcesControllerBasis,
+    public Server::SourcesControllerBasis,
+    public Simulator::ObjectControllerBasis,
+    public Simulator::ContainerControllerBasis
 {
 public:
     SourcesController(void);
     virtual ~SourcesController(void);
 
-    Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
+    // Initializer(s)
+
+    Common::Status Init(Server::CommandManager &aCommandManager) final;
 
     // Configuration Management Methods
 
     Common::Status LoadFromBackupConfiguration(CFDictionaryRef aBackupDictionary) final;
-    void QueryCurrentConfiguration(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const final;
+    void QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const final;
     void ResetToDefaultConfiguration(void) final;
     void SaveToBackupConfiguration(CFMutableDictionaryRef aBackupDictionary) final;
 
     // Command Request Handler Trampolines
 
-    static void SetNameRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
-    Common::Status RequestInit(void);
     Common::Status DoRequestHandlers(const bool &aRegister);
 
     Common::Status ElementLoadFromBackupConfiguration(CFDictionaryRef aSourcesDictionary, const IdentifierType &aSourceIdentifier) final;
     Common::Status ElementSaveToBackupConfiguration(CFMutableDictionaryRef aSourcesDictionary, const IdentifierType &aSourceIdentifier) const final;
-    Common::Status HandleQueryReceived(const IdentifierType &aSourceIdentifier, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
 
     // Command Completion Handlers
 
-    void SetNameRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-
-private:
-    Model::SourcesModel                      mSources;
-
-private:
-    static Command::Sources::SetNameRequest  kSetNameRequest;
+    void SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 };
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX
 
-#endif // HLXSERVERSOURCESCONTROLLER_HPP
+#endif // OPENHLXSIMULATORSOURCESCONTROLLER_HPP

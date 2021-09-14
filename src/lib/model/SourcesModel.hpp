@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXMMODELSOURCESMODEL_HPP
-#define HLXMMODELSOURCESMODEL_HPP
+#ifndef OPENHLXMMODELSOURCESMODEL_HPP
+#define OPENHLXMMODELSOURCESMODEL_HPP
 
 #include <map>
 
@@ -62,7 +62,7 @@ public:
     SourcesModel(const SourcesModel &aSourcesModel);
     virtual ~SourcesModel(void) = default;
 
-    Common::Status Init(const size_t &aSourcesMax);
+    Common::Status Init(const IdentifierType &aSourcesMax);
     Common::Status Init(const SourcesModel &aSourcesModel);
 
     SourcesModel &operator =(const SourcesModel &aSourcesModel);
@@ -81,12 +81,12 @@ private:
 private:
     typedef std::map<IdentifierType, SourceModel> Sources;
 
-    size_t    mSourcesMax;
-    Sources   mSources;
+    IdentifierType  mSourcesMax;
+    Sources         mSources;
 };
 
 }; // namespace Model
 
 }; // namespace HLX
 
-#endif // HLXMMODELSOURCESMODEL_HPP
+#endif // OPENHLXMMODELSOURCESMODEL_HPP

@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXCLIENTCONNECTIONBASIS_HPP
-#define HLXCLIENTCONNECTIONBASIS_HPP
+#ifndef OPENHLXCLIENTCONNECTIONBASIS_HPP
+#define OPENHLXCLIENTCONNECTIONBASIS_HPP
 
 #include <CoreFoundation/CFURL.h>
 
@@ -57,10 +57,10 @@ class ConnectionBasis :
 public:
     virtual ~ConnectionBasis(void);
 
-public:
     virtual Common::Status Init(const Common::RunLoopParameters &aRunLoopParameters);
     virtual Common::Status Connect(CFURLRef aURLRef, const Common::Timeout &aTimeout);
     virtual Common::Status Disconnect(void);
+    virtual Common::Status Disconnect(const Common::Error &aError);
 
     Common::Status SetDelegate(ConnectionBasisDelegate *aDelegate);
     ConnectionBasisDelegate *GetDelegate(void) const;
@@ -97,9 +97,52 @@ protected:
     void OnApplicationDataReceived(Common::ConnectionBuffer::MutableCountedPointer aBuffer);
 
     void OnWillDisconnect(void);
+
+    /**
+     *  @brief
+     *    Signals to connection delegates that a connection did
+     *    disconnect.
+     *
+     *  This is invoked by a connection in response to a disconnection
+     *  to signal delegates that the connection did disconnect.
+     *
+     *  @param[in]  aError  An immutable reference to the error
+     *                      associated with the disconnection.
+     *
+     */
     void OnDidDisconnect(const Common::Error &aError);
+
+    /**
+     *  @brief
+     *    Signals to connection delegates that a connection did
+     *    not disconnect.
+     *
+     *  This is invoked by a connection in response to a failed
+     *  disconnection to signal delegates that the connection did
+     *  not disconnect.
+     *
+     *  @param[in]  aError  An immutable reference to the error
+     *                      associated with the failed disconnection.
+     *
+     */
     void OnDidNotDisconnect(const Common::Error &aError);
 
+    /**
+     *  @brief
+     *    Signals to connection delegates that a connection experienced an
+     *    error.
+     *
+     *  This is invoked by a connection in response to a connection error
+     *  to signal delegates that such a connection error occurred.
+     *
+     *  @note
+     *    This action may occur along with other actions with respect to
+     *    the same underlying event or cause.
+     *
+     *  @param[in]  aError  An immutable reference to the error associated
+     *                      with the event.
+     *
+     */
     void OnError(const Common::Error &aError);
 
     /**
@@ -136,4 +179,4 @@ private:
 
 }; // namespace HLX
 
-#endif // HLXCLIENTCONNECTIONBASIS_HPP
+#endif // OPENHLXCLIENTCONNECTIONBASIS_HPP

@@ -1,3 +1,15 @@
+1.1 (2021-09-13)
+
+        * Added hlxproxyd, a caching proxy daemon for the HLX control
+          protocol and hardware.
+
+        * Correctly observe and honor in hlxc the value passed via -t
+          or --timeout.
+
+        * Generate unique connection identifiers for servers such as
+          hlxsimd (for example, 'telnet_client_4: connected') rather
+          than 'telnet_client_1: connected' for all connections.
+
 1.0.1 (2021-07-20)
 
         * Added version information and interfaces plus support for

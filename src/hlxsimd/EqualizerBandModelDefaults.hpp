@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXSERVEREQUALIZERBANDMODELDEFAULTS_HPP
-#define HLXSERVEREQUALIZERBANDMODELDEFAULTS_HPP
+#ifndef OPENHLXSIMULATOREQUALIZERBANDMODELDEFAULTS_HPP
+#define OPENHLXSIMULATOREQUALIZERBANDMODELDEFAULTS_HPP
 
 #include <OpenHLX/Model/EqualizerBandModel.hpp>
 
@@ -32,7 +32,7 @@
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
 
 namespace Defaults
@@ -53,8 +53,8 @@ struct EqualizerBandModel
 
 }; // namespace Defaults
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX
 
-#endif // HLXSERVEREQUALIZERBANDMODELDEFAULTS_HPP
+#endif // OPENHLXSIMULATOREQUALIZERBANDMODELDEFAULTS_HPP

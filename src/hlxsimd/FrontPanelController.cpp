@@ -35,27 +35,23 @@
 #include <CFUtilities/CFUtilities.hpp>
 #include <LogUtilities/LogUtilities.hpp>
 
+#include <OpenHLX/Server/CommandManager.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
+#include <OpenHLX/Utilities/ElementsOf.hpp>
 #include <OpenHLX/Utilities/Utilities.hpp>
-
-#include "CommandManager.hpp"
 
 
 using namespace HLX::Common;
 using namespace HLX::Model;
+using namespace HLX::Utilities;
 using namespace Nuovations;
+
 
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
-
-// Request data
-
-Command::FrontPanel::QueryRequest          FrontPanelController::kQueryRequest;
-Command::FrontPanel::SetBrightnessRequest  FrontPanelController::kSetBrightnessRequest;
-Command::FrontPanel::SetLockedRequest      FrontPanelController::kSetLockedRequest;
 
 /**
  *  @brief
@@ -84,36 +80,31 @@ static CFStringRef               kFrontPanelSchemaKey = CFSTR("Front Panel");
 static CFStringRef               kBrightnessSchemaKey = CFSTR("Brightness");
 static CFStringRef               kLockedSchemaKey = CFSTR("Locked");
 
+/**
+ *  @brief
+ *    This is the class default constructor.
+ *
+ */
 FrontPanelController :: FrontPanelController(void) :
-    ControllerBasis(),
-    mFrontPanelModel()
+    Common::FrontPanelControllerBasis(),
+    Server::FrontPanelControllerBasis(Common::FrontPanelControllerBasis::mFrontPanelModel),
+    Simulator::ObjectControllerBasis()
 {
     return;
 }
 
+/**
+ *  @brief
+ *    This is the class destructor.
+ *
+ */
 FrontPanelController :: ~FrontPanelController(void)
 {
     return;
 }
 
-Status FrontPanelController :: RequestInit(void)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = kQueryRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSetBrightnessRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSetLockedRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status FrontPanelController :: DoRequestHandlers(const bool &aRegister)
+Status
+FrontPanelController :: DoRequestHandlers(const bool &aRegister)
 {
     static const RequestHandlerBasis  lRequestHandlers[] = {
         {
@@ -131,121 +122,79 @@ Status FrontPanelController :: DoRequestHandlers(const bool &aRegister)
             FrontPanelController::SetLockedRequestReceivedHandler
         }
     };
-    static const size_t               lRequestHandlerCount = sizeof (lRequestHandlers) / sizeof (lRequestHandlers[0]);
-    Status                            lRetval = kStatus_Success;
+    static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
+    Status                   lRetval = kStatus_Success;
 
-    lRetval = ControllerBasis::DoRequestHandlers(&lRequestHandlers[0], &lRequestHandlers[lRequestHandlerCount], aRegister);
+    lRetval = Server::ObjectControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
+                                                               &lRequestHandlers[lRequestHandlerCount],
+                                                               this,
+                                                               aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
-Status FrontPanelController :: Init(CommandManager &aCommandManager, const Timeout &aTimeout)
+// MARK: Initializer(s)
+
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the class with the specified command manager and
+ *  timeout.
+ *
+ *  @param[in]  aCommandManager  A reference to the command manager
+ *                               instance to initialize the controller
+ *                               with.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -EINVAL                      If an internal parameter was
+ *                                        invalid.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_NotInitialized        The base class was not properly
+ *                                        initialized.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+FrontPanelController :: Init(Server::CommandManager &aCommandManager)
 {
     DeclareScopedFunctionTracer(lTracer);
-    const bool  lRegister = true;
-    Status      lRetval = kStatus_Success;
+    constexpr bool  kRegister = true;
+    Status          lRetval = kStatus_Success;
 
 
-    lRetval = RequestInit();
+    lRetval = Common::FrontPanelControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mFrontPanelModel.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = ControllerBasis::Init(aCommandManager, aTimeout);
+    lRetval = Server::FrontPanelControllerBasis::Init(aCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // This MUST come AFTER the base class initialization due to a
     // dependency on the command manager instance.
 
-    lRetval = DoRequestHandlers(lRegister);
+    lRetval = DoRequestHandlers(kRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
-}
-
-void FrontPanelController :: QueryHandler(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
-{
-    FrontPanelModel::BrightnessType          lBrightness;
-    FrontPanelModel::LockedType              lLocked;
-    Status                                   lStatus;
-
-
-    lStatus = mFrontPanelModel.GetBrightness(lBrightness);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lStatus = HandleBrightnessResponse(lBrightness, aBuffer);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lStatus = mFrontPanelModel.GetLocked(lLocked);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lStatus = HandleLockedResponse(lLocked, aBuffer);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
- done:
-    return;
-}
-
-Status FrontPanelController :: HandleBrightnessResponse(const FrontPanelModel::BrightnessType &aBrightness, ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    Command::FrontPanel::BrightnessResponse  lBrightnessResponse;
-    const uint8_t *                          lBuffer;
-    size_t                                   lSize;
-    Status                                   lStatus;
-
-
-    lStatus = lBrightnessResponse.Init(aBrightness);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lBuffer = lBrightnessResponse.GetBuffer();
-    lSize = lBrightnessResponse.GetSize();
-
-    lStatus = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
- done:
-    return (lStatus);
-}
-
-Status FrontPanelController :: HandleLockedResponse(const FrontPanelModel::LockedType &aLocked, ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    Command::FrontPanel::LockedResponse      lLockedResponse;
-    const uint8_t *                          lBuffer;
-    size_t                                   lSize;
-    Status                                   lStatus;
-
-
-    lStatus = lLockedResponse.Init(aLocked);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lBuffer = lLockedResponse.GetBuffer();
-    lSize = lLockedResponse.GetSize();
-
-    lStatus = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
- done:
-    return (lStatus);
 }
 
 // MARK: Configuration Management Methods
 
-void FrontPanelController :: QueryCurrentConfiguration(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+void FrontPanelController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     (void)aConnection;
 
-    QueryHandler(aBuffer);
+    HandleQueryReceived(aBuffer);
 }
 
 void FrontPanelController :: ResetToDefaultConfiguration(void)
 {
     Status lStatus;
 
-    lStatus = mFrontPanelModel.SetBrightness(kFrontPanelModelDefaults.mBrightness);
+    lStatus = GetModel().SetBrightness(kFrontPanelModelDefaults.mBrightness);
     nlCHECK_SUCCESS(lStatus);
 
     if (lStatus == kStatus_Success)
@@ -253,7 +202,7 @@ void FrontPanelController :: ResetToDefaultConfiguration(void)
         OnConfigurationIsDirty();
     }
 
-    lStatus = mFrontPanelModel.SetLocked(kFrontPanelModelDefaults.mLocked);
+    lStatus = GetModel().SetLocked(kFrontPanelModelDefaults.mLocked);
     nlCHECK_SUCCESS(lStatus);
 
     if (lStatus == kStatus_Success)
@@ -294,7 +243,7 @@ Status FrontPanelController :: LoadFromBackupConfiguration(CFDictionaryRef aBack
 
     // Attempt to set the brightness and locked configuration.
 
-    lRetval = mFrontPanelModel.SetBrightness(lBrightness);
+    lRetval = GetModel().SetBrightness(lBrightness);
     nlREQUIRE(lRetval >= kStatus_Success, done);
 
     if (lRetval == kStatus_Success)
@@ -302,7 +251,7 @@ Status FrontPanelController :: LoadFromBackupConfiguration(CFDictionaryRef aBack
         OnConfigurationIsDirty();
     }
 
-    lRetval = mFrontPanelModel.SetLocked(lLocked);
+    lRetval = GetModel().SetLocked(lLocked);
     nlREQUIRE(lRetval >= kStatus_Success, done);
 
     if (lRetval == kStatus_Success)
@@ -324,12 +273,12 @@ void FrontPanelController :: SaveToBackupConfiguration(CFMutableDictionaryRef aB
 
     // Attempt to get the brightness value from the model.
 
-    lStatus = mFrontPanelModel.GetBrightness(lBrightness);
+    lStatus = GetModel().GetBrightness(lBrightness);
     nlREQUIRE_SUCCESS(lStatus, done);
 
     // Attempt to get the locked value from the model.
 
-    lStatus = mFrontPanelModel.GetLocked(lLocked);
+    lStatus = GetModel().GetLocked(lLocked);
     nlREQUIRE_SUCCESS(lStatus, done);
 
     // Create a mutable dictionary to store the values from the model
@@ -357,9 +306,9 @@ void FrontPanelController :: SaveToBackupConfiguration(CFMutableDictionaryRef aB
     return;
 }
 
-// MARK: Command Completion Handlers
+// MARK: Command Request Completion Handlers
 
-void FrontPanelController :: QueryRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void FrontPanelController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     FrontPanelModel::LockedType              lLocked;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
@@ -369,7 +318,7 @@ void FrontPanelController :: QueryRequestReceivedHandler(ConnectionBasis &aConne
     (void)aBuffer;
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::FrontPanel::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::FrontPanel::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     lResponseBuffer.reset(new ConnectionBuffer);
     nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
@@ -377,7 +326,7 @@ void FrontPanelController :: QueryRequestReceivedHandler(ConnectionBasis &aConne
     lStatus = lResponseBuffer->Init();
     nlREQUIRE_SUCCESS(lStatus, done);
 
-    lStatus = mFrontPanelModel.GetLocked(lLocked);
+    lStatus = GetModel().GetLocked(lLocked);
     nlREQUIRE_SUCCESS(lStatus, done);
 
     lStatus = HandleLockedResponse(lLocked, lResponseBuffer);
@@ -398,7 +347,7 @@ void FrontPanelController :: QueryRequestReceivedHandler(ConnectionBasis &aConne
     return;
 }
 
-void FrontPanelController :: SetBrightnessRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void FrontPanelController :: SetBrightnessRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     FrontPanelModel::BrightnessType          lBrightness;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
@@ -407,7 +356,7 @@ void FrontPanelController :: SetBrightnessRequestReceivedHandler(ConnectionBasis
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::FrontPanel::SetBrightnessRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::FrontPanel::SetBrightnessRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/2: Brightness
 
@@ -422,7 +371,7 @@ void FrontPanelController :: SetBrightnessRequestReceivedHandler(ConnectionBasis
     lStatus = lResponseBuffer->Init();
     nlREQUIRE_SUCCESS(lStatus, done);
 
-    lStatus = mFrontPanelModel.SetBrightness(lBrightness);
+    lStatus = GetModel().SetBrightness(lBrightness);
     nlREQUIRE(lStatus >= kStatus_Success, done);
 
     if (lStatus == kStatus_Success)
@@ -448,17 +397,17 @@ void FrontPanelController :: SetBrightnessRequestReceivedHandler(ConnectionBasis
     return;
 }
 
-void FrontPanelController :: SetLockedRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void FrontPanelController :: SetLockedRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    FrontPanelModel::LockedType              lLocked;
-    Command::FrontPanel::LockedResponse      lLockedResponse;
-    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
-    Status                                   lStatus;
+    FrontPanelModel::LockedType                  lLocked;
+    Server::Command::FrontPanel::LockedResponse  lLockedResponse;
+    ConnectionBuffer::MutableCountedPointer      lResponseBuffer;
+    Status                                       lStatus;
 
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::FrontPanel::SetLockedRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::FrontPanel::SetLockedRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/2: Locked
 
@@ -473,7 +422,7 @@ void FrontPanelController :: SetLockedRequestReceivedHandler(ConnectionBasis &aC
     lStatus = lResponseBuffer->Init();
     nlREQUIRE_SUCCESS(lStatus, done);
 
-    lStatus = mFrontPanelModel.SetLocked(lLocked);
+    lStatus = GetModel().SetLocked(lLocked);
     nlREQUIRE(lStatus >= kStatus_Success, done);
 
     if (lStatus == kStatus_Success)
@@ -501,7 +450,7 @@ void FrontPanelController :: SetLockedRequestReceivedHandler(ConnectionBasis &aC
 
 // MARK: Command Request Handler Trampolines
 
-void FrontPanelController :: QueryRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void FrontPanelController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     FrontPanelController *lController = static_cast<FrontPanelController *>(aContext);
 
@@ -511,7 +460,7 @@ void FrontPanelController :: QueryRequestReceivedHandler(ConnectionBasis &aConne
     }
 }
 
-void FrontPanelController :: SetBrightnessRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void FrontPanelController :: SetBrightnessRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     FrontPanelController *lController = static_cast<FrontPanelController *>(aContext);
 
@@ -521,7 +470,7 @@ void FrontPanelController :: SetBrightnessRequestReceivedHandler(ConnectionBasis
     }
 }
 
-void FrontPanelController :: SetLockedRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void FrontPanelController :: SetLockedRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     FrontPanelController *lController = static_cast<FrontPanelController *>(aContext);
 
@@ -531,6 +480,6 @@ void FrontPanelController :: SetLockedRequestReceivedHandler(ConnectionBasis &aC
     }
 }
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX

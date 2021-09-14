@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXCOMMONSOCKETADDRESS_HPP
-#define HLXCOMMONSOCKETADDRESS_HPP
+#ifndef OPENHLXCOMMONSOCKETADDRESS_HPP
+#define OPENHLXCOMMONSOCKETADDRESS_HPP
 
 #include <netinet/in.h>
 #include <sys/socket.h>
@@ -55,4 +55,4 @@ extern bool operator ==(const SocketAddress &aFirst, const SocketAddress &aSecon
 
 }; // namespace HLX
 
-#endif // HLXCOMMONSOCKETADDRESS_HPP
+#endif // OPENHLXCOMMONSOCKETADDRESS_HPP

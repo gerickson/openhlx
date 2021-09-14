@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef HLXMMODELGROUPMODEL_HPP
-#define HLXMMODELGROUPMODEL_HPP
+#ifndef OPENHLXMMODELGROUPMODEL_HPP
+#define OPENHLXMMODELGROUPMODEL_HPP
 
 #include <set>
 #include <string>
@@ -153,4 +153,4 @@ private:
 
 }; // namespace HLX
 
-#endif // HLXMMODELGROUPMODEL_HPP
+#endif // OPENHLXMMODELGROUPMODEL_HPP

@@ -78,7 +78,7 @@ EqualizerPresetsModel :: EqualizerPresetsModel(const EqualizerPresetsModel &aEqu
  *
  */
 Status
-EqualizerPresetsModel :: Init(const size_t &aEqualizerPresetsMax)
+EqualizerPresetsModel :: Init(const IdentifierType &aEqualizerPresetsMax)
 {
     EqualizerPresetModel lEqualizerPresetModel;
     Status               lRetval = kStatus_Success;

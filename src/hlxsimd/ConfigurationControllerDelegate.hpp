@@ -19,22 +19,20 @@
 /**
  *    @file
  *      This file defines a delegate interface for the server
- *      configuration controller object.
+ *      simulator configuration controller object.
  *
  */
 
-#ifndef HLXSERVERCONFIGURATIONCONTROLLERDELEGATE_HPP
-#define HLXSERVERCONFIGURATIONCONTROLLERDELEGATE_HPP
+#ifndef OPENHLXSIMULATORCONFIGURATIONCONTROLLERDELEGATE_HPP
+#define OPENHLXSIMULATORCONFIGURATIONCONTROLLERDELEGATE_HPP
 
 #include <CoreFoundation/CFDictionary.h>
-
-#include <ControllerBasisDelegate.hpp>
 
 
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
 
 class ConfigurationController;
@@ -56,7 +54,7 @@ class ConnectionBasis;
  *    - Serialzing back up configuration to a backup representation.
  *    - Storing backup configuration to non-volatile storage.
  *
- *  @ingroup server
+ *  @ingroup simulator
  *  @ingroup configuration
  */
 class ConfigurationControllerDelegate
@@ -67,14 +65,14 @@ public:
 
     virtual Common::Status LoadFromBackupConfiguration(ConfigurationController &aController, CFDictionaryRef aBackupConfiguration) = 0;
     virtual Common::Status LoadFromBackupConfigurationStorage(ConfigurationController &aController, CFDictionaryRef &aBackupDictionary) = 0;
-    virtual void           QueryCurrentConfiguration(ConfigurationController &aController, ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) = 0;
+    virtual void           QueryCurrentConfiguration(ConfigurationController &aController, Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) = 0;
     virtual void           ResetToDefaultConfiguration(ConfigurationController &aController) = 0;
     virtual void           SaveToBackupConfiguration(ConfigurationController &aController, CFMutableDictionaryRef aBackupDictionary) = 0;
     virtual Common::Status SaveToBackupConfigurationStorage(ConfigurationController &aController, CFDictionaryRef aBackupDictionary) = 0;
 };
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX
 
-#endif // HLXSERVERCONFIGURATIONCONTROLLERDELEGATE_HPP
+#endif // OPENHLXSIMULATORCONFIGURATIONCONTROLLERDELEGATE_HPP
