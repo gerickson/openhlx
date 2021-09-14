@@ -1913,16 +1913,6 @@ void ZonesController :: QueryVolumeRequestReceivedHandler(Server::ConnectionBasi
                                                 lZoneIdentifier);
     nlREQUIRE_SUCCESS(lStatus, done);
 
-    // At this point, the inbound command appears valid. One of two
-    // things will happen next. We'll attempt to satisfy the request
-    // from our local data model cache. If we can satisfy it, we'll
-    // send the response. If we cannot satisfy it due to a TBD error,
-    // then we need to forward the request onto the proxied server. On
-    // response, we will update the local cache and forward the
-    // response back to the initiator. On server error, we will
-    // forward the error back to the initiator. On server timeout, we
-    // will send an error response back to the initiator.
-
     lResponseBuffer.reset(new ConnectionBuffer);
     nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
 
@@ -1932,8 +1922,6 @@ void ZonesController :: QueryVolumeRequestReceivedHandler(Server::ConnectionBasi
     // First, put the solicited notifications portion.
 
     lStatus = HandleQueryVolumeReceived(lZoneIdentifier, lResponseBuffer);
-    Log::Debug().Write("%s: %d: lStatus %d\n",
-                       __func__, __LINE__, lStatus);
     nlREQUIRE_SUCCESS(lStatus, done);
 
  done:
