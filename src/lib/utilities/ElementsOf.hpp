@@ -49,7 +49,7 @@ namespace Utilities
  */
 template <typename T, size_t N>
 inline constexpr size_t
-ElementsOf(const T (&aArray)[N])
+ElementsOf(__attribute__((unused)) const T (&aArray)[N])
 {
     return (N);
 }
