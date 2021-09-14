@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXCOMMONREGULAREXPRESSION_HPP
-#define HLXCOMMONREGULAREXPRESSION_HPP
+#ifndef OPENHLXCOMMONREGULAREXPRESSION_HPP
+#define OPENHLXCOMMONREGULAREXPRESSION_HPP
 
 #include <memory>
 #include <string>
@@ -119,4 +119,4 @@ extern size_t Distance(const regmatch_t &aMatch);
 
 }; // namespace HLX
 
-#endif // HLXCOMMONREGULAREXPRESSION_HPP
+#endif // OPENHLXCOMMONREGULAREXPRESSION_HPP

@@ -23,10 +23,12 @@
  *
  */
 
-#ifndef HLXCOMMONEQUALIZERPRESETSCONTROLLERBASIS_HPP
-#define HLXCOMMONEQUALIZERPRESETSCONTROLLERBASIS_HPP
+#ifndef OPENHLXCOMMONEQUALIZERPRESETSCONTROLLERBASIS_HPP
+#define OPENHLXCOMMONEQUALIZERPRESETSCONTROLLERBASIS_HPP
 
 #include <OpenHLX/Model/EqualizerPresetModel.hpp>
+#include <OpenHLX/Model/EqualizerPresetsModel.hpp>
+
 
 namespace HLX
 {
@@ -57,11 +59,26 @@ public:
 
     // Observer Methods
 
+    static Common::Status GetEqualizerPresetsMax(IdentifierType &aEqualizerPresets);
+    static IdentifierType GetEqualizerPresetsMax(void);
+
     static bool           IsValidIdentifier(const IdentifierType &aEqualizerPresetIdentifier);
     static Common::Status ValidateIdentifier(const IdentifierType &aEqualizerPresetIdentifier);
 
 protected:
     EqualizerPresetsControllerBasis(void) = default;
+
+    // Initializer(s)
+
+    Common::Status Init(void);
+
+protected:
+    /**
+     *  The equalizer presets collection model for all client and
+     *  server controllers.
+     *
+     */
+    Model::EqualizerPresetsModel mEqualizerPresets;
 
 protected:
     static const IdentifierType  kEqualizerPresetsMax;
@@ -71,4 +88,4 @@ protected:
 
 }; // namespace HLX
 
-#endif // HLXCOMMONEQUALIZERPRESETSCONTROLLERBASIS_HPP
+#endif // OPENHLXCOMMONEQUALIZERPRESETSCONTROLLERBASIS_HPP

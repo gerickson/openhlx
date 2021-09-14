@@ -18,7 +18,9 @@
 
 /**
  *    @file
- *      This file...
+ *      This file implements an object for working with Internet
+ *      Protocol version 4 (that is, IPv4) and version 6 (that is,
+ *      IPv6) addresses.
  *
  */
 

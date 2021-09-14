@@ -23,13 +23,13 @@
  *
  */
 
-#ifndef HLXCLIENTZONESCONTROLLER_HPP
-#define HLXCLIENTZONESCONTROLLER_HPP
+#ifndef OPENHLXCLIENTZONESCONTROLLER_HPP
+#define OPENHLXCLIENTZONESCONTROLLER_HPP
 
 #include <stddef.h>
 #include <stdint.h>
 
-#include <OpenHLX/Client/ControllerBasis.hpp>
+#include <OpenHLX/Client/ZonesControllerBasis.hpp>
 #include <OpenHLX/Client/ZonesControllerCommands.hpp>
 #include <OpenHLX/Common/ZonesControllerBasis.hpp>
 #include <OpenHLX/Model/BalanceModel.hpp>
@@ -57,23 +57,22 @@ namespace Client
  *
  */
 class ZonesController :
-    public ControllerBasis,
-    public Common::ZonesControllerBasis
+    public Common::ZonesControllerBasis,
+    public Client::ZonesControllerBasis
 {
 public:
     ZonesController(void);
     virtual ~ZonesController(void);
 
-    Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
+    // Initializer(s)
 
-    Common::Status Refresh(const Common::Timeout &aTimeout) final;
+    Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
 
     // Observer Methods
 
-    Common::Status Query(void);
-    Common::Status Query(const IdentifierType &aZoneIdentifier);
-
-    Common::Status GetZonesMax(size_t &aZones) const;
+    Common::Status QueryMute(const Model::ZoneModel::IdentifierType &aZoneIdentifier);
+    Common::Status QuerySource(const Model::ZoneModel::IdentifierType &aZoneIdentifier);
+    Common::Status QueryVolume(const Model::ZoneModel::IdentifierType &aZoneIdentifier);
 
     Common::Status GetZone(const IdentifierType &aIdentifier, const Model::ZoneModel *&aModel) const;
 
@@ -111,119 +110,23 @@ public:
     Common::Status SetSoundMode(const IdentifierType &aZoneIdentifier, const Model::SoundModel::SoundMode &aSoundMode);
 
     Common::Status SetSource(const IdentifierType &aZoneIdentifier, const Model::SourceModel::IdentifierType &aSourceIdentifier);
+    Common::Status SetSourceAll(const Model::SourceModel::IdentifierType &aSourceIdentifier);
 
     Common::Status SetVolume(const IdentifierType &aZoneIdentifier, const Model::VolumeModel::LevelType &aLevel);
+    Common::Status SetVolumeAll(const Model::VolumeModel::LevelType &aLevel);
     Common::Status IncreaseVolume(const IdentifierType &aZoneIdentifier);
     Common::Status DecreaseVolume(const IdentifierType &aZoneIdentifier);
 
     Common::Status SetVolumeLocked(const IdentifierType &aZoneIdentifier, const Model::VolumeModel::FixedType &aLocked);
 
-    // Command Completion Handler Trampolines
-
-    static void QueryCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SetBalanceCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SetEqualizerBandCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SetEqualizerPresetCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SetHighpassCrossoverCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SetLowpassCrossoverCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SetMuteCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SetNameCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SetSoundModeCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SetSourceCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SetToneCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SetVolumeCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SetVolumeFixedCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-
-    static void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError, void *aContext);
-
-    // Notification Handler Trampolines
-
-    static void BalanceNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void EqualizerBandNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void EqualizerPresetNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void HighpassCrossoverNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void LowpassCrossoverNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void MuteNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SoundModeNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SourceNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SourceAllNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void ToneNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void VolumeNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void VolumeAllNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void VolumeFixedNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-
 private:
-    Common::Status ResponseInit(void);
-    Common::Status DoNotificationHandlers(bool aRegister);
+    // Implementation
 
     Common::Status SetTone(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const Model::ToneModel::LevelType &aBass, const Model::ToneModel::LevelType &aTreble);
-
-    // Command Completion Handlers
-
-    void QueryCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void SetBalanceCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void SetEqualizerBandCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void SetEqualizerPresetCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void SetHighpassCrossoverCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void SetLowpassCrossoverCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void SetMuteCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void SetNameCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void SetSoundModeCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void SetSourceCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void SetToneCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void SetVolumeCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void SetVolumeFixedCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError);
-
-    // Notification Handlers
-
-    void BalanceNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void EqualizerBandNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void EqualizerPresetNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void HighpassCrossoverNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void LowpassCrossoverNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void MuteNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void SoundModeNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void SourceNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void SourceAllNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void ToneNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void VolumeNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void VolumeAllNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void VolumeFixedNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-
-private:
-    friend class Controller;
-
-    void HandleMuteChange(const IdentifierType &aZoneIdentifier, const Model::VolumeModel::MuteType &aMute);
-    void HandleVolumeChange(const IdentifierType &aZoneIdentifier, const Model::VolumeModel::LevelType &aVolume);
-    void HandleSourceChange(const IdentifierType &aZoneIdentifier, const Model::SourceModel::IdentifierType &aSourceIdentifier);
-
-private:
-    size_t                                            mZonesDidRefreshCount;
-    Model::ZonesModel                                 mZones;
-
-private:
-    static Command::Zones::BalanceResponse            kBalanceResponse;
-    static Command::Zones::EqualizerBandResponse      kEqualizerBandResponse;
-    static Command::Zones::EqualizerPresetResponse    kEqualizerPresetResponse;
-    static Command::Zones::HighpassCrossoverResponse  kHighpassCrossoverResponse;
-    static Command::Zones::LowpassCrossoverResponse   kLowpassCrossoverResponse;
-    static Command::Zones::MuteResponse               kMuteResponse;
-    static Command::Zones::NameResponse               kNameResponse;
-    static Command::Zones::QueryResponse              kQueryResponse;
-    static Command::Zones::SoundModeResponse          kSoundModeResponse;
-    static Command::Zones::SourceResponse             kSourceResponse;
-    static Command::Zones::SourceAllResponse          kSourceAllResponse;
-    static Command::Zones::ToneResponse               kToneResponse;
-    static Command::Zones::VolumeResponse             kVolumeResponse;
-    static Command::Zones::VolumeAllResponse          kVolumeAllResponse;
-    static Command::Zones::VolumeFixedResponse        kVolumeFixedResponse;
 };
 
 }; // namespace Client
 
 }; // namespace HLX
 
-#endif // HLXCLIENTZONESCONTROLLER_HPP
+#endif // OPENHLXCLIENTZONESCONTROLLER_HPP

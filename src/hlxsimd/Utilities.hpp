@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef HLXSERVERUTILITIES_HPP
-#define HLXSERVERUTILITIES_HPP
+#ifndef OPENHLXSIMULATORUTILITIES_HPP
+#define OPENHLXSIMULATORUTILITIES_HPP
 
 #include <stdint.h>
 
@@ -33,7 +33,7 @@
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
 
 namespace Utilities
@@ -48,8 +48,8 @@ extern CFStringRef CreateCFString(const uint8_t &aValue);
 
 }; // namespace Utilities
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX
 
-#endif // HLXSERVERUTILITIES_HPP
+#endif // OPENHLXSIMULATORUTILITIES_HPP

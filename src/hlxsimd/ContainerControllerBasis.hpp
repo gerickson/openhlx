@@ -25,8 +25,8 @@
  *
  */
 
-#ifndef HLXSERVERCONTAINERCONTROLLERBASIS_HPP
-#define HLXSERVERCONTAINERCONTROLLERBASIS_HPP
+#ifndef OPENHLXSIMULATORCONTAINERCONTROLLERBASIS_HPP
+#define OPENHLXSIMULATORCONTAINERCONTROLLERBASIS_HPP
 
 #include <CoreFoundation/CoreFoundation.h>
 
@@ -36,7 +36,7 @@
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
 
 /**
@@ -48,7 +48,7 @@ namespace Server
  *  and mutation of a collection of HLX objects such as equalizer
  *  presets, favorites, groups, or zones.
  *
- *  @ingroup server
+ *  @ingroup simulator
  *
  */
 class ContainerControllerBasis
@@ -68,8 +68,8 @@ protected:
     virtual Common::Status ElementSaveToBackupConfiguration(CFMutableDictionaryRef aContainerBackupDictionary, const Model::IdentifierModel::IdentifierType &aElementIdentifier) const = 0;
 };
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX
 
-#endif // HLXSERVERCONTAINERCONTROLLERBASIS_HPP
+#endif // OPENHLXSIMULATORCONTAINERCONTROLLERBASIS_HPP

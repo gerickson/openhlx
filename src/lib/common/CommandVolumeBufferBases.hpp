@@ -23,17 +23,18 @@
  *
  */
 
-#ifndef HLXCOMMONCOMMANDVOLUMEBUFFERBASIS_HPP
-#define HLXCOMMONCOMMANDVOLUMEBUFFERBASIS_HPP
+#ifndef OPENHLXCOMMONCOMMANDVOLUMEBUFFERBASIS_HPP
+#define OPENHLXCOMMONCOMMANDVOLUMEBUFFERBASIS_HPP
 
 #include <stddef.h>
 
 #include <OpenHLX/Common/Errors.hpp>
 
-#include <CommandPropertyBufferBases.hpp>
+#include <OpenHLX/Common/CommandPropertyBufferBases.hpp>
 #include <OpenHLX/Common/CommandBuffer.hpp>
 #include <OpenHLX/Model/IdentifierModel.hpp>
 #include <OpenHLX/Model/VolumeModel.hpp>
+
 
 namespace HLX
 {
@@ -192,4 +193,4 @@ protected:
 
 }; // namespace HLX
 
-#endif // HLXCOMMONCOMMANDVOLUMEBUFFERBASIS_HPP
+#endif // OPENHLXCOMMONCOMMANDVOLUMEBUFFERBASIS_HPP

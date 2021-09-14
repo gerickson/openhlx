@@ -36,6 +36,8 @@
 #include <CFUtilities/CFUtilities.hpp>
 
 #include <LogUtilities/LogUtilities.hpp>
+
+#include <OpenHLX/Client/CommandRequestBasis.hpp>
 #include <OpenHLX/Common/ConnectionBuffer.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
@@ -43,7 +45,6 @@
 #include <CommandErrorResponse.hpp>
 #include <CommandExchangeBasis.hpp>
 #include <CommandManager.hpp>
-#include <CommandRequestBasis.hpp>
 #include <CommandResponseBasis.hpp>
 
 
@@ -476,9 +477,9 @@ CommandManager :: RegisterNotificationHandler(Command::ResponseBasis &aResponse,
                                               void *aContext,
                                               OnNotificationReceivedFunc aOnNotificationReceivedHandler)
 {
-    NotificationHandlerState lNotificationHandlerState;
-    std::pair<std::set<NotificationHandlerState>::iterator, bool> lStatus;
-    Status lRetval = kStatus_Success;
+    NotificationHandlerState                                       lNotificationHandlerState;
+    std::pair<std::set<NotificationHandlerState>::iterator, bool>  lStatus;
+    Status                                                         lRetval = kStatus_Success;
 
     lRetval = lNotificationHandlerState.Init(aResponse, aContext, aOnNotificationReceivedHandler);
     nlREQUIRE_SUCCESS(lRetval, done);
@@ -513,7 +514,6 @@ CommandManager :: RegisterNotificationHandler(Command::ResponseBasis &aResponse,
 Status
 CommandManager :: UnregisterNotificationHandler(const Command::ResponseBasis &aResponse, void *aContext)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
     (void)aResponse;
@@ -784,15 +784,20 @@ Status CommandManager :: DispatchResponse(ConnectionBuffer::ImmutableCountedPoin
  *
  *  @param[in]  aConnectionManager  A reference to the connection
  *                                  manager that issued the delegation.
+ *  @param[in]  aRoles              An immutable reference to the roles
+ *                                  in which the connection manager
+ *                                  that issued the delegation is
+ *                                  acting.
  *  @param[in]  aHost               A pointer to a null-terminated C
  *                                  string containing the host
  *                                  name that will resolve.
  *
  */
 void
-CommandManager :: ConnectionManagerWillResolve(Common::ConnectionManagerBasis &aConnectionManager, const char *aHost)
+CommandManager :: ConnectionManagerWillResolve(Common::ConnectionManagerBasis &aConnectionManager, const Common::ConnectionManagerBasis::Roles &aRoles, const char *aHost)
 {
     (void)aConnectionManager;
+    (void)aRoles;
     (void)aHost;
 }
 
@@ -803,15 +808,20 @@ CommandManager :: ConnectionManagerWillResolve(Common::ConnectionManagerBasis &a
  *
  *  @param[in]  aConnectionManager  A reference to the connection
  *                                  manager that issued the delegation.
+ *  @param[in]  aRoles              An immutable reference to the roles
+ *                                  in which the connection manager
+ *                                  that issued the delegation is
+ *                                  acting.
  *  @param[in]  aHost               A pointer to a null-terminated C
  *                                  string containing the host
  *                                  name that is resolving.
  *
  */
 void
-CommandManager :: ConnectionManagerIsResolving(Common::ConnectionManagerBasis &aConnectionManager, const char *aHost)
+CommandManager :: ConnectionManagerIsResolving(Common::ConnectionManagerBasis &aConnectionManager, const Common::ConnectionManagerBasis::Roles &aRoles, const char *aHost)
 {
     (void)aConnectionManager;
+    (void)aRoles;
     (void)aHost;
 }
 
@@ -827,6 +837,10 @@ CommandManager :: ConnectionManagerIsResolving(Common::ConnectionManagerBasis &a
  *
  *  @param[in]  aConnectionManager  A reference to the connection
  *                                  manager that issued the delegation.
+ *  @param[in]  aRoles              An immutable reference to the roles
+ *                                  in which the connection manager
+ *                                  that issued the delegation is
+ *                                  acting.
  *  @param[in]  aHost               A pointer to a null-terminated C
  *                                  string containing the host
  *                                  name that did resolve.
@@ -836,32 +850,26 @@ CommandManager :: ConnectionManagerIsResolving(Common::ConnectionManagerBasis &a
  *
  */
 void
-CommandManager :: ConnectionManagerDidResolve(Common::ConnectionManagerBasis &aConnectionManager, const char *aHost, const Common::IPAddress &aIPAddress)
+CommandManager :: ConnectionManagerDidResolve(Common::ConnectionManagerBasis &aConnectionManager, const Common::ConnectionManagerBasis::Roles &aRoles, const char *aHost, const Common::IPAddress &aIPAddress)
 {
     (void)aConnectionManager;
+    (void)aRoles;
     (void)aHost;
     (void)aIPAddress;
 }
 
-/**
- *  @brief
- *    Delegation from the connection manager that a host name did
- *    not resolve.
- *
- *  @param[in]  aConnectionManager  A reference to the connection
- *                                  manager that issued the delegation.
- *  @param[in]  aHost               A pointer to a null-terminated C
- *                                  string containing the host
- *                                  name that did not resolve.
- *  @param[in]  aError              An immutable reference to the error
- *                                  associated with the failed
- *                                  resolution.
- *
- */
+// Note: This is documented in the header, rather than in the source
+// as preferred, because Doxygen (1.9.x) does not seem to want to find
+// and match it as documented when done in the source.
+
 void
-CommandManager :: ConnectionManagerDidNotResolve(Common::ConnectionManagerBasis &aConnectionManager, const char *aHost, const Common::Error &aError)
+CommandManager :: ConnectionManagerDidNotResolve(Common::ConnectionManagerBasis &aConnectionManager,
+                                                 const Common::ConnectionManagerBasis::Roles &aRoles,
+                                                 const char *aHost,
+                                                 const Common::Error &aError)
 {
     (void)aConnectionManager;
+    (void)aRoles;
     (void)aHost;
     (void)aError;
 }
@@ -1074,32 +1082,30 @@ CommandManager :: ConnectionManagerDidReceiveApplicationData(Common::ConnectionM
  *
  *  @param[in]  aConnectionManager  A reference to the connection manager
  *                                  that issued the delegation.
+ *  @param[in]  aRoles              An immutable reference to the roles
+ *                                  in which the connection manager
+ *                                  that issued the delegation is
+ *                                  acting.
  *  @param[in]  aURLRef             The URL associated with the peer server.
  *
  */
 void
-CommandManager :: ConnectionManagerWillDisconnect(Common::ConnectionManagerBasis &aConnectionManager, CFURLRef aURLRef)
+CommandManager :: ConnectionManagerWillDisconnect(Common::ConnectionManagerBasis &aConnectionManager, const ConnectionManagerBasis::Roles &aRoles, CFURLRef aURLRef)
 {
     (void)aConnectionManager;
+    (void)aRoles;
     (void)aURLRef;
 }
 
-/**
- *  @brief
- *    Delegation from the connection manager that a connection to a
- *    peer server did disconnect.
- *
- *  @param[in]  aConnectionManager  A reference to the connection manager
- *                                  that issued the delegation.
- *  @param[in]  aURLRef             The URL associated with the peer server.
- *  @param[in]  aError              An immutable reference to the error
- *                                  associated with the disconnection.
- *
- */
+// Note: This is documented in the header, rather than in the source
+// as preferred, because Doxygen (1.9.x) does not seem to want to find
+// and match it as documented when done in the source.
+
 void
-CommandManager :: ConnectionManagerDidDisconnect(Common::ConnectionManagerBasis &aConnectionManager, CFURLRef aURLRef, const Common::Error &aError)
+CommandManager :: ConnectionManagerDidDisconnect(Common::ConnectionManagerBasis &aConnectionManager, const Common::ConnectionManagerBasis::Roles &aRoles, CFURLRef aURLRef, const Common::Error &aError)
 {
     (void)aConnectionManager;
+    (void)aRoles;
     (void)aURLRef;
     (void)aError;
 
@@ -1110,48 +1116,30 @@ CommandManager :: ConnectionManagerDidDisconnect(Common::ConnectionManagerBasis 
     mActiveExchangeState.reset();
 }
 
-/**
- *  @brief
- *    Delegation from the connection manager that a connection to a
- *    peer server did not disconnect.
- *
- *  @param[in]  aConnectionManager  A reference to the connection manager
- *                                  that issued the delegation.
- *  @param[in]  aURLRef             The URL associated with the peer server.
- *  @param[in]  aError              An immutable reference to the error
- *                                  associated with the failed
- *                                  disconnection.
- *
- */
+// Note: This is documented in the header, rather than in the source
+// as preferred, because Doxygen (1.9.x) does not seem to want to find
+// and match it as documented when done in the source.
+
 void
-CommandManager :: ConnectionManagerDidNotDisconnect(Common::ConnectionManagerBasis &aConnectionManager, CFURLRef aURLRef, const Common::Error &aError)
+CommandManager :: ConnectionManagerDidNotDisconnect(Common::ConnectionManagerBasis &aConnectionManager, const Common::ConnectionManagerBasis::Roles &aRoles, CFURLRef aURLRef, const Common::Error &aError)
 {
     (void)aConnectionManager;
+    (void)aRoles;
     (void)aURLRef;
     (void)aError;
 }
 
 // MARK: Connection Manager Error Method
 
-/**
- *  @brief
- *    Delegation from the connection manager that a connection to a
- *    peer server experienced an error.
- *
- *  @note
- *    This delegation may occur along with other delegations with
- *    respect to the same underlying event or cause.
- *
- *  @param[in]  aConnectionManager  A reference to the connection manager
- *                                  that issued the delegation.
- *  @param[in]  aError              An immutable reference to the error
- *                                  associated with the event.
- *
- */
+// Note: This is documented in the header, rather than in the source
+// as preferred, because Doxygen (1.9.x) does not seem to want to find
+// and match it as documented when done in the source.
+
 void
-CommandManager :: ConnectionManagerError(Common::ConnectionManagerBasis &aConnectionManager, const Common::Error &aError)
+CommandManager :: ConnectionManagerError(Common::ConnectionManagerBasis &aConnectionManager, const Common::ConnectionManagerBasis::Roles &aRoles, const Common::Error &aError)
 {
     (void)aConnectionManager;
+    (void)aRoles;
     (void)aError;
 }
 

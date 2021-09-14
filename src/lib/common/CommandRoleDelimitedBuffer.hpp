@@ -25,11 +25,11 @@
  *
  */
 
-#ifndef HLXCOMMONCOMMANDROLEDELIMITEDBUFFER_HPP
-#define HLXCOMMONCOMMANDROLEDELIMITEDBUFFER_HPP
+#ifndef OPENHLXCOMMONCOMMANDROLEDELIMITEDBUFFER_HPP
+#define OPENHLXCOMMONCOMMANDROLEDELIMITEDBUFFER_HPP
 
-#include <CommandDelimitedBuffer.hpp>
-#include <CommandRole.hpp>
+#include <OpenHLX/Common/CommandDelimitedBuffer.hpp>
+#include <OpenHLX/Common/CommandRole.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 
 namespace HLX
@@ -74,4 +74,4 @@ protected:
 
 }; // namespace HLX
 
-#endif // HLXCOMMONCOMMANDDELIMITEDBUFFER_HPP
+#endif // OPENHLXCOMMONCOMMANDDELIMITEDBUFFER_HPP

@@ -50,6 +50,39 @@ const SourcesControllerBasis::IdentifierType  SourcesControllerBasis::kSourcesMa
 
 /**
  *  @brief
+ *    Get the maximum number of supported HLX sources.
+ *
+ *  @param[out]  aSources  The maximum number of HLX sources on success.
+ *
+ *  @retval  kStatus_Success  Unconditionally.
+ *
+ */
+Status
+SourcesControllerBasis :: GetSourcesMax(IdentifierType &aSources)
+{
+    Status  lRetval = kStatus_Success;
+
+    aSources = GetSourcesMax();
+
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Get the maximum number of supported HLX sources.
+ *
+ *  @returns
+ *    The maximum number of supported HLX sources.
+ *
+ */
+SourcesControllerBasis::IdentifierType
+SourcesControllerBasis :: GetSourcesMax(void)
+{
+    return (kSourcesMax);
+}
+
+/**
+ *  @brief
  *    Determine whether or not an source identifier is valid.
  *
  *  This determines whether or not the specified source
@@ -95,6 +128,27 @@ SourcesControllerBasis :: ValidateIdentifier(const IdentifierType &aSourceIdenti
     nlREQUIRE_ACTION(aSourceIdentifier <= kSourcesMax, done, lRetval = -ERANGE);
 
  done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the sources controller basis.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+SourcesControllerBasis :: Init(void)
+{
+    Status lRetval = kStatus_Success;
+
+    lRetval = mSources.Init(kSourcesMax);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
     return (lRetval);
 }
 

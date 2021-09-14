@@ -35,23 +35,23 @@
 
 #include <LogUtilities/LogUtilities.hpp>
 
+#include <OpenHLX/Server/CommandManager.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
-#include <CommandManager.hpp>
+#include <OpenHLX/Utilities/ElementsOf.hpp>
 
 
 using namespace HLX::Common;
 using namespace HLX::Model;
+using namespace HLX::Server;
+using namespace HLX::Utilities;
 using namespace Nuovations;
+
 
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
-
-// Request data
-
-Command::Network::QueryRequest  NetworkController::kQueryRequest;
 
 // The query network response contains both state and
 // configuration settings.
@@ -92,27 +92,27 @@ struct NetworkModelDefaults
     NetworkModel::EnabledType          mSDDPEnabled;
 };
 
+/**
+ *  @brief
+ *    This is the class default constructor.
+ *
+ */
 NetworkController :: NetworkController(void) :
-    ControllerBasis(),
-    mNetworkModel()
+    Common::NetworkControllerBasis(),
+    Server::NetworkControllerBasis(Common::NetworkControllerBasis::mNetworkModel),
+    Simulator::ObjectControllerBasis()
 {
     return;
 }
 
+/**
+ *  @brief
+ *    This is the class destructor.
+ *
+ */
 NetworkController :: ~NetworkController(void)
 {
     return;
-}
-
-Status NetworkController :: RequestInit(void)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = kQueryRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
 }
 
 Status NetworkController :: DoRequestHandlers(const bool &aRegister)
@@ -123,66 +123,72 @@ Status NetworkController :: DoRequestHandlers(const bool &aRegister)
             NetworkController::QueryRequestReceivedHandler
         }
     };
-    static const size_t               lRequestHandlerCount = sizeof (lRequestHandlers) / sizeof (lRequestHandlers[0]);
-    Status                            lRetval = kStatus_Success;
+    static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
+    Status                   lRetval = kStatus_Success;
 
-    lRetval = ControllerBasis::DoRequestHandlers(&lRequestHandlers[0], &lRequestHandlers[lRequestHandlerCount], aRegister);
+    lRetval = Server::ObjectControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
+                                                               &lRequestHandlers[lRequestHandlerCount],
+                                                               this,
+                                                               aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
-Status NetworkController :: Init(CommandManager &aCommandManager, const Timeout &aTimeout)
+// MARK: Initializer(s)
+
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the class with the specified command manager and
+ *  timeout.
+ *
+ *  @param[in]  aCommandManager  A reference to the command manager
+ *                               instance to initialize the controller
+ *                               with.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -EINVAL                      If an internal parameter was
+ *                                        invalid.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_NotInitialized        The base class was not properly
+ *                                        initialized.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+NetworkController :: Init(Server::CommandManager &aCommandManager)
 {
     DeclareScopedFunctionTracer(lTracer);
-    const bool  lRegister = true;
-    Status      lRetval = kStatus_Success;
+    constexpr bool  kRegister = true;
+    Status          lRetval = kStatus_Success;
 
 
-    lRetval = RequestInit();
+    lRetval = Common::NetworkControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mNetworkModel.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = ControllerBasis::Init(aCommandManager, aTimeout);
+    lRetval = Server::NetworkControllerBasis::Init(aCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // This MUST come AFTER the base class initialization due to a
     // dependency on the command manager instance.
 
-    lRetval = DoRequestHandlers(lRegister);
+    lRetval = DoRequestHandlers(kRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
-}
-
-void NetworkController :: QueryHandler(const char *aInputBuffer, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer)
-{
-    const uint8_t *                          lBuffer;
-    size_t                                   lSize;
-    Status                                   lStatus;
-
-
-    lBuffer = reinterpret_cast<const uint8_t *>(aInputBuffer);
-    lSize = strlen(aInputBuffer);
-
-    lStatus = Common::Utilities::Put(*aOutputBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
- done:
-    return;
 }
 
 // MARK: Configuration Management Methods
 
-void NetworkController :: QueryCurrentConfiguration(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+void NetworkController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     (void)aConnection;
 
-    QueryHandler(kQueryCurrentResponseBuffer, aBuffer);
+    HandleQueryReceived(kQueryCurrentResponseBuffer, aBuffer);
 }
 
 void NetworkController :: ResetToDefaultConfiguration(void)
@@ -190,11 +196,11 @@ void NetworkController :: ResetToDefaultConfiguration(void)
     return;
 }
 
-// MARK: Command Completion Handlers
+// MARK: Command Request Completion Handlers
 
-void NetworkController :: QueryRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void NetworkController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    Command::Network::QueryResponse          lResponse;
+    Server::Command::Network::QueryResponse  lResponse;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
     const uint8_t *                          lBuffer;
@@ -204,7 +210,7 @@ void NetworkController :: QueryRequestReceivedHandler(ConnectionBasis &aConnecti
     (void)aBuffer;
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Network::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Network::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     lResponseBuffer.reset(new ConnectionBuffer);
     nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
@@ -214,7 +220,7 @@ void NetworkController :: QueryRequestReceivedHandler(ConnectionBasis &aConnecti
 
     // First, put the solicited notifications portion.
 
-    QueryHandler(kQueryResponseBuffer, lResponseBuffer);
+    HandleQueryReceived(kQueryResponseBuffer, lResponseBuffer);
 
     // Second, put the response completion portion.
 
@@ -244,7 +250,7 @@ void NetworkController :: QueryRequestReceivedHandler(ConnectionBasis &aConnecti
 
 // MARK: Command Request Handler Trampolines
 
-void NetworkController :: QueryRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void NetworkController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     NetworkController *lController = static_cast<NetworkController *>(aContext);
 
@@ -254,6 +260,6 @@ void NetworkController :: QueryRequestReceivedHandler(ConnectionBasis &aConnecti
     }
 }
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX

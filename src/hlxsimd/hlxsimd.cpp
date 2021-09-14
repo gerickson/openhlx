@@ -58,60 +58,60 @@
 #include <NuovationsUtilities/GenerateShortOptions.hpp>
 
 #include <OpenHLX/Common/ConnectionBuffer.hpp>
+#include <OpenHLX/Common/ConnectionManagerBasis.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/RegularExpression.hpp>
 #include <OpenHLX/Common/RunLoopParameters.hpp>
 #include <OpenHLX/Common/Version.hpp>
 #include <OpenHLX/Model/IdentifierModel.hpp>
+#include <OpenHLX/Server/ConnectionBasisDelegate.hpp>
+#include <OpenHLX/Server/ConnectionTelnet.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
 #include <OpenHLX/Utilities/ElementsOf.hpp>
 #include <OpenHLX/Utilities/Utilities.hpp>
 
-#include <CommandManager.hpp>
-#include <CommandRegularExpression.hpp>
-#include <CommandRequestBasis.hpp>
-#include <ConnectionBasisDelegate.hpp>
-#include <ConnectionTelnet.hpp>
-#include <HLXServerController.hpp>
-#include <SourcesControllerCommands.hpp>
+#include "ApplicationController.hpp"
 
 
 using namespace HLX;
 using namespace HLX::Common;
 using namespace HLX::Model;
 using namespace HLX::Server;
+using namespace HLX::Simulator;
+using namespace HLX::Simulator::Application;
 using namespace HLX::Utilities;
 using namespace Nuovations;
 using namespace boost::filesystem;
 using namespace std;
 
+
 // Preprocessor Definitions
 
-#define OPT_BASE                    0x00001000
+#define OPT_BASE                     0x00001000
 
-#define OPT_DEBUG                   'd'
-#define OPT_HELP                    'h'
-#define OPT_IPV4_ONLY               '4'
-#define OPT_IPV6_ONLY               '6'
-#define OPT_QUIET                   'q'
-#define OPT_SYSLOG                  's'
-#define OPT_VERBOSE                 'v'
-#define OPT_VERSION                 'V'
+#define OPT_DEBUG                    'd'
+#define OPT_HELP                     'h'
+#define OPT_IPV4_ONLY                '4'
+#define OPT_IPV6_ONLY                '6'
+#define OPT_QUIET                    'q'
+#define OPT_SYSLOG                   's'
+#define OPT_VERBOSE                  'v'
+#define OPT_VERSION                  'V'
 
-#define OPT_CONFIGURATION_FILE      (OPT_BASE +  1)
+#define OPT_CONFIGURATION_FILE       (OPT_BASE +  1)
 
 // Type Declarations
 
 enum OptFlags {
-    kOptNone          = 0x00000000,
-    kOptIPv4Only      = 0x00000001,
-    kOptIPv6Only      = 0x00000002,
-    kOptPriority      = 0x00000004,
-    kOptQuiet         = 0x00000008,
-    kOptSyslog        = 0x00000010
+    kOptNone            = 0x00000000,
+    kOptIPv4Only        = 0x00000001,
+    kOptIPv6Only        = 0x00000002,
+    kOptPriority        = 0x00000004,
+    kOptQuiet           = 0x00000008,
+    kOptSyslog          = 0x00000010
 };
 
-class HLXServer;
+class HLXSimulator;
 
 // Function Prototypes
 
@@ -126,19 +126,19 @@ static const char *         sProgram             = nullptr;
 
 static const char *         sConfigurationFile   = HLXSIMD_DEFAULT_CONFIG_PATH;
 
-static HLXServer *          sHLXServer           = nullptr;
+static HLXSimulator *       sHLXSimulator        = nullptr;
 
 static const struct option  sOptions[] = {
-    { "configuration-file",     required_argument,  nullptr,   OPT_CONFIGURATION_FILE     },
-    { "debug",                  optional_argument,  nullptr,   OPT_DEBUG                  },
-    { "help",                   no_argument,        nullptr,   OPT_HELP                   },
-    { "ipv4-only",              no_argument,        nullptr,   OPT_IPV4_ONLY              },
-    { "ipv6-only",              no_argument,        nullptr,   OPT_IPV6_ONLY              },
-    { "quiet",                  no_argument,        nullptr,   OPT_QUIET                  },
-    { "verbose",                optional_argument,  nullptr,   OPT_VERBOSE                },
-    { "version",                no_argument,        nullptr,   OPT_VERSION                },
+    { "configuration-file",      required_argument,  nullptr,   OPT_CONFIGURATION_FILE     },
+    { "debug",                   optional_argument,  nullptr,   OPT_DEBUG                   },
+    { "help",                    no_argument,        nullptr,   OPT_HELP                    },
+    { "ipv4-only",               no_argument,        nullptr,   OPT_IPV4_ONLY               },
+    { "ipv6-only",               no_argument,        nullptr,   OPT_IPV6_ONLY               },
+    { "quiet",                   no_argument,        nullptr,   OPT_QUIET                   },
+    { "verbose",                 optional_argument,  nullptr,   OPT_VERBOSE                 },
+    { "version",                 no_argument,        nullptr,   OPT_VERSION                 },
 
-    { nullptr,                  0,                  nullptr,   0                          }
+    { nullptr,                   0,                  nullptr,   0                           }
 };
 
 static const char * const   sShortUsageString =
@@ -179,133 +179,132 @@ static const char * const   sLongUsageString =
  *  implements the required server delegations for that controller.
  *
  */
-class HLXServer :
-    public ControllerDelegate
+class HLXSimulator :
+    public Simulator::Application::ControllerDelegate
 {
 public:
-    HLXServer(void);
-    ~HLXServer(void);
+    HLXSimulator(void);
+    ~HLXSimulator(void);
 
     Status Init(void);
 
-    Status Start(const bool &aUseIPv6, const bool &aUseIPv4);
-    Status Start(const char *aMaybeURL, const bool &aUseIPv6, const bool &aUseIPv4);
+    Status Start(const bool &aUseIPv6,
+                 const bool &aUseIPv4);
+    Status Start(const char *aMaybeURL,
+                 const bool &aUseIPv6,
+                 const bool &aUseIPv4);
     Status Stop(void);
     Status Stop(const Status &aStatus);
 
-    const HLX::Server::Controller &GetController(void) const;
-    HLX::Server::Controller &GetController(void);
+    const Simulator::Application::Controller &GetController(void) const;
+    Simulator::Application::Controller &GetController(void);
     Status GetStatus(void) const;
     void SetStatus(const Status &aStatus);
 
 private:
     // Resolve
 
-    void ControllerWillResolve(Controller &aController, const char *aHost) final;
-    void ControllerIsResolving(Controller &aController, const char *aHost) final;
-    void ControllerDidResolve(Controller &aController, const char *aHost, const Common::IPAddress &aIPAddress) final;
-    void ControllerDidNotResolve(Controller &aController, const char *aHost, const Common::Error &aError) final;
+    void ControllerWillResolve(Simulator::Application::Controller &aController, const char *aHost) final;
+    void ControllerIsResolving(Simulator::Application::Controller &aController, const char *aHost) final;
+    void ControllerDidResolve(Simulator::Application::Controller &aController, const char *aHost, const Common::IPAddress &aIPAddress) final;
+    void ControllerDidNotResolve(Simulator::Application::Controller &aController, const char *aHost, const Common::Error &aError) final;
 
     // Listen
 
-    void ControllerWillListen(Controller &aController, CFURLRef aURLRef) final;
-    void ControllerIsListening(Controller &aController, CFURLRef aURLRef) final;
-    void ControllerDidListen(Controller &aController, CFURLRef aURLRef) final;
-    void ControllerDidNotListen(Controller &aController, CFURLRef aURLRef, const Common::Error &aError) final;
+    void ControllerWillListen(Simulator::Application::Controller &aController, CFURLRef aURLRef) final;
+    void ControllerIsListening(Simulator::Application::Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidListen(Simulator::Application::Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidNotListen(Simulator::Application::Controller &aController, CFURLRef aURLRef, const Common::Error &aError) final;
 
     // Accept
 
-    void ControllerWillAccept(Controller &aController, CFURLRef aURLRef) final;
-    void ControllerIsAccepting(Controller &aController, CFURLRef aURLRef) final;
-    void ControllerDidAccept(Controller &aController, CFURLRef aURLRef) final;
-    void ControllerDidNotAccept(Controller &aController, CFURLRef aURLRef, const Error &aError) final;
+    void ControllerWillAccept(Simulator::Application::Controller &aController, CFURLRef aURLRef) final;
+    void ControllerIsAccepting(Simulator::Application::Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidAccept(Simulator::Application::Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidNotAccept(Simulator::Application::Controller &aController, CFURLRef aURLRef, const Error &aError) final;
 
     // Disconnect
 
-    void ControllerWillDisconnect(Controller &aController, CFURLRef aURLRef) final;
-    void ControllerDidDisconnect(Controller &aController, CFURLRef aURLRef, const Error &aError) final;
-    void ControllerDidNotDisconnect(Controller &aController, CFURLRef aURLRef, const Error &aError) final;
+    void ControllerWillDisconnect(Simulator::Application::Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidDisconnect(Simulator::Application::Controller &aController, CFURLRef aURLRef, const Error &aError) final;
+    void ControllerDidNotDisconnect(Simulator::Application::Controller &aController, CFURLRef aURLRef, const Error &aError) final;
 
     // Error
 
-    void ControllerError(Controller &aController, const Error &aError) final;
+    void ControllerError(Common::Application::ControllerBasis &aController, const Error &aError) final;
 
     static void OnSignal(int aSignal);
 
 private:
-    RunLoopParameters                mRunLoopParameters;
-    HLX::Server::Controller          mHLXServerController;
-    Status                           mStatus;
+    RunLoopParameters                   mRunLoopParameters;
+    Simulator::Application::Controller  mHLXSimulatorController;
+    Status                              mStatus;
 };
 
-HLXServer :: HLXServer(void) :
+HLXSimulator :: HLXSimulator(void) :
     ControllerDelegate(),
     mRunLoopParameters(),
-    mHLXServerController(),
+    mHLXSimulatorController(),
     mStatus(kStatus_Success)
 {
     return;
 }
 
-HLXServer :: ~HLXServer(void)
+HLXSimulator :: ~HLXSimulator(void)
 {
     return;
 }
 
-Status HLXServer :: Init(void)
+Status HLXSimulator :: Init(void)
 {
     Status lRetval = kStatus_Success;
 
     lRetval = mRunLoopParameters.Init(CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mHLXServerController.Init(mRunLoopParameters, sConfigurationFile);
+    lRetval = mHLXSimulatorController.Init(mRunLoopParameters, sConfigurationFile);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mHLXServerController.SetDelegate(this, nullptr);
+    lRetval = mHLXSimulatorController.SetDelegate(this);
     nlREQUIRE_SUCCESS(lRetval, done);
 
  done:
     return (lRetval);
 }
 
-static ConnectionManager::Versions
-GetVersions(const bool &aUseIPv6, const bool &aUseIPv4)
+Status
+HLXSimulator :: Start(const bool &aUseIPv6,
+                      const bool &aUseIPv4)
 {
-    using Version  = ConnectionManagerBasis::Version;
-    using Versions = ConnectionManagerBasis::Versions;
+    using Common::Utilities::GetVersions;
 
-    const Versions kVersions =
-        (((aUseIPv6) ? Version::kIPv6 : 0) |
-         ((aUseIPv4) ? Version::kIPv4 : 0));
-
-    return (kVersions);
-}
-
-Status HLXServer :: Start(const bool &aUseIPv6, const bool &aUseIPv4)
-{
     Status lRetval = kStatus_Success;
 
-    lRetval = mHLXServerController.Listen(GetVersions(aUseIPv6, aUseIPv4));
+    lRetval = mHLXSimulatorController.Listen(GetVersions(aUseIPv6, aUseIPv4));
 
     return (lRetval);
 }
 
-Status HLXServer :: Start(const char *aMaybeURL, const bool &aUseIPv6, const bool &aUseIPv4)
+Status
+HLXSimulator :: Start(const char *aMaybeURL,
+                      const bool &aUseIPv6,
+                      const bool &aUseIPv4)
 {
+    using Common::Utilities::GetVersions;
+
     Status lRetval = kStatus_Success;
 
-    lRetval = mHLXServerController.Listen(aMaybeURL, GetVersions(aUseIPv6, aUseIPv4));
+    lRetval = mHLXSimulatorController.Listen(aMaybeURL, GetVersions(aUseIPv6, aUseIPv4));
 
     return (lRetval);
 }
 
-Status HLXServer :: Stop(void)
+Status HLXSimulator :: Stop(void)
 {
     return (Stop(kStatus_Success));
 }
 
-Status HLXServer :: Stop(const Status &aStatus)
+Status HLXSimulator :: Stop(const Status &aStatus)
 {
     Status lStatus = kStatus_Success;
 
@@ -316,22 +315,24 @@ Status HLXServer :: Stop(const Status &aStatus)
     return (lStatus);
 }
 
-const HLX::Server::Controller &HLXServer :: GetController(void) const
+const Simulator::Application::Controller &
+HLXSimulator :: GetController(void) const
 {
-    return (mHLXServerController);
+    return (mHLXSimulatorController);
 }
 
-HLX::Server::Controller &HLXServer :: GetController(void)
+Simulator::Application::Controller &
+HLXSimulator :: GetController(void)
 {
-    return (mHLXServerController);
+    return (mHLXSimulatorController);
 }
 
-Status HLXServer :: GetStatus(void) const
+Status HLXSimulator :: GetStatus(void) const
 {
     return (mStatus);
 }
 
-void HLXServer :: SetStatus(const Status &aStatus)
+void HLXSimulator :: SetStatus(const Status &aStatus)
 {
     mStatus = aStatus;
 }
@@ -340,21 +341,21 @@ void HLXServer :: SetStatus(const Status &aStatus)
 
 // Resolve
 
-void HLXServer :: ControllerWillResolve(Controller &aController, const char *aHost)
+void HLXSimulator :: ControllerWillResolve(Simulator::Application::Controller &aController, const char *aHost)
 {
     (void)aController;
 
     Log::Info().Write("Will resolve \"%s\".\n", aHost);
 }
 
-void HLXServer :: ControllerIsResolving(Controller &aController, const char *aHost)
+void HLXSimulator :: ControllerIsResolving(Simulator::Application::Controller &aController, const char *aHost)
 {
     (void)aController;
 
     Log::Info().Write("Is resolving \"%s\".\n", aHost);
 }
 
-void HLXServer :: ControllerDidResolve(Controller &aController, const char *aHost, const IPAddress &aIPAddress)
+void HLXSimulator :: ControllerDidResolve(Simulator::Application::Controller &aController, const char *aHost, const IPAddress &aIPAddress)
 {
     char   lBuffer[INET6_ADDRSTRLEN];
     Status lStatus;
@@ -370,7 +371,7 @@ void HLXServer :: ControllerDidResolve(Controller &aController, const char *aHos
     return;
 }
 
-void HLXServer :: ControllerDidNotResolve(Controller &aController, const char *aHost, const Common::Error &aError)
+void HLXSimulator :: ControllerDidNotResolve(Simulator::Application::Controller &aController, const char *aHost, const Common::Error &aError)
 {
     (void)aController;
 
@@ -379,28 +380,28 @@ void HLXServer :: ControllerDidNotResolve(Controller &aController, const char *a
 
 // Listen
 
-void HLXServer :: ControllerWillListen(Controller &aController, CFURLRef aURLRef)
+void HLXSimulator :: ControllerWillListen(Simulator::Application::Controller &aController, CFURLRef aURLRef)
 {
     (void)aController;
 
     Log::Info().Write("Will listen at %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
 }
 
-void HLXServer :: ControllerIsListening(Controller &aController, CFURLRef aURLRef)
+void HLXSimulator :: ControllerIsListening(Simulator::Application::Controller &aController, CFURLRef aURLRef)
 {
     (void)aController;
 
     Log::Info().Write("Listening at %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
 }
 
-void HLXServer :: ControllerDidListen(Controller &aController, CFURLRef aURLRef)
+void HLXSimulator :: ControllerDidListen(Simulator::Application::Controller &aController, CFURLRef aURLRef)
 {
     (void)aController;
 
     Log::Info().Write("Listened at %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
 }
 
-void HLXServer :: ControllerDidNotListen(Controller &aController, CFURLRef aURLRef, const Common::Error &aError)
+void HLXSimulator :: ControllerDidNotListen(Simulator::Application::Controller &aController, CFURLRef aURLRef, const Common::Error &aError)
 {
     (void)aController;
 
@@ -409,28 +410,28 @@ void HLXServer :: ControllerDidNotListen(Controller &aController, CFURLRef aURLR
 
 // Accept
 
-void HLXServer :: ControllerWillAccept(Controller &aController, CFURLRef aURLRef)
+void HLXSimulator :: ControllerWillAccept(Simulator::Application::Controller &aController, CFURLRef aURLRef)
 {
     (void)aController;
 
     Log::Info().Write("Will accept from %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
 }
 
-void HLXServer :: ControllerIsAccepting(Controller &aController, CFURLRef aURLRef)
+void HLXSimulator :: ControllerIsAccepting(Simulator::Application::Controller &aController, CFURLRef aURLRef)
 {
     (void)aController;
 
     Log::Info().Write("Accepting from %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
 }
 
-void HLXServer :: ControllerDidAccept(Controller &aController, CFURLRef aURLRef)
+void HLXSimulator :: ControllerDidAccept(Simulator::Application::Controller &aController, CFURLRef aURLRef)
 {
     (void)aController;
 
     Log::Info().Write("Accepted from %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
 }
 
-void HLXServer :: ControllerDidNotAccept(Controller &aController, CFURLRef aURLRef, const Error &aError)
+void HLXSimulator :: ControllerDidNotAccept(Simulator::Application::Controller &aController, CFURLRef aURLRef, const Error &aError)
 {
     (void)aController;
 
@@ -439,21 +440,21 @@ void HLXServer :: ControllerDidNotAccept(Controller &aController, CFURLRef aURLR
 
 // Disconnect
 
-void HLXServer :: ControllerWillDisconnect(Controller &aController, CFURLRef aURLRef)
+void HLXSimulator :: ControllerWillDisconnect(Simulator::Application::Controller &aController, CFURLRef aURLRef)
 {
     (void)aController;
 
     Log::Info().Write("Will disconnect from %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
 }
 
-void HLXServer :: ControllerDidDisconnect(Controller &aController, CFURLRef aURLRef, const Error &aError)
+void HLXSimulator :: ControllerDidDisconnect(Simulator::Application::Controller &aController, CFURLRef aURLRef, const Error &aError)
 {
     (void)aController;
 
     Log::Info().Write("Disconnected from %s: %d (%s).\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString(), aError, strerror(-aError));
 }
 
-void HLXServer :: ControllerDidNotDisconnect(Controller &aController, CFURLRef aURLRef, const Error &aError)
+void HLXSimulator :: ControllerDidNotDisconnect(Simulator::Application::Controller &aController, CFURLRef aURLRef, const Error &aError)
 {
     (void)aController;
 
@@ -462,7 +463,7 @@ void HLXServer :: ControllerDidNotDisconnect(Controller &aController, CFURLRef a
 
 // Error
 
-void HLXServer :: ControllerError(Controller &aController, const Error &aError)
+void HLXSimulator :: ControllerError(Common::Application::ControllerBasis &aController, const Error &aError)
 {
     (void)aController;
 
@@ -481,7 +482,7 @@ void HLXServer :: ControllerError(Controller &aController, const Error &aError)
     }
 }
 
-void HLXServer :: OnSignal(int aSignal)
+void HLXSimulator :: OnSignal(int aSignal)
 {
     Log::Debug().Write("%s: caught signal %d\n", __func__, aSignal);
 }
@@ -490,9 +491,9 @@ static void OnSignal(int aSignal)
 {
     Log::Debug().Write("%s: caught signal %d\n", __func__, aSignal);
 
-    if (sHLXServer != nullptr)
+    if (sHLXSimulator != nullptr)
     {
-        sHLXServer->Stop(-errno);
+        sHLXSimulator->Stop(-errno);
     }
 }
 
@@ -861,7 +862,7 @@ FilterSyslog(Log::Logger &inLogger)
 
 int main(int argc, char * const argv[])
 {
-    HLXServer    lHLXServer;
+    HLXSimulator    lHLXSimulator;
     Status       lStatus;
     size_t       n = 0;
     const char * lMaybeURL = nullptr;
@@ -901,20 +902,20 @@ int main(int argc, char * const argv[])
         const bool lUseIPv4 = (((sOptFlags & kOptIPv6Only) == kOptIPv6Only) ? false : true);
         const bool lUseIPv6 = (((sOptFlags & kOptIPv4Only) == kOptIPv4Only) ? false : true);
 
-        sHLXServer = &lHLXServer;
+        sHLXSimulator = &lHLXSimulator;
 
-        lStatus = lHLXServer.Init();
-        nlREQUIRE_SUCCESS_ACTION(lStatus, done, lHLXServer.SetStatus(lStatus));
+        lStatus = lHLXSimulator.Init();
+        nlREQUIRE_SUCCESS_ACTION(lStatus, done, lHLXSimulator.SetStatus(lStatus));
 
         if (lMaybeURL != nullptr)
         {
-            lStatus = lHLXServer.Start(lMaybeURL, lUseIPv6, lUseIPv4);
+            lStatus = lHLXSimulator.Start(lMaybeURL, lUseIPv6, lUseIPv4);
         }
         else
         {
-            lStatus = lHLXServer.Start(lUseIPv6, lUseIPv4);
+            lStatus = lHLXSimulator.Start(lUseIPv6, lUseIPv4);
         }
-        nlREQUIRE_SUCCESS_ACTION(lStatus, done, lHLXServer.SetStatus(lStatus));
+        nlREQUIRE_SUCCESS_ACTION(lStatus, done, lHLXSimulator.SetStatus(lStatus));
 
         Log::Debug().Write("Server started with status %d\n", lStatus);
     }
@@ -922,5 +923,5 @@ int main(int argc, char * const argv[])
     CFRunLoopRun();
 
  done:
-    return((lHLXServer.GetStatus() == 0) ? EXIT_SUCCESS : EXIT_FAILURE);
+    return((lHLXSimulator.GetStatus() == 0) ? EXIT_SUCCESS : EXIT_FAILURE);
 }

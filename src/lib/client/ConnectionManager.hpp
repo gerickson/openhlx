@@ -23,21 +23,22 @@
  *
  */
 
-#ifndef HLXCLIENTCONNECTIONMANAGER_HPP
-#define HLXCLIENTCONNECTIONMANAGER_HPP
+#ifndef OPENHLXCLIENTCONNECTIONMANAGER_HPP
+#define OPENHLXCLIENTCONNECTIONMANAGER_HPP
 
 #include <unordered_set>
 
 #include <CoreFoundation/CFURL.h>
 
+#include <OpenHLX/Client/ConnectionBasis.hpp>
+#include <OpenHLX/Client/ConnectionBasisDelegate.hpp>
+#include <OpenHLX/Client/ConnectionFactory.hpp>
+#include <OpenHLX/Client/ConnectionManagerDelegate.hpp>
 #include <OpenHLX/Common/ConnectionManagerApplicationDataDelegate.hpp>
 #include <OpenHLX/Common/ConnectionManagerBasis.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
-
-#include <ConnectionBasis.hpp>
-#include <ConnectionBasisDelegate.hpp>
-#include <ConnectionFactory.hpp>
-#include <ConnectionManagerDelegate.hpp>
+#include <OpenHLX/Common/Timer.hpp>
+#include <OpenHLX/Common/TimerDelegate.hpp>
 
 
 namespace HLX
@@ -63,11 +64,12 @@ namespace Client
  */
 class ConnectionManager :
     public Common::ConnectionManagerBasis,
+    public Common::TimerDelegate,
     public ConnectionBasisDelegate
 {
 public:
     ConnectionManager(void);
-    ~ConnectionManager(void) = default;
+    virtual ~ConnectionManager(void) = default;
 
     Common::Status Init(const Common::RunLoopParameters &aRunLoopParameters);
     Common::Status Connect(const char *aMaybeURL, const Common::Timeout &aTimeout);
@@ -83,26 +85,30 @@ public:
 
     // Connection Basis Delegate Methods
 
-    // Connect
+    // Connect Methods
 
     void ConnectionWillConnect(ConnectionBasis &aConnection, CFURLRef aURLRef, const Common::Timeout &aTimeout) final;
     void ConnectionIsConnecting(ConnectionBasis &aConnection, CFURLRef aURLRef, const Common::Timeout &aTimeout) final;
     void ConnectionDidConnect(ConnectionBasis &aConnection, CFURLRef aURLRef) final;
     void ConnectionDidNotConnect(ConnectionBasis &aConnection, CFURLRef aURLRef, const Common::Error &aError) final;
 
-    // Application Data
+    // Application Data Method
 
     void ConnectionDidReceiveApplicationData(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer aBuffer) final;
 
-    // Disconnect
+    // Disconnect Methods
 
     void ConnectionWillDisconnect(ConnectionBasis &aConnection, CFURLRef aURLRef) final;
     void ConnectionDidDisconnect(ConnectionBasis &aConnection, CFURLRef aURLRef, const Common::Error &aError) final;
     void ConnectionDidNotDisconnect(ConnectionBasis &aConnection, CFURLRef aURLRef, const Common::Error &aError) final;
 
-    // Error
+    // Error Method
 
     void ConnectionError(ConnectionBasis &aConnection, const Common::Error &aError) final;
+
+    // Timer Delegate Method
+
+    void TimerDidFire(Common::Timer &aTimer) final;
 
 private:
     void OnWillResolve(const char *aHost) final;
@@ -115,13 +121,15 @@ private:
 private:
     typedef std::unordered_set<ConnectionManagerDelegate *> ConnectionManagerDelegates;
 
-    ConnectionFactory                           mConnectionFactory;
-    ConnectionBasis *                           mConnection;
-    ConnectionManagerDelegates                  mDelegates;
+    Common::RunLoopParameters   mRunLoopParameters;
+    ConnectionFactory           mConnectionFactory;
+    ConnectionBasis *           mConnection;
+    Common::Timer               mConnectionTimer;
+    ConnectionManagerDelegates  mDelegates;
 };
 
 }; // namespace Client
 
 }; // namespace HLX
 
-#endif // HLXCLIENTCONNECTIONMANAGER_HPP
+#endif // OPENHLXCLIENTCONNECTIONMANAGER_HPP

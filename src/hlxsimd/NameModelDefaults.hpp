@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXSERVERNAMEMODELDEFAULTS_HPP
-#define HLXSERVERNAMEMODELDEFAULTS_HPP
+#ifndef OPENHLXSIMULATORNAMEMODELDEFAULTS_HPP
+#define OPENHLXSIMULATORNAMEMODELDEFAULTS_HPP
 
 #include <OpenHLX/Model/NameModel.hpp>
 
@@ -32,7 +32,7 @@
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
 
 namespace Defaults
@@ -53,8 +53,8 @@ struct NameModel
 
 }; // namespace Defaults
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX
 
-#endif // HLXSERVERNAMEMODELDEFAULTS_HPP
+#endif // OPENHLXSIMULATORNAMEMODELDEFAULTS_HPP

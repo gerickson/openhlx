@@ -24,15 +24,16 @@
  *
  */
 
-#ifndef HLXCOMMONCOMMANDBALANCEBUFFERBASIS_HPP
-#define HLXCOMMONCOMMANDBALANCEBUFFERBASIS_HPP
+#ifndef OPENHLXCOMMONCOMMANDBALANCEBUFFERBASIS_HPP
+#define OPENHLXCOMMONCOMMANDBALANCEBUFFERBASIS_HPP
 
 #include <stddef.h>
 
-#include <OpenHLX/Model/BalanceModel.hpp>
-#include <CommandPropertyBufferBases.hpp>
+#include <OpenHLX/Common/CommandPropertyBufferBases.hpp>
 #include <OpenHLX/Common/Errors.hpp>
+#include <OpenHLX/Model/BalanceModel.hpp>
 #include <OpenHLX/Model/IdentifierModel.hpp>
+
 
 namespace HLX
 {
@@ -84,4 +85,4 @@ protected:
 
 }; // namespace HLX
 
-#endif // HLXCOMMONCOMMANDBALANCEBUFFERBASIS_HPP
+#endif // OPENHLXCOMMONCOMMANDBALANCEBUFFERBASIS_HPP

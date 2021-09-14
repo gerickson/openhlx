@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXMMODELSOUNDMODEL_HPP
-#define HLXMMODELSOUNDMODEL_HPP
+#ifndef OPENHLXMMODELSOUNDMODEL_HPP
+#define OPENHLXMMODELSOUNDMODEL_HPP
 
 #include <stddef.h>
 
@@ -201,4 +201,4 @@ private:
 
 }; // namespace HLX
 
-#endif // HLXMMODELSOUNDMODEL_HPP
+#endif // OPENHLXMMODELSOUNDMODEL_HPP

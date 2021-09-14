@@ -23,10 +23,12 @@
  *
  */
 
-#ifndef HLXCOMMONSOURCESCONTROLLERBASIS_HPP
-#define HLXCOMMONSOURCESCONTROLLERBASIS_HPP
+#ifndef OPENHLXCOMMONSOURCESCONTROLLERBASIS_HPP
+#define OPENHLXCOMMONSOURCESCONTROLLERBASIS_HPP
 
 #include <OpenHLX/Model/SourceModel.hpp>
+#include <OpenHLX/Model/SourcesModel.hpp>
+
 
 namespace HLX
 {
@@ -56,11 +58,26 @@ public:
 
     // Observer Methods
 
+    static Common::Status GetSourcesMax(IdentifierType &aSources);
+    static IdentifierType GetSourcesMax(void);
+
     static bool           IsValidIdentifier(const IdentifierType &aSourceIdentifier);
     static Common::Status ValidateIdentifier(const IdentifierType &aSourceIdentifier);
 
 protected:
     SourcesControllerBasis(void) = default;
+
+    // Initializer(s)
+
+    Common::Status Init(void);
+
+protected:
+    /**
+     *  The sources collection model for all client and server
+     *  controllers.
+     *
+     */
+    Model::SourcesModel          mSources;
 
 protected:
     static const IdentifierType  kSourcesMax;
@@ -70,4 +87,4 @@ protected:
 
 }; // namespace HLX
 
-#endif // HLXCOMMONSOURCESCONTROLLERBASIS_HPP
+#endif // OPENHLXCOMMONSOURCESCONTROLLERBASIS_HPP

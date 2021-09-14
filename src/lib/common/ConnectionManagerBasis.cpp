@@ -135,6 +135,7 @@ MapGaiStatusToError(const int &aGaiStatus)
  *
  */
 ConnectionManagerBasis :: ConnectionManagerBasis(void) :
+    mRoles(kRoleNone),
     mApplicationDataDelegate(nullptr)
 {
     return;
@@ -144,9 +145,12 @@ ConnectionManagerBasis :: ConnectionManagerBasis(void) :
  *  @brief
  *    This is a class initializer.
  *
- *  This initializes the connection manager with the specified run loop
- *  parameters.
+ *  This initializes the connection manager with the specified role(s)
+ *  and run loop parameters.
  *
+ *  @param[in]  aRoles              An immutable reference to the role(s)
+ *                                  in which the connection manager
+ *                                  will be acting.
  *  @param[in]  aRunLoopParameters  An immutable reference to the run
  *                                  loop parameters to initialize the
  *                                  connection manager with.
@@ -157,11 +161,14 @@ ConnectionManagerBasis :: ConnectionManagerBasis(void) :
  *
  */
 Status
-ConnectionManagerBasis :: Init(const RunLoopParameters &aRunLoopParameters)
+ConnectionManagerBasis :: Init(const Roles &aRoles,
+                               const RunLoopParameters &aRunLoopParameters)
 {
     Status lRetval = kStatus_Success;
 
     (void)aRunLoopParameters;
+
+    mRoles = aRoles;
 
     return (lRetval);
 }
@@ -296,6 +303,20 @@ done:
     }
 
     return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Return the roles in which the connection manager is acting.
+ *
+ *  @returns
+ *    The roles in which the connection manager is acting.
+ *
+ */
+const ConnectionManagerBasis::Roles &
+ConnectionManagerBasis :: GetRoles(void) const
+{
+    return (mRoles);
 }
 
 /**
@@ -573,6 +594,36 @@ ConnectionManagerBasis :: ParseURL(const char *aMaybeURL, CFURLRef &aOutURL)
  done:
     return (lRetval);
 }
+
+namespace Utilities
+{
+
+/**
+ *  Return a version object indicating which IP versions are desired.
+ *
+ *  @param[in]  aUseIPv6  An immutable reference indicating whether
+ *                        IPv6 should be used.
+ *  @param[in]  aUseIPv4  An immutable reference indicating
+ *                        IPv4 should be used.
+ *
+ *  @returns
+ *    The IP versions appropriate for the specified parameters.
+ *
+ */
+ConnectionManagerBasis::Versions
+GetVersions(const bool &aUseIPv6, const bool &aUseIPv4)
+{
+    using Version  = ConnectionManagerBasis::Version;
+    using Versions = ConnectionManagerBasis::Versions;
+
+    const Versions kVersions =
+        (((aUseIPv6) ? Version::kIPv6 : 0) |
+         ((aUseIPv4) ? Version::kIPv4 : 0));
+
+    return (kVersions);
+}
+
+}; // namespace Utilities
 
 }; // namespace Common
 

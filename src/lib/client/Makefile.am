@@ -1,4 +1,4 @@
-
+#
 #    Copyright (c) 2019-2021 Grant Erickson
 #    All rights reserved.
 #
@@ -44,6 +44,10 @@ libopenhlx_client_a_includedir                              = \
 # Public library headers to distribute and install.
 
 libopenhlx_client_a_include_HEADERS                         = \
+    ApplicationController.hpp                                 \
+    ApplicationControllerBasis.hpp                            \
+    ApplicationControllerDelegate.hpp                         \
+    ApplicationControllerRefreshDelegate.hpp                  \
     CommandBalanceRequestBases.hpp                            \
     CommandEqualizerBandRequestBases.hpp                      \
     CommandErrorResponse.hpp                                  \
@@ -58,6 +62,7 @@ libopenhlx_client_a_include_HEADERS                         = \
     CommandSourceRequestBases.hpp                             \
     CommandVolumeRequestBases.hpp                             \
     ConfigurationController.hpp                               \
+    ConfigurationControllerBasis.hpp                          \
     ConfigurationControllerCommands.hpp                       \
     ConfigurationStateChangeNotifications.hpp                 \
     ConnectionBasis.hpp                                       \
@@ -66,38 +71,47 @@ libopenhlx_client_a_include_HEADERS                         = \
     ConnectionManager.hpp                                     \
     ConnectionManagerDelegate.hpp                             \
     ConnectionTelnet.hpp                                      \
-    ControllerBasis.hpp                                       \
-    ControllerBasisDelegate.hpp                               \
     EqualizerBandStateChangeNotificationBasis.hpp             \
     EqualizerPresetsController.hpp                            \
+    EqualizerPresetsControllerBasis.hpp                       \
     EqualizerPresetsControllerCommands.hpp                    \
     EqualizerPresetsStateChangeNotifications.hpp              \
     FavoritesController.hpp                                   \
+    FavoritesControllerBasis.hpp                              \
     FavoritesControllerCommands.hpp                           \
     FavoritesStateChangeNotifications.hpp                     \
     FrontPanelController.hpp                                  \
+    FrontPanelControllerBasis.hpp                             \
     FrontPanelControllerCommands.hpp                          \
     FrontPanelStateChangeNotifications.hpp                    \
     GroupsController.hpp                                      \
+    GroupsControllerBasis.hpp                                 \
     GroupsControllerCommands.hpp                              \
     GroupsStateChangeNotifications.hpp                        \
-    HLXController.hpp                                         \
-    HLXControllerDelegate.hpp                                 \
     IdentifierStateChangeNotificationBasis.hpp                \
     InfraredController.hpp                                    \
+    InfraredControllerBasis.hpp                               \
     InfraredControllerCommands.hpp                            \
     InfraredStateChangeNotifications.hpp                      \
     NameStateChangeNotificationBasis.hpp                      \
     NetworkController.hpp                                     \
+    NetworkControllerBasis.hpp                                \
     NetworkControllerCommands.hpp                             \
+    ObjectControllerBasis.hpp                                 \
+    ObjectControllerBasisDelegate.hpp                         \
+    ObjectControllerBasisErrorDelegate.hpp                    \
+    ObjectControllerBasisRefreshDelegate.hpp                  \
+    ObjectControllerBasisStateChangeDelegate.hpp              \
     SourceStateChangeNotificationBasis.hpp                    \
     SourcesController.hpp                                     \
+    SourcesControllerBasis.hpp                                \
     SourcesControllerCommands.hpp                             \
     SourcesStateChangeNotifications.hpp                       \
     StateChangeNotificationBasis.hpp                          \
     StateChangeNotificationTypes.hpp                          \
     VolumeStateChangeNotificationBasis.hpp                    \
     ZonesController.hpp                                       \
+    ZonesControllerBasis.hpp                                  \
     ZonesControllerCommands.hpp                               \
     ZonesStateChangeNotifications.hpp                         \
     $(NULL)
@@ -112,6 +126,8 @@ libopenhlx_client_a_CPPFLAGS                                = \
     $(NULL)
 
 libopenhlx_client_a_SOURCES                                 = \
+    ApplicationController.cpp                                 \
+    ApplicationControllerBasis.cpp                            \
     CommandBalanceRequestBases.cpp                            \
     CommandEqualizerBandRequestBases.cpp                      \
     CommandErrorResponse.cpp                                  \
@@ -125,41 +141,49 @@ libopenhlx_client_a_SOURCES                                 = \
     CommandSourceRequestBases.cpp                             \
     CommandVolumeRequestBases.cpp                             \
     ConfigurationController.cpp                               \
+    ConfigurationControllerBasis.cpp                          \
     ConfigurationControllerCommands.cpp                       \
     ConfigurationStateChangeNotifications.cpp                 \
     ConnectionBasis.cpp                                       \
     ConnectionFactory.cpp                                     \
     ConnectionManager.cpp                                     \
     ConnectionTelnet.cpp                                      \
-    ControllerBasis.cpp                                       \
     EqualizerBandStateChangeNotificationBasis.cpp             \
     EqualizerPresetsController.cpp                            \
+    EqualizerPresetsControllerBasis.cpp                       \
     EqualizerPresetsControllerCommands.cpp                    \
     EqualizerPresetsStateChangeNotifications.cpp              \
     FavoritesController.cpp                                   \
+    FavoritesControllerBasis.cpp                              \
     FavoritesControllerCommands.cpp                           \
     FavoritesStateChangeNotifications.cpp                     \
     FrontPanelController.cpp                                  \
+    FrontPanelControllerBasis.cpp                             \
     FrontPanelControllerCommands.cpp                          \
     FrontPanelStateChangeNotifications.cpp                    \
     GroupsController.cpp                                      \
+    GroupsControllerBasis.cpp                                 \
     GroupsControllerCommands.cpp                              \
     GroupsStateChangeNotifications.cpp                        \
-    HLXController.cpp                                         \
     IdentifierStateChangeNotificationBasis.cpp                \
     InfraredController.cpp                                    \
+    InfraredControllerBasis.cpp                               \
     InfraredControllerCommands.cpp                            \
     InfraredStateChangeNotifications.cpp                      \
     NameStateChangeNotificationBasis.cpp                      \
     NetworkController.cpp                                     \
+    NetworkControllerBasis.cpp                                \
     NetworkControllerCommands.cpp                             \
+    ObjectControllerBasis.cpp                                 \
     SourceStateChangeNotificationBasis.cpp                    \
     SourcesController.cpp                                     \
+    SourcesControllerBasis.cpp                                \
     SourcesControllerCommands.cpp                             \
     SourcesStateChangeNotifications.cpp                       \
     StateChangeNotificationBasis.cpp                          \
     VolumeStateChangeNotificationBasis.cpp                    \
     ZonesController.cpp                                       \
+    ZonesControllerBasis.cpp                                  \
     ZonesControllerCommands.cpp                               \
     ZonesStateChangeNotifications.cpp                         \
     $(NULL)

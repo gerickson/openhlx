@@ -391,16 +391,20 @@ ConnectionTelnet :: CloseStreams(void)
 
 /**
  *  @brief
- *    Disconnect from the peer.
+ *    Disconnect from the HLX server peer with the specified error.
  *
  *  This attempts to asynchronously disconnect from the
- *  currently-connected peer, if any.
+ *  currently-connected HLX server peer, if any, with the specified
+ *  error (that is, reason for disconnection), for example -ETIMEDOUT.
+ *
+ *  @param[in]  aError  A reference to the error associated with the
+ *                      reason for the disconnection.
  *
  *  @retval  kStatus_Success  If successful.
  *
  */
 Status
-ConnectionTelnet :: Disconnect(void)
+ConnectionTelnet :: Disconnect(const Common::Error &aError)
 {
     DeclareScopedFunctionTracer(lTracer);
     const State  lCurrentState = GetState();
@@ -423,9 +427,9 @@ ConnectionTelnet :: Disconnect(void)
 
         SetState(kState_Disconnected);
 
-        OnDidDisconnect(lRetval);
+        OnDidDisconnect(aError);
 
-        lRetval = ConnectionBasis::Disconnect();
+        lRetval = ConnectionBasis::Disconnect(aError);
     }
     else
     {
@@ -502,6 +506,19 @@ ConnectionTelnet :: HandleStreamError(const CFStreamEventType &aType, const CFSt
 
     Log::Debug().Write("%s: state is %d\n", __FUNCTION__, lState);
 
+    switch (aStreamError.domain)
+    {
+
+    case kCFStreamErrorDomainPOSIX:
+        lError = -aStreamError.error;
+        break;
+
+    default:
+        lError = kError_Unknown;
+        break;
+
+    }
+
     switch (lState)
     {
 
@@ -509,26 +526,16 @@ ConnectionTelnet :: HandleStreamError(const CFStreamEventType &aType, const CFSt
         {
             SetState(kState_Disconnected);
 
-            switch (aStreamError.domain)
-            {
-            case kCFStreamErrorDomainPOSIX:
-                lError = -aStreamError.error;
-                break;
-
-            default:
-                break;
-            }
-
             OnDidNotConnect(lError);
 
             OnError(lError);
         }
         break;
 
-     case kState_Unknown:
+    case kState_Unknown:
          break;
 
-     case kState_Connected:
+    case kState_Connected:
          {
              CloseStreams();
 
@@ -537,16 +544,6 @@ ConnectionTelnet :: HandleStreamError(const CFStreamEventType &aType, const CFSt
              mWaitingForClientConfirmation = true;
 
              SetState(kState_Disconnected);
-
-             switch (aStreamError.domain)
-             {
-             case kCFStreamErrorDomainPOSIX:
-                 lError = -aStreamError.error;
-                 break;
-
-             default:
-                 break;
-             }
 
              OnDidDisconnect(lError);
 
@@ -742,7 +739,8 @@ ConnectionTelnet :: CFWriteStreamCallback(CFWriteStreamRef aStream, CFStreamEven
  *                        the trampoline.
  *
  */
-void ConnectionTelnet :: CFReadStreamCallback(CFReadStreamRef aStream, CFStreamEventType aType, void *aContext)
+void
+ConnectionTelnet :: CFReadStreamCallback(CFReadStreamRef aStream, CFStreamEventType aType, void *aContext)
 {
     ConnectionTelnet *lConnection = static_cast<ConnectionTelnet *>(aContext);
 
@@ -768,7 +766,8 @@ void ConnectionTelnet :: CFReadStreamCallback(CFReadStreamRef aStream, CFStreamE
  *                        the trampoline.
  *
  */
-void ConnectionTelnet :: CFWriteStreamCallback(CFWriteStreamRef aStream, CFStreamEventType aType, void *aContext)
+void
+ConnectionTelnet :: CFWriteStreamCallback(CFWriteStreamRef aStream, CFStreamEventType aType, void *aContext)
 {
     ConnectionTelnet *lConnection = static_cast<ConnectionTelnet *>(aContext);
 
@@ -780,7 +779,8 @@ void ConnectionTelnet :: CFWriteStreamCallback(CFWriteStreamRef aStream, CFStrea
     return;
 }
 
-void ConnectionTelnet :: TryClientConfirmationDataReceived(void)
+void
+ConnectionTelnet :: TryClientConfirmationDataReceived(void)
 {
     const char *  lBuffer = reinterpret_cast<const char *>(mReceiveBuffer->GetHead());
     const size_t  lSize = mReceiveBuffer->GetSize();
@@ -813,7 +813,8 @@ void ConnectionTelnet :: TryClientConfirmationDataReceived(void)
     }
 }
 
-void ConnectionTelnet :: DidReceiveDataHandler(const uint8_t *aBuffer, const size_t &aSize)
+void
+ConnectionTelnet :: DidReceiveDataHandler(const uint8_t *aBuffer, const size_t &aSize)
 {
     DeclareLogIndentWithValue(lLogIndent, 0);
     DeclareLogLevelWithValue(lLogLevel, 1);

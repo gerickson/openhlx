@@ -1,5 +1,5 @@
 /*
- *    Copyright (c) 2018-2019 Grant Erickson
+ *    Copyright (c) 2018-2021 Grant Erickson
  *    All rights reserved.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,8 +14,13 @@
  *    express or implied.  See the License for the specific language
  *    governing permissions and limitations under the License.
  *
- *    Description:
- *      This file...
+ */
+
+/**
+ *    @file
+ *      This file implements a HLX control caching proxy daemon program
+ *      executable.
+ *
  */
 
 #include <errno.h>
@@ -39,38 +44,64 @@
 #include <LogUtilities/LogUtilities.hpp>
 #include <NuovationsUtilities/GenerateShortOptions.hpp>
 
+#include <OpenHLX/Common/ConnectionManagerBasis.hpp>
 #include <OpenHLX/Common/Errors.hpp>
+#include <OpenHLX/Common/RunLoopParameters.hpp>
 #include <OpenHLX/Common/Version.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
+#include <OpenHLX/Utilities/Parse.hpp>
 #include <OpenHLX/Utilities/ElementsOf.hpp>
+
+#include "ApplicationController.hpp"
 
 
 using namespace HLX;
+using namespace HLX::Client;
 using namespace HLX::Common;
+using namespace HLX::Proxy;
+using namespace HLX::Proxy::Application;
 using namespace HLX::Utilities;
 using namespace Nuovations;
 using namespace boost::filesystem;
 using namespace std;
 
+
 // Preprocessor Definitions
 
-#define OPT_BASE                    0x00001000
+#define OPT_BASE                     0x00001000
 
-#define OPT_DEBUG                   'd'
-#define OPT_HELP                    'h'
-#define OPT_QUIET                   'q'
-#define OPT_SYSLOG                  's'
-#define OPT_VERBOSE                 'v'
-#define OPT_VERSION                 'V'
+#define OPT_CONNECT                  'c'
+#define OPT_DEBUG                    'd'
+#define OPT_HELP                     'h'
+#define OPT_INITIAL_REFRESH          (OPT_BASE + 1)
+#define OPT_IPV4_ONLY                '4'
+#define OPT_IPV6_ONLY                '6'
+#define OPT_LISTEN                   'l'
+#define OPT_NO_INITIAL_REFRESH       (OPT_BASE + 2)
+#define OPT_QUIET                    'q'
+#define OPT_SYSLOG                   's'
+#define OPT_TIMEOUT                  't'
+#define OPT_VERBOSE                  'v'
+#define OPT_VERSION                  'V'
 
 // Type Declarations
 
 enum OptFlags {
-    kOptNone          = 0x00000000,
-    kOptPriority      = 0x00000001,
-    kOptQuiet         = 0x00000002,
-    kOptSyslog        = 0x00000004
+    kOptNone             = 0x00000000,
+    kOptIPv4Only         = 0x00000001,
+    kOptIPv6Only         = 0x00000002,
+    kOptPriority         = 0x00000004,
+    kOptQuiet            = 0x00000008,
+    kOptSyslog           = 0x00000010,
+
+    kOptTimeout          = 0x00000080,
+
+    kOptNoInitialRefresh = 0x00000100
 };
+
+class HLXProxy;
+
+// Function Prototypes
 
 // Global Variables
 
@@ -81,18 +112,32 @@ static Log::Level           sVerbose             = 0;
 
 static const char *         sProgram             = nullptr;
 
-static const struct option  sOptions[] = {
-    { "debug",                  optional_argument,  nullptr,   OPT_DEBUG                  },
-    { "help",                   no_argument,        nullptr,   OPT_HELP                   },
-    { "quiet",                  no_argument,        nullptr,   OPT_QUIET                  },
-    { "verbose",                optional_argument,  nullptr,   OPT_VERBOSE                },
-    { "version",                no_argument,        nullptr,   OPT_VERSION                },
+static Timeout              sTimeout;
 
-    { nullptr,                  0,                  nullptr,   0                          }
+static const char *         sConnectMaybeURL     = nullptr;
+static const char *         sListenMaybeURL      = nullptr;
+
+static HLXProxy *           sHLXProxy            = nullptr;
+
+static const struct option  sOptions[] = {
+    { "connect",                 required_argument,  nullptr,   OPT_CONNECT                 },
+    { "debug",                   optional_argument,  nullptr,   OPT_DEBUG                   },
+    { "help",                    no_argument,        nullptr,   OPT_HELP                    },
+    { "initial-refresh",         no_argument,        nullptr,   OPT_INITIAL_REFRESH         },
+    { "ipv4-only",               no_argument,        nullptr,   OPT_IPV4_ONLY               },
+    { "ipv6-only",               no_argument,        nullptr,   OPT_IPV6_ONLY               },
+    { "listen",                  required_argument,  nullptr,   OPT_LISTEN                  },
+    { "no-initial-refresh",      no_argument,        nullptr,   OPT_NO_INITIAL_REFRESH      },
+    { "quiet",                   no_argument,        nullptr,   OPT_QUIET                   },
+    { "timeout",                 required_argument,  nullptr,   OPT_TIMEOUT                 },
+    { "verbose",                 optional_argument,  nullptr,   OPT_VERBOSE                 },
+    { "version",                 no_argument,        nullptr,   OPT_VERSION                 },
+
+    { nullptr,                   0,                  nullptr,   0                           }
 };
 
 static const char * const   sShortUsageString =
-"Usage: %s [ options ] { <URL> | <host[:port]> | <file> }\n";
+"Usage: %s [ options ]\n";
 
 static const char * const   sLongUsageString =
 "\n"
@@ -111,23 +156,667 @@ static const char * const   sLongUsageString =
 "  -V, --version               Print version and copyright information, then\n"
 "                              exit.\n"
 "\n"
-" Client Options:\n"
+" Proxy Options:\n"
 "\n"
+"  -4, --ipv4-only             Force hlxproxyd to use IPv4 addresses only.\n"
+"  -6, --ipv6-only             Force hlxproxyd to use IPv6 addresses only.\n"
+"  -c, --connect=HOST          Specify that hlxproxyd should connect to the\n"
+"                              HLX server at host HOST.\n"
+"\n"
+"                              HOST may be either a resolvable name, name plus\n"
+"                              colon-delimited TCP port number, IPv4 or IPv6\n"
+"                              address, or IPv4 or IPv6 address plus colon-delimited\n"
+"                              TCP port number.\n"
+"  --[no-]initial-refresh      Do [not] perform an initial proxy cache pre-\n"
+"                              warming by requesting all relevant and supported\n"
+"                              HLX state before listening and allowing clients\n"
+"                              to connect. Pre-warming is the default.\n"
+"  -l, --listen=HOST           Optionally specify that hlxproxyd should listen for\n"
+"                              incoming HLX client connections at host HOST.\n"
+"\n"
+"                              HOST may be either a resolvable name, name plus\n"
+"                              colon-delimited TCP port number, IPv4 or IPv6\n"
+"                              address, or IPv4 or IPv6 address plus colon-\n"
+"                              delimited TCP port number.\n"
+"\n"
+"                              If not specified, hlxproxyd will listen on the default\n"
+"                              TCP port (23) for the IPv4 and IPv6 wildcard or\n"
+"                              \"any\" addresses.\n"
 "  -t, --timeout=MILLISECONDS  Set a connection timeout of MILLISECONDS \n"
 "                              milliseconds.\n"
 "\n";
 
+class HLXProxy :
+    public Proxy::Application::ControllerDelegate
+{
+public:
+    HLXProxy(void);
+    ~HLXProxy(void);
+
+    Status Init(const char *aConnectMaybeURL,
+                const char *aListenMaybeURL,
+                const bool &aUseIPv6,
+                const bool &aUseIPv4);
+
+    Status Start(void);
+    Status Listen(void);
+    Status Stop(void);
+    Status Stop(const Status &aStatus);
+
+    const Proxy::Application::Controller &GetController(void) const;
+    Proxy::Application::Controller &GetController(void);
+
+    Status GetStatus(void) const;
+    void SetStatus(const Status &aStatus);
+
+    void SetVersions(const bool &aUseIPv6,
+                     const bool &aUseIPv4);
+    const ConnectionManagerBasis::Versions &GetVersions(void) const;
+
+    static bool IsRole(const Roles &aFirst, const Roles &aSecond);
+    static bool IsClient(const Roles &aRole);
+    static bool IsServer(const Roles &aRole);
+
+private:
+    // Resolve
+
+    void ControllerWillResolve(Proxy::Application::Controller &aController, const char *aHost) final;
+    void ControllerIsResolving(Proxy::Application::Controller &aController, const char *aHost) final;
+    void ControllerDidResolve(Proxy::Application::Controller &aController, const char *aHost, const IPAddress &aIPAddress) final;
+    void ControllerDidNotResolve(Proxy::Application::Controller &aController, const char *aHost, const Error &aError) final;
+
+    // Client-facing Server Listen
+
+    void ControllerWillListen(Proxy::Application::Controller &aController, CFURLRef aURLRef) final;
+    void ControllerIsListening(Proxy::Application::Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidListen(Proxy::Application::Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidNotListen(Proxy::Application::Controller &aController, CFURLRef aURLRef, const Common::Error &aError) final;
+
+    // Client-facing Server Accept
+
+    void ControllerWillAccept(Proxy::Application::Controller &aController, CFURLRef aURLRef) final;
+    void ControllerIsAccepting(Proxy::Application::Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidAccept(Proxy::Application::Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidNotAccept(Proxy::Application::Controller &aController, CFURLRef aURLRef, const Error &aError) final;
+
+    // Server-facing Client Connect
+
+    void ControllerWillConnect(Proxy::Application::Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout) final;
+    void ControllerIsConnecting(Proxy::Application::Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout) final;
+    void ControllerDidConnect(Proxy::Application::Controller &aController, CFURLRef aURLRef) final;
+    void ControllerDidNotConnect(Proxy::Application::Controller &aController, CFURLRef aURLRef, const Error &aError) final;
+
+    // Disconnect
+
+    void ControllerWillDisconnect(Proxy::Application::Controller &aController, const Roles &aRoles, CFURLRef aURLRef) final;
+    void ControllerDidDisconnect(Proxy::Application::Controller &aController, const Roles &aRoles, CFURLRef aURLRef, const Error &aError) final;
+    void ControllerDidNotDisconnect(Proxy::Application::Controller &aController, const Roles &aRoles, CFURLRef aURLRef, const Error &aError) final;
+
+    // Server-facing Client Refresh / Reload
+
+    void ControllerWillRefresh(Client::Application::ControllerBasis &aController) final;
+    void ControllerIsRefreshing(Client::Application::ControllerBasis &aController, const uint8_t &aPercentComplete) final;
+    void ControllerDidRefresh(Client::Application::ControllerBasis &aController) final;
+    void ControllerDidNotRefresh(Client::Application::ControllerBasis &aController, const Error &aError) final;
+
+    // Server-facing Client State Change
+
+    void ControllerStateDidChange(Proxy::Application::Controller &aController, const StateChange::NotificationBasis &aStateChangeNotification) final;
+
+    // Error
+
+    void ControllerError(Proxy::Application::Controller &aController, const Roles &aRoles, const Error &aError) final;
+
+    static void OnSignal(int aSignal);
+
+private:
+    RunLoopParameters                mRunLoopParameters;
+    Proxy::Application::Controller   mHLXProxyController;
+    Status                           mStatus;
+    const char *                     mConnectMaybeURL;
+    const char *                     mListenMaybeURL;
+    ConnectionManagerBasis::Versions mVersions;
+};
+
+static const char *
+GetString(const Proxy::Application::ControllerDelegate::Roles &aRoles, const bool &aTitleCase)
+{
+    constexpr auto kRoleClient = HLX::Common::ConnectionManagerBasis::kRoleClient;
+    constexpr auto kRoleServer = HLX::Common::ConnectionManagerBasis::kRoleServer;
+    const char *   lRetval     = nullptr;
+
+
+    if ((aRoles & kRoleClient) == kRoleClient)
+    {
+        lRetval = ((aTitleCase) ? "Client" : "client");
+    }
+    else if ((aRoles & kRoleServer) == kRoleServer)
+    {
+        lRetval = ((aTitleCase) ? "Server" : "server");
+    }
+
+    return (lRetval);
+}
+
+static const char *
+GetString(const Proxy::Application::ControllerDelegate::Roles &aRoles)
+{
+    static const bool kTitleCase = true;
+
+    return (GetString(aRoles, !kTitleCase));
+}
+
+HLXProxy :: HLXProxy(void) :
+    ControllerDelegate(),
+    mRunLoopParameters(),
+    mHLXProxyController(),
+    mStatus(kStatus_Success),
+    mConnectMaybeURL(nullptr),
+    mListenMaybeURL(nullptr),
+    mVersions(0)
+{
+    return;
+}
+
+HLXProxy :: ~HLXProxy(void)
+{
+    return;
+}
+
+Status HLXProxy :: Init(const char *aConnectMaybeURL,
+                        const char *aListenMaybeURL,
+                        const bool &aUseIPv6,
+                        const bool &aUseIPv4)
+{
+    Status lRetval = kStatus_Success;
+
+    lRetval = mRunLoopParameters.Init(CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = mHLXProxyController.Init(mRunLoopParameters);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = mHLXProxyController.SetDelegate(this);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    mConnectMaybeURL = aConnectMaybeURL;
+    mListenMaybeURL  = aListenMaybeURL;
+
+    SetVersions(aUseIPv6, aUseIPv4);
+
+ done:
+    return (lRetval);
+}
+
+Status
+HLXProxy :: Start(void)
+{
+    Status lRetval = kStatus_Success;
+
+    // Attempt to connect to the specified host, either with a
+    // user-specified timeout or with the internal default timeout.
+
+    if (sOptFlags & kOptTimeout)
+    {
+        lRetval = mHLXProxyController.Connect(mConnectMaybeURL,
+                                              GetVersions(),
+                                              sTimeout);
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
+    else
+    {
+        lRetval = mHLXProxyController.Connect(mConnectMaybeURL,
+                                              GetVersions());
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
+
+    // If no initial refresh was requested, then initiate listening.
+
+    if ((sOptFlags & kOptNoInitialRefresh) == kOptNoInitialRefresh)
+    {
+        lRetval = Listen();
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
+
+done:
+    return (lRetval);
+}
+
+Status
+HLXProxy :: Listen(void)
+{
+    Status lRetval = kStatus_Success;
+
+
+    if (mListenMaybeURL == nullptr)
+    {
+        lRetval = mHLXProxyController.Listen(GetVersions());
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
+    else
+    {
+        lRetval = mHLXProxyController.Listen(mListenMaybeURL, GetVersions());
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
+
+done:
+    return (lRetval);
+}
+
+Status HLXProxy :: Stop(void)
+{
+    return (Stop(kStatus_Success));
+}
+
+Status HLXProxy :: Stop(const Status &aStatus)
+{
+    Status lStatus = kStatus_Success;
+
+    SetStatus(aStatus);
+
+    CFRunLoopStop(mRunLoopParameters.GetRunLoop());
+
+    return (lStatus);
+}
+
+const Proxy::Application::Controller &
+HLXProxy :: GetController(void) const
+{
+    return (mHLXProxyController);
+}
+
+Proxy::Application::Controller &
+HLXProxy :: GetController(void)
+{
+    return (mHLXProxyController);
+}
+
+Status HLXProxy :: GetStatus(void) const
+{
+    return (mStatus);
+}
+
+void HLXProxy :: SetStatus(const Status &aStatus)
+{
+    mStatus = aStatus;
+}
+
+void
+HLXProxy :: SetVersions(const bool &aUseIPv6,
+                        const bool &aUseIPv4)
+{
+    using Common::Utilities::GetVersions;
+
+    mVersions = GetVersions(aUseIPv6, aUseIPv4);
+}
+
+const ConnectionManagerBasis::Versions &
+HLXProxy :: GetVersions(void) const
+{
+    return (mVersions);
+}
+
+bool
+HLXProxy :: IsRole(const Roles &aFirst, const Roles &aSecond)
+{
+    return ((aFirst & aSecond) == aSecond);
+}
+
+bool
+HLXProxy :: IsClient(const Roles &aRole)
+{
+    constexpr auto kRoleClient = HLX::Common::ConnectionManagerBasis::kRoleClient;
+
+    return (IsRole(aRole, kRoleClient));
+}
+
+bool
+HLXProxy :: IsServer(const Roles &aRole)
+{
+    constexpr auto kRoleServer = HLX::Common::ConnectionManagerBasis::kRoleServer;
+
+    return (IsRole(aRole, kRoleServer));
+}
+
+// Controller Delegate Methods
+
+// Resolve
+
+void HLXProxy :: ControllerWillResolve(Proxy::Application::Controller &aController, const char *aHost)
+{
+    (void)aController;
+
+    Log::Info().Write("Will resolve \"%s\".\n", aHost);
+}
+
+void HLXProxy :: ControllerIsResolving(Proxy::Application::Controller &aController, const char *aHost)
+{
+    (void)aController;
+
+    Log::Info().Write("Is resolving \"%s\".\n", aHost);
+}
+
+void HLXProxy :: ControllerDidResolve(Proxy::Application::Controller &aController, const char *aHost, const IPAddress &aIPAddress)
+{
+    char   lBuffer[INET6_ADDRSTRLEN];
+    Status lStatus;
+
+    (void)aController;
+
+    lStatus = aIPAddress.ToString(lBuffer, sizeof (lBuffer));
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    Log::Info().Write("Did resolve \"%s\" to '%s'.\n", aHost, lBuffer);
+
+ done:
+    return;
+}
+
+void HLXProxy :: ControllerDidNotResolve(Proxy::Application::Controller &aController, const char *aHost, const Error &aError)
+{
+    (void)aController;
+
+    Log::Error().Write("Did not resolve \"%s\": %d (%s).\n", aHost, aError, strerror(-aError));
+}
+
+// Client-facing Server Listen
+
+void HLXProxy :: ControllerWillListen(Proxy::Application::Controller &aController, CFURLRef aURLRef)
+{
+    (void)aController;
+
+    Log::Info().Write("Will listen at %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
+}
+
+void HLXProxy :: ControllerIsListening(Proxy::Application::Controller &aController, CFURLRef aURLRef)
+{
+    (void)aController;
+
+    Log::Info().Write("Listening at %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
+}
+
+void HLXProxy :: ControllerDidListen(Proxy::Application::Controller &aController, CFURLRef aURLRef)
+{
+    (void)aController;
+
+    Log::Info().Write("Listened at %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
+}
+
+void HLXProxy :: ControllerDidNotListen(Proxy::Application::Controller &aController, CFURLRef aURLRef, const Common::Error &aError)
+{
+    (void)aController;
+
+    Log::Error().Write("Did not listen at %s: %d (%s).\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString(), aError, strerror(-aError));
+}
+
+// Client-facing Server Accept
+
+void HLXProxy :: ControllerWillAccept(Proxy::Application::Controller &aController, CFURLRef aURLRef)
+{
+    (void)aController;
+
+    Log::Info().Write("Will accept from %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
+}
+
+void HLXProxy :: ControllerIsAccepting(Proxy::Application::Controller &aController, CFURLRef aURLRef)
+{
+    (void)aController;
+
+    Log::Info().Write("Accepting from %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
+}
+
+void HLXProxy :: ControllerDidAccept(Proxy::Application::Controller &aController, CFURLRef aURLRef)
+{
+    (void)aController;
+
+    Log::Info().Write("Accepted from %s.\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString());
+}
+
+void HLXProxy :: ControllerDidNotAccept(Proxy::Application::Controller &aController, CFURLRef aURLRef, const Error &aError)
+{
+    (void)aController;
+
+    Log::Error().Write("Did not accept from %s: %d (%s).\n", (aURLRef == nullptr) ? "(null)" : CFString(CFURLGetString(aURLRef)).GetCString(), aError, strerror(-aError));
+}
+
+// Server-facing Client Connect
+
+void HLXProxy :: ControllerWillConnect(Proxy::Application::Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout)
+{
+    static const char * const kWillConnectToString = "Will connect to";
+
+
+    (void)aController;
+
+    if (aTimeout.IsMilliseconds())
+    {
+        Log::Info().Write("%s %s with %u ms timeout.\n",
+                          kWillConnectToString,
+                          CFString(CFURLGetString(aURLRef)).GetCString(),
+                          aTimeout.GetMilliseconds());
+    }
+    else
+    {
+        Log::Info().Write("%s %s with default timeout.\n",
+                          kWillConnectToString,
+                          CFString(CFURLGetString(aURLRef)).GetCString());
+    }
+}
+
+void HLXProxy :: ControllerIsConnecting(Proxy::Application::Controller &aController, CFURLRef aURLRef, const Timeout &aTimeout)
+{
+    static const char * const kConnectingToString = "Connecting to";
+
+
+    (void)aController;
+
+    if (aTimeout.IsMilliseconds())
+    {
+        Log::Info().Write("%s %s with %u ms timeout.\n",
+                          kConnectingToString,
+                          CFString(CFURLGetString(aURLRef)).GetCString(),
+                          aTimeout.GetMilliseconds());
+    }
+    else
+    {
+        Log::Info().Write("%s %s with default timeout.\n",
+                          kConnectingToString,
+                          CFString(CFURLGetString(aURLRef)).GetCString());
+    }
+}
+
+void HLXProxy :: ControllerDidConnect(Proxy::Application::Controller &aController, CFURLRef aURLRef)
+{
+    Status lStatus;
+
+    (void)aController;
+
+    Log::Info().Write("Connected to %s.\n", CFString(CFURLGetString(aURLRef)).GetCString());
+
+    if ((sOptFlags & kOptNoInitialRefresh) != kOptNoInitialRefresh)
+    {
+        lStatus = mHLXProxyController.Refresh();
+        nlREQUIRE_SUCCESS(lStatus, done);
+    }
+
+ done:
+    return;
+}
+
+void HLXProxy :: ControllerDidNotConnect(Proxy::Application::Controller &aController, CFURLRef aURLRef, const Error &aError)
+{
+    (void)aController;
+
+    Log::Error().Write("Did not connect to %s: %d (%s).\n", CFString(CFURLGetString(aURLRef)).GetCString(), aError, strerror(-aError));
+
+    Stop(aError);
+}
+
+// Disconnect
+
+void HLXProxy :: ControllerWillDisconnect(Proxy::Application::Controller &aController, const Roles &aRoles, CFURLRef aURLRef)
+{
+    (void)aController;
+
+    Log::Info().Write("Will disconnect %s from %s.\n", GetString(aRoles), CFString(CFURLGetString(aURLRef)).GetCString());
+}
+
+void HLXProxy :: ControllerDidDisconnect(Proxy::Application::Controller &aController, const Roles &aRoles, CFURLRef aURLRef, const Error &aError)
+{
+    (void)aController;
+
+    if (aError >= kStatus_Success)
+    {
+        Log::Info().Write("Disconnected %s from %s.\n", GetString(aRoles), CFString(CFURLGetString(aURLRef)).GetCString());
+    }
+    else
+    {
+        Log::Info().Write("Disconnected %s from %s: %d (%s).\n", GetString(aRoles), CFString(CFURLGetString(aURLRef)).GetCString(), aError, strerror(-aError));
+    }
+
+    // Only call stop if we have non-error status that is not
+    // -ECONNRESET; otherwise a DidNot... or Error delegation already
+    // called it.
+    //
+    // For the -ECONNRESET case, only stop the proxy if the server
+    // side disconnected, resulting in forcible disconnect of all
+    // connected clients. If it is simply a client disconnecting from
+    // the proxy, do nothing.
+
+    switch (aError)
+    {
+
+    case kStatus_Success:
+        break;
+
+    case -ECONNRESET:
+        if (IsClient(aRoles))
+        {
+            Stop(kError_ServerDisconnected);
+        }
+        break;
+
+    default:
+        Stop(aError);
+        break;
+
+    }
+
+    return;
+}
+
+void HLXProxy :: ControllerDidNotDisconnect(Proxy::Application::Controller &aController, const Roles &aRoles, CFURLRef aURLRef, const Error &aError)
+{
+    (void)aController;
+
+    Log::Error().Write("Did not disconnect %s from %s: %d.\n", GetString(aRoles), CFString(CFURLGetString(aURLRef)).GetCString(), aError);
+}
+
+// Server-facing Client Refresh / Reload
+
+void HLXProxy :: ControllerWillRefresh(Client::Application::ControllerBasis &aController)
+{
+    (void)aController;
+
+    Log::Info().Write("Waiting for client data...\n");
+
+    return;
+}
+
+void HLXProxy :: ControllerIsRefreshing(Client::Application::ControllerBasis &aController, const uint8_t &aPercentComplete)
+{
+    (void)aController;
+
+    Log::Info().Write("%u%% of client data received.\n", aPercentComplete);
+}
+
+void HLXProxy :: ControllerDidRefresh(Client::Application::ControllerBasis &aController)
+{
+    Status lStatus;
+
+
+    (void)aController;
+
+    Log::Info().Write("Client data received.\n");
+
+    if ((sOptFlags & kOptNoInitialRefresh) != kOptNoInitialRefresh)
+    {
+        lStatus = Listen();
+        nlREQUIRE_SUCCESS_ACTION(lStatus, done, SetStatus(lStatus));
+    }
+
+ done:
+    return;
+}
+
+void HLXProxy :: ControllerDidNotRefresh(Client::Application::ControllerBasis &aController, const Error &aError)
+{
+    (void)aController;
+
+    Stop(aError);
+}
+
+// Server-facing Client State Change
+
+void HLXProxy :: ControllerStateDidChange(Proxy::Application::Controller &aController, const Client::StateChange::NotificationBasis &aStateChangeNotification)
+{
+    const StateChange::Type lType = aStateChangeNotification.GetType();
+
+    (void)aController;
+
+    switch (lType)
+    {
+    default:
+        Log::Error().Write("Unhandled state change notification type %d\n", lType);
+        break;
+    }
+
+    return;
+}
+
+// Error
+
+void HLXProxy :: ControllerError(Proxy::Application::Controller &aController, const Roles &aRoles, const Error &aError)
+{
+    (void)aController;
+
+    Log::Error().Write("Proxy %s error: %d (%s).\n",
+                       GetString(aRoles),
+                       aError,
+                       strerror(-aError));
+
+    switch (aError)
+    {
+
+    case -ECONNRESET:
+        break;
+
+    default:
+        Stop(aError);
+        break;
+
+    }
+}
+
+void HLXProxy :: OnSignal(int aSignal)
+{
+    Log::Debug().Write("%s: caught signal %d\n", __func__, aSignal);
+}
+
 static void OnSignal(int aSignal)
 {
-    DeclareScopedFunctionTracer(lTracer);
-
     Log::Debug().Write("%s: caught signal %d\n", __func__, aSignal);
+
+    if (sHLXProxy != nullptr)
+    {
+        sHLXProxy->Stop(-errno);
+    }
 }
 
 static void SetSignalHandler(int aSignal, void (*aHandler)(int aSignal))
 {
     struct sigaction sa;
-    int signals[] = { aSignal };
+    int              signals[] = { aSignal };
 
     memset(&sa, 0, sizeof(sa));
     sa.sa_handler = aHandler;
@@ -275,6 +964,7 @@ DecodeOptions(const char *inProgram,
     int             c;
     unsigned int    error = 0;
     string          shortOptions;
+    Timeout::Value  timeoutMilliseconds;
 
     // Generate a list of those single-character options available as
     // a subset of the long option list.
@@ -289,6 +979,10 @@ DecodeOptions(const char *inProgram,
 
         switch (c) {
 
+        case OPT_CONNECT:
+            sConnectMaybeURL = optarg;
+            break;
+
         case OPT_DEBUG:
             error += SetLevel(sDebug, optarg);
             break;
@@ -297,12 +991,72 @@ DecodeOptions(const char *inProgram,
             PrintUsage(inProgram, EXIT_SUCCESS);
             break;
 
+        case OPT_INITIAL_REFRESH:
+            if (sOptFlags & kOptNoInitialRefresh)
+            {
+                Log::Error().Write("The '--initial-refresh' and '--no-initial-refresh' options are mutually-exclusive. Please choose one or the other.\n");
+                error++;
+            }
+            else
+            {
+                sOptFlags &= static_cast<uint32_t>(~kOptNoInitialRefresh);
+            }
+            break;
+
+        case OPT_IPV4_ONLY:
+            if (sOptFlags & kOptIPv6Only)
+            {
+                Log::Error().Write("The '-6' and '-4' options are mutually-exclusive. Please choose one or the other.\n");
+                error++;
+            }
+            else
+            {
+                sOptFlags |= kOptIPv4Only;
+            }
+            break;
+
+        case OPT_IPV6_ONLY:
+            if (sOptFlags & kOptIPv4Only)
+            {
+                Log::Error().Write("The '-4' and '-6' options are mutually-exclusive. Please choose one or the other.\n");
+                error++;
+            }
+            else
+            {
+                sOptFlags |= kOptIPv6Only;
+            }
+            break;
+
+        case OPT_LISTEN:
+            sListenMaybeURL = optarg;
+            break;
+
+        case OPT_NO_INITIAL_REFRESH:
+            sOptFlags |= kOptNoInitialRefresh;
+            break;
+
         case OPT_QUIET:
             sOptFlags |= kOptQuiet;
             break;
 
         case OPT_SYSLOG:
             sOptFlags |= kOptSyslog;
+            break;
+
+        case OPT_TIMEOUT:
+            {
+                const Status  lStatus = Parse(optarg, timeoutMilliseconds);
+
+                if (lStatus != kStatus_Success)
+                {
+                    Log::Error().Write("Cannot interpret timeout value '%s' as a duration in milliseconds.\n", optarg);
+                    error++;
+                }
+                else
+                {
+                    sOptFlags |= kOptTimeout;
+                }
+            }
             break;
 
         case OPT_VERBOSE:
@@ -342,12 +1096,24 @@ DecodeOptions(const char *inProgram,
 
     optind = 0;
 
-    // At this point, we should have exactly one other argument, the
-    // URL, path, or host and optional port to connect to.
+    // Check that the timeout, if specified, makes sense.
 
-    if (argc != 1) {
-        error++;
-        goto exit;
+    if (sOptFlags & kOptTimeout) {
+        if (timeoutMilliseconds <= 0) {
+            Log::Error().Write("The specified timeout `%d' is not greater "
+                               "than zero. Please specify a non-zero, "
+                               "positive timeout.\n", timeoutMilliseconds);
+            error++;
+
+        } else {
+            const Timeout tempTimeout(timeoutMilliseconds);
+
+            sTimeout = tempTimeout;
+
+        }
+    } else {
+        sTimeout = kTimeoutDefault;
+
     }
 
     // If there were any errors parsing the command line arguments,
@@ -459,8 +1225,9 @@ FilterSyslog(Log::Logger &inLogger)
 
 int main(int argc, char * const argv[])
 {
-    DeclareScopedFunctionTracer(lTracer);
-    size_t n = 0;
+    HLXProxy     lHLXProxy;
+    Status       lStatus;
+    size_t       n = 0;
 
     // Cache the program invocation name for later use
 
@@ -488,5 +1255,26 @@ int main(int argc, char * const argv[])
         FilterSyslog(Log::Info());
     }
 
-    return((true) ? EXIT_SUCCESS : EXIT_FAILURE);
+    {
+        const bool lUseIPv4 = (((sOptFlags & kOptIPv6Only) == kOptIPv6Only) ? false : true);
+        const bool lUseIPv6 = (((sOptFlags & kOptIPv4Only) == kOptIPv4Only) ? false : true);
+
+        sHLXProxy = &lHLXProxy;
+
+        lStatus = lHLXProxy.Init(sConnectMaybeURL,
+                                 sListenMaybeURL,
+                                 lUseIPv6,
+                                 lUseIPv4);
+        nlREQUIRE_SUCCESS_ACTION(lStatus, done, lHLXProxy.SetStatus(lStatus));
+
+        lStatus = lHLXProxy.Start();
+        nlREQUIRE_SUCCESS_ACTION(lStatus, done, lHLXProxy.SetStatus(lStatus));
+
+        Log::Debug().Write("Proxy started with status %d\n", lStatus);
+    }
+
+    CFRunLoopRun();
+
+ done:
+    return((lHLXProxy.GetStatus() == 0) ? EXIT_SUCCESS : EXIT_FAILURE);
 }

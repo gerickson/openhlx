@@ -23,13 +23,13 @@
  *
  */
 
-#ifndef HLXCLIENTFAVORITESCONTROLLER_HPP
-#define HLXCLIENTFAVORITESCONTROLLER_HPP
+#ifndef OPENHLXCLIENTFAVORITESCONTROLLER_HPP
+#define OPENHLXCLIENTFAVORITESCONTROLLER_HPP
 
 #include <stddef.h>
 #include <stdint.h>
 
-#include <OpenHLX/Client/ControllerBasis.hpp>
+#include <OpenHLX/Client/FavoritesControllerBasis.hpp>
 #include <OpenHLX/Client/FavoritesControllerCommands.hpp>
 #include <OpenHLX/Common/FavoritesControllerBasis.hpp>
 #include <OpenHLX/Model/FavoriteModel.hpp>
@@ -52,23 +52,18 @@ namespace Client
  *
  */
 class FavoritesController :
-    public ControllerBasis,
-    public Common::FavoritesControllerBasis
+    public Common::FavoritesControllerBasis,
+    public Client::FavoritesControllerBasis
 {
 public:
     FavoritesController(void);
     virtual ~FavoritesController(void);
 
+    // Initializer(s)
+
     Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
 
-    Common::Status Refresh(const Common::Timeout &aTimeout) final;
-
     // Observer Methods
-
-    Common::Status Query(void);
-    Common::Status Query(const IdentifierType &aFavoriteIdentifier);
-
-    Common::Status GetFavoritesMax(size_t &aFavorites) const;
 
     Common::Status GetFavorite(const IdentifierType &aIdentifier, const Model::FavoriteModel *&aModel) const;
 
@@ -78,42 +73,10 @@ public:
 
     Common::Status SetName(const IdentifierType &aFavoriteIdentifier, const char *aName);
 
-    // Command Completion Handler Trampolines
-
-    static void QueryCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SetNameCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-
-    static void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError, void *aContext);
-
-    // Notification Handler Trampolines
-
-    static void NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-
-private:
-    Common::Status ResponseInit(void);
-    Common::Status DoNotificationHandlers(bool aRegister);
-
-    // Command Completion Handlers
-
-    void QueryCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void SetNameCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError);
-
-    // Notification Handlers
-
-    void NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-
-private:
-    size_t                                        mFavoritesDidRefreshCount;
-    Model::FavoritesModel                         mFavorites;
-
-private:
-    static Command::Favorites::NameResponse       kNameResponse;
-    static Command::Favorites::QueryResponse      kQueryResponse;
 };
 
 }; // namespace Client
 
 }; // namespace HLX
 
-#endif // HLXCLIENTFAVORITESCONTROLLER_HPP
+#endif // OPENHLXCLIENTFAVORITESCONTROLLER_HPP

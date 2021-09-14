@@ -18,7 +18,7 @@
 
 /**
  *    @file
- *      This file...
+ *      This file implements an object for....
  *
  */
 
@@ -36,7 +36,9 @@
 #include <LogUtilities/LogUtilities.hpp>
 
 #include <OpenHLX/Model/IdentifierModel.hpp>
+#include <OpenHLX/Server/CommandManager.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
+#include <OpenHLX/Utilities/ElementsOf.hpp>
 #include <OpenHLX/Utilities/Utilities.hpp>
 
 #include <NameModelDefaults.hpp>
@@ -45,18 +47,16 @@
 
 using namespace HLX::Common;
 using namespace HLX::Model;
+using namespace HLX::Server;
+using namespace HLX::Utilities;
 using namespace Nuovations;
+
 
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
-
-// Request data
-
-Command::Sources::SetNameRequest      SourcesController::kSetNameRequest;
-
 
 /**
  *  @brief
@@ -85,32 +85,33 @@ static const SourceModelDefaults kSourceModelDefaults[8] = {
 static CFStringRef      kSourcesSchemaKey = CFSTR("Sources");
 static CFStringRef      kNameSchemaKey = CFSTR("Name");
 
+/**
+ *  @brief
+ *    This is the class default constructor.
+ *
+ */
 SourcesController :: SourcesController(void) :
-    ControllerBasis(),
-    ContainerControllerBasis(),
-    SourcesControllerBasis(),
-    mSources()
+    Common::SourcesControllerBasis(),
+    Server::SourcesControllerBasis(Common::SourcesControllerBasis::mSources,
+                                   Common::SourcesControllerBasis::kSourcesMax),
+    Simulator::ObjectControllerBasis(),
+    Simulator::ContainerControllerBasis()
 {
     return;
 }
 
+/**
+ *  @brief
+ *    This is the class destructor.
+ *
+ */
 SourcesController :: ~SourcesController(void)
 {
     return;
 }
 
-Status SourcesController :: RequestInit(void)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = kSetNameRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status SourcesController :: DoRequestHandlers(const bool &aRegister)
+Status
+SourcesController :: DoRequestHandlers(const bool &aRegister)
 {
     static const RequestHandlerBasis  lRequestHandlers[] = {
         {
@@ -118,88 +119,79 @@ Status SourcesController :: DoRequestHandlers(const bool &aRegister)
             SourcesController::SetNameRequestReceivedHandler
         }
     };
-    static const size_t               lRequestHandlerCount = sizeof (lRequestHandlers) / sizeof (lRequestHandlers[0]);
-    Status                            lRetval = kStatus_Success;
+    static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
+    Status                   lRetval = kStatus_Success;
 
-    lRetval = ControllerBasis::DoRequestHandlers(&lRequestHandlers[0], &lRequestHandlers[lRequestHandlerCount], aRegister);
+    lRetval = Server::ObjectControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
+                                                               &lRequestHandlers[lRequestHandlerCount],
+                                                               this,
+                                                               aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
-Status SourcesController :: Init(CommandManager &aCommandManager, const Timeout &aTimeout)
+// MARK: Initializer(s)
+
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the class with the specified command manager and
+ *  timeout.
+ *
+ *  @param[in]  aCommandManager  A reference to the command manager
+ *                               instance to initialize the controller
+ *                               with.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -EINVAL                      If an internal parameter was
+ *                                        invalid.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_NotInitialized        The base class was not properly
+ *                                        initialized.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+SourcesController :: Init(Server::CommandManager &aCommandManager)
 {
     DeclareScopedFunctionTracer(lTracer);
-    const bool  lRegister = true;
-    Status      lRetval = kStatus_Success;
+    constexpr bool  kRegister = true;
+    Status          lRetval = kStatus_Success;
 
 
-    lRetval = RequestInit();
+    lRetval = Common::SourcesControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mSources.Init(kSourcesMax);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = ControllerBasis::Init(aCommandManager, aTimeout);
+    lRetval = Server::SourcesControllerBasis::Init(aCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // This MUST come AFTER the base class initialization due to a
     // dependency on the command manager instance.
 
-    lRetval = DoRequestHandlers(lRegister);
+    lRetval = DoRequestHandlers(kRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
-    return (lRetval);
-}
-
-Status SourcesController :: HandleQueryReceived(const IdentifierType &aSourceIdentifier, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
-{
-    const SourceModel *               lSourceModel;
-    const char *                      lName;
-    Command::Sources::NameResponse    lResponse;
-    const uint8_t *                   lBuffer;
-    size_t                            lSize;
-    Status                            lRetval;
-
-
-    lRetval = mSources.GetSource(aSourceIdentifier, lSourceModel);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = lSourceModel->GetName(lName);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = lResponse.Init(aSourceIdentifier, lName);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lBuffer = lResponse.GetBuffer();
-    lSize = lResponse.GetSize();
-
-    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
+done:
     return (lRetval);
 }
 
 // MARK: Configuration Management Methods
 
-void SourcesController :: QueryCurrentConfiguration(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+void
+SourcesController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
-    IdentifierType  lSourceIdentifier;
-    Status          lStatus;
+    Status lStatus = kStatus_Success;
 
 
     (void)aConnection;
 
-    for (lSourceIdentifier = IdentifierModel::kIdentifierMin; lSourceIdentifier <= kSourcesMax; lSourceIdentifier++)
-    {
-        lStatus = HandleQueryReceived(lSourceIdentifier, aBuffer);
-        nlREQUIRE_SUCCESS(lStatus, done);
-    }
+    lStatus = HandleQueryReceived(aBuffer);
+    nlREQUIRE_SUCCESS(lStatus, done);
 
- done:
+done:
     return;
 }
 
@@ -238,7 +230,7 @@ Status SourcesController :: ElementLoadFromBackupConfiguration(CFDictionaryRef a
 
     // Attempt to form the source identifier key.
 
-    lSourceIdentifierKey = Utilities::Configuration::CreateCFString(aSourceIdentifier);
+    lSourceIdentifierKey = Simulator::Utilities::Configuration::CreateCFString(aSourceIdentifier);
     nlREQUIRE_ACTION(lSourceIdentifierKey != nullptr, done, lRetval = -ENOMEM);
 
     // Attempt to retrieve the source dictionary.
@@ -293,7 +285,7 @@ Status SourcesController :: ElementSaveToBackupConfiguration(CFMutableDictionary
     lRetval = mSources.GetSource(aSourceIdentifier, lSourceModel);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lSourceIdentifierKey = Utilities::Configuration::CreateCFString(aSourceIdentifier);
+    lSourceIdentifierKey = Simulator::Utilities::Configuration::CreateCFString(aSourceIdentifier);
     nlREQUIRE_ACTION(lSourceIdentifierKey != nullptr, done, lRetval = -ENOMEM);
 
     lSourceDictionary = CFDictionaryCreateMutable(kCFAllocatorDefault,
@@ -330,13 +322,13 @@ void SourcesController :: SaveToBackupConfiguration(CFMutableDictionaryRef aBack
 
 // MARK: Command Completion Handlers
 
-void SourcesController :: SetNameRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void SourcesController :: SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     IdentifierType                           lSourceIdentifier;
     const char *                             lName;
     size_t                                   lNameSize;
     SourceModel *                            lSourceModel;
-    Command::Sources::NameResponse           lNameResponse;
+    Server::Command::Sources::NameResponse   lNameResponse;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
     const uint8_t *                          lBuffer;
@@ -345,7 +337,7 @@ void SourcesController :: SetNameRequestReceivedHandler(ConnectionBasis &aConnec
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Sources::SetNameRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Sources::SetNameRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/3: Source Identifier
     //
@@ -414,7 +406,7 @@ void SourcesController :: SetNameRequestReceivedHandler(ConnectionBasis &aConnec
 
 // MARK: Command Request Handler Trampolines
 
-void SourcesController :: SetNameRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void SourcesController :: SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     SourcesController *lController = static_cast<SourcesController *>(aContext);
 
@@ -424,6 +416,6 @@ void SourcesController :: SetNameRequestReceivedHandler(ConnectionBasis &aConnec
     }
 }
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX

@@ -23,11 +23,11 @@
  *
  */
 
-#ifndef HLXCLIENTCOMMANDRESPONSEBASIS_HPP
-#define HLXCLIENTCOMMANDRESPONSEBASIS_HPP
+#ifndef OPENHLXCLIENTCOMMANDRESPONSEBASIS_HPP
+#define OPENHLXCLIENTCOMMANDRESPONSEBASIS_HPP
 
-#include <CommandRegularExpressionBasis.hpp>
-#include <CommandRoleDelimitedRegularExpression.hpp>
+#include <OpenHLX/Common/CommandRegularExpressionBasis.hpp>
+#include <OpenHLX/Common/CommandRoleDelimitedRegularExpression.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 
 
@@ -53,7 +53,7 @@ class ResponseBasis :
     public Common::Command::RegularExpressionBasis,
     public Common::Command::RoleDelimitedRegularExpression
 {
-protected:
+public:
     ResponseBasis(void) = default;
     virtual ~ResponseBasis(void) = default;
 
@@ -66,4 +66,4 @@ protected:
 
 }; // namespace HLX
 
-#endif // HLXCLIENTCOMMANDRESPONSEBASIS_HPP
+#endif // OPENHLXCLIENTCOMMANDRESPONSEBASIS_HPP

@@ -167,7 +167,41 @@ Status
 ConnectionBasis :: Disconnect(void)
 {
     DeclareScopedFunctionTracer(lTracer);
+    Status lRetval;
+
+    lRetval = Disconnect(kStatus_Success);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Disconnect from the HLX server peer with the specified error.
+ *
+ *  This attempts to asynchronously disconnect from the
+ *  currently-connected HLX server peer, if any, with the specified
+ *  error (that is, reason for disconnection), for example -ETIMEDOUT.
+ *
+ *  @note
+ *    At present any meaningful work associated with the disconnection
+ *    is handled by a dervied class.
+ *
+ *  @param[in]  aError  A reference to the error associated with the
+ *                      reason for the disconnection.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+ConnectionBasis :: Disconnect(const Common::Error &aError)
+{
+    DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
+
+
+    (void)aError;
 
     if (mURLRef != nullptr)
     {
@@ -175,6 +209,7 @@ ConnectionBasis :: Disconnect(void)
         mURLRef = nullptr;
     }
 
+ done:
     return (lRetval);
 }
 
@@ -362,18 +397,10 @@ ConnectionBasis :: OnWillDisconnect(void)
     }
 }
 
-/**
- *  @brief
- *    Signals to connection delegates that a connection did
- *    disconnect.
- *
- *  This is invoked by a connection in response to a disconnection
- *  to signal delegates that the connection did disconnect.
- *
- *  @param[in]  aError  An immutable reference to the error
- *                      associated with the disconnection.
- *
- */
+// Note: This is documented in the header, rather than in the source
+// as preferred, because Doxygen (1.9.x) does not seem to want to find
+// and match it as documented when done in the source.
+
 void
 ConnectionBasis :: OnDidDisconnect(const Common::Error &aError)
 {
@@ -383,19 +410,10 @@ ConnectionBasis :: OnDidDisconnect(const Common::Error &aError)
     }
 }
 
-/**
- *  @brief
- *    Signals to connection delegates that a connection did
- *    not disconnect.
- *
- *  This is invoked by a connection in response to a failed
- *  disconnection to signal delegates that the connection did
- *  not disconnect.
- *
- *  @param[in]  aError  An immutable reference to the error
- *                      associated with the failed disconnection.
- *
- */
+// Note: This is documented in the header, rather than in the source
+// as preferred, because Doxygen (1.9.x) does not seem to want to find
+// and match it as documented when done in the source.
+
 void
 ConnectionBasis :: OnDidNotDisconnect(const Common::Error &aError)
 {
@@ -405,22 +423,10 @@ ConnectionBasis :: OnDidNotDisconnect(const Common::Error &aError)
     }
 }
 
-/**
- *  @brief
- *    Signals to connection delegates that a connection experienced an
- *    error.
- *
- *  This is invoked by a connection in response to a connection error
- *  to signal delegates that such a connection error occurred.
- *
- *  @note
- *    This action may occur along with other actions with respect to
- *    the same underlying event or cause.
- *
- *  @param[in]  aError  An immutable reference to the error associated
- *                      with the event.
- *
- */
+// Note: This is documented in the header, rather than in the source
+// as preferred, because Doxygen (1.9.x) does not seem to want to find
+// and match it as documented when done in the source.
+
 void
 ConnectionBasis :: OnError(const Common::Error &aError)
 {

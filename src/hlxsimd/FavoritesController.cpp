@@ -38,6 +38,7 @@
 
 #include <OpenHLX/Model/IdentifierModel.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
+#include <OpenHLX/Utilities/ElementsOf.hpp>
 #include <OpenHLX/Utilities/Utilities.hpp>
 
 #include <CommandManager.hpp>
@@ -47,18 +48,16 @@
 
 using namespace HLX::Common;
 using namespace HLX::Model;
+using namespace HLX::Server;
+using namespace HLX::Utilities;
 using namespace Nuovations;
+
 
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
-
-// Request data
-
-Command::Favorites::QueryRequest    FavoritesController::kQueryRequest;
-Command::Favorites::SetNameRequest  FavoritesController::kSetNameRequest;
 
 /**
  *  @brief
@@ -89,35 +88,33 @@ static const FavoriteModelDefaults kFavoriteModelDefaults[10] = {
 static CFStringRef      kFavoritesSchemaKey = CFSTR("Favorites");
 static CFStringRef      kNameSchemaKey = CFSTR("Name");
 
+/**
+ *  @brief
+ *    This is the class default constructor.
+ *
+ */
 FavoritesController :: FavoritesController(void) :
-    ControllerBasis(),
-    ContainerControllerBasis(),
-    FavoritesControllerBasis(),
-    mFavorites()
+    Common::FavoritesControllerBasis(),
+    Server::FavoritesControllerBasis(Common::FavoritesControllerBasis::mFavorites,
+                                     Common::FavoritesControllerBasis::kFavoritesMax),
+    Simulator::ContainerControllerBasis(),
+    Simulator::ObjectControllerBasis()
 {
     return;
 }
 
+/**
+ *  @brief
+ *    This is the class destructor.
+ *
+ */
 FavoritesController :: ~FavoritesController(void)
 {
     return;
 }
 
-Status FavoritesController :: RequestInit(void)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = kQueryRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSetNameRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-Status FavoritesController :: DoRequestHandlers(const bool &aRegister)
+Status
+FavoritesController :: DoRequestHandlers(const bool &aRegister)
 {
     static const RequestHandlerBasis  lRequestHandlers[] = {
         {
@@ -130,88 +127,83 @@ Status FavoritesController :: DoRequestHandlers(const bool &aRegister)
             FavoritesController::SetNameRequestReceivedHandler
         }
     };
-    static const size_t               lRequestHandlerCount = sizeof (lRequestHandlers) / sizeof (lRequestHandlers[0]);
-    Status                            lRetval = kStatus_Success;
+    static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
+    Status                   lRetval = kStatus_Success;
 
-    lRetval = ControllerBasis::DoRequestHandlers(&lRequestHandlers[0], &lRequestHandlers[lRequestHandlerCount], aRegister);
+    lRetval = Server::ObjectControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
+                                                               &lRequestHandlers[lRequestHandlerCount],
+                                                               this,
+                                                               aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
-Status FavoritesController :: Init(CommandManager &aCommandManager, const Timeout &aTimeout)
+// MARK: Initializer(s)
+
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the class with the specified command manager and
+ *  timeout.
+ *
+ *  @param[in]  aCommandManager  A reference to the command manager
+ *                               instance to initialize the controller
+ *                               with.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -EINVAL                      If an internal parameter was
+ *                                        invalid.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_NotInitialized        The base class was not properly
+ *                                        initialized.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+FavoritesController :: Init(Server::CommandManager &aCommandManager)
 {
     DeclareScopedFunctionTracer(lTracer);
-    const bool  lRegister = true;
-    Status      lRetval = kStatus_Success;
+    constexpr bool  kRegister = true;
+    Status          lRetval = kStatus_Success;
 
 
-    lRetval = RequestInit();
+    lRetval = Common::FavoritesControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mFavorites.Init(kFavoritesMax);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = ControllerBasis::Init(aCommandManager, aTimeout);
+    lRetval = Server::FavoritesControllerBasis::Init(aCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // This MUST come AFTER the base class initialization due to a
     // dependency on the command manager instance.
 
-    lRetval = DoRequestHandlers(lRegister);
+    lRetval = DoRequestHandlers(kRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
-    return (lRetval);
-}
-
-Status FavoritesController :: HandleQueryReceived(const IdentifierType &aFavoriteIdentifier, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
-{
-    const FavoriteModel *             lFavoriteModel;
-    const char *                      lName;
-    Command::Favorites::NameResponse  lResponse;
-    const uint8_t *                   lBuffer;
-    size_t                            lSize;
-    Status                            lRetval;
-
-
-    lRetval = mFavorites.GetFavorite(aFavoriteIdentifier, lFavoriteModel);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = lFavoriteModel->GetName(lName);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = lResponse.Init(aFavoriteIdentifier, lName);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lBuffer = lResponse.GetBuffer();
-    lSize = lResponse.GetSize();
-
-    lRetval = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
+done:
     return (lRetval);
 }
 
 // MARK: Configuration Management Methods
 
-void FavoritesController :: QueryCurrentConfiguration(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+void FavoritesController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
-    IdentifierType  lFavoriteIdentifier;
     Status          lStatus;
 
 
     (void)aConnection;
 
-    for (lFavoriteIdentifier = IdentifierModel::kIdentifierMin; lFavoriteIdentifier <= kFavoritesMax; lFavoriteIdentifier++)
+    // For each favorite, query the configuration.
+
+    for (auto lFavoriteIdentifier = IdentifierModel::kIdentifierMin; lFavoriteIdentifier <= kFavoritesMax; lFavoriteIdentifier++)
     {
         lStatus = HandleQueryReceived(lFavoriteIdentifier, aBuffer);
         nlREQUIRE_SUCCESS(lStatus, done);
     }
 
- done:
+done:
     return;
 }
 
@@ -250,7 +242,7 @@ Status FavoritesController :: ElementLoadFromBackupConfiguration(CFDictionaryRef
 
     // Attempt to form the favorite identifier key.
 
-    lFavoriteIdentifierKey = Utilities::Configuration::CreateCFString(aFavoriteIdentifier);
+    lFavoriteIdentifierKey = Simulator::Utilities::Configuration::CreateCFString(aFavoriteIdentifier);
     nlREQUIRE_ACTION(lFavoriteIdentifierKey != nullptr, done, lRetval = -ENOMEM);
 
     // Attempt to retrieve the favorite dictionary.
@@ -305,7 +297,7 @@ Status FavoritesController :: ElementSaveToBackupConfiguration(CFMutableDictiona
     lRetval = mFavorites.GetFavorite(aFavoriteIdentifier, lFavoriteModel);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lFavoriteIdentifierKey = Utilities::Configuration::CreateCFString(aFavoriteIdentifier);
+    lFavoriteIdentifierKey = Simulator::Utilities::Configuration::CreateCFString(aFavoriteIdentifier);
     nlREQUIRE_ACTION(lFavoriteIdentifierKey != nullptr, done, lRetval = -ENOMEM);
 
     lFavoriteDictionary = CFDictionaryCreateMutable(kCFAllocatorDefault,
@@ -340,21 +332,21 @@ void FavoritesController :: SaveToBackupConfiguration(CFMutableDictionaryRef aBa
                                                         kFavoritesSchemaKey);
 }
 
-// MARK: Command Completion Handlers
+// MARK: Command Request Handlers
 
-void FavoritesController :: QueryRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void FavoritesController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    IdentifierType                           lFavoriteIdentifier;
-    Command::Favorites::QueryResponse        lResponse;
-    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
-    Status                                   lStatus;
-    const uint8_t *                          lBuffer;
-    size_t                                   lSize;
+    IdentifierType                             lFavoriteIdentifier;
+    Server::Command::Favorites::QueryResponse  lResponse;
+    ConnectionBuffer::MutableCountedPointer    lResponseBuffer;
+    Status                                     lStatus;
+    const uint8_t *                            lBuffer;
+    size_t                                     lSize;
 
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Favorites::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Favorites::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/2: Favorite Identifier
     //
@@ -403,22 +395,23 @@ void FavoritesController :: QueryRequestReceivedHandler(ConnectionBasis &aConnec
     return;
 }
 
-void FavoritesController :: SetNameRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void
+FavoritesController :: SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    IdentifierType                           lFavoriteIdentifier;
-    const char *                             lName;
-    size_t                                   lNameSize;
-    FavoriteModel *                          lFavoriteModel;
-    Command::Favorites::NameResponse         lNameResponse;
-    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
-    Status                                   lStatus;
-    const uint8_t *                          lBuffer;
-    size_t                                   lSize;
+    IdentifierType                            lFavoriteIdentifier;
+    const char *                              lName;
+    size_t                                    lNameSize;
+    FavoriteModel *                           lFavoriteModel;
+    Server::Command::Favorites::NameResponse  lNameResponse;
+    ConnectionBuffer::MutableCountedPointer   lResponseBuffer;
+    Status                                    lStatus;
+    const uint8_t *                           lBuffer;
+    size_t                                    lSize;
 
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Favorites::SetNameRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Favorites::SetNameRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/3: Favorite Identifier
     //
@@ -487,7 +480,7 @@ void FavoritesController :: SetNameRequestReceivedHandler(ConnectionBasis &aConn
 
 // MARK: Command Request Handler Trampolines
 
-void FavoritesController :: QueryRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void FavoritesController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     FavoritesController *lController = static_cast<FavoritesController *>(aContext);
 
@@ -497,7 +490,7 @@ void FavoritesController :: QueryRequestReceivedHandler(ConnectionBasis &aConnec
     }
 }
 
-void FavoritesController :: SetNameRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void FavoritesController :: SetNameRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     FavoritesController *lController = static_cast<FavoritesController *>(aContext);
 
@@ -507,6 +500,6 @@ void FavoritesController :: SetNameRequestReceivedHandler(ConnectionBasis &aConn
     }
 }
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX

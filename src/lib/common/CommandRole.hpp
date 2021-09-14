@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXCOMMONCOMMANDROLE_HPP
-#define HLXCOMMONCOMMANDROLE_HPP
+#ifndef OPENHLXCOMMONCOMMANDROLE_HPP
+#define OPENHLXCOMMONCOMMANDROLE_HPP
 
 #include <stdint.h>
 
@@ -60,4 +60,4 @@ enum class Role : uint8_t
 
 }; // namespace HLX
 
-#endif // HLXCOMMONCOMMANDROLE_HPP
+#endif // OPENHLXCOMMONCOMMANDROLE_HPP

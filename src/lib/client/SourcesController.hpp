@@ -23,13 +23,13 @@
  *
  */
 
-#ifndef HLXCLIENTSOURCESCONTROLLER_HPP
-#define HLXCLIENTSOURCESCONTROLLER_HPP
+#ifndef OPENHLXCLIENTSOURCESCONTROLLER_HPP
+#define OPENHLXCLIENTSOURCESCONTROLLER_HPP
 
 #include <stddef.h>
 #include <stdint.h>
 
-#include <OpenHLX/Client/ControllerBasis.hpp>
+#include <OpenHLX/Client/SourcesControllerBasis.hpp>
 #include <OpenHLX/Client/SourcesControllerCommands.hpp>
 #include <OpenHLX/Common/SourcesControllerBasis.hpp>
 #include <OpenHLX/Model/SourceModel.hpp>
@@ -52,61 +52,30 @@ namespace Client
  *
  */
 class SourcesController :
-    public ControllerBasis,
-    public Common::SourcesControllerBasis
+    public Common::SourcesControllerBasis,
+    public Client::SourcesControllerBasis
 {
 public:
     SourcesController(void);
     virtual ~SourcesController(void);
 
-    Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
+    // Initializer(s)
 
-    Common::Status Refresh(const Common::Timeout &aTimeout) final;
+    Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
 
     // Observer Methods
 
     Common::Status GetSource(const IdentifierType &aIdentifier, const Model::SourceModel *&aModel) const;
-
-    Common::Status GetSourcesMax(size_t &aSources) const;
 
     Common::Status LookupIdentifier(const char *aName, IdentifierType &aSourceIdentifier) const;
 
     // Mutator Methods
 
     Common::Status SetName(const IdentifierType &aSourceIdentifier, const char *aName);
-
-    // Command Completion Handler Trampolines
-
-    static void SetNameCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-
-    static void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError, void *aContext);
-
-    // Notification Handler Trampolines
-
-    static void NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-
-private:
-    Common::Status ResponseInit(void);
-    Common::Status DoNotificationHandlers(bool aRegister);
-
-    // Command Completion Handlers
-
-    void SetNameCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError);
-
-    // Notification Handlers
-
-    void NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-
-private:
-    Model::SourcesModel                      mSources;
-
-private:
-    static Command::Sources::NameResponse    kNameResponse;
 };
 
 }; // namespace Client
 
 }; // namespace HLX
 
-#endif // HLXCLIENTSOURCESCONTROLLER_HPP
+#endif // OPENHLXCLIENTSOURCESCONTROLLER_HPP

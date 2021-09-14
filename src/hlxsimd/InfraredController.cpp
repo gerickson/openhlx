@@ -36,26 +36,24 @@
 #include <CFUtilities/CFUtilities.hpp>
 #include <LogUtilities/LogUtilities.hpp>
 
+#include <OpenHLX/Server/CommandManager.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
+#include <OpenHLX/Utilities/ElementsOf.hpp>
 #include <OpenHLX/Utilities/Utilities.hpp>
-
-#include "CommandManager.hpp"
 
 
 using namespace HLX::Common;
 using namespace HLX::Model;
+using namespace HLX::Server;
+using namespace HLX::Utilities;
 using namespace Nuovations;
+
 
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
-
-// Request data
-
-Command::Infrared::QueryRequest        InfraredController::kQueryRequest;
-Command::Infrared::SetDisabledRequest  InfraredController::kSetDisabledRequest;
 
 /**
  *  @brief
@@ -80,30 +78,27 @@ static const InfraredModelDefaults kInfraredModelDefaults =
 static CFStringRef           kInfraredSchemaKey = CFSTR("Infrared");
 static CFStringRef           kDisabledSchemaKey = CFSTR("Disabled");
 
+/**
+ *  @brief
+ *    This is the class default constructor.
+ *
+ */
 InfraredController :: InfraredController(void) :
-    ControllerBasis(),
-    mInfraredModel()
+    Common::InfraredControllerBasis(),
+    Server::InfraredControllerBasis(Common::InfraredControllerBasis::mInfraredModel),
+    Simulator::ObjectControllerBasis()
 {
     return;
 }
 
+/**
+ *  @brief
+ *    This is the class destructor.
+ *
+ */
 InfraredController :: ~InfraredController(void)
 {
     return;
-}
-
-Status InfraredController :: RequestInit(void)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = kQueryRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = kSetDisabledRequest.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
 }
 
 Status InfraredController :: DoRequestHandlers(const bool &aRegister)
@@ -119,93 +114,79 @@ Status InfraredController :: DoRequestHandlers(const bool &aRegister)
             InfraredController::SetDisabledRequestReceivedHandler
         }
     };
-    static const size_t               lRequestHandlerCount = sizeof (lRequestHandlers) / sizeof (lRequestHandlers[0]);
-    Status                            lRetval = kStatus_Success;
+    static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
+    Status                   lRetval = kStatus_Success;
 
-    lRetval = ControllerBasis::DoRequestHandlers(&lRequestHandlers[0], &lRequestHandlers[lRequestHandlerCount], aRegister);
+    lRetval = Server::ObjectControllerBasis::DoRequestHandlers(&lRequestHandlers[0],
+                                                               &lRequestHandlers[lRequestHandlerCount],
+                                                               this,
+                                                               aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
 }
 
-Status InfraredController :: Init(CommandManager &aCommandManager, const Timeout &aTimeout)
+// MARK: Initializer(s)
+
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the class with the specified command manager and
+ *  timeout.
+ *
+ *  @param[in]  aCommandManager  A reference to the command manager
+ *                               instance to initialize the controller
+ *                               with.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -EINVAL                      If an internal parameter was
+ *                                        invalid.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_NotInitialized        The base class was not properly
+ *                                        initialized.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+InfraredController :: Init(Server::CommandManager &aCommandManager)
 {
     DeclareScopedFunctionTracer(lTracer);
-    const bool  lRegister = true;
-    Status      lRetval = kStatus_Success;
+    constexpr bool  kRegister = true;
+    Status          lRetval = kStatus_Success;
 
 
-    lRetval = RequestInit();
+    lRetval = Common::InfraredControllerBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = mInfraredModel.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = ControllerBasis::Init(aCommandManager, aTimeout);
+    lRetval = Server::InfraredControllerBasis::Init(aCommandManager);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     // This MUST come AFTER the base class initialization due to a
     // dependency on the command manager instance.
 
-    lRetval = DoRequestHandlers(lRegister);
+    lRetval = DoRequestHandlers(kRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
- done:
+done:
     return (lRetval);
-}
-
-void InfraredController :: QueryHandler(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
-{
-    InfraredModel::DisabledType              lDisabled;
-    Status                                   lStatus;
-
-
-    lStatus = mInfraredModel.GetDisabled(lDisabled);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lStatus = HandleDisabledResponse(lDisabled, aBuffer);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
- done:
-    return;
-}
-
-Status InfraredController :: HandleDisabledResponse(const InfraredModel::DisabledType &aDisabled, ConnectionBuffer::MutableCountedPointer &aBuffer)
-{
-    Command::Infrared::DisabledResponse      lDisabledResponse;
-    const uint8_t *                          lBuffer;
-    size_t                                   lSize;
-    Status                                   lStatus;
-
-
-    lStatus = lDisabledResponse.Init(aDisabled);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    lBuffer = lDisabledResponse.GetBuffer();
-    lSize = lDisabledResponse.GetSize();
-
-    lStatus = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
- done:
-    return (lStatus);
 }
 
 // MARK: Configuration Management Methods
 
-void InfraredController :: QueryCurrentConfiguration(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+void InfraredController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     (void)aConnection;
 
-    QueryHandler(aBuffer);
+    HandleQueryReceived(aBuffer);
 }
 
 void InfraredController :: ResetToDefaultConfiguration(void)
 {
     Status lStatus;
 
-    lStatus = mInfraredModel.SetDisabled(kInfraredModelDefaults.mDisabled);
+    lStatus = GetModel().SetDisabled(kInfraredModelDefaults.mDisabled);
     nlCHECK_SUCCESS(lStatus);
 
     if (lStatus == kStatus_Success)
@@ -236,7 +217,7 @@ Status InfraredController :: LoadFromBackupConfiguration(CFDictionaryRef aBackup
 
     // Attempt to set the disabled configuration.
 
-    lRetval = mInfraredModel.SetDisabled(lDisabled);
+    lRetval = GetModel().SetDisabled(lDisabled);
     nlCHECK_SUCCESS(lRetval);
 
     if (lRetval == kStatus_Success)
@@ -256,7 +237,7 @@ void InfraredController :: SaveToBackupConfiguration(CFMutableDictionaryRef aBac
 
     // Attempt to get the disabled value from the model.
 
-    lStatus = mInfraredModel.GetDisabled(lDisabled);
+    lStatus = GetModel().GetDisabled(lDisabled);
     nlREQUIRE_SUCCESS(lStatus, done);
 
     // Create a mutable dictionary to store the disabled value from
@@ -282,9 +263,9 @@ void InfraredController :: SaveToBackupConfiguration(CFMutableDictionaryRef aBac
     return;
 }
 
-// MARK: Command Completion Handlers
+// MARK: Command Request Completion Handlers
 
-void InfraredController :: QueryRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void InfraredController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
@@ -293,7 +274,7 @@ void InfraredController :: QueryRequestReceivedHandler(ConnectionBasis &aConnect
     (void)aBuffer;
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Infrared::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Infrared::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     lResponseBuffer.reset(new ConnectionBuffer);
     nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
@@ -301,7 +282,7 @@ void InfraredController :: QueryRequestReceivedHandler(ConnectionBasis &aConnect
     lStatus = lResponseBuffer->Init();
     nlREQUIRE_SUCCESS(lStatus, done);
 
-    QueryHandler(lResponseBuffer);
+    HandleQueryReceived(lResponseBuffer);
 
  done:
     if (lStatus >= kStatus_Success)
@@ -318,17 +299,17 @@ void InfraredController :: QueryRequestReceivedHandler(ConnectionBasis &aConnect
     return;
 }
 
-void InfraredController :: SetDisabledRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+void InfraredController :: SetDisabledRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    InfraredModel::DisabledType              lDisabled;
-    Command::Infrared::DisabledResponse      lResponse;
-    ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
-    Status                                   lStatus;
+    InfraredModel::DisabledType                  lDisabled;
+    Server::Command::Infrared::DisabledResponse  lResponse;
+    ConnectionBuffer::MutableCountedPointer      lResponseBuffer;
+    Status                                       lStatus;
 
 
     (void)aSize;
 
-    nlREQUIRE_ACTION(aMatches.size() == Command::Infrared::SetDisabledRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Infrared::SetDisabledRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
     // Match 2/2: Disabled
 
@@ -343,7 +324,7 @@ void InfraredController :: SetDisabledRequestReceivedHandler(ConnectionBasis &aC
     lStatus = lResponseBuffer->Init();
     nlREQUIRE_SUCCESS(lStatus, done);
 
-    lStatus = mInfraredModel.SetDisabled(lDisabled);
+    lStatus = GetModel().SetDisabled(lDisabled);
     nlREQUIRE(lStatus >= kStatus_Success, done);
 
     if (lStatus == kStatus_Success)
@@ -371,7 +352,7 @@ void InfraredController :: SetDisabledRequestReceivedHandler(ConnectionBasis &aC
 
 // MARK: Command Request Handler Trampolines
 
-void InfraredController :: QueryRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void InfraredController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     InfraredController *lController = static_cast<InfraredController *>(aContext);
 
@@ -381,7 +362,7 @@ void InfraredController :: QueryRequestReceivedHandler(ConnectionBasis &aConnect
     }
 }
 
-void InfraredController :: SetDisabledRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void InfraredController :: SetDisabledRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     InfraredController *lController = static_cast<InfraredController *>(aContext);
 
@@ -391,6 +372,6 @@ void InfraredController :: SetDisabledRequestReceivedHandler(ConnectionBasis &aC
     }
 }
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX

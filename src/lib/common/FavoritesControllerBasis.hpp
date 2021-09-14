@@ -23,10 +23,12 @@
  *
  */
 
-#ifndef HLXCOMMONDFAVORITESCONTROLLERBASIS_HPP
-#define HLXCOMMONDFAVORITESCONTROLLERBASIS_HPP
+#ifndef OPENHLXCOMMONDFAVORITESCONTROLLERBASIS_HPP
+#define OPENHLXCOMMONDFAVORITESCONTROLLERBASIS_HPP
 
 #include <OpenHLX/Model/FavoriteModel.hpp>
+#include <OpenHLX/Model/FavoritesModel.hpp>
+
 
 namespace HLX
 {
@@ -52,15 +54,30 @@ public:
     typedef Model::FavoriteModel::IdentifierType IdentifierType;
 
 public:
-    FavoritesControllerBasis(void) = default;
+    virtual ~FavoritesControllerBasis(void) = default;
 
     // Observer Methods
+
+    static Common::Status GetFavoritesMax(IdentifierType &aFavorites);
+    static IdentifierType GetFavoritesMax(void);
 
     static bool           IsValidIdentifier(const IdentifierType &aFavoriteIdentifier);
     static Common::Status ValidateIdentifier(const IdentifierType &aFavoriteIdentifier);
 
 protected:
-    virtual ~FavoritesControllerBasis(void) = default;
+    FavoritesControllerBasis(void) = default;
+
+    // Initializer(s)
+
+    Common::Status Init(void);
+
+protected:
+    /**
+     *  The favorites collection model for all client and server
+     *  controllers.
+     *
+     */
+    Model::FavoritesModel        mFavorites;
 
 protected:
     static const IdentifierType  kFavoritesMax;
@@ -70,4 +87,4 @@ protected:
 
 }; // namespace HLX
 
-#endif // HLXCOMMONDFAVORITESCONTROLLERBASIS_HPP
+#endif // OPENHLXCOMMONDFAVORITESCONTROLLERBASIS_HPP

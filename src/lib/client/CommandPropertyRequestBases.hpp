@@ -23,16 +23,16 @@
  *
  */
 
-#ifndef HLXCLIENTCOMMANDPROPERTYREQUESTBASIS_HPP
-#define HLXCLIENTCOMMANDPROPERTYREQUESTBASIS_HPP
+#ifndef OPENHLXCLIENTCOMMANDPROPERTYREQUESTBASIS_HPP
+#define OPENHLXCLIENTCOMMANDPROPERTYREQUESTBASIS_HPP
 
 #include <stddef.h>
 
+#include <OpenHLX/Client/CommandRequestBasis.hpp>
+#include <OpenHLX/Common/CommandPropertyBufferBases.hpp>
 #include <OpenHLX/Common/Errors.hpp>
-
-#include <CommandPropertyBufferBases.hpp>
-#include <CommandRequestBasis.hpp>
 #include <OpenHLX/Model/IdentifierModel.hpp>
+
 
 namespace HLX
 {
@@ -108,4 +108,4 @@ private:
 
 }; // namespace HLX
 
-#endif // HLXCLIENTCOMMANDPROPERTYREQUESTBASIS_HPP
+#endif // OPENHLXCLIENTCOMMANDPROPERTYREQUESTBASIS_HPP

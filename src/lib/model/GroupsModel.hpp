@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXMMODELGROUPSMODEL_HPP
-#define HLXMMODELGROUPSMODEL_HPP
+#ifndef OPENHLXMMODELGROUPSMODEL_HPP
+#define OPENHLXMMODELGROUPSMODEL_HPP
 
 #include <map>
 
@@ -62,7 +62,7 @@ public:
     GroupsModel(const GroupsModel &aGroupsModel);
     virtual ~GroupsModel(void) = default;
 
-    Common::Status Init(const size_t &aGroupsMax);
+    Common::Status Init(const IdentifierType &aGroupsMax);
     Common::Status Init(const GroupsModel &aGroupsModel);
 
     GroupsModel &operator =(const GroupsModel &aGroupsModel);
@@ -81,12 +81,12 @@ private:
 private:
     typedef std::map<IdentifierType, GroupModel> Groups;
 
-    size_t  mGroupsMax;
-    Groups  mGroups;
+    IdentifierType  mGroupsMax;
+    Groups          mGroups;
 };
 
 }; // namespace Model
 
 }; // namespace HLX
 
-#endif // HLXMMODELGROUPSMODEL_HPP
+#endif // OPENHLXMMODELGROUPSMODEL_HPP

@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef HLXCOMMONERRORS_HPP
-#define HLXCOMMONERRORS_HPP
+#ifndef OPENHLXCOMMONERRORS_HPP
+#define OPENHLXCOMMONERRORS_HPP
 
 #include <stdint.h>
 
@@ -62,25 +62,78 @@ typedef int32_t Status;
  */
 typedef Status  Error;
 
+/**
+ *  Negative error (failure) and positive success status codes
+ *  returned or set by package interfaces and functions.
+ *
+ */
 enum
 {
-	// Negative, error status
-	//
-	// Values -1 through -255 are reserved for POSIX error status
-	// (such as -EINVAL).
+    // Negative, error status
+    //
+    // Values -1 through -255 are reserved for POSIX error status
+    // (such as -EINVAL).
 
+    /**
+     *  The class, object, variable, or data member is has not been
+     *  initialized.
+     */
     kError_NotInitialized       = -(1 << 8),
+
+    /**
+     *  Initialization of the class, object, variable, or data member
+     *  failed.
+     */
     kError_InitializationFailed = -(2 << 8),
+
+    /**
+     *  An operation to reallocate or grow a storage buffer was
+     *  attempted on a buffer not owned by the class or object.
+     */
     kError_BufferNotOwned       = -(3 << 8),
+
+    /**
+     *  An unsupported, invalid, corrupt, or malformed command was
+     *  encountered.
+     */
     kError_BadCommand           = -(4 << 8),
+
+    /**
+     *  An invalid, corrupt, or malformed confirguation was
+     *  encountered.
+     */
     kError_InvalidConfiguration = -(5 << 8),
+
+    /**
+     *  A missing configuration entry was encountered.
+     */
     kError_MissingConfiguration = -(6 << 8),
+
+    /**
+     *  An error occurred during host name-to-address resolution.
+     */
     kError_HostNameResolution   = -(7 << 8),
 
-	// Positive, non-error status
+    /**
+     *  The peer server disconnected.
+     */
+    kError_ServerDisconnected   = -(8 << 8),
 
+    /**
+     *  An unknown error occurred.
+     */
+    kError_Unknown              = -(255 << 8),
+
+    // Positive, non-error status
+
+    /**
+     *  The request or operatin completed successfully.
+     */
     kStatus_Success             = 0,
 
+    /**
+     *  The requested value has already been set.
+     */
     kStatus_ValueAlreadySet     = 1
 };
 
@@ -88,4 +141,4 @@ enum
 
 }; // namespace HLX
 
-#endif // HLXCOMMONERRORS_HPP
+#endif // OPENHLXCOMMONERRORS_HPP

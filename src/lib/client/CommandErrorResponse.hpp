@@ -23,12 +23,12 @@
  *
  */
 
-#ifndef HLXCLIENTCOMMANDERRORRESPONSE_HPP
-#define HLXCLIENTCOMMANDERRORRESPONSE_HPP
+#ifndef OPENHLXCLIENTCOMMANDERRORRESPONSE_HPP
+#define OPENHLXCLIENTCOMMANDERRORRESPONSE_HPP
 
 #include <stddef.h>
 
-#include <CommandResponseBasis.hpp>
+#include <OpenHLX/Client/CommandResponseBasis.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 
 namespace HLX
@@ -72,4 +72,4 @@ private:
 
 }; // namespace HLX
 
-#endif // HLXCLIENTCOMMANDERRORRESPONSE_HPP
+#endif // OPENHLXCLIENTCOMMANDERRORRESPONSE_HPP

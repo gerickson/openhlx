@@ -23,10 +23,12 @@
  *
  */
 
-#ifndef HLXCOMMONZONESCONTROLLERBASIS_HPP
-#define HLXCOMMONZONESCONTROLLERBASIS_HPP
+#ifndef OPENHLXCOMMONZONESCONTROLLERBASIS_HPP
+#define OPENHLXCOMMONZONESCONTROLLERBASIS_HPP
 
 #include <OpenHLX/Model/ZoneModel.hpp>
+#include <OpenHLX/Model/ZonesModel.hpp>
+
 
 namespace HLX
 {
@@ -56,11 +58,26 @@ public:
 
     // Observer Methods
 
+    static Common::Status GetZonesMax(IdentifierType &aZones);
+    static IdentifierType GetZonesMax(void);
+
     static bool           IsValidIdentifier(const IdentifierType &aZoneIdentifier);
     static Common::Status ValidateIdentifier(const IdentifierType &aZoneIdentifier);
 
 protected:
     ZonesControllerBasis(void) = default;
+
+    // Initializer(s)
+
+    Common::Status Init(void);
+
+protected:
+    /**
+     *  The zones collection model for all client and server
+     *  controllers.
+     *
+     */
+    Model::ZonesModel            mZones;
 
 protected:
     static const IdentifierType  kZonesMax;
@@ -70,4 +87,4 @@ protected:
 
 }; // namespace HLX
 
-#endif // HLXCOMMONZONESCONTROLLERBASIS_HPP
+#endif // OPENHLXCOMMONZONESCONTROLLERBASIS_HPP

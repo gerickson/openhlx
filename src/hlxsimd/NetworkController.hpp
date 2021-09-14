@@ -23,17 +23,21 @@
  *
  */
 
-#ifndef HLXSERVERNETWORKCONTROLLER_HPP
-#define HLXSERVERNETWORKCONTROLLER_HPP
+#ifndef OPENHLXSIMULATORNETWORKCONTROLLER_HPP
+#define OPENHLXSIMULATORNETWORKCONTROLLER_HPP
 
-#include <ControllerBasis.hpp>
-#include <NetworkControllerCommands.hpp>
-#include <OpenHLX/Model/NetworkModel.hpp>
+#include <OpenHLX/Common/NetworkControllerBasis.hpp>
+#include <OpenHLX/Server/NetworkControllerBasis.hpp>
+#include <OpenHLX/Server/NetworkControllerCommands.hpp>
+
+#include "ContainerControllerBasis.hpp"
+#include "ObjectControllerBasis.hpp"
+
 
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
 
 /**
@@ -46,42 +50,38 @@ namespace Server
  *
  */
 class NetworkController :
-    public ControllerBasis
+    public Common::NetworkControllerBasis,
+    public Server::NetworkControllerBasis,
+    public Simulator::ObjectControllerBasis
 {
 public:
     NetworkController(void);
-    ~NetworkController(void);
+    virtual ~NetworkController(void);
 
-    Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
+    // Initializer(s)
+
+    Common::Status Init(Server::CommandManager &aCommandManager) final;
 
     // Configuration Management Methods
 
-    void QueryCurrentConfiguration(ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const final;
+    void QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const final;
     void ResetToDefaultConfiguration(void) final;
 
     // Command Request Handler Trampolines
 
-    static void QueryRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
-    Common::Status RequestInit(void);
     Common::Status DoRequestHandlers(const bool &aRegister);
-
-    static void QueryHandler(const char *aInputBuffer, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer);
 
     // Command Completion Handlers
 
-    void QueryRequestReceivedHandler(ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 
-private:
-    Model::NetworkModel                   mNetworkModel;
-
-private:
-    static Command::Network::QueryRequest  kQueryRequest;
 };
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX
 
-#endif // HLXSERVERNETWORKCONTROLLER_HPP
+#endif // OPENHLXSIMULATORNETWORKCONTROLLER_HPP

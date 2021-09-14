@@ -24,8 +24,8 @@
  *
  */
 
-#ifndef HLXCOMMONOUTPUTSTRINGSTREAM_HPP
-#define HLXCOMMONOUTPUTSTRINGSTREAM_HPP
+#ifndef OPENHLXCOMMONOUTPUTSTRINGSTREAM_HPP
+#define OPENHLXCOMMONOUTPUTSTRINGSTREAM_HPP
 
 #include <iomanip>
 #include <ios>
@@ -101,4 +101,4 @@ OutputStringStream & OutputStringStream::operator << (Model::IdentifierModel::Id
 
 }; // namespace HLX
 
-#endif // HLXCOMMONOUTPUTSTRINGSTREAM_HPP
+#endif // OPENHLXCOMMONOUTPUTSTRINGSTREAM_HPP

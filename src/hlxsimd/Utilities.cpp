@@ -30,7 +30,7 @@
 namespace HLX
 {
 
-namespace Server
+namespace Simulator
 {
 
 namespace Utilities
@@ -58,6 +58,6 @@ CreateCFString(const uint8_t &aValue)
 
 }; // namespace Utilities
 
-}; // namespace Server
+}; // namespace Simulator
 
 }; // namespace HLX

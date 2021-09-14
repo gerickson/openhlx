@@ -24,13 +24,13 @@
  *
  */
 
-#ifndef HLXCLIENTEQUALIZERPRESETSCONTROLLER_HPP
-#define HLXCLIENTEQUALIZERPRESETSCONTROLLER_HPP
+#ifndef OPENHLXCLIENTEQUALIZERPRESETSCONTROLLER_HPP
+#define OPENHLXCLIENTEQUALIZERPRESETSCONTROLLER_HPP
 
 #include <stddef.h>
 #include <stdint.h>
 
-#include <OpenHLX/Client/ControllerBasis.hpp>
+#include <OpenHLX/Client/EqualizerPresetsControllerBasis.hpp>
 #include <OpenHLX/Client/EqualizerPresetsControllerCommands.hpp>
 #include <OpenHLX/Common/EqualizerPresetsControllerBasis.hpp>
 #include <OpenHLX/Model/EqualizerPresetModel.hpp>
@@ -53,23 +53,18 @@ namespace Client
  *
  */
 class EqualizerPresetsController :
-    public ControllerBasis,
-    public Common::EqualizerPresetsControllerBasis
+    public Common::EqualizerPresetsControllerBasis,
+    public Client::EqualizerPresetsControllerBasis
 {
 public:
     EqualizerPresetsController(void);
     virtual ~EqualizerPresetsController(void);
 
+    // Initializer(s)
+
     Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
 
-    Common::Status Refresh(const Common::Timeout &aTimeout) final;
-
     // Observer Methods
-
-    Common::Status Query(void);
-    Common::Status Query(const IdentifierType &aEqualizerPresetIdentifier);
-
-    Common::Status GetEqualizerPresetsMax(size_t &aEqualizerPresets) const;
 
     Common::Status GetEqualizerPreset(const IdentifierType &aIdentifier, const Model::EqualizerPresetModel *&aModel) const;
 
@@ -83,47 +78,10 @@ public:
 
     Common::Status SetName(const IdentifierType &aEqualizerPresetIdentifier, const char *aName);
 
-    // Command Completion Handler Trampolines
-
-    static void QueryCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SetEqualizerBandCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void SetNameCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches, void *aContext);
-
-    static void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError, void *aContext);
-
-    // Notification Handler Trampolines
-
-    static void EqualizerBandNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-    static void NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
-
-private:
-    Common::Status ResponseInit(void);
-    Common::Status DoNotificationHandlers(bool aRegister);
-
-    // Command Completion Handlers
-
-    void QueryCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void SetEqualizerBandCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void SetNameCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::RegularExpression::Matches &aMatches);
-    void CommandErrorHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange, const Common::Error &aError);
-
-    // Notification Handlers
-
-    void EqualizerBandNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-    void NameNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-
-private:
-    size_t                                                   mEqualizerPresetsDidRefreshCount;
-    Model::EqualizerPresetsModel                             mEqualizerPresets;
-
-private:
-    static Command::EqualizerPresets::EqualizerBandResponse  kEqualizerBandResponse;
-    static Command::EqualizerPresets::NameResponse           kNameResponse;
-    static Command::EqualizerPresets::QueryResponse          kQueryResponse;
 };
 
 }; // namespace Client
 
 }; // namespace HLX
 
-#endif // HLXCLIENTEQUALIZERPRESETSCONTROLLER_HPP
+#endif // OPENHLXCLIENTEQUALIZERPRESETSCONTROLLER_HPP
