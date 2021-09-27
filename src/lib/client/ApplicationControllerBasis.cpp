@@ -140,7 +140,12 @@ ControllerBasis :: DerivedGroupState :: UpdateVolume(const VolumeModel::LevelTyp
 
 /**
  *  @brief
- *    This is the class default constructor.
+ *    This is a class constructor.
+ *
+ *  @param[in]  aGroupsControllerBasis  A reference to the client groups
+ *                                      object controller basis.
+ *  @param[in]  aZonesControllerBasis   A reference to the client zones
+ *                                      object controller basis.
  *
  */
 ControllerBasis :: ControllerBasis(GroupsControllerBasis &aGroupsControllerBasis,
