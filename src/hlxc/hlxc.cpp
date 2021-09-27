@@ -492,7 +492,7 @@ private:
 
     // State Change
 
-    void ControllerStateDidChange(Client::Application::Controller &aController, const StateChange::NotificationBasis &aStateChangeNotification) final;
+    void ControllerStateDidChange(Client::Application::ControllerBasis &aController, const StateChange::NotificationBasis &aStateChangeNotification) final;
 
     // Error
 
@@ -813,7 +813,7 @@ void HLXClient :: ControllerDidNotRefresh(Client::Application::ControllerBasis &
 
 // State Change
 
-void HLXClient :: ControllerStateDidChange(Client::Application::Controller &aController, const StateChange::NotificationBasis &aStateChangeNotification)
+void HLXClient :: ControllerStateDidChange(Client::Application::ControllerBasis &aController, const StateChange::NotificationBasis &aStateChangeNotification)
 {
     const StateChange::Type lType = aStateChangeNotification.GetType();
 

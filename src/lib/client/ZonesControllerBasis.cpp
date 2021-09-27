@@ -611,6 +611,37 @@ done:
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Get the zone model associated with specified zone
+ *    identifier.
+ *
+ *  @param[in]   aIdentifier  An immutable reference to the zone
+ *                            model to obtain.
+ *  @param[out]  aModel       A reference to an immutable pointer
+ *                            by which to return the zone model.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *  @retval  -ERANGE          If the zone identifier is smaller
+ *                            or larger than supported.
+ *
+ */
+Status
+ZonesControllerBasis :: GetZone(const ZoneModel::IdentifierType &aIdentifier, const ZoneModel *&aModel) const
+{
+    Status  lRetval = kStatus_Success;
+
+
+    lRetval = Common::ZonesControllerBasis::ValidateIdentifier(aIdentifier);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = mZonesModel.GetZone(aIdentifier, aModel);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
 // MARK: Command Completion Handlers
 
 /**

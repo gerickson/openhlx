@@ -83,7 +83,6 @@ class Controller :
     public Client::CommandManagerDelegate,
     public Server::CommandManagerDelegate,
     public Client::ObjectControllerBasisErrorDelegate,
-    public Client::ObjectControllerBasisStateChangeDelegate,
     public ConfigurationControllerDelegate
 {
 public:
@@ -152,8 +151,6 @@ public:
 
     // Server-facing Client Object Controller Basis State Change Delegate Method
 
-    void ControllerStateDidChange(Client::ObjectControllerBasis &aController, const Client::StateChange::NotificationBasis &aStateChangeNotification) final;
-
     // Client-facing Server Controller Basis Delegate Methods
 
     // Client-facing Server Configuration Controller Delegate Methods
@@ -167,8 +164,6 @@ private:
     Common::Status InitClientControllers(const Common::RunLoopParameters &aRunLoopParameters);
     Common::Status InitServerControllers(const Common::RunLoopParameters &aRunLoopParameters);
     Common::Status InitProxyControllers(const Common::RunLoopParameters &aRunLoopParameters);
-
-    void DeriveGroupState(void) final { return; }
 
 private:
     typedef Common::Application::ObjectControllerContainerTemplate<Proxy::ObjectControllerBasis> ProxyObjectControllerContainer;

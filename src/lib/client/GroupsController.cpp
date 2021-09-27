@@ -159,37 +159,6 @@ done:
 
 /**
  *  @brief
- *    Get the group model associated with specified group
- *    identifier.
- *
- *  @param[in]   aIdentifier  An immutable reference to the group
- *                            model to obtain.
- *  @param[out]  aModel       A reference to an immutable pointer
- *                            by which to return the group model.
- *
- *  @retval  kStatus_Success  If successful.
- *  @retval  -ERANGE          If the group identifier is smaller
- *                            or larger than supported.
- *
- */
-Status
-GroupsController :: GetGroup(const IdentifierType &aIdentifier, const GroupModel *&aModel) const
-{
-    Status  lRetval = kStatus_Success;
-
-
-    lRetval = ValidateIdentifier(aIdentifier);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = mGroups.GetGroup(aIdentifier, aModel);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-/**
- *  @brief
  *    Get the group identifier with the specified name.
  *
  *  This attempts to lookup the group identifier for the group
