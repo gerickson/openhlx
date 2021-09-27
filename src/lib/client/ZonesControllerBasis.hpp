@@ -42,6 +42,7 @@ namespace Application
 {
 
     class Controller;
+    class ControllerBasis;
 
 }; // namespace Application
 
@@ -92,6 +93,8 @@ protected:
 
     Common::Status Query(void);
     Common::Status Query(const Model::ZoneModel::IdentifierType &aZoneIdentifier);
+
+    Common::Status GetZone(const Model::ZoneModel::IdentifierType &aIdentifier, const Model::ZoneModel *&aModel) const;
 
     // Command Completion Handler Trampolines
 
@@ -179,11 +182,13 @@ private:
     Common::Status ResponseInit(void);
 
 private:
-    //!< Ensure the application controller can access the Handle*Change
-    //!< methods for cross zone-to-group and group-to-zone state
-    //!< synthesis.
-
+    /** 
+     *  Ensure the application controller and controller basis can
+     *  access the Handle*Change methods for cross zone-to-group and
+     *  group-to-zone state synthesis.
+     */
     friend class Application::Controller;
+    friend class Application::ControllerBasis;
 
     void HandleMuteChange(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const Model::VolumeModel::MuteType &aMute);
     void HandleSourceChange(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const Model::SourceModel::IdentifierType &aSourceIdentifier);
