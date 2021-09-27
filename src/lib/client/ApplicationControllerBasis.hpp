@@ -31,11 +31,15 @@
 
 #include <OpenHLX/Client/CommandManager.hpp>
 #include <OpenHLX/Client/ConnectionManager.hpp>
+#include <OpenHLX/Client/GroupsStateChangeNotifications.hpp>
 #include <OpenHLX/Client/ObjectControllerBasis.hpp>
 #include <OpenHLX/Client/ObjectControllerBasisRefreshDelegate.hpp>
+#include <OpenHLX/Client/ObjectControllerBasisStateChangeDelegate.hpp>
 #include <OpenHLX/Common/ApplicationObjectControllerContainerTemplate.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/RunLoopParameters.hpp>
+#include <OpenHLX/Model/GroupModel.hpp>
+#include <OpenHLX/Model/ZoneModel.hpp>
 
 
 namespace HLX
@@ -45,12 +49,15 @@ namespace Client
 {
 
 class Controller;
+class GroupsControllerBasis;
+class ZonesControllerBasis;
 
 namespace Application
 {
 
 class Controller;
 class ControllerRefreshDelegate;
+class ControllerStateChangeDelegate;
 
 /**
  *  @brief
@@ -63,7 +70,8 @@ class ControllerRefreshDelegate;
  */
 class ControllerBasis :
     public Common::Application::ObjectControllerContainerTemplate<Client::ObjectControllerBasis>,
-    public ObjectControllerBasisRefreshDelegate
+    public ObjectControllerBasisRefreshDelegate,
+    public ObjectControllerBasisStateChangeDelegate
 {
 public:
     virtual ~ControllerBasis(void);
@@ -80,8 +88,10 @@ public:
     Client::ConnectionManager &        GetConnectionManager(void);
 
     Client::Application::ControllerRefreshDelegate *GetRefreshDelegate(void) const;
+    Client::Application::ControllerStateChangeDelegate *GetStateChangeDelegate(void) const;
 
     Common::Status SetRefreshDelegate(Client::Application::ControllerRefreshDelegate *aRefreshDelegate);
+    Common::Status SetStateChangeDelegate(Client::Application::ControllerStateChangeDelegate *aStateChangeDelegate);
 
     // Connection Management
 
@@ -98,10 +108,16 @@ public:
 
     Common::Status Refresh(void);
 
-    // Controller Delegate Methods
+    // Object Controller Delegate Methods
+
+    // Object Controller Refresh Delegate Methods
 
     void ControllerIsRefreshing(Client::ObjectControllerBasis &aController, const uint8_t &aPercentComplete) final;
     void ControllerDidRefresh(Client::ObjectControllerBasis &aController) final;
+
+    // Object Controller State Change Delegate Method
+
+    void ControllerStateDidChange(Client::ObjectControllerBasis &aController, const StateChange::NotificationBasis &aStateChangeNotification) final;
 
 protected:
     /**
@@ -112,18 +128,58 @@ protected:
     typedef Common::Application::ObjectControllerContainerTemplate<Client::ObjectControllerBasis> ClientObjectControllerContainer;
 
 protected:
-    ControllerBasis(void);
+    ControllerBasis(GroupsControllerBasis &aGroupsControllerBasis,
+                    ZonesControllerBasis &aZonesControllerBasis);
 
     bool IsRefreshing(void) const;
 
 private:
-    virtual void DeriveGroupState(void) = 0;
+    // Group State Derivation Methods
+
+    void DeriveGroupState(void);
+    void DeriveGroupStateForGroupsIncludingZone(const Model::ZoneModel::IdentifierType &aZoneIdentifier);
+    void DeriveGroupStateForGroupIncludingZone(const Model::GroupModel::IdentifierType &aGroupIdentifier,
+                                               const Model::GroupModel &aGroupModel,
+                                               const Model::ZoneModel::IdentifierType &aZoneIdentifier);
+    void DeriveGroupStateForGroup(const Model::GroupModel::IdentifierType &aGroupIdentifier,
+                                  const Model::GroupModel &aGroupModel);
+
+    void MaybeHandleGroupZoneStateChangeInteractions(Client::ObjectControllerBasis &aController, const StateChange::NotificationBasis &aStateChangeNotification);
+    void HandleGroupZoneStateChangeInteractions(const StateChange::GroupsNotificationBasis &aGroupStateChangeNotification, const StateChange::Type &aType);
+
+    struct DerivedGroupState
+    {
+    public:
+        DerivedGroupState(void);
+        ~DerivedGroupState(void);
+
+        Common::Status Init(void);
+
+        const Model::GroupModel::Sources &GetSources(void) const;
+        Model::VolumeModel::LevelType GetVolume(void) const;
+
+        Common::Status AddSource(const Model::SourceModel::IdentifierType &aSourceIdentifier);
+        void UpdateVolume(const Model::VolumeModel::LevelType &aVolume);
+
+        size_t                                mZoneCount;
+        Model::VolumeModel::MuteType          mGroupMute;
+        mutable Model::VolumeModel::LevelType mGroupVolume;
+        int16_t                               mGroupVolumeAccumulator;
+        Model::GroupModel::Sources            mGroupSources;
+    };
+
+    void HandleGroupZoneStateChangeInteractions(const StateChange::GroupsNotificationBasis &aGroupStateChangeNotification, const StateChange::Type &aType, const Model::GroupModel &aGroupModel, DerivedGroupState &aDerivedGroupState);
+    void HandleGroupZoneStateChangeInteractions(const StateChange::GroupsNotificationBasis &aGroupStateChangeNotification, const StateChange::Type &aType, DerivedGroupState &aDerivedGroupState, const Model::ZoneModel::IdentifierType &aZoneIdentifier);
 
 private:
-    Client::ConnectionManager                         mConnectionManager;
-    Client::CommandManager                            mCommandManager;
-    size_t                                            mControllersDidRefreshCount;
-    Client::Application::ControllerRefreshDelegate *  mRefreshDelegate;
+    Client::ConnectionManager                             mConnectionManager;
+    Client::CommandManager                                mCommandManager;
+    size_t                                                mControllersDidRefreshCount;
+    Client::Application::ControllerRefreshDelegate *      mRefreshDelegate;
+    Client::Application::ControllerStateChangeDelegate *  mStateChangeDelegate;
+    GroupsControllerBasis &                               mGroupsControllerBasis;
+    ZonesControllerBasis &                                mZonesControllerBasis;
+    bool                                                  mIsDerivingGroupState;
 };
 
 }; // namespace Application

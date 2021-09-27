@@ -39,7 +39,6 @@
 #include <OpenHLX/Client/FavoritesController.hpp>
 #include <OpenHLX/Client/FrontPanelController.hpp>
 #include <OpenHLX/Client/GroupsController.hpp>
-#include <OpenHLX/Client/GroupsStateChangeNotifications.hpp>
 #include <OpenHLX/Client/ApplicationControllerBasis.hpp>
 #include <OpenHLX/Client/ApplicationControllerDelegate.hpp>
 #include <OpenHLX/Client/InfraredController.hpp>
@@ -84,8 +83,7 @@ class Controller :
     public Client::Application::ControllerBasis,
     public ConnectionManagerDelegate,
     public CommandManagerDelegate,
-    public ObjectControllerBasisErrorDelegate,
-    public ObjectControllerBasisStateChangeDelegate
+    public ObjectControllerBasisErrorDelegate
 {
 public:
     Controller(void);
@@ -222,43 +220,6 @@ public:
     // Object Controller Basis Delegate Methods
 
     void ControllerError(Client::ObjectControllerBasis &aController, const Common::Error &aError) final;
-    void ControllerStateDidChange(Client::ObjectControllerBasis &aController, const StateChange::NotificationBasis &aStateChangeNotification) final;
-
-private:
-    void DeriveGroupState(void) final;
-    void DeriveGroupStateForGroupsIncludingZone(const Model::ZoneModel::IdentifierType &aZoneIdentifier);
-    void DeriveGroupStateForGroupIncludingZone(const Model::GroupModel::IdentifierType &aGroupIdentifier,
-                                               const Model::GroupModel &aGroupModel,
-                                               const Model::ZoneModel::IdentifierType &aZoneIdentifier);
-    void DeriveGroupStateForGroup(const Model::GroupModel::IdentifierType &aGroupIdentifier,
-                                  const Model::GroupModel &aGroupModel);
-
-    void MaybeHandleGroupZoneStateChangeInteractions(Client::ObjectControllerBasis &aController, const StateChange::NotificationBasis &aStateChangeNotification);
-    void HandleGroupZoneStateChangeInteractions(const StateChange::GroupsNotificationBasis &aGroupStateChangeNotification, const StateChange::Type &aType);
-
-    struct DerivedGroupState
-    {
-    public:
-        DerivedGroupState(void);
-        ~DerivedGroupState(void);
-
-        Common::Status Init(void);
-
-        const Model::GroupModel::Sources &GetSources(void) const;
-        Model::VolumeModel::LevelType GetVolume(void) const;
-
-        Common::Status AddSource(const Model::SourceModel::IdentifierType &aSourceIdentifier);
-        void UpdateVolume(const Model::VolumeModel::LevelType &aVolume);
-
-        size_t                                mZoneCount;
-        Model::VolumeModel::MuteType          mGroupMute;
-        mutable Model::VolumeModel::LevelType mGroupVolume;
-        int16_t                               mGroupVolumeAccumulator;
-        Model::GroupModel::Sources            mGroupSources;
-    };
-
-    void HandleGroupZoneStateChangeInteractions(const StateChange::GroupsNotificationBasis &aGroupStateChangeNotification, const StateChange::Type &aType, const Model::GroupModel &aGroupModel, DerivedGroupState &aDerivedGroupState);
-    void HandleGroupZoneStateChangeInteractions(const StateChange::GroupsNotificationBasis &aGroupStateChangeNotification, const StateChange::Type &aType, DerivedGroupState &aDerivedGroupState, const Model::ZoneModel::IdentifierType &aZoneIdentifier);
 
 private:
     ConfigurationController         mConfigurationController;
@@ -271,7 +232,6 @@ private:
     SourcesController               mSourcesController;
     ZonesController                 mZonesController;
     ControllerDelegate *            mDelegate;
-    bool                            mIsDerivingGroupState;
 };
 
 }; // namespace Application

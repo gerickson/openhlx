@@ -68,8 +68,6 @@ public:
 
     // Observer Methods
 
-    Common::Status GetGroup(const IdentifierType &aIdentifier, const Model::GroupModel *&aModel) const;
-
     Common::Status LookupIdentifier(const char *aName, IdentifierType &aGroupIdentifier) const;
 
     // Mutator Methods

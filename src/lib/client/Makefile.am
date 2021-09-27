@@ -48,6 +48,7 @@ libopenhlx_client_a_include_HEADERS                         = \
     ApplicationControllerBasis.hpp                            \
     ApplicationControllerDelegate.hpp                         \
     ApplicationControllerRefreshDelegate.hpp                  \
+    ApplicationControllerStateChangeDelegate.hpp              \
     CommandBalanceRequestBases.hpp                            \
     CommandEqualizerBandRequestBases.hpp                      \
     CommandErrorResponse.hpp                                  \
