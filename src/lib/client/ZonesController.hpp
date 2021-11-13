@@ -74,8 +74,6 @@ public:
     Common::Status QuerySource(const Model::ZoneModel::IdentifierType &aZoneIdentifier);
     Common::Status QueryVolume(const Model::ZoneModel::IdentifierType &aZoneIdentifier);
 
-    Common::Status GetZone(const IdentifierType &aIdentifier, const Model::ZoneModel *&aModel) const;
-
     Common::Status LookupIdentifier(const char *aName, IdentifierType &aZoneIdentifier) const;
 
     // Mutator Methods

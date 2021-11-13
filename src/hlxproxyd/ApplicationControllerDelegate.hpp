@@ -29,6 +29,7 @@
 #include <CoreFoundation/CFURL.h>
 
 #include <OpenHLX/Client/ApplicationControllerRefreshDelegate.hpp>
+#include <OpenHLX/Client/ApplicationControllerStateChangeDelegate.hpp>
 #include <OpenHLX/Client/StateChangeNotificationBasis.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/IPAddress.hpp>
@@ -59,7 +60,8 @@ class Controller;
  *
  */
 class ControllerDelegate :
-    public Client::Application::ControllerRefreshDelegate
+    public Client::Application::ControllerRefreshDelegate,
+    public Client::Application::ControllerStateChangeDelegate
 {
 public:
     typedef Common::ConnectionManagerBasis::Roles Roles;
@@ -247,25 +249,6 @@ public:
      *
      */
     virtual void ControllerDidNotDisconnect(Controller &aController, const Roles &aRoles, CFURLRef aURLRef, const Common::Error &aError) = 0;
-
-    // State Change Delegation Method
-
-    /**
-     *  @brief
-     *    Delegation from the proxy controller that the controller
-     *    state has changed in response to a change from the peer
-     *    server controller.
-     *
-     *  @param[in]  aController               A reference to the
-     *                                        proxy controller that
-     *                                        issued the delegation.
-     *  @param[in]  aStateChangeNotification  An immutable reference
-     *                                        to a notification
-     *                                        describing the state
-     *                                        change.
-     *
-     */
-    virtual void ControllerStateDidChange(Controller &aController, const Client::StateChange::NotificationBasis &aStateChangeNotification) = 0;
 
     // Error Delegation Method
 

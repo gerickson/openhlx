@@ -261,7 +261,7 @@ private:
 
     // Server-facing Client State Change
 
-    void ControllerStateDidChange(Proxy::Application::Controller &aController, const StateChange::NotificationBasis &aStateChangeNotification) final;
+    void ControllerStateDidChange(Client::Application::ControllerBasis &aController, const StateChange::NotificationBasis &aStateChangeNotification) final;
 
     // Error
 
@@ -758,7 +758,7 @@ void HLXProxy :: ControllerDidNotRefresh(Client::Application::ControllerBasis &a
 
 // Server-facing Client State Change
 
-void HLXProxy :: ControllerStateDidChange(Proxy::Application::Controller &aController, const Client::StateChange::NotificationBasis &aStateChangeNotification)
+void HLXProxy :: ControllerStateDidChange(Client::Application::ControllerBasis &aController, const StateChange::NotificationBasis &aStateChangeNotification)
 {
     const StateChange::Type lType = aStateChangeNotification.GetType();
 

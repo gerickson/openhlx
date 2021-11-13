@@ -44,9 +44,17 @@ namespace Proxy
 namespace Application
 {
 
+// MARK: Proxy Controller
+
+/**
+ *  @brief
+ *    This is the class default constructor.
+ *
+ */
 Controller :: Controller(void) :
     Common::Application::ControllerBasis(),
-    Client::Application::ControllerBasis(),
+    Client::Application::ControllerBasis(mGroupsController,
+                                         mZonesController),
     Server::Application::ControllerBasis(),
     Common::Application::ObjectControllerContainerTemplate<Proxy::ObjectControllerBasis>(),
     Client::ConnectionManagerDelegate(),
@@ -54,7 +62,6 @@ Controller :: Controller(void) :
     Client::CommandManagerDelegate(),
     Server::CommandManagerDelegate(),
     Client::ObjectControllerBasisErrorDelegate(),
-    Client::ObjectControllerBasisStateChangeDelegate(),
     ConfigurationControllerDelegate(),
     mConfigurationController(),
     mNetworkController(),
@@ -102,7 +109,6 @@ Controller :: ~Controller(void)
 Status
 Controller :: Init(const RunLoopParameters &aRunLoopParameters)
 {
-    DeclareScopedFunctionTracer(lTracer);
     Status lRetval = kStatus_Success;
 
 
@@ -762,52 +768,6 @@ Controller :: ControllerError(Client::ObjectControllerBasis &aController, const 
 }
 
 // MARK: Server-facing Client Object Controller Basis State Change Delegate Methods
-
-/**
- *  Delegation callback for individual sub-controller state change
- *  notifications.
- *
- *  This is not simply a pass-through of sub-controller state change
- *  delegate to the end client due to the fact that some group
- *  sub-controller state changes need to be fanned out to the zone
- *  sub-controller for the zones that belong to a particular group.
- *
- *  In theory and ideally, Audio Authority would have implemented a
- *  group mute, source, or volume change as follows:
- *
- *    \<Group j Mute or Volume or Source Command Request>
- *    \<Zone i Mute or Volume or Source State Change>
- *    ...
- *    \<Zone n Mute or Volume or Source State Change>
- *    \<Group Mute or Volume or Source Command Response>
- *
- *  However, instead, all that we get in practice is:
- *
- *    \<Group j Mute or Volume or Source Command Request>
- *    \<Group j Mute or Volume or Source Command Response>
- *
- *  Leaving us to extract zone membership for the relevant group from
- *  the group sub-controller and to then intuit and apply the mute,
- *  volume, or source changes to the zone members based on the group
- *  command response.
- *
- *  @param[in]  aController               A reference to the controller
- *                                        that initiated the state change
- *                                        notification.
- *
- *  @param[in]  aStateChangeNotification  A read-only reference to the
- *                                        state change notification.
- *
- */
-void
-Controller :: ControllerStateDidChange(Client::ObjectControllerBasis &aController,
-                                       const Client::StateChange::NotificationBasis &aStateChangeNotification)
-{
-    (void)aController;
-    (void)aStateChangeNotification;
-
-    return;
-}
 
 // MARK: Client-facing Server Configuration Controller Delegate Methods
 
