@@ -65,6 +65,31 @@ jobs:
         mkdir tzcode2021a
         tar --directory tzcode2021a -zxf tzcode2021a.tar.gz
 
+    - name: Checkout libkqueue OpenCFLite Dependency
+      uses: actions/checkout@v2
+      with:
+        repository: mheily/libkqueue
+        ref: master
+        path: libkqueue
+
+    - name: Configure libkqueue OpenCFLite Dependency
+      run: |
+        cd "${GITHUB_WORKSPACE}/libkqueue"
+        cmake -S. -B. -G "Unix Makefiles" \
+          -DCMAKE_INSTALL_PREFIX="/usr" \
+          -DCMAKE_INSTALL_LIBDIR="lib"
+
+    - name: Build libkqueue OpenCFLite Dependency
+      run: |
+        cd "${GITHUB_WORKSPACE}/libkqueue"
+        make -j
+
+    - name: Install libkqueue Dependency
+      run: |
+        cd "${GITHUB_WORKSPACE}/libkqueue"
+        sudo make install
+        sudo ldconfig
+
     - name: Checkout OpenCFLite Dependency
       uses: actions/checkout@v2
       with:
