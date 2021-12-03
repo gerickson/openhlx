@@ -230,11 +230,11 @@ ControllerBasis :: Init(const Common::RunLoopParameters &aRunLoopParameters)
  *
  */
 bool
-ControllerBasis :: SupportsScheme(CFStringRef aScheme) const
+ControllerBasis :: SupportsScheme(CFStringRef aSchemeRef) const
 {
     bool lRetval;
 
-    lRetval = mConnectionManager.SupportsScheme(aScheme);
+    lRetval = mConnectionManager.SupportsScheme(aSchemeRef);
 
     return (lRetval);
 }

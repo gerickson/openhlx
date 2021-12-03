@@ -202,11 +202,11 @@ done:
  *
  */
 bool
-ConnectionManager :: SupportsScheme(CFStringRef aScheme) const
+ConnectionManager :: SupportsScheme(CFStringRef aSchemeRef) const
 {
     bool lRetval = false;
 
-    lRetval = mConnectionFactory.SupportsScheme(aScheme);
+    lRetval = mConnectionFactory.SupportsScheme(aSchemeRef);
 
     return (lRetval);
 }
