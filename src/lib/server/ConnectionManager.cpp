@@ -130,11 +130,11 @@ done:
  *
  */
 bool
-ConnectionManager :: SupportsScheme(CFStringRef aScheme) const
+ConnectionManager :: SupportsScheme(CFStringRef aSchemeRef) const
 {
-    bool lRetval = false;
-
-    lRetval = mListenerFactory.SupportsScheme(aScheme);
+    const bool lListenersSupported   = mListenerFactory.SupportsScheme(aSchemeRef);
+    const bool lConnectionsSupported = mConnectionFactory.SupportsScheme(aSchemeRef);
+    const bool lRetval               = (lListenersSupported && lConnectionsSupported);
 
     return (lRetval);
 }
