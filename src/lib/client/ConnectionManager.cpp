@@ -189,6 +189,30 @@ done:
 
 /**
  *  @brief
+ *    Determine whether the manager supports connections with the
+ *    specified protocol scheme.
+ *
+ *  @param[in]  aSchemeRef  A reference to a CoreFoundation string
+ *                          containing the protocol (for example,
+ *                          "telnet") scheme for which to check
+ *                          support.
+ *
+ *  @returns
+ *     True if the scheme is supported; otherwise, false.
+ *
+ */
+bool
+ConnectionManager :: SupportsScheme(CFStringRef aSchemeRef) const
+{
+    bool lRetval = false;
+
+    lRetval = mConnectionFactory.SupportsScheme(aSchemeRef);
+
+    return (lRetval);
+}
+
+/**
+ *  @brief
  *    Connect to a HLX server peer.
  *
  *  This attempts to asynchronously connect to the HLX server peer at

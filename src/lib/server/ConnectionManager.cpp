@@ -115,6 +115,30 @@ done:
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Determine whether the manager supports connections with the
+ *    specified protocol scheme.
+ *
+ *  @param[in]  aSchemeRef  A reference to a CoreFoundation string
+ *                          containing the protocol (for example,
+ *                          "telnet") scheme for which to check
+ *                          support.
+ *
+ *  @returns
+ *     True if the scheme is supported; otherwise, false.
+ *
+ */
+bool
+ConnectionManager :: SupportsScheme(CFStringRef aSchemeRef) const
+{
+    const bool lListenersSupported   = mListenerFactory.SupportsScheme(aSchemeRef);
+    const bool lConnectionsSupported = mConnectionFactory.SupportsScheme(aSchemeRef);
+    const bool lRetval               = (lListenersSupported && lConnectionsSupported);
+
+    return (lRetval);
+}
+
 Status
 ConnectionManager :: Listen(const SocketAddress *aFirst, const SocketAddress *aLast)
 {

@@ -29,6 +29,8 @@
 
 #include <map>
 
+#include <CoreFoundation/CFString.h>
+
 #include <OpenHLX/Common/ApplicationObjectControllerContainerTemplate.hpp>
 #include <OpenHLX/Common/ConnectionManagerBasis.hpp>
 #include <OpenHLX/Common/Errors.hpp>
@@ -68,6 +70,8 @@ public:
     // Initializer(s)
 
     Common::Status Init(const Common::RunLoopParameters &aRunLoopParameters);
+
+    bool SupportsScheme(CFStringRef aSchemeRef) const;
 
     // Accessors
 
