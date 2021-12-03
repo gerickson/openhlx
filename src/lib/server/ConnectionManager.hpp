@@ -79,6 +79,9 @@ public:
     virtual ~ConnectionManager(void) = default;
 
     Common::Status Init(const Common::RunLoopParameters &aRunLoopParameters);
+
+    bool SupportsScheme(CFStringRef aSchemeRef) const final;
+
     Common::Status Listen(void);
     Common::Status Listen(const Versions &aVersions);
     Common::Status Listen(const char *aMaybeURL);

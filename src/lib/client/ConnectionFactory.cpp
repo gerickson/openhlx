@@ -106,6 +106,34 @@ ConnectionFactory :: Init(const RunLoopParameters &aRunLoopParameters)
 
 /**
  *  @brief
+ *    Determine whether the factory supports creating a connection
+ *    with the specified protocol scheme.
+ *
+ *  @param[in]  aSchemeRef  A reference to a CoreFoundation string
+ *                          containing the protocol (for example,
+ *                          "telnet") scheme for which to check
+ *                          support.
+ *
+ *  @returns
+ *     True if the scheme is supported; otherwise, false.
+ *
+ */
+bool
+ConnectionFactory :: SupportsScheme(CFStringRef aSchemeRef) const
+{
+    const CFString lRequestedScheme(aSchemeRef);
+    bool lRetval = false;
+
+    if (lRequestedScheme == ConnectionTelnet::kScheme)
+    {
+        lRetval = true;
+    }
+
+    return (lRetval);
+}
+
+/**
+ *  @brief
  *    Return a connection for the protocol scheme associated with the
  *    specified peer URL.
  *

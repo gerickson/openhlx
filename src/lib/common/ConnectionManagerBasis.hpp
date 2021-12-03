@@ -112,6 +112,8 @@ public:
 
     const Roles & GetRoles(void) const;
 
+    virtual bool SupportsScheme(CFStringRef aSchemeRef) const = 0;
+
     ConnectionManagerApplicationDataDelegate *GetApplicationDataDelegate(void) const;
     Common::Status SetApplicationDataDelegate(ConnectionManagerApplicationDataDelegate *aDelegate);
 

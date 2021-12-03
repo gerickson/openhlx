@@ -64,6 +64,8 @@ public:
 
     Common::Status Init(const Common::RunLoopParameters &aRunLoopParameters);
 
+    bool SupportsScheme(CFStringRef aSchemeRef) const;
+
     ConnectionBasis *GetConnection(CFURLRef aURLRef) const;
 
 private:

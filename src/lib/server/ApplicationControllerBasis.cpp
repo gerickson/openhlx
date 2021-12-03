@@ -108,6 +108,30 @@ ControllerBasis :: Init(const Common::RunLoopParameters &aRunLoopParameters)
     return (lRetval);
 }
 
+/**
+ *  @brief
+ *    Determine whether the controller supports connections with
+ *    the specified protocol scheme.
+ *
+ *  @param[in]  aSchemeRef  A reference to a CoreFoundation string
+ *                          containing the protocol (for example,
+ *                          "telnet") scheme for which to check
+ *                          support.
+ *
+ *  @returns
+ *     True if the scheme is supported; otherwise, false.
+ *
+ */
+bool
+ControllerBasis :: SupportsScheme(CFStringRef aScheme) const
+{
+    bool lRetval;
+
+    lRetval = mConnectionManager.SupportsScheme(aScheme);
+
+    return (lRetval);
+}
+
 // MARK: Accessors
 
 /**
