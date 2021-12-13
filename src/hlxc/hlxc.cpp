@@ -53,6 +53,7 @@
 #include <OpenHLX/Client/FrontPanelStateChangeNotifications.hpp>
 #include <OpenHLX/Client/GroupsStateChangeNotifications.hpp>
 #include <OpenHLX/Client/InfraredStateChangeNotifications.hpp>
+#include <OpenHLX/Client/NetworkStateChangeNotifications.hpp>
 #include <OpenHLX/Client/SourcesStateChangeNotifications.hpp>
 #include <OpenHLX/Client/ZonesStateChangeNotifications.hpp>
 #include <OpenHLX/Common/ConnectionManagerBasis.hpp>
@@ -972,6 +973,22 @@ void HLXClient :: ControllerStateDidChange(Client::Application::ControllerBasis 
             const StateChange::InfraredDisabledNotification &lSCN = static_cast<const StateChange::InfraredDisabledNotification &>(aStateChangeNotification);
             Log::Debug().Write("Front panel infrared sensor is %s\n",
                                (lSCN.GetDisabled() ? "disabled" : "enabled"));
+        }
+        break;
+
+    case StateChange::kStateChangeType_NetworkDHCPv4Enabled:
+        {
+            const StateChange::NetworkDHCPv4EnabledNotification &lSCN = static_cast<const StateChange::NetworkDHCPv4EnabledNotification &>(aStateChangeNotification);
+            Log::Debug().Write("Ethernet network interface DHCPv4 is %s\n",
+                               (lSCN.GetEnabled() ? "enabled" : "disabled"));
+        }
+        break;
+
+    case StateChange::kStateChangeType_NetworkSDDPEnabled:
+        {
+            const StateChange::NetworkSDDPEnabledNotification &lSCN = static_cast<const StateChange::NetworkSDDPEnabledNotification &>(aStateChangeNotification);
+            Log::Debug().Write("Ethernet network interface Control4 SDDP is %s\n",
+                               (lSCN.GetEnabled() ? "enabled" : "disabled"));
         }
         break;
 
