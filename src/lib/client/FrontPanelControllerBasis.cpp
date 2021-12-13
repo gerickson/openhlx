@@ -231,9 +231,9 @@ FrontPanelControllerBasis :: DoNotificationHandlers(const bool &aRegister)
     Status                   lRetval = kStatus_Success;
 
     lRetval = Client::ObjectControllerBasis::DoNotificationHandlers(&lNotificationHandlers[0],
-                                                              &lNotificationHandlers[lNotificationHandlerCount],
-                                                              this,
-                                                              aRegister);
+                                                                    &lNotificationHandlers[lNotificationHandlerCount],
+                                                                    this,
+                                                                    aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
