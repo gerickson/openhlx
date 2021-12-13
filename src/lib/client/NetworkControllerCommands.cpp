@@ -53,6 +53,24 @@ namespace Network
  *  @brief
  *    This is the class default initializer.
  *
+ *  This initializes the Ethernet network interface DHCPv4 enabled
+ *  property command response regular expression.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+DHCPv4EnabledResponse :: Init(void)
+{
+    return (DHCPv4EnabledRegularExpressionBasis::Init(*this));
+}
+
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
  *  This initializes the Ethernet network interface query command
  *  request buffer.
  *
@@ -112,6 +130,24 @@ Query :: Init(void)
 
  done:
     return (lRetval);
+}
+
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the Ethernet network interface Control4 SDDP
+ *  enabled property command response regular expression.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+SDDPEnabledResponse :: Init(void)
+{
+    return (SDDPEnabledRegularExpressionBasis::Init(*this));
 }
 
 }; // namespace Network

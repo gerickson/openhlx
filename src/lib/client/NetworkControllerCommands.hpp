@@ -50,6 +50,32 @@ namespace Network
 
 /**
  *  @brief
+ *    A object for a HLX client Ethernet network interface DHCPv4
+ *    enabled property data model command response regular expression.
+ *
+ *  @ingroup client
+ *  @ingroup command
+ *  @ingroup network
+ *
+ */
+class DHCPv4EnabledResponse :
+    public ResponseBasis,
+    public Common::Command::Network::DHCPv4EnabledRegularExpressionBasis
+{
+public:
+    DHCPv4EnabledResponse(void) = default;
+    virtual ~DHCPv4EnabledResponse(void) = default;
+
+    Common::Status Init(void);
+
+private:
+    // Explicitly hide base class initializers
+
+    using ResponseBasis::Init;
+};
+
+/**
+ *  @brief
  *    A object for a HLX client network data model query command request
  *    buffer.
  *
@@ -122,6 +148,33 @@ public:
 private:
     QueryRequest  mRequest;
     QueryResponse mResponse;
+};
+
+/**
+ *  @brief
+ *    A object for a HLX client Ethernet network interface Control4
+ *    SDDP enabled property data model command response regular
+ *    expression.
+ *
+ *  @ingroup client
+ *  @ingroup command
+ *  @ingroup network
+ *
+ */
+class SDDPEnabledResponse :
+    public ResponseBasis,
+    public Common::Command::Network::SDDPEnabledRegularExpressionBasis
+{
+public:
+    SDDPEnabledResponse(void) = default;
+    virtual ~SDDPEnabledResponse(void) = default;
+
+    Common::Status Init(void);
+
+private:
+    // Explicitly hide base class initializers
+
+    using ResponseBasis::Init;
 };
 
 }; // namespace Configuration
