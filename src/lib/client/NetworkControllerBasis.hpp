@@ -72,6 +72,9 @@ protected:
 
     // Notification Handler Trampolines
 
+    static void DHCPv4EnabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void SDDPEnabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+
 protected:
     // Implementation
 
@@ -86,6 +89,9 @@ private:
 
     // Notification Handlers
 
+    void DHCPv4EnabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void SDDPEnabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+
 private:
     // Implementation
 
@@ -95,7 +101,9 @@ private:
     Model::NetworkModel & mNetworkModel;
 
 protected:
-    static Command::Network::QueryResponse          kQueryResponse;
+    static Command::Network::DHCPv4EnabledResponse    kDHCPv4EnabledResponse;
+    static Command::Network::QueryResponse            kQueryResponse;
+    static Command::Network::SDDPEnabledResponse      kSDDPEnabledResponse;
 };
 
 }; // namespace Client

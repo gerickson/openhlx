@@ -33,6 +33,8 @@
 
 #include <OpenHLX/Client/CommandManager.hpp>
 #include <OpenHLX/Client/NetworkControllerCommands.hpp>
+#include <OpenHLX/Client/NetworkStateChangeNotifications.hpp>
+#include <OpenHLX/Model/NetworkModel.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
 #include <OpenHLX/Utilities/ElementsOf.hpp>
 
@@ -52,11 +54,25 @@ namespace Client
 // Class-scoped Notification Regular Expression Data
 
 /**
+ *  Class-scoped server network interface DHCPv4 enabled notification
+ *  regular expression.
+ *
+ */
+Command::Network::DHCPv4EnabledResponse  NetworkControllerBasis::kDHCPv4EnabledResponse;
+
+/**
+ *  Class-scoped server network interface Control4 SDDP enabled
+ *  notification regular expression.
+ *
+ */
+Command::Network::SDDPEnabledResponse    NetworkControllerBasis::kSDDPEnabledResponse;
+
+/**
  *  Class-scoped server network interface query notification regular
  *  expression.
  *
  */
-Command::Network::QueryResponse     NetworkControllerBasis::kQueryResponse;
+Command::Network::QueryResponse          NetworkControllerBasis::kQueryResponse;
 
 /**
  *  @brief
@@ -201,9 +217,27 @@ done:
 Status
 NetworkControllerBasis :: DoNotificationHandlers(const bool &aRegister)
 {
-    Status  lRetval = kStatus_Success;
+    static const NotificationHandlerBasis  lNotificationHandlers[] = {
+        {
+            kDHCPv4EnabledResponse,
+            NetworkControllerBasis::DHCPv4EnabledNotificationReceivedHandler
+        },
 
+        {
+            kSDDPEnabledResponse,
+            NetworkControllerBasis::SDDPEnabledNotificationReceivedHandler
+        }
+    };
+    static constexpr size_t  lNotificationHandlerCount = ElementsOf(lNotificationHandlers);
+    Status                   lRetval = kStatus_Success;
 
+    lRetval = Client::ObjectControllerBasis::DoNotificationHandlers(&lNotificationHandlers[0],
+                                                                    &lNotificationHandlers[lNotificationHandlerCount],
+                                                                    this,
+                                                                    aRegister);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
     return (lRetval);
 }
 
@@ -228,6 +262,12 @@ NetworkControllerBasis :: ResponseInit(void)
 
 
     // Initialize static notification response regular expression pattern data.
+
+    lRetval = kDHCPv4EnabledResponse.Init();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = kSDDPEnabledResponse.Init();
+    nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = kQueryResponse.Init();
     nlREQUIRE_SUCCESS(lRetval, done);
@@ -295,7 +335,7 @@ NetworkControllerBasis :: Query(void)
  */
 void
 NetworkControllerBasis :: QueryCompleteHandler(Command::ExchangeBasis::MutableCountedPointer &aExchange,
-                                          const RegularExpression::Matches &aMatches)
+                                               const RegularExpression::Matches &aMatches)
 {
     const Command::ResponseBasis * lResponse = aExchange->GetResponse();
     const size_t                   lExpectedMatchCount = lResponse->GetRegularExpression().GetExpectedMatchCount();
@@ -405,7 +445,190 @@ NetworkControllerBasis :: CommandErrorHandler(Command::ExchangeBasis::MutableCou
 
 // MARK: Unsolicited Notification Handlers
 
+/**
+ *  @brief Ethernet network interface DHCPv4 enabled changed client
+ *  unsolicited notification handler.
+ *
+ *  This handles an asynchronous, unsolicited client notification for
+ *  the Ethernet network interface DHCPv4 enabled changed
+ *  notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+NetworkControllerBasis :: DHCPv4EnabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+{
+    NetworkModel::EnabledType                      lEnabled;
+    StateChange::NetworkDHCPv4EnabledNotification  lStateChangeNotification;
+    Status                                         lStatus;
+
+
+    (void)aSize;
+
+    nlREQUIRE(aMatches.size() == Command::Network::DHCPv4EnabledResponse::kExpectedMatches, done);
+
+    // Match 2/2: Enabled
+
+    lStatus = Utilities::Parse(aBuffer + aMatches.at(1).rm_so,
+                               Common::Utilities::Distance(aMatches.at(1)),
+                               lEnabled);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // If the DHCPv4 enabled state is unchanged, SetDHCPv4Enabled will
+    // return kStatus_ValueAlreadySet and there will be no need to
+    // send a state change notification. If we receive
+    // kStatus_Success, it is the first time set or a change and state
+    // change notification needs to be sent.
+
+    lStatus = mNetworkModel.SetDHCPv4Enabled(lEnabled);
+    nlEXPECT_SUCCESS(lStatus, done);
+
+    lStatus = lStateChangeNotification.Init(lEnabled);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    OnStateDidChange(lStateChangeNotification);
+
+ done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Ethernet network interface Control4 SDDP enabled changed client
+ *    unsolicited notification handler.
+ *
+ *  This handles an asynchronous, unsolicited client notification for
+ *  the Ethernet network interface Control4 SDDP enabled changed
+ *  notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+NetworkControllerBasis :: SDDPEnabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+{
+    NetworkModel::EnabledType                    lEnabled;
+    StateChange::NetworkSDDPEnabledNotification  lStateChangeNotification;
+    Status                                       lStatus;
+
+
+    (void)aSize;
+
+    nlREQUIRE(aMatches.size() == Command::Network::SDDPEnabledResponse::kExpectedMatches, done);
+
+    // Match 2/2: Enabled
+
+    lStatus = Utilities::Parse(aBuffer + aMatches.at(1).rm_so,
+                               Common::Utilities::Distance(aMatches.at(1)),
+                               lEnabled);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // If the Control4 SDDP enabled state is unchanged, SetSDDPEnabled
+    // will return kStatus_ValueAlreadySet and there will be no need
+    // to send a state change notification. If we receive
+    // kStatus_Success, it is the first time set or a change and state
+    // change notification needs to be sent.
+
+    lStatus = mNetworkModel.SetSDDPEnabled(lEnabled);
+    nlEXPECT_SUCCESS(lStatus, done);
+
+    lStatus = lStateChangeNotification.Init(lEnabled);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    OnStateDidChange(lStateChangeNotification);
+
+ done:
+    return;
+}
+
 // MARK: Unsolicited Notification Handler Trampolines
+
+/**
+ *  @brief
+ *    Ethernet network interface DHCPv4 enabled changed client
+ *    unsolicited notification handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the Ethernet network interface DHCPv4 enabled
+ *  changed notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+NetworkControllerBasis :: DHCPv4EnabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+{
+    NetworkControllerBasis *lController = static_cast<NetworkControllerBasis *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->DHCPv4EnabledNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Ethernet network interface Control4 SDDP enabled changed client
+ *    unsolicited notification handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the Ethernet network interface Control4 SDDP
+ *  enabled changed notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+NetworkControllerBasis :: SDDPEnabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+{
+    NetworkControllerBasis *lController = static_cast<NetworkControllerBasis *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->SDDPEnabledNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
 
 }; // namespace Client
 
