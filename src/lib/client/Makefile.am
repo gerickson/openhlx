@@ -98,6 +98,7 @@ libopenhlx_client_a_include_HEADERS                         = \
     NetworkController.hpp                                     \
     NetworkControllerBasis.hpp                                \
     NetworkControllerCommands.hpp                             \
+    NetworkStateChangeNotifications.hpp                       \
     ObjectControllerBasis.hpp                                 \
     ObjectControllerBasisDelegate.hpp                         \
     ObjectControllerBasisErrorDelegate.hpp                    \
@@ -175,6 +176,7 @@ libopenhlx_client_a_SOURCES                                 = \
     NetworkController.cpp                                     \
     NetworkControllerBasis.cpp                                \
     NetworkControllerCommands.cpp                             \
+    NetworkStateChangeNotifications.cpp                       \
     ObjectControllerBasis.cpp                                 \
     SourceStateChangeNotificationBasis.cpp                    \
     SourcesController.cpp                                     \
