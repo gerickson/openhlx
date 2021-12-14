@@ -26,6 +26,8 @@
 
 #include "NetworkStateChangeNotifications.hpp"
 
+#include <string.h>
+
 #include <OpenHLX/Utilities/Assert.hpp>
 #include <OpenHLX/Client/StateChangeNotificationTypes.hpp>
 
@@ -95,6 +97,60 @@ NetworkDHCPv4EnabledNotification :: EnabledType
 NetworkDHCPv4EnabledNotification :: GetEnabled(void) const
 {
     return (mEnabled);
+}
+
+/**
+ *  @brief
+ *    This is the class default constructor.
+ *
+ */
+NetworkEthernetAddressNotification :: NetworkEthernetAddressNotification(void) :
+    NotificationBasis(),
+    mEthernetAddress()
+{
+    memset(mEthernetAddress, 0, sizeof (mEthernetAddress));
+}
+
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the Ethernet network interface MAC address
+ *  property state change notification with the specified Ethernet MAC
+ *  address.
+ *
+ *  @param[in]  aEthernetAddress  An immutable reference to the
+ *                                Ethernet MAC address that changed.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+NetworkEthernetAddressNotification :: Init(const EthernetAddressType &aEthernetAddress)
+{
+    Status lRetval = kStatus_Success;
+
+    lRetval = NotificationBasis::Init(kStateChangeType_NetworkEthernetAddress);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    memcpy(mEthernetAddress, aEthernetAddress, sizeof (mEthernetAddress));
+
+ done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Return the Ethernet network interface MAC address property.
+ *
+ *  @returns
+ *    The MAC address of the Ethernet network interface that changed.
+ *
+ */
+const NetworkEthernetAddressNotification :: EthernetAddressType &
+NetworkEthernetAddressNotification :: GetEthernetAddress(void) const
+{
+    return (mEthernetAddress);
 }
 
 /**

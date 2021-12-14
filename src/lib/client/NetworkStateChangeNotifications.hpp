@@ -79,6 +79,40 @@ private:
 /**
  *  @brief
  *    An object for a HLX client physical Ethernet network interface
+ *    object MAC address property data model state change notification
+ *    (SCN).
+ *
+ *  @ingroup client
+ *  @ingroup front-panel
+ *  @ingroup state-change
+ *
+ */
+class NetworkEthernetAddressNotification :
+    public NotificationBasis
+{
+public:
+    /**
+     *  Convenience type redeclaring @a EnabledType from the Ethernet
+     *  network interface model.
+     *
+     */
+    typedef Model::NetworkModel::EthernetAddressType EthernetAddressType;
+
+public:
+    NetworkEthernetAddressNotification(void);
+    virtual ~NetworkEthernetAddressNotification(void) = default;
+
+    Common::Status Init(const EthernetAddressType &aEthernetAddress);
+
+    const EthernetAddressType &GetEthernetAddress(void) const;
+
+private:
+    EthernetAddressType mEthernetAddress;
+};
+
+/**
+ *  @brief
+ *    An object for a HLX client physical Ethernet network interface
  *    object Control4 SDDP enabled property data model state change
  *    notification (SCN).
  *
