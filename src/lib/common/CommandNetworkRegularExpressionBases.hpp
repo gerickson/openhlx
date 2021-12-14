@@ -78,6 +78,35 @@ private:
 /**
  *  @brief
  *    Base regular expression object for HLX Ethernet network
+ *    interface MAC address property.
+ *
+ *  This defines a base, common (that is, independent of requestor or
+ *  responder) regular expression object for HLX Ethernet network
+ *  interface MAC address property.
+ *
+ *  @ingroup common
+ *  @ingroup command
+ *  @ingroup network
+ *
+ */
+class EthernetAddressRegularExpressionBasis
+{
+protected:
+    EthernetAddressRegularExpressionBasis(void) = default;
+    virtual ~EthernetAddressRegularExpressionBasis(void) = default;
+
+    static Common::Status Init(RegularExpressionBasis &aRegularExpression);
+
+public:
+    static const size_t       kExpectedMatches;
+
+private:
+    static const char * const kRegexp;
+};
+
+/**
+ *  @brief
+ *    Base regular expression object for HLX Ethernet network
  *    interface query command.
  *
  *  This defines a base, common (that is, independent of requestor or

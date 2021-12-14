@@ -46,42 +46,56 @@ namespace Network
  *  expression pattern string.
  *
  */
-const char * const DHCPv4EnabledRegularExpressionBasis::kRegexp = "DHCP([01])";
+const char * const DHCPv4EnabledRegularExpressionBasis::kRegexp   = "DHCP([01])";
+
+/**
+ *  The Ethernet network interface MAC address regular expression
+ *  pattern string.
+ *
+ */
+const char * const EthernetAddressRegularExpressionBasis::kRegexp = "MAC(([[:xdigit:]]{2}-){5}[[:xdigit:]]{2})";
 
 /**
  *  The Ethernet network interface query command regular expression
  *  pattern string.
  *
  */
-const char * const QueryRegularExpressionBasis::kRegexp         = "QE";
+const char * const QueryRegularExpressionBasis::kRegexp           = "QE";
 
 /**
  *  The Ethernet network interface Control4 SDDP enabled state regular
  *  expression pattern string.
  *
  */
-const char * const SDDPEnabledRegularExpressionBasis::kRegexp   = "SDDP([01])";
+const char * const SDDPEnabledRegularExpressionBasis::kRegexp     = "SDDP([01])";
 
 /**
  *  The Ethernet network interface DHCPv4 enabled state regular
  *  expression pattern expected substring matches.
  *
  */
-const size_t DHCPv4EnabledRegularExpressionBasis::kExpectedMatches = 2;
+const size_t DHCPv4EnabledRegularExpressionBasis::kExpectedMatches   = 2;
+
+/**
+ *  The Ethernet network interface MAC address regular expression
+ *  pattern expected substring matches.
+ *
+ */
+const size_t EthernetAddressRegularExpressionBasis::kExpectedMatches = 2;
 
 /**
  *  The Ethernet network interface query command regular expression
  *  pattern expected substring matches.
  *
  */
-const size_t QueryRegularExpressionBasis::kExpectedMatches         = 1;
+const size_t QueryRegularExpressionBasis::kExpectedMatches           = 1;
 
 /**
  *  The Ethernet network interface Control4 SDDP enabled state regular
  *  expression pattern expected substring matches.
  *
  */
-const size_t SDDPEnabledRegularExpressionBasis::kExpectedMatches   = 2;
+const size_t SDDPEnabledRegularExpressionBasis::kExpectedMatches     = 2;
 
 /**
  *  @brief
@@ -99,6 +113,25 @@ const size_t SDDPEnabledRegularExpressionBasis::kExpectedMatches   = 2;
  */
 Status
 DHCPv4EnabledRegularExpressionBasis :: Init(RegularExpressionBasis &aRegularExpression)
+{
+    return (aRegularExpression.Init(kRegexp, kExpectedMatches));
+}
+
+/**
+ *  @brief
+ *    This initializes the Ethernet network interface MAC address
+ *    property regular expression.
+ *
+ *  @param[in,out]  aRegularExpression  A mutable reference to the
+ *                                      Ethernet network interface MAC
+ *                                      address property regular
+ *                                      expression to initialize.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+EthernetAddressRegularExpressionBasis :: Init(RegularExpressionBasis &aRegularExpression)
 {
     return (aRegularExpression.Init(kRegexp, kExpectedMatches));
 }
