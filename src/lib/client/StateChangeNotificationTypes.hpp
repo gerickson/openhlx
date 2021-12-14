@@ -88,7 +88,8 @@ enum Type
     // Network
 
     kStateChangeType_NetworkDHCPv4Enabled             = 700,
-    kStateChangeType_NetworkSDDPEnabled               = 701,
+    kStateChangeType_NetworkEthernetAddress           = 701,
+    kStateChangeType_NetworkSDDPEnabled               = 702,
 
     // Sources
 
