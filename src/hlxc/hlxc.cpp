@@ -984,6 +984,21 @@ void HLXClient :: ControllerStateDidChange(Client::Application::ControllerBasis 
         }
         break;
 
+    case StateChange::kStateChangeType_NetworkEthernetAddress:
+        {
+            const StateChange::NetworkEthernetAddressNotification &lSCN = static_cast<const StateChange::NetworkEthernetAddressNotification &>(aStateChangeNotification);
+            const NetworkModel::EthernetAddressType &lEthernetAddress = lSCN.GetEthernetAddress();
+
+            Log::Debug().Write("Ethernet network interface address is %02hhx:%02hhx:%02hhx:%02hhx:%02hhx:%02hhx\n",
+                               lEthernetAddress[0],
+                               lEthernetAddress[1],
+                               lEthernetAddress[2],
+                               lEthernetAddress[3],
+                               lEthernetAddress[4],
+                               lEthernetAddress[5]);
+        }
+        break;
+
     case StateChange::kStateChangeType_NetworkSDDPEnabled:
         {
             const StateChange::NetworkSDDPEnabledNotification &lSCN = static_cast<const StateChange::NetworkSDDPEnabledNotification &>(aStateChangeNotification);
