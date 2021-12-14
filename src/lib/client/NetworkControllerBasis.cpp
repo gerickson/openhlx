@@ -28,6 +28,8 @@
 #include <memory>
 
 #include <errno.h>
+#include <stdio.h>
+#include <string.h>
 
 #include <LogUtilities/LogUtilities.hpp>
 
@@ -59,6 +61,13 @@ namespace Client
  *
  */
 Command::Network::DHCPv4EnabledResponse  NetworkControllerBasis::kDHCPv4EnabledResponse;
+
+/**
+ *  Class-scoped server network interface MAC address notification
+ *  regular expression.
+ *
+ */
+Command::Network::EthernetAddressResponse  NetworkControllerBasis::kEthernetAddressResponse;
 
 /**
  *  Class-scoped server network interface Control4 SDDP enabled
@@ -224,6 +233,11 @@ NetworkControllerBasis :: DoNotificationHandlers(const bool &aRegister)
         },
 
         {
+            kEthernetAddressResponse,
+            NetworkControllerBasis::EthernetAddressNotificationReceivedHandler
+        },
+
+        {
             kSDDPEnabledResponse,
             NetworkControllerBasis::SDDPEnabledNotificationReceivedHandler
         }
@@ -264,6 +278,9 @@ NetworkControllerBasis :: ResponseInit(void)
     // Initialize static notification response regular expression pattern data.
 
     lRetval = kDHCPv4EnabledResponse.Init();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = kEthernetAddressResponse.Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = kSDDPEnabledResponse.Init();
@@ -446,8 +463,9 @@ NetworkControllerBasis :: CommandErrorHandler(Command::ExchangeBasis::MutableCou
 // MARK: Unsolicited Notification Handlers
 
 /**
- *  @brief Ethernet network interface DHCPv4 enabled changed client
- *  unsolicited notification handler.
+ *  @brief
+ *    Ethernet network interface DHCPv4 enabled changed client
+ *    unsolicited notification handler.
  *
  *  This handles an asynchronous, unsolicited client notification for
  *  the Ethernet network interface DHCPv4 enabled changed
@@ -492,6 +510,82 @@ NetworkControllerBasis :: DHCPv4EnabledNotificationReceivedHandler(const uint8_t
     nlEXPECT_SUCCESS(lStatus, done);
 
     lStatus = lStateChangeNotification.Init(lEnabled);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    OnStateDidChange(lStateChangeNotification);
+
+ done:
+    return;
+}
+
+static Common::Status
+Parse(const uint8_t *aBuffer, const size_t &aBufferLength, NetworkModel::EthernetAddressType &aEthernetAddress)
+{
+    int    lConversions;
+    Status lRetval = kStatus_Success;
+
+    lConversions = sscanf(reinterpret_cast<const char *>(aBuffer),
+                          "%02hhx-%02hhx-%02hhx-%02hhx-%02hhx-%02hhx",
+                          &aEthernetAddress[0],
+                          &aEthernetAddress[1],
+                          &aEthernetAddress[2],
+                          &aEthernetAddress[3],
+                          &aEthernetAddress[4],
+                          &aEthernetAddress[5]);
+    nlREQUIRE_ACTION(lConversions == sizeof(NetworkModel::EthernetAddressType), done, lRetval = -EINVAL);
+
+ done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Ethernet network interface MAC address changed client
+ *    unsolicited notification handler.
+ *
+ *  This handles an asynchronous, unsolicited client notification for
+ *  the Ethernet network interface MAC address changed
+ *  notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+NetworkControllerBasis :: EthernetAddressNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+{
+    DeclareScopedFunctionTracer(lTracer);
+    NetworkModel::EthernetAddressType                lEthernetAddress;
+    StateChange::NetworkEthernetAddressNotification  lStateChangeNotification;
+    Status                                           lStatus;
+
+
+    (void)aSize;
+
+    nlREQUIRE(aMatches.size() == Command::Network::EthernetAddressResponse::kExpectedMatches, done);
+
+    // Match 2/2: Ethernet Address
+
+    lStatus = Parse(aBuffer + aMatches.at(1).rm_so,
+                    Common::Utilities::Distance(aMatches.at(1)),
+                    lEthernetAddress);
+
+    // If the Ethernet MAC address is unchanged, SetEthernetAddress
+    // will return kStatus_ValueAlreadySet and there will be no need
+    // to send a state change notification. If we receive
+    // kStatus_Success, it is the first time set or a change and state
+    // change notification needs to be sent.
+
+    lStatus = mNetworkModel.SetEthernetAddress(lEthernetAddress);
+    nlEXPECT_SUCCESS(lStatus, done);
+
+    lStatus = lStateChangeNotification.Init(lEthernetAddress);
     nlREQUIRE_SUCCESS(lStatus, done);
 
     OnStateDidChange(lStateChangeNotification);
@@ -591,6 +685,42 @@ NetworkControllerBasis :: DHCPv4EnabledNotificationReceivedHandler(const uint8_t
     if (lController != nullptr)
     {
         lController->DHCPv4EnabledNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Ethernet network interface MAC address changed client
+ *    unsolicited notification handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the Ethernet network interface MAC address
+ *  changed notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+NetworkControllerBasis :: EthernetAddressNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+{
+    NetworkControllerBasis *lController = static_cast<NetworkControllerBasis *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->EthernetAddressNotificationReceivedHandler(aBuffer, aSize, aMatches);
     }
 }
 

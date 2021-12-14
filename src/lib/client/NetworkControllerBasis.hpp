@@ -73,6 +73,7 @@ protected:
     // Notification Handler Trampolines
 
     static void DHCPv4EnabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void EthernetAddressNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
     static void SDDPEnabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 protected:
@@ -90,6 +91,7 @@ private:
     // Notification Handlers
 
     void DHCPv4EnabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void EthernetAddressNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
     void SDDPEnabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 
 private:
@@ -102,6 +104,7 @@ private:
 
 protected:
     static Command::Network::DHCPv4EnabledResponse    kDHCPv4EnabledResponse;
+    static Command::Network::EthernetAddressResponse  kEthernetAddressResponse;
     static Command::Network::QueryResponse            kQueryResponse;
     static Command::Network::SDDPEnabledResponse      kSDDPEnabledResponse;
 };
