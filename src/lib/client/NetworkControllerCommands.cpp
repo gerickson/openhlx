@@ -71,6 +71,24 @@ DHCPv4EnabledResponse :: Init(void)
  *  @brief
  *    This is the class default initializer.
  *
+ *  This initializes the Ethernet network interface MAC address
+ *  property command response regular expression.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+EthernetAddressResponse :: Init(void)
+{
+    return (EthernetAddressRegularExpressionBasis::Init(*this));
+}
+
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
  *  This initializes the Ethernet network interface query command
  *  request buffer.
  *

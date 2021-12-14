@@ -76,6 +76,32 @@ private:
 
 /**
  *  @brief
+ *    A object for a HLX client Ethernet network interface MAC address
+ *    property data model command response regular expression.
+ *
+ *  @ingroup client
+ *  @ingroup command
+ *  @ingroup network
+ *
+ */
+class EthernetAddressResponse :
+    public ResponseBasis,
+    public Common::Command::Network::EthernetAddressRegularExpressionBasis
+{
+public:
+    EthernetAddressResponse(void) = default;
+    virtual ~EthernetAddressResponse(void) = default;
+
+    Common::Status Init(void);
+
+private:
+    // Explicitly hide base class initializers
+
+    using ResponseBasis::Init;
+};
+
+/**
+ *  @brief
  *    A object for a HLX client network data model query command request
  *    buffer.
  *
