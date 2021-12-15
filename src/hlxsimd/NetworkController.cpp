@@ -33,11 +33,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <CFUtilities/CFUtilities.hpp>
 #include <LogUtilities/LogUtilities.hpp>
 
 #include <OpenHLX/Server/CommandManager.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
 #include <OpenHLX/Utilities/ElementsOf.hpp>
+#include <OpenHLX/Utilities/Utilities.hpp>
 
 
 using namespace HLX::Common;
@@ -57,22 +59,18 @@ namespace Simulator
 // configuration settings.
 
 static const char * const kQueryResponseBuffer = \
-"(DHCP1)\r\n"
 "(IP192.168.1.48)\r\n"
 "(NM255.255.255.0)\r\n"
 "(GW192.168.1.1)\r\n"
-"(MAC00-50-C2-D8-24-71)\r\n"
-"(SDDP0)\r\n";
+"(MAC00-50-C2-D8-24-71)\r\n";
 
 // The query current configuration response contains ONLY
 // configuration settings.
 
 static const char * const kQueryCurrentResponseBuffer = \
-"(DHCP1)\r\n"
 "(IP192.168.1.48)\r\n"
 "(NM255.255.255.0)\r\n"
-"(GW192.168.1.1)\r\n"
-"(SDDP0)\r\n";
+"(GW192.168.1.1)\r\n";
 
 /**
  *  @brief
@@ -91,6 +89,21 @@ struct NetworkModelDefaults
     NetworkModel::EnabledType          mDHCPv4Enabled;
     NetworkModel::EnabledType          mSDDPEnabled;
 };
+
+static const NetworkModel::EnabledType     kSetDHCPv4EnabledDefault = true;
+static const NetworkModel::EnabledType     kSetSDDPEnabledDefault   = false;
+
+static const NetworkModelDefaults kNetworkModelDefaults =
+{
+    { },
+    0,
+    { },
+    { },
+    kSetDHCPv4EnabledDefault,
+    kSetSDDPEnabledDefault
+};
+
+static CFStringRef           kNetworkSchemaKey = CFSTR("Network");
 
 /**
  *  @brief
@@ -121,6 +134,16 @@ Status NetworkController :: DoRequestHandlers(const bool &aRegister)
         {
             kQueryRequest,
             NetworkController::QueryRequestReceivedHandler
+        },
+
+        {
+            kSetDHCPv4EnabledRequest,
+            NetworkController::SetDHCPv4EnabledRequestReceivedHandler
+        },
+
+        {
+            kSetSDDPEnabledRequest,
+            NetworkController::SetSDDPEnabledRequestReceivedHandler
         }
     };
     static constexpr size_t  lRequestHandlerCount = ElementsOf(lRequestHandlers);
@@ -193,6 +216,86 @@ void NetworkController :: QueryCurrentConfiguration(Server::ConnectionBasis &aCo
 
 void NetworkController :: ResetToDefaultConfiguration(void)
 {
+    Status lStatus;
+
+    lStatus = GetModel().SetDHCPv4Enabled(kNetworkModelDefaults.mDHCPv4Enabled);
+    nlCHECK_SUCCESS(lStatus);
+
+    if (lStatus == kStatus_Success)
+    {
+        OnConfigurationIsDirty();
+    }
+
+    lStatus = GetModel().SetSDDPEnabled(kNetworkModelDefaults.mSDDPEnabled);
+    nlCHECK_SUCCESS(lStatus);
+
+    if (lStatus == kStatus_Success)
+    {
+        OnConfigurationIsDirty();
+    }
+}
+
+Status NetworkController :: LoadFromBackupConfiguration(CFDictionaryRef aBackupDictionary)
+{
+    CFDictionaryRef                  lNetworkDictionary = nullptr;
+    NetworkModel::EnabledType        lDHCPv4Enabled;
+    NetworkModel::EnabledType        lSDDPEnabled;
+    Status                           lRetval = kStatus_Success;
+
+
+    nlREQUIRE_ACTION(aBackupDictionary != nullptr, done, lRetval = -EINVAL);
+
+    // Attempt to retrieve the network configuration subdictionary.
+
+    lNetworkDictionary = static_cast<CFDictionaryRef>(CFDictionaryGetValue(aBackupDictionary, kNetworkSchemaKey));
+    nlREQUIRE_ACTION(lNetworkDictionary != nullptr, done, lRetval = kError_MissingConfiguration);
+
+    // Attempt to retrieve the DHCPv4 enabled configuration.
+
+    // Attempt to retrieve the Control4 SDDP enabled configuration.
+
+ done:
+    return (lRetval);
+}
+
+void NetworkController :: SaveToBackupConfiguration(CFMutableDictionaryRef aBackupDictionary)
+{
+    NetworkModel::EnabledType        lDHCPv4Enabled;
+    NetworkModel::EnabledType        lSDDPEnabled;
+    CFMutableDictionaryRef           lNetworkDictionary = nullptr;
+    Status                           lStatus;
+
+
+    // Attempt to get the DHCPv4 enabled value from the model.
+
+    lStatus = GetModel().GetDHCPv4Enabled(lDHCPv4Enabled);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // Attempt to get the Control4 SDDP enabled value from the model.
+
+    lStatus = GetModel().GetSDDPEnabled(lSDDPEnabled);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // Create a mutable dictionary to store the disabled value from
+    // the model into.
+
+    lNetworkDictionary = CFDictionaryCreateMutable(kCFAllocatorDefault,
+                                                   0,
+                                                   &kCFCopyStringDictionaryKeyCallBacks,
+                                                   &kCFTypeDictionaryValueCallBacks);
+    nlREQUIRE(lNetworkDictionary != nullptr, done);
+
+    // Add the model DHCPv4 enaled value into the newly-created dictionary.
+
+    // Add the model Control4 SDDP enaled value into the newly-created dictionary.
+
+    // Add the newly-created dictionary into the backup configuration dictionary, keyed for this controller.
+
+    CFDictionaryAddValue(aBackupDictionary, kNetworkSchemaKey, lNetworkDictionary);
+
+ done:
+    CFURelease(lNetworkDictionary);
+
     return;
 }
 
@@ -248,15 +351,142 @@ void NetworkController :: QueryRequestReceivedHandler(Server::ConnectionBasis &a
     return;
 }
 
+void
+NetworkController :: SetDHCPv4EnabledRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+{
+    NetworkModel::EnabledType                        lEnabled;
+    Server::Command::Network::DHCPv4EnabledResponse  lResponse;
+    ConnectionBuffer::MutableCountedPointer          lResponseBuffer;
+    Status                                           lStatus;
+
+
+    (void)aSize;
+
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Network::SetDHCPv4EnabledRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+
+    // Match 2/2: Enabled
+
+    lStatus = Utilities::Parse(aBuffer + aMatches.at(1).rm_so,
+                               Common::Utilities::Distance(aMatches.at(1)),
+                               lEnabled);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lResponseBuffer.reset(new ConnectionBuffer);
+    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
+
+    lStatus = lResponseBuffer->Init();
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lStatus = GetModel().SetDHCPv4Enabled(lEnabled);
+    nlREQUIRE(lStatus >= kStatus_Success, done);
+
+    if (lStatus == kStatus_Success)
+    {
+        OnConfigurationIsDirty();
+    }
+
+    lStatus = HandleDHCPv4EnabledResponse(lEnabled, lResponseBuffer);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    if (lStatus >= kStatus_Success)
+    {
+        lStatus = SendResponse(aConnection, lResponseBuffer);
+        nlVERIFY_SUCCESS(lStatus);
+    }
+    else
+    {
+        lStatus = SendErrorResponse(aConnection);
+        nlVERIFY_SUCCESS(lStatus);
+    }
+
+    return;
+}
+
+void
+NetworkController :: SetSDDPEnabledRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+{
+    NetworkModel::EnabledType                        lEnabled;
+    Server::Command::Network::SDDPEnabledResponse    lResponse;
+    ConnectionBuffer::MutableCountedPointer          lResponseBuffer;
+    Status                                           lStatus;
+
+
+    (void)aSize;
+
+    nlREQUIRE_ACTION(aMatches.size() == Server::Command::Network::SetSDDPEnabledRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
+
+    // Match 2/2: Enabled
+
+    lStatus = Utilities::Parse(aBuffer + aMatches.at(1).rm_so,
+                               Common::Utilities::Distance(aMatches.at(1)),
+                               lEnabled);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lResponseBuffer.reset(new ConnectionBuffer);
+    nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
+
+    lStatus = lResponseBuffer->Init();
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lStatus = GetModel().SetSDDPEnabled(lEnabled);
+    nlREQUIRE(lStatus >= kStatus_Success, done);
+
+    if (lStatus == kStatus_Success)
+    {
+        OnConfigurationIsDirty();
+    }
+
+    lStatus = HandleSDDPEnabledResponse(lEnabled, lResponseBuffer);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    if (lStatus >= kStatus_Success)
+    {
+        lStatus = SendResponse(aConnection, lResponseBuffer);
+        nlVERIFY_SUCCESS(lStatus);
+    }
+    else
+    {
+        lStatus = SendErrorResponse(aConnection);
+        nlVERIFY_SUCCESS(lStatus);
+    }
+
+    return;
+}
+
 // MARK: Command Request Handler Trampolines
 
-void NetworkController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+void
+NetworkController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     NetworkController *lController = static_cast<NetworkController *>(aContext);
 
     if (lController != nullptr)
     {
         lController->QueryRequestReceivedHandler(aConnection, aBuffer, aSize, aMatches);
+    }
+}
+
+void
+NetworkController :: SetDHCPv4EnabledRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+{
+    NetworkController *lController = static_cast<NetworkController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->SetDHCPv4EnabledRequestReceivedHandler(aConnection, aBuffer, aSize, aMatches);
+    }
+}
+
+void
+NetworkController :: SetSDDPEnabledRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+{
+    NetworkController *lController = static_cast<NetworkController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->SetSDDPEnabledRequestReceivedHandler(aConnection, aBuffer, aSize, aMatches);
     }
 }
 

@@ -30,7 +30,6 @@
 #include <OpenHLX/Server/NetworkControllerBasis.hpp>
 #include <OpenHLX/Server/NetworkControllerCommands.hpp>
 
-#include "ContainerControllerBasis.hpp"
 #include "ObjectControllerBasis.hpp"
 
 
@@ -45,7 +44,7 @@ namespace Simulator
  *    An object for managing the server-side observation and mutation
  *    of a HLX Ethernet network interface.
  *
- *  @ingroup client
+ *  @ingroup server
  *  @ingroup network
  *
  */
@@ -64,12 +63,16 @@ public:
 
     // Configuration Management Methods
 
+    Common::Status LoadFromBackupConfiguration(CFDictionaryRef aBackupDictionary) final;
     void QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const final;
     void ResetToDefaultConfiguration(void) final;
+    void SaveToBackupConfiguration(CFMutableDictionaryRef aBackupDictionary) final;
 
     // Command Request Handler Trampolines
 
     static void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void SetDHCPv4EnabledRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void SetSDDPEnabledRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
 
 private:
     Common::Status DoRequestHandlers(const bool &aRegister);
@@ -77,7 +80,8 @@ private:
     // Command Completion Handlers
 
     void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
-
+    void SetDHCPv4EnabledRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void SetSDDPEnabledRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
 };
 
 }; // namespace Simulator
