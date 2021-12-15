@@ -54,6 +54,20 @@ namespace Server
 Server::Command::Network::QueryRequest  NetworkControllerBasis::kQueryRequest;
 
 /**
+ *  Class-scoped server Ethetner network interface DHCPv4 set enabled state command request
+ *  regular expression.
+ *
+ */
+Server::Command::Network::SetDHCPv4EnabledRequest  NetworkControllerBasis::kSetDHCPv4EnabledRequest;
+
+/**
+ *  Class-scoped server Ethetner network interface Control4 SDDP set enabled state command request
+ *  regular expression.
+ *
+ */
+Server::Command::Network::SetSDDPEnabledRequest    NetworkControllerBasis::kSetSDDPEnabledRequest;
+
+/**
  *  @brief
  *    This is a class constructor.
  *
@@ -123,6 +137,8 @@ done:
     return (lRetval);
 }
 
+// MARK: Implementation
+
 Status
 NetworkControllerBasis :: RequestInit(void)
 {
@@ -132,6 +148,12 @@ NetworkControllerBasis :: RequestInit(void)
     // Initialize static command request regular expression pattern data.
 
     lRetval = kQueryRequest.Init();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = kSetDHCPv4EnabledRequest.Init();
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = kSetSDDPEnabledRequest.Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -183,9 +205,99 @@ NetworkControllerBasis :: HandleQueryReceived(const char *aInputBuffer, Common::
     return (lRetval);
 }
 
+// MARK: Observation (Query) Command Request Class (Static) Handlers
+
 // MARK: Command Response Handlers
 
 // MARK: Command Response Class (Static) Handlers
+
+/**
+ *  @brief
+ *    Handle and generate the server command response for an Ethernet
+ *    network interface DHCPv4 enabled state request.
+ *
+ *  This handles and generates the server command response for an
+ *  Ethernet network interface DHCPv4 enabled state request.
+ *
+ *  @param[in]      aEnabled   An immutable reference to the Ethernet network interface DHCPv4
+ *                             enabled state for which the response
+ *                             is to be formed.
+ *  @param[in,out]  aBuffer    A mutable reference to the shared
+ *                             pointer into which the response is to
+ *                             be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
+NetworkControllerBasis :: HandleDHCPv4EnabledResponse(const NetworkModel::EnabledType &aEnabled, ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    Server::Command::Network::DHCPv4EnabledResponse  lDHCPv4EnabledResponse;
+    const uint8_t *                                  lBuffer;
+    size_t                                           lSize;
+    Status                                           lStatus;
+
+
+    lStatus = lDHCPv4EnabledResponse.Init(aEnabled);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lBuffer = lDHCPv4EnabledResponse.GetBuffer();
+    lSize = lDHCPv4EnabledResponse.GetSize();
+
+    lStatus = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return (lStatus);
+}
+
+/**
+ *  @brief
+ *    Handle and generate the server command response for an Ethernet
+ *    network interface Control4 SDDP enabled state request.
+ *
+ *  This handles and generates the server command response for an
+ *  Ethernet network interface Control4 SDDP enabled state request.
+ *
+ *  @param[in]      aEnabled   An immutable reference to the Ethernet network interface Control4 SDDP
+ *                             enabled state for which the response
+ *                             is to be formed.
+ *  @param[in,out]  aBuffer    A mutable reference to the shared
+ *                             pointer into which the response is to
+ *                             be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
+NetworkControllerBasis :: HandleSDDPEnabledResponse(const NetworkModel::EnabledType &aEnabled, ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    Server::Command::Network::SDDPEnabledResponse    lSDDPEnabledResponse;
+    const uint8_t *                                  lBuffer;
+    size_t                                           lSize;
+    Status                                           lStatus;
+
+
+    lStatus = lSDDPEnabledResponse.Init(aEnabled);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lBuffer = lSDDPEnabledResponse.GetBuffer();
+    lSize = lSDDPEnabledResponse.GetSize();
+
+    lStatus = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return (lStatus);
+}
 
 }; // namespace Server
 

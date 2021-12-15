@@ -79,8 +79,13 @@ protected:
 
     // Command Response Class (Static) Handlers
 
+    static Common::Status HandleDHCPv4EnabledResponse(const Model::NetworkModel::EnabledType &aEnabled, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    static Common::Status HandleSDDPEnabledResponse(const Model::NetworkModel::EnabledType &aEnabled, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+
 protected:
-    static Server::Command::Network::QueryRequest  kQueryRequest;
+    static Server::Command::Network::QueryRequest             kQueryRequest;
+    static Server::Command::Network::SetDHCPv4EnabledRequest  kSetDHCPv4EnabledRequest;
+    static Server::Command::Network::SetSDDPEnabledRequest    kSetSDDPEnabledRequest;
 };
 
 }; // namespace Server
