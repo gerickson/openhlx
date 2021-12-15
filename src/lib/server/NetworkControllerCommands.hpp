@@ -26,11 +26,13 @@
 #ifndef OPENHLXSERVERNETWORKCONTROLLERCOMMANDS_HPP
 #define OPENHLXSERVERNETWORKCONTROLLERCOMMANDS_HPP
 
+#include <OpenHLX/Common/CommandNetworkBufferBases.hpp>
 #include <OpenHLX/Common/CommandNetworkRegularExpressionBases.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 
 #include "CommandQueryResponseBasis.hpp"
 #include "CommandRequestBasis.hpp"
+#include "CommandResponseBasis.hpp"
 
 
 namespace HLX
@@ -95,6 +97,116 @@ public:
     using QueryResponseBasis::Init;
 
     Common::Status Init(void);
+};
+
+// MARK: Network Mutator Requests, Responses, and Commands
+
+/**
+ *  @brief
+ *    A object for a HLX server Ethernet network interface DHCPv4
+ *    enabled data model property mutation command request regular
+ *    expression.
+ *
+ *  @ingroup server
+ *  @ingroup command
+ *  @ingroup network
+ *
+ */
+class SetDHCPv4EnabledRequest :
+    public RequestBasis,
+    public Common::Command::Network::DHCPv4EnabledRegularExpressionBasis
+{
+public:
+    SetDHCPv4EnabledRequest(void) = default;
+    virtual ~SetDHCPv4EnabledRequest(void) = default;
+
+    Common::Status Init(void);
+
+private:
+    // Explicitly hide base class initializers
+
+    using RequestBasis::Init;
+};
+
+/**
+ *  @brief
+ *    A object for a HLX server Ethernet network interface DHCPv4
+ *    enabled disabled data model property mutation command response
+ *    buffer.
+ *
+ *  @ingroup server
+ *  @ingroup command
+ *  @ingroup network
+ *
+ */
+class DHCPv4EnabledResponse :
+    public ResponseBasis,
+    public Common::Command::Network::DHCPv4EnabledBufferBasis
+{
+public:
+    DHCPv4EnabledResponse(void) = default;
+    virtual ~DHCPv4EnabledResponse(void) = default;
+
+    Common::Status Init(const Model::NetworkModel::EnabledType &aEnabled);
+
+private:
+    // Explicitly hide base class initializers
+
+    using ResponseBasis::Init;
+};
+
+/**
+ *  @brief
+ *    A object for a HLX server Ethernet network interface Control4
+ *    SDDP enabled data model property mutation command request
+ *    regular expression.
+ *
+ *  @ingroup server
+ *  @ingroup command
+ *  @ingroup network
+ *
+ */
+class SetSDDPEnabledRequest :
+    public RequestBasis,
+    public Common::Command::Network::SDDPEnabledRegularExpressionBasis
+{
+public:
+    SetSDDPEnabledRequest(void) = default;
+    virtual ~SetSDDPEnabledRequest(void) = default;
+
+    Common::Status Init(void);
+
+private:
+    // Explicitly hide base class initializers
+
+    using RequestBasis::Init;
+};
+
+/**
+ *  @brief
+ *    A object for a HLX server Ethernet network interface Control4
+ *    SDDP enabled disabled data model property mutation command
+ *    response buffer.
+ *
+ *  @ingroup server
+ *  @ingroup command
+ *  @ingroup network
+ *
+ */
+class SDDPEnabledResponse :
+    public ResponseBasis,
+    public Common::Command::Network::SDDPEnabledBufferBasis
+{
+public:
+    SDDPEnabledResponse(void) = default;
+    virtual ~SDDPEnabledResponse(void) = default;
+
+    Common::Status Init(const Model::NetworkModel::EnabledType &aEnabled);
+
+private:
+    // Explicitly hide base class initializers
+
+    using ResponseBasis::Init;
 };
 
 }; // namespace Network
