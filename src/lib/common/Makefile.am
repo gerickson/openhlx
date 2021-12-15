@@ -69,6 +69,7 @@ libopenhlx_common_a_include_HEADERS                         = \
     CommandInfraredBufferBases.hpp                            \
     CommandInfraredRegularExpressionBases.hpp                 \
     CommandNameSetBufferBasis.hpp                             \
+    CommandNetworkBufferBases.hpp                             \
     CommandNetworkRegularExpressionBases.hpp                  \
     CommandPropertyBufferBases.hpp                            \
     CommandQueryBufferBasis.hpp                               \
@@ -137,6 +138,7 @@ libopenhlx_common_a_SOURCES                                 = \
     CommandInfraredBufferBases.cpp                            \
     CommandInfraredRegularExpressionBases.cpp                 \
     CommandNameSetBufferBasis.cpp                             \
+    CommandNetworkBufferBases.cpp                             \
     CommandNetworkRegularExpressionBases.cpp                  \
     CommandPropertyBufferBases.cpp                            \
     CommandQueryBufferBasis.cpp                               \
