@@ -70,9 +70,9 @@ private:
 protected:
     // Observation (Query) Command Request Handlers
 
-    // Observation (Query) Command Request Class (Static) Handlers
+    // Observation (Query) Command Request Instance Handlers
 
-    static Common::Status HandleQueryReceived(const char *aInputBuffer, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer);
+    Common::Status HandleQueryReceived(const char *aInputBuffer, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer) const;
 
 protected:
     // Command Response Handlers

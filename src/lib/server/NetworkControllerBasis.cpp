@@ -51,7 +51,7 @@ namespace Server
  *  expression.
  *
  */
-Server::Command::Network::QueryRequest  NetworkControllerBasis::kQueryRequest;
+Server::Command::Network::QueryRequest             NetworkControllerBasis::kQueryRequest;
 
 /**
  *  Class-scoped server Ethetner network interface DHCPv4 set enabled state command request
@@ -164,8 +164,6 @@ done:
 
 // MARK: Observation (Query) Command Request Instance Handlers
 
-// MARK: Observation (Query) Command Request Class (Static) Handlers
-
 /**
  *  @brief
  *    Handle and generate the server command response for a network
@@ -188,12 +186,30 @@ done:
  *
  */
 Status
-NetworkControllerBasis :: HandleQueryReceived(const char *aInputBuffer, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer)
+NetworkControllerBasis :: HandleQueryReceived(const char *aInputBuffer, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer) const
 {
-    const uint8_t *  lBuffer;
-    size_t           lSize;
-    Status           lRetval;
+    NetworkModel::EnabledType  lDHCPv4Enabled;
+    NetworkModel::EnabledType  lSDDPEnabled;
+    const uint8_t *            lBuffer;
+    size_t                     lSize;
+    Status                     lRetval;
 
+
+    // Handle any data model-sourced response content.
+
+    lRetval = mNetworkModel.GetDHCPv4Enabled(lDHCPv4Enabled);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = HandleDHCPv4EnabledResponse(lDHCPv4Enabled, aOutputBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = mNetworkModel.GetSDDPEnabled(lSDDPEnabled);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = HandleSDDPEnabledResponse(lSDDPEnabled, aOutputBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // Handle any remaining precanned response content.
 
     lBuffer = reinterpret_cast<const uint8_t *>(aInputBuffer);
     lSize = strlen(aInputBuffer);
