@@ -103,7 +103,11 @@ static const NetworkModelDefaults kNetworkModelDefaults =
     kSetSDDPEnabledDefault
 };
 
+static CFStringRef           kDHCPSchemaKey    = CFSTR("DHCP");
+static CFStringRef           kEnabledSchemaKey = CFSTR("Enabled");
+static CFStringRef           kIPv4SchemaKey    = CFSTR("IPv4");
 static CFStringRef           kNetworkSchemaKey = CFSTR("Network");
+static CFStringRef           kSDDPSchemaKey    = CFSTR("SDDP");
 
 /**
  *  @brief
@@ -237,10 +241,8 @@ void NetworkController :: ResetToDefaultConfiguration(void)
 
 Status NetworkController :: LoadFromBackupConfiguration(CFDictionaryRef aBackupDictionary)
 {
-    CFDictionaryRef                  lNetworkDictionary = nullptr;
-    NetworkModel::EnabledType        lDHCPv4Enabled;
-    NetworkModel::EnabledType        lSDDPEnabled;
-    Status                           lRetval = kStatus_Success;
+    CFDictionaryRef  lNetworkDictionary = nullptr;
+    Status           lRetval = kStatus_Success;
 
 
     nlREQUIRE_ACTION(aBackupDictionary != nullptr, done, lRetval = -EINVAL);
@@ -250,9 +252,15 @@ Status NetworkController :: LoadFromBackupConfiguration(CFDictionaryRef aBackupD
     lNetworkDictionary = static_cast<CFDictionaryRef>(CFDictionaryGetValue(aBackupDictionary, kNetworkSchemaKey));
     nlREQUIRE_ACTION(lNetworkDictionary != nullptr, done, lRetval = kError_MissingConfiguration);
 
-    // Attempt to retrieve the DHCPv4 enabled configuration.
+    // Attempt to retrieve the IPv4 configuration.
 
-    // Attempt to retrieve the Control4 SDDP enabled configuration.
+    lRetval = IPv4LoadFromBackupConfiguration(lNetworkDictionary, GetModel());
+    nlREQUIRE(lRetval >= kStatus_Success, done);
+
+    // Attempt to retrieve the Control4 SDDP configuration.
+
+    lRetval = SDDPLoadFromBackupConfiguration(lNetworkDictionary, GetModel());
+    nlREQUIRE(lRetval >= kStatus_Success, done);
 
  done:
     return (lRetval);
@@ -260,21 +268,9 @@ Status NetworkController :: LoadFromBackupConfiguration(CFDictionaryRef aBackupD
 
 void NetworkController :: SaveToBackupConfiguration(CFMutableDictionaryRef aBackupDictionary)
 {
-    NetworkModel::EnabledType        lDHCPv4Enabled;
-    NetworkModel::EnabledType        lSDDPEnabled;
-    CFMutableDictionaryRef           lNetworkDictionary = nullptr;
-    Status                           lStatus;
+    CFMutableDictionaryRef  lNetworkDictionary = nullptr;
+    Status                  lStatus;
 
-
-    // Attempt to get the DHCPv4 enabled value from the model.
-
-    lStatus = GetModel().GetDHCPv4Enabled(lDHCPv4Enabled);
-    nlREQUIRE_SUCCESS(lStatus, done);
-
-    // Attempt to get the Control4 SDDP enabled value from the model.
-
-    lStatus = GetModel().GetSDDPEnabled(lSDDPEnabled);
-    nlREQUIRE_SUCCESS(lStatus, done);
 
     // Create a mutable dictionary to store the disabled value from
     // the model into.
@@ -285,11 +281,20 @@ void NetworkController :: SaveToBackupConfiguration(CFMutableDictionaryRef aBack
                                                    &kCFTypeDictionaryValueCallBacks);
     nlREQUIRE(lNetworkDictionary != nullptr, done);
 
-    // Add the model DHCPv4 enaled value into the newly-created dictionary.
+    // Add the IPv4 schema configuration into the newly-created
+    // dictionary.
 
-    // Add the model Control4 SDDP enaled value into the newly-created dictionary.
+    lStatus = IPv4SaveToBackupConfiguration(lNetworkDictionary, GetModel());
+    nlREQUIRE_SUCCESS(lStatus, done);
 
-    // Add the newly-created dictionary into the backup configuration dictionary, keyed for this controller.
+    // Add the Control4 SDDP schema configuration into the
+    // newly-created dictionary.
+
+    lStatus = SDDPSaveToBackupConfiguration(lNetworkDictionary, GetModel());
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    // Add the newly-created dictionary into the backup configuration
+    // dictionary, keyed for this controller.
 
     CFDictionaryAddValue(aBackupDictionary, kNetworkSchemaKey, lNetworkDictionary);
 
@@ -297,6 +302,188 @@ void NetworkController :: SaveToBackupConfiguration(CFMutableDictionaryRef aBack
     CFURelease(lNetworkDictionary);
 
     return;
+}
+
+// MARK: Backup Configuration Load / Save Handlers
+
+Status
+NetworkController :: IPv4LoadFromBackupConfiguration(CFDictionaryRef aNetworkDictionary, Model::NetworkModel &aNetworkModel)
+{
+    CFDictionaryRef            lIPv4Dictionary = nullptr;
+    Status                     lRetval = kStatus_Success;
+
+    // Attempt to retrieve the IPv4 configuration subdictionary.
+
+    lIPv4Dictionary = static_cast<CFDictionaryRef>(CFDictionaryGetValue(aNetworkDictionary, kIPv4SchemaKey));
+    nlREQUIRE_ACTION(lIPv4Dictionary != nullptr, done, lRetval = kError_MissingConfiguration);
+
+    // Attempt to get the DHCPv4 schema configuration
+
+    lRetval = DHCPv4LoadFromBackupConfiguration(lIPv4Dictionary, aNetworkModel);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+Status
+NetworkController :: DHCPv4LoadFromBackupConfiguration(CFDictionaryRef aIPDictionary, Model::NetworkModel &aNetworkModel)
+{
+    CFDictionaryRef            lDHCPv4Dictionary = nullptr;
+    bool                       lStatus;
+    NetworkModel::EnabledType  lDHCPv4Enabled;
+    Status                     lRetval = kStatus_Success;
+
+    // Attempt to retrieve the DHCPv4 configuration subdictionary.
+
+    lDHCPv4Dictionary = static_cast<CFDictionaryRef>(CFDictionaryGetValue(aIPDictionary, kDHCPSchemaKey));
+    nlREQUIRE_ACTION(lDHCPv4Dictionary != nullptr, done, lRetval = kError_MissingConfiguration);
+
+    // Attempt to get the enabled property configuration
+
+    lStatus = CFUDictionaryGetBoolean(lDHCPv4Dictionary, kEnabledSchemaKey, lDHCPv4Enabled);
+    nlREQUIRE_ACTION(lStatus, done, lRetval = kError_MissingConfiguration);
+
+    // DHCPv4 Enabled
+
+    lRetval = aNetworkModel.SetDHCPv4Enabled(lDHCPv4Enabled);
+    nlREQUIRE(lRetval >= kStatus_Success, done);
+
+    if (lRetval == kStatus_Success)
+    {
+        OnConfigurationIsDirty();
+    }
+
+ done:
+    return (lRetval);
+}
+
+Status
+NetworkController :: SDDPLoadFromBackupConfiguration(CFDictionaryRef aNetworkDictionary, Model::NetworkModel &aNetworkModel)
+{
+    CFDictionaryRef            lSDDPDictionary = nullptr;
+    bool                       lStatus;
+    NetworkModel::EnabledType  lSDDPEnabled;
+    Status                     lRetval = kStatus_Success;
+
+    // Attempt to retrieve the Control4 SDDP configuration subdictionary.
+
+    lSDDPDictionary = static_cast<CFDictionaryRef>(CFDictionaryGetValue(aNetworkDictionary, kSDDPSchemaKey));
+    nlREQUIRE_ACTION(lSDDPDictionary != nullptr, done, lRetval = kError_MissingConfiguration);
+
+    // Attempt to get the enabled property configuration
+
+    lStatus = CFUDictionaryGetBoolean(lSDDPDictionary, kEnabledSchemaKey, lSDDPEnabled);
+    nlREQUIRE_ACTION(lStatus, done, lRetval = kError_MissingConfiguration);
+
+    // SDDP Enabled
+
+    lRetval = aNetworkModel.SetSDDPEnabled(lSDDPEnabled);
+    nlREQUIRE(lRetval >= kStatus_Success, done);
+
+    if (lRetval == kStatus_Success)
+    {
+        OnConfigurationIsDirty();
+    }
+
+ done:
+    return (lRetval);
+}
+
+Status
+NetworkController :: IPv4SaveToBackupConfiguration(CFMutableDictionaryRef aNetworkDictionary, const Model::NetworkModel &aNetworkModel)
+{
+    CFMutableDictionaryRef     lIPv4Dictionary;
+    Status                     lRetval = kStatus_Success;
+
+
+    lIPv4Dictionary = CFDictionaryCreateMutable(kCFAllocatorDefault,
+                                                0,
+                                                &kCFCopyStringDictionaryKeyCallBacks,
+                                                &kCFTypeDictionaryValueCallBacks);
+    nlREQUIRE_ACTION(lIPv4Dictionary != nullptr, done, lRetval = -ENOMEM);
+
+    // Add the DHCPv4 schema configuration to the newly-created IPv4
+    // dictionary.
+
+    lRetval = DHCPv4SaveToBackupConfiguration(lIPv4Dictionary, aNetworkModel);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // Add the newly-created IPv4 dictionary to the IP dictionary.
+
+    CFDictionaryAddValue(aNetworkDictionary, kIPv4SchemaKey, lIPv4Dictionary);
+
+ done:
+    CFURelease(lIPv4Dictionary);
+
+    return (lRetval);
+}
+
+Status
+NetworkController :: DHCPv4SaveToBackupConfiguration(CFMutableDictionaryRef aIPDictionary, const Model::NetworkModel &aNetworkModel)
+{
+    CFMutableDictionaryRef     lDHCPv4Dictionary;
+    NetworkModel::EnabledType  lDHCPv4Enabled;
+    Status                     lRetval = kStatus_Success;
+
+
+    lDHCPv4Dictionary = CFDictionaryCreateMutable(kCFAllocatorDefault,
+                                                0,
+                                                &kCFCopyStringDictionaryKeyCallBacks,
+                                                &kCFTypeDictionaryValueCallBacks);
+    nlREQUIRE_ACTION(lDHCPv4Dictionary != nullptr, done, lRetval = -ENOMEM);
+
+    // Attempt to get the DHCPv4 enabled value from the model.
+
+    lRetval = aNetworkModel.GetDHCPv4Enabled(lDHCPv4Enabled);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // Add the enabled state to the newly-created DHCPv4 dictionary.
+
+    CFUDictionarySetBoolean(lDHCPv4Dictionary, kEnabledSchemaKey, lDHCPv4Enabled);
+
+    // Add the newly-created DHCPv4 dictionary to the IP dictionary.
+
+    CFDictionaryAddValue(aIPDictionary, kDHCPSchemaKey, lDHCPv4Dictionary);
+
+ done:
+    CFURelease(lDHCPv4Dictionary);
+
+    return (lRetval);
+}
+
+Status
+NetworkController :: SDDPSaveToBackupConfiguration(CFMutableDictionaryRef aNetworkDictionary, const Model::NetworkModel &aNetworkModel)
+{
+    CFMutableDictionaryRef     lSDDPDictionary;
+    NetworkModel::EnabledType  lSDDPEnabled;
+    Status                     lRetval = kStatus_Success;
+
+
+    lSDDPDictionary = CFDictionaryCreateMutable(kCFAllocatorDefault,
+                                                0,
+                                                &kCFCopyStringDictionaryKeyCallBacks,
+                                                &kCFTypeDictionaryValueCallBacks);
+    nlREQUIRE_ACTION(lSDDPDictionary != nullptr, done, lRetval = -ENOMEM);
+
+    // Attempt to get the Control4 SDDP enabled value from the model.
+
+    lRetval = aNetworkModel.GetSDDPEnabled(lSDDPEnabled);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // Add the enabled state to the newly-created Control4 SDDP dictionary.
+
+    CFUDictionarySetBoolean(lSDDPDictionary, kEnabledSchemaKey, lSDDPEnabled);
+
+    // Add the newly-created Control4 SDDP dictionary to the network
+    // dictionary.
+
+    CFDictionaryAddValue(aNetworkDictionary, kSDDPSchemaKey, lSDDPDictionary);
+
+ done:
+    CFURelease(lSDDPDictionary);
+
+    return (lRetval);
 }
 
 // MARK: Command Request Completion Handlers

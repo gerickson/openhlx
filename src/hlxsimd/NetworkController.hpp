@@ -77,6 +77,14 @@ public:
 private:
     Common::Status DoRequestHandlers(const bool &aRegister);
 
+    Common::Status IPv4LoadFromBackupConfiguration(CFDictionaryRef aIPv4Dictionary, Model::NetworkModel &aNetworkModel);
+    Common::Status DHCPv4LoadFromBackupConfiguration(CFDictionaryRef aNetworkDictionary, Model::NetworkModel &aNetworkModel);
+    Common::Status SDDPLoadFromBackupConfiguration(CFDictionaryRef aNetworkDictionary, Model::NetworkModel &aNetworkModel);
+
+    static Common::Status IPv4SaveToBackupConfiguration(CFMutableDictionaryRef aIPv4Dictionary, const Model::NetworkModel &aNetworkModel);
+    static Common::Status DHCPv4SaveToBackupConfiguration(CFMutableDictionaryRef aNetworkDictionary, const Model::NetworkModel &aNetworkModel);
+    static Common::Status SDDPSaveToBackupConfiguration(CFMutableDictionaryRef aNetworkDictionary, const Model::NetworkModel &aNetworkModel);
+
     // Command Completion Handlers
 
     void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
