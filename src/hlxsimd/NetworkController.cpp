@@ -85,7 +85,7 @@ struct NetworkModelDefaults
     NetworkModel::IPAddressType        mHLXAddress;
     NetworkModel::PrefixLengthType     mPrefixLength;
     NetworkModel::IPAddressType        mGatewayAddress;
-    NetworkModel::EthernetAddressType  mEthernetAddress;
+    NetworkModel::EthernetEUI48Type    mEthernetEUI48;
     NetworkModel::EnabledType          mDHCPv4Enabled;
     NetworkModel::EnabledType          mSDDPEnabled;
 };
@@ -213,9 +213,11 @@ done:
 
 void NetworkController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
+    static const bool kIsConfiguration = true;
+
     (void)aConnection;
 
-    HandleQueryReceived(kQueryCurrentResponseBuffer, aBuffer);
+    HandleQueryReceived(kIsConfiguration, kQueryCurrentResponseBuffer, aBuffer);
 }
 
 void NetworkController :: ResetToDefaultConfiguration(void)
@@ -490,6 +492,7 @@ NetworkController :: SDDPSaveToBackupConfiguration(CFMutableDictionaryRef aNetwo
 
 void NetworkController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
+    static const bool                        kIsConfiguration = true;
     Server::Command::Network::QueryResponse  lResponse;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
@@ -510,7 +513,7 @@ void NetworkController :: QueryRequestReceivedHandler(Server::ConnectionBasis &a
 
     // First, put the solicited notifications portion.
 
-    HandleQueryReceived(kQueryResponseBuffer, lResponseBuffer);
+    HandleQueryReceived(!kIsConfiguration, kQueryResponseBuffer, lResponseBuffer);
 
     // Second, put the response completion portion.
 
