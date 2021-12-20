@@ -542,7 +542,8 @@ FrontPanelController :: HandleQueryReceived(Common::ConnectionBuffer::MutableCou
     return (lRetval);
 }
 
-Status FrontPanelController :: HandleBrightnessResponse(const FrontPanelModel::BrightnessType &aBrightness, ConnectionBuffer::MutableCountedPointer &aBuffer)
+Status
+FrontPanelController :: HandleBrightnessResponse(const FrontPanelModel::BrightnessType &aBrightness, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     Server::Command::FrontPanel::BrightnessResponse  lBrightnessResponse;
     const uint8_t *                                  lBuffer;
@@ -563,7 +564,8 @@ Status FrontPanelController :: HandleBrightnessResponse(const FrontPanelModel::B
     return (lStatus);
 }
 
-Status FrontPanelController :: HandleLockedResponse(const FrontPanelModel::LockedType &aLocked, ConnectionBuffer::MutableCountedPointer &aBuffer)
+Status
+FrontPanelController :: HandleLockedResponse(const FrontPanelModel::LockedType &aLocked, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     Server::Command::FrontPanel::LockedResponse  lLockedResponse;
     const uint8_t *                              lBuffer;
