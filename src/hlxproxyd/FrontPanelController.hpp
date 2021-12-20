@@ -68,6 +68,8 @@ public:
     FrontPanelController(void);
     virtual ~FrontPanelController(void);
 
+    // Initializer(s)
+
     Common::Status Init(Client::CommandManager &aCommandManager, Server::CommandManager &aServerCommandManager, const Common::Timeout &aTimeout) final;
 
     // Configuration Management Methods
