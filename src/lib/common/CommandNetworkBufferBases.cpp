@@ -26,6 +26,9 @@
 
 #include "CommandNetworkBufferBases.hpp"
 
+#include <iomanip>
+#include <ios>
+#include <sstream>
 #include <string>
 
 #include <OpenHLX/Common/CommandBufferBasis.hpp>
@@ -109,6 +112,61 @@ DHCPv4EnabledBufferBasis :: Init(Common::Command::BufferBasis &aBuffer,
     static const char * const kDHCPv4Property = "DHCP";
 
     return (EnabledBufferBasis::Init(aBuffer, kDHCPv4Property, aEnabled));
+}
+
+/**
+ *  @brief
+ *    This is a class initializer for an Ethernet network interface
+ *    Ethernet EUI-48 address set operation.
+ *
+ *  This initializes the Ethernet network interface EUI-48 address
+ *  property set operation of a specified EUI-48 address into the
+ *  specified command buffer.
+ *
+ *  @param[in,out]  aBuffer         A mutable reference to the
+ *                                  command buffer to compose the
+ *                                  operation into.
+ *  @param[in]      aEthernetEUI48  An immutable reference to the
+ *                                  EUI-48 address to set.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+EthernetEUI48BufferBasis :: Init(Common::Command::BufferBasis &aBuffer,
+                                 const EthernetEUI48Type &aEthernetEUI48)
+{
+    static const char * const kMACProperty = "MAC";
+    const size_t              n            = sizeof(EthernetEUI48Type);
+    std::string               lPropertyString(kMACProperty);
+
+    for (size_t i = 0; i < n; i++)
+    {
+        std::ostringstream         lValueStream;
+
+        // Set the width to two (2), the fill to zero ('0'), the case
+        // to upper, and the base to hexadecimal while upcasting the
+        // value to an unsigned integer to ensure it is interpretted
+        // as something to be converted rather than a character
+        // literal.
+
+        lValueStream << std::setw(2)
+                     << std::setfill('0')
+                     << std::uppercase
+                     << std::hex
+                     << static_cast<unsigned int>(aEthernetEUI48[i]);
+
+        // Compose the buffer with the property and value.
+
+        lPropertyString += lValueStream.str();
+
+        if (i != (n - 1))
+        {
+            lPropertyString += '-';
+        }
+    }
+
+    return (aBuffer.Init(lPropertyString.c_str(), lPropertyString.size()));
 }
 
 /**

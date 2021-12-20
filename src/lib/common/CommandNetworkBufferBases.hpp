@@ -92,6 +92,32 @@ protected:
 /**
  *  @brief
  *    A derived object for composing a HLX command for mutating the
+ *    Ethernet network interface data model EUI-48 address property.
+ *
+ *  @ingroup common
+ *  @ingroup command
+ *
+ */
+class EthernetEUI48BufferBasis
+{
+protected:
+    /**
+     *  Convenience type redeclaring @a EnabledType from the
+     *  network model.
+     *
+     */
+    typedef Model::NetworkModel::EthernetEUI48Type  EthernetEUI48Type;
+
+protected:
+    EthernetEUI48BufferBasis(void) = default;
+    virtual ~EthernetEUI48BufferBasis(void) = default;
+
+    static Common::Status Init(Common::Command::BufferBasis &aBuffer, const EthernetEUI48Type &aEthernetEUI48);
+};
+
+/**
+ *  @brief
+ *    A derived object for composing a HLX command for mutating the
  *    Ethernet network interface data model Control4 SDDP enabled
  *    property.
  *
