@@ -54,8 +54,8 @@ NetworkModel :: NetworkModel(void) :
     mPrefixLength(),
     mGatewayAddressIsNull(true),
     mGatewayAddress(),
-    mEthernetAddressIsNull(true),
-    mEthernetAddress(),
+    mEthernetEUI48IsNull(true),
+    mEthernetEUI48(),
     mDHCPv4EnabledIsNull(true),
     mDHCPv4Enabled(false),
     mSDDPEnabledIsNull(true),
@@ -89,8 +89,8 @@ NetworkModel :: Init(void)
     mGatewayAddressIsNull  = true;
     memset(mGatewayAddress, 0, sizeof (mGatewayAddress));
 
-    mEthernetAddressIsNull = true;
-    memset(mEthernetAddress, 0, sizeof (mEthernetAddress));
+    mEthernetEUI48IsNull   = true;
+    memset(mEthernetEUI48, 0, sizeof (mEthernetEUI48));
 
     mDHCPv4EnabledIsNull   = true;
     mDHCPv4Enabled         = false;
@@ -149,8 +149,8 @@ NetworkModel :: operator =(const NetworkModel &aNetworkModel)
     mGatewayAddressIsNull  = aNetworkModel.mGatewayAddressIsNull;
     memcpy(mGatewayAddress, aNetworkModel.mGatewayAddress, sizeof (mGatewayAddress));
 
-    mEthernetAddressIsNull = aNetworkModel.mEthernetAddressIsNull;
-    memcpy(mEthernetAddress, aNetworkModel.mEthernetAddress, sizeof (mEthernetAddress));
+    mEthernetEUI48IsNull   = aNetworkModel.mEthernetEUI48IsNull;
+    memcpy(mEthernetEUI48, aNetworkModel.mEthernetEUI48, sizeof (mEthernetEUI48));
 
     mDHCPv4EnabledIsNull   = aNetworkModel.mDHCPv4EnabledIsNull;
     mDHCPv4Enabled         = aNetworkModel.mDHCPv4Enabled;
@@ -263,8 +263,8 @@ NetworkModel :: GetGatewayAddress(IPAddressType &aGatewayAddress) const
  *  This attempts to get the model Ethernet network interface hardware
  *  address, if it has been previously initialized or set.
  *
- *  @param[out]  aEthernetAddress  A mutable reference to storage for
- *                                 the Ethernet network interface hardware
+ *  @param[out]  aEthernetEUI48    A mutable reference to storage for
+ *                                 the Ethernet network interface EUI-48
  *                                 address, if successful.
  *
  *  @retval  kStatus_Success        If successful.
@@ -272,17 +272,17 @@ NetworkModel :: GetGatewayAddress(IPAddressType &aGatewayAddress) const
  *                                  hardware address has not been
  *                                  initialized with a known value.
  *
- *  @sa SetEthernetAddress
+ *  @sa SetEthernetEUI48
  *
  */
 Status
-NetworkModel :: GetEthernetAddress(EthernetAddressType &aEthernetAddress) const
+NetworkModel :: GetEthernetEUI48(EthernetEUI48Type &aEthernetEUI48) const
 {
-    Status lRetval = ((mEthernetAddressIsNull) ? kError_NotInitialized : kStatus_Success);
+    Status lRetval = ((mEthernetEUI48IsNull) ? kError_NotInitialized : kStatus_Success);
 
     if (lRetval == kStatus_Success)
     {
-        memcpy(aEthernetAddress, mEthernetAddress, sizeof (mEthernetAddress));
+        memcpy(aEthernetEUI48, mEthernetEUI48, sizeof (mEthernetEUI48));
     }
 
     return (lRetval);
@@ -469,30 +469,30 @@ NetworkModel :: SetGatewayAddress(const IPAddressType &aGatewayAddress)
  *  This attempts to set the model with the specified Ethernet network
  *  interface hardware address.
  *
- *  @param[in]  aEthernetAddress  An immutable reference to the Ethernet
- *                                network interface hardware address
- *                                to set.
+ *  @param[in]  aEthernetEUI48  An immutable reference to the Ethernet
+ *                              network interface EUI-48 address to
+ *                              set.
  *
  *  @retval  kStatus_Success          If successful.
- *  @retval  kStatus_ValueAlreadySet  The specified @a aEthernetAddress
+ *  @retval  kStatus_ValueAlreadySet  The specified @a aEthernetEUI48
  *                                    value has already been set.
  *
  */
 Status
-NetworkModel :: SetEthernetAddress(const EthernetAddressType &aEthernetAddress)
+NetworkModel :: SetEthernetEUI48(const EthernetEUI48Type &aEthernetEUI48)
 {
     Status lRetval = kStatus_Success;
 
-    if (memcmp(mEthernetAddress, aEthernetAddress, sizeof (mEthernetAddress)) == 0)
+    if (memcmp(mEthernetEUI48, aEthernetEUI48, sizeof (mEthernetEUI48)) == 0)
     {
-        lRetval = ((mEthernetAddressIsNull) ? kStatus_Success : kStatus_ValueAlreadySet);
+        lRetval = ((mEthernetEUI48IsNull) ? kStatus_Success : kStatus_ValueAlreadySet);
     }
     else
     {
-        memcpy(mEthernetAddress, aEthernetAddress, sizeof (mEthernetAddress));
+        memcpy(mEthernetEUI48, aEthernetEUI48, sizeof (mEthernetEUI48));
     }
 
-    mEthernetAddressIsNull = false;
+    mEthernetEUI48IsNull = false;
 
     return (lRetval);
 }
@@ -593,8 +593,8 @@ NetworkModel :: operator ==(const NetworkModel &aNetworkModel) const
             (mPrefixLength          == aNetworkModel.mPrefixLength         ) &&
             (mGatewayAddressIsNull  == aNetworkModel.mGatewayAddressIsNull ) &&
             (mGatewayAddress        == aNetworkModel.mGatewayAddress       ) &&
-            (mEthernetAddressIsNull == aNetworkModel.mEthernetAddressIsNull) &&
-            (mEthernetAddress       == aNetworkModel.mEthernetAddress      ) &&
+            (mEthernetEUI48IsNull   == aNetworkModel.mEthernetEUI48IsNull  ) &&
+            (mEthernetEUI48         == aNetworkModel.mEthernetEUI48        ) &&
             (mDHCPv4EnabledIsNull   == aNetworkModel.mDHCPv4EnabledIsNull  ) &&
             (mDHCPv4Enabled         == aNetworkModel.mDHCPv4Enabled        ) &&
             (mSDDPEnabledIsNull     == aNetworkModel.mSDDPEnabledIsNull    ) &&

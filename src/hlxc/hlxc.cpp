@@ -984,18 +984,18 @@ void HLXClient :: ControllerStateDidChange(Client::Application::ControllerBasis 
         }
         break;
 
-    case StateChange::kStateChangeType_NetworkEthernetAddress:
+    case StateChange::kStateChangeType_NetworkEthernetEUI48:
         {
-            const StateChange::NetworkEthernetAddressNotification &lSCN = static_cast<const StateChange::NetworkEthernetAddressNotification &>(aStateChangeNotification);
-            const NetworkModel::EthernetAddressType &lEthernetAddress = lSCN.GetEthernetAddress();
+            const StateChange::NetworkEthernetEUI48Notification &lSCN = static_cast<const StateChange::NetworkEthernetEUI48Notification &>(aStateChangeNotification);
+            const NetworkModel::EthernetEUI48Type &lEthernetEUI48 = lSCN.GetEthernetEUI48();
 
-            Log::Debug().Write("Ethernet network interface address is %02hhx:%02hhx:%02hhx:%02hhx:%02hhx:%02hhx\n",
-                               lEthernetAddress[0],
-                               lEthernetAddress[1],
-                               lEthernetAddress[2],
-                               lEthernetAddress[3],
-                               lEthernetAddress[4],
-                               lEthernetAddress[5]);
+            Log::Debug().Write("Ethernet network interface EUI-48 address is %02hhx:%02hhx:%02hhx:%02hhx:%02hhx:%02hhx\n",
+                               lEthernetEUI48[0],
+                               lEthernetEUI48[1],
+                               lEthernetEUI48[2],
+                               lEthernetEUI48[3],
+                               lEthernetEUI48[4],
+                               lEthernetEUI48[5]);
         }
         break;
 

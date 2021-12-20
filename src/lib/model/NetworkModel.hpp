@@ -53,10 +53,10 @@ public:
     typedef bool    EnabledType;
 
     /**
-     *  A type for the Ethernet network interface hardware address.
+     *  A type for the Ethernet network interface EUI-48 address.
      *
      */
-    typedef uint8_t EthernetAddressType[6];
+    typedef uint8_t EthernetEUI48Type[6];
 
     /**
      *  A type for the Ethernet network interface IPv4 or IPv6 network
@@ -84,14 +84,14 @@ public:
     Common::Status GetHLXAddress(IPAddressType &aHLXAddress) const;
     Common::Status GetPrefixLength(PrefixLengthType &aPrefixLength) const;
     Common::Status GetGatewayAddress(IPAddressType &aGatewayAddress) const;
-    Common::Status GetEthernetAddress(EthernetAddressType &aEthernetAddress) const;
+    Common::Status GetEthernetEUI48(EthernetEUI48Type &aEthernetEUI48) const;
     Common::Status GetDHCPv4Enabled(EnabledType &aDHCPv4Enabled) const;
     Common::Status GetSDDPEnabled(EnabledType &aSDDPEnabled) const;
 
     Common::Status SetHLXAddress(const IPAddressType &aHLXAddress);
     Common::Status SetPrefixLength(const PrefixLengthType &aPrefixLength);
     Common::Status SetGatewayAddress(const IPAddressType &aGatewayAddress);
-    Common::Status SetEthernetAddress(const EthernetAddressType &aEthernetAddress);
+    Common::Status SetEthernetEUI48(const EthernetEUI48Type &aEthernetEUI48);
     Common::Status SetDHCPv4Enabled(const EnabledType &aDHCPv4Enabled);
     Common::Status SetSDDPEnabled(const EnabledType &aSDDPEnabled);
 
@@ -104,8 +104,8 @@ private:
     PrefixLengthType     mPrefixLength;
     bool                 mGatewayAddressIsNull;
     IPAddressType        mGatewayAddress;
-    bool                 mEthernetAddressIsNull;
-    EthernetAddressType  mEthernetAddress;
+    bool                 mEthernetEUI48IsNull;
+    EthernetEUI48Type    mEthernetEUI48;
     bool                 mDHCPv4EnabledIsNull;
     EnabledType          mDHCPv4Enabled;
     bool                 mSDDPEnabledIsNull;

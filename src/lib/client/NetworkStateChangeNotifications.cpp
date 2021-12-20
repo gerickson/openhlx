@@ -104,11 +104,11 @@ NetworkDHCPv4EnabledNotification :: GetEnabled(void) const
  *    This is the class default constructor.
  *
  */
-NetworkEthernetAddressNotification :: NetworkEthernetAddressNotification(void) :
+NetworkEthernetEUI48Notification :: NetworkEthernetEUI48Notification(void) :
     NotificationBasis(),
-    mEthernetAddress()
+    mEthernetEUI48()
 {
-    memset(mEthernetAddress, 0, sizeof (mEthernetAddress));
+    memset(mEthernetEUI48, 0, sizeof (mEthernetEUI48));
 }
 
 /**
@@ -119,22 +119,22 @@ NetworkEthernetAddressNotification :: NetworkEthernetAddressNotification(void) :
  *  property state change notification with the specified Ethernet
  *  EUI-48 address.
  *
- *  @param[in]  aEthernetAddress  An immutable reference to the
- *                                Ethernet EUI-48 address that
- *                                changed.
+ *  @param[in]  aEthernetEUI48  An immutable reference to the
+ *                              Ethernet EUI-48 address that
+ *                              changed.
  *
  *  @retval  kStatus_Success  If successful.
  *
  */
 Status
-NetworkEthernetAddressNotification :: Init(const EthernetAddressType &aEthernetAddress)
+NetworkEthernetEUI48Notification :: Init(const EthernetEUI48Type &aEthernetEUI48)
 {
     Status lRetval = kStatus_Success;
 
-    lRetval = NotificationBasis::Init(kStateChangeType_NetworkEthernetAddress);
+    lRetval = NotificationBasis::Init(kStateChangeType_NetworkEthernetEUI48);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    memcpy(mEthernetAddress, aEthernetAddress, sizeof (mEthernetAddress));
+    memcpy(mEthernetEUI48, aEthernetEUI48, sizeof (mEthernetEUI48));
 
  done:
     return (lRetval);
@@ -149,10 +149,10 @@ NetworkEthernetAddressNotification :: Init(const EthernetAddressType &aEthernetA
  *    changed.
  *
  */
-const NetworkEthernetAddressNotification :: EthernetAddressType &
-NetworkEthernetAddressNotification :: GetEthernetAddress(void) const
+const NetworkEthernetEUI48Notification :: EthernetEUI48Type &
+NetworkEthernetEUI48Notification :: GetEthernetEUI48(void) const
 {
-    return (mEthernetAddress);
+    return (mEthernetEUI48);
 }
 
 /**

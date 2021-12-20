@@ -89,11 +89,11 @@ private:
  *  @ingroup network
  *
  */
-class EthernetAddressRegularExpressionBasis
+class EthernetEUI48RegularExpressionBasis
 {
 protected:
-    EthernetAddressRegularExpressionBasis(void) = default;
-    virtual ~EthernetAddressRegularExpressionBasis(void) = default;
+    EthernetEUI48RegularExpressionBasis(void) = default;
+    virtual ~EthernetEUI48RegularExpressionBasis(void) = default;
 
     static Common::Status Init(RegularExpressionBasis &aRegularExpression);
 

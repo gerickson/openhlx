@@ -87,7 +87,7 @@ private:
  *  @ingroup state-change
  *
  */
-class NetworkEthernetAddressNotification :
+class NetworkEthernetEUI48Notification :
     public NotificationBasis
 {
 public:
@@ -96,18 +96,18 @@ public:
      *  network interface model.
      *
      */
-    typedef Model::NetworkModel::EthernetAddressType EthernetAddressType;
+    typedef Model::NetworkModel::EthernetEUI48Type EthernetEUI48Type;
 
 public:
-    NetworkEthernetAddressNotification(void);
-    virtual ~NetworkEthernetAddressNotification(void) = default;
+    NetworkEthernetEUI48Notification(void);
+    virtual ~NetworkEthernetEUI48Notification(void) = default;
 
-    Common::Status Init(const EthernetAddressType &aEthernetAddress);
+    Common::Status Init(const EthernetEUI48Type &aEthernetEUI48);
 
-    const EthernetAddressType &GetEthernetAddress(void) const;
+    const EthernetEUI48Type &GetEthernetEUI48(void) const;
 
 private:
-    EthernetAddressType mEthernetAddress;
+    EthernetEUI48Type mEthernetEUI48;
 };
 
 /**
