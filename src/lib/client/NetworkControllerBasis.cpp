@@ -67,7 +67,7 @@ Command::Network::DHCPv4EnabledResponse  NetworkControllerBasis::kDHCPv4EnabledR
  *  regular expression.
  *
  */
-Command::Network::EthernetAddressResponse  NetworkControllerBasis::kEthernetAddressResponse;
+Command::Network::EthernetEUI48Response  NetworkControllerBasis::kEthernetEUI48Response;
 
 /**
  *  Class-scoped server network interface Control4 SDDP enabled
@@ -233,8 +233,8 @@ NetworkControllerBasis :: DoNotificationHandlers(const bool &aRegister)
         },
 
         {
-            kEthernetAddressResponse,
-            NetworkControllerBasis::EthernetAddressNotificationReceivedHandler
+            kEthernetEUI48Response,
+            NetworkControllerBasis::EthernetEUI48NotificationReceivedHandler
         },
 
         {
@@ -280,7 +280,7 @@ NetworkControllerBasis :: ResponseInit(void)
     lRetval = kDHCPv4EnabledResponse.Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = kEthernetAddressResponse.Init();
+    lRetval = kEthernetEUI48Response.Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = kSDDPEnabledResponse.Init();
@@ -519,20 +519,20 @@ NetworkControllerBasis :: DHCPv4EnabledNotificationReceivedHandler(const uint8_t
 }
 
 static Common::Status
-Parse(const uint8_t *aBuffer, const size_t &aBufferLength, NetworkModel::EthernetAddressType &aEthernetAddress)
+Parse(const uint8_t *aBuffer, const size_t &aBufferLength, NetworkModel::EthernetEUI48Type &aEthernetEUI48)
 {
     int    lConversions;
     Status lRetval = kStatus_Success;
 
     lConversions = sscanf(reinterpret_cast<const char *>(aBuffer),
                           "%02hhx-%02hhx-%02hhx-%02hhx-%02hhx-%02hhx",
-                          &aEthernetAddress[0],
-                          &aEthernetAddress[1],
-                          &aEthernetAddress[2],
-                          &aEthernetAddress[3],
-                          &aEthernetAddress[4],
-                          &aEthernetAddress[5]);
-    nlREQUIRE_ACTION(lConversions == sizeof(NetworkModel::EthernetAddressType), done, lRetval = -EINVAL);
+                          &aEthernetEUI48[0],
+                          &aEthernetEUI48[1],
+                          &aEthernetEUI48[2],
+                          &aEthernetEUI48[3],
+                          &aEthernetEUI48[4],
+                          &aEthernetEUI48[5]);
+    nlREQUIRE_ACTION(lConversions == sizeof(NetworkModel::EthernetEUI48Type), done, lRetval = -EINVAL);
 
  done:
     return (lRetval);
@@ -558,34 +558,34 @@ Parse(const uint8_t *aBuffer, const size_t &aBufferLength, NetworkModel::Etherne
  *
  */
 void
-NetworkControllerBasis :: EthernetAddressNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
+NetworkControllerBasis :: EthernetEUI48NotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
     DeclareScopedFunctionTracer(lTracer);
-    NetworkModel::EthernetAddressType                lEthernetAddress;
-    StateChange::NetworkEthernetAddressNotification  lStateChangeNotification;
-    Status                                           lStatus;
+    NetworkModel::EthernetEUI48Type                lEthernetEUI48;
+    StateChange::NetworkEthernetEUI48Notification  lStateChangeNotification;
+    Status                                         lStatus;
 
 
     (void)aSize;
 
-    nlREQUIRE(aMatches.size() == Command::Network::EthernetAddressResponse::kExpectedMatches, done);
+    nlREQUIRE(aMatches.size() == Command::Network::EthernetEUI48Response::kExpectedMatches, done);
 
     // Match 2/2: Ethernet Address
 
     lStatus = Parse(aBuffer + aMatches.at(1).rm_so,
                     Common::Utilities::Distance(aMatches.at(1)),
-                    lEthernetAddress);
+                    lEthernetEUI48);
 
-    // If the Ethernet EUI-48 address is unchanged, SetEthernetAddress
+    // If the Ethernet EUI-48 address is unchanged, SetEthernetEUI48
     // will return kStatus_ValueAlreadySet and there will be no need
     // to send a state change notification. If we receive
     // kStatus_Success, it is the first time set or a change and state
     // change notification needs to be sent.
 
-    lStatus = mNetworkModel.SetEthernetAddress(lEthernetAddress);
+    lStatus = mNetworkModel.SetEthernetEUI48(lEthernetEUI48);
     nlEXPECT_SUCCESS(lStatus, done);
 
-    lStatus = lStateChangeNotification.Init(lEthernetAddress);
+    lStatus = lStateChangeNotification.Init(lEthernetEUI48);
     nlREQUIRE_SUCCESS(lStatus, done);
 
     OnStateDidChange(lStateChangeNotification);
@@ -714,13 +714,13 @@ NetworkControllerBasis :: DHCPv4EnabledNotificationReceivedHandler(const uint8_t
  *
  */
 void
-NetworkControllerBasis :: EthernetAddressNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
+NetworkControllerBasis :: EthernetEUI48NotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext)
 {
     NetworkControllerBasis *lController = static_cast<NetworkControllerBasis *>(aContext);
 
     if (lController != nullptr)
     {
-        lController->EthernetAddressNotificationReceivedHandler(aBuffer, aSize, aMatches);
+        lController->EthernetEUI48NotificationReceivedHandler(aBuffer, aSize, aMatches);
     }
 }
 

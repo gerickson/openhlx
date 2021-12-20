@@ -122,6 +122,28 @@ DHCPv4EnabledResponse :: Init(const Model::NetworkModel::EnabledType &aEnabled)
 
 /**
  *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the Ethernet network interface EUI-48 address
+ *  command response buffer.
+ *
+ *  @param[in]  aEthernetEUI48   An immutable reference to the
+ *                               EUI-48 address state for which to
+ *                               form the response.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+EthernetEUI48Response :: Init(const Model::NetworkModel::EthernetEUI48Type &aEthernetEUI48)
+{
+    return (EthernetEUI48BufferBasis::Init(*this, aEthernetEUI48));
+}
+
+/**
+ *  @brief
  *    This is the class default initializer.
  *
  *  This initializes the set Ethernet network interface Control4 SDDP

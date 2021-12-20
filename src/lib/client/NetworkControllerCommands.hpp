@@ -84,13 +84,13 @@ private:
  *  @ingroup network
  *
  */
-class EthernetAddressResponse :
+class EthernetEUI48Response :
     public ResponseBasis,
-    public Common::Command::Network::EthernetAddressRegularExpressionBasis
+    public Common::Command::Network::EthernetEUI48RegularExpressionBasis
 {
 public:
-    EthernetAddressResponse(void) = default;
-    virtual ~EthernetAddressResponse(void) = default;
+    EthernetEUI48Response(void) = default;
+    virtual ~EthernetEUI48Response(void) = default;
 
     Common::Status Init(void);
 

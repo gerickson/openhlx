@@ -131,8 +131,7 @@ private:
 /**
  *  @brief
  *    A object for a HLX server Ethernet network interface DHCPv4
- *    enabled disabled data model property mutation command response
- *    buffer.
+ *    enabled data model property mutation command response buffer.
  *
  *  @ingroup server
  *  @ingroup command
@@ -148,6 +147,32 @@ public:
     virtual ~DHCPv4EnabledResponse(void) = default;
 
     Common::Status Init(const Model::NetworkModel::EnabledType &aEnabled);
+
+private:
+    // Explicitly hide base class initializers
+
+    using ResponseBasis::Init;
+};
+
+/**
+ *  @brief
+ *    A object for a HLX server Ethernet network interface EUI-48
+ *    address data model property mutation command response buffer.
+ *
+ *  @ingroup server
+ *  @ingroup command
+ *  @ingroup network
+ *
+ */
+class EthernetEUI48Response :
+    public ResponseBasis,
+    public Common::Command::Network::EthernetEUI48BufferBasis
+{
+public:
+    EthernetEUI48Response(void) = default;
+    virtual ~EthernetEUI48Response(void) = default;
+
+    Common::Status Init(const Model::NetworkModel::EthernetEUI48Type &aEthernetEUI48);
 
 private:
     // Explicitly hide base class initializers
@@ -185,8 +210,8 @@ private:
 /**
  *  @brief
  *    A object for a HLX server Ethernet network interface Control4
- *    SDDP enabled disabled data model property mutation command
- *    response buffer.
+ *    SDDP enabled data model property mutation command response
+ *    buffer.
  *
  *  @ingroup server
  *  @ingroup command

@@ -80,9 +80,9 @@ DHCPv4EnabledResponse :: Init(void)
  *
  */
 Status
-EthernetAddressResponse :: Init(void)
+EthernetEUI48Response :: Init(void)
 {
-    return (EthernetAddressRegularExpressionBasis::Init(*this));
+    return (EthernetEUI48RegularExpressionBasis::Init(*this));
 }
 
 /**
