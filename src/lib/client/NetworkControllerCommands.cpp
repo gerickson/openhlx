@@ -71,7 +71,7 @@ DHCPv4EnabledResponse :: Init(void)
  *  @brief
  *    This is the class default initializer.
  *
- *  This initializes the Ethernet network interface MAC address
+ *  This initializes the Ethernet network interface EUI-48 address
  *  property command response regular expression.
  *
  *  @retval  kStatus_Success              If successful.

@@ -76,7 +76,7 @@ private:
 
 /**
  *  @brief
- *    A object for a HLX client Ethernet network interface MAC address
+ *    A object for a HLX client Ethernet network interface EUI-48 address
  *    property data model command response regular expression.
  *
  *  @ingroup client

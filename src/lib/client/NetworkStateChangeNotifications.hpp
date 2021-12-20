@@ -79,8 +79,8 @@ private:
 /**
  *  @brief
  *    An object for a HLX client physical Ethernet network interface
- *    object MAC address property data model state change notification
- *    (SCN).
+ *    object EUI-48 address property data model state change
+ *    notification (SCN).
  *
  *  @ingroup client
  *  @ingroup front-panel

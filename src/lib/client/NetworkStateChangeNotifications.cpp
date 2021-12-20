@@ -115,12 +115,13 @@ NetworkEthernetAddressNotification :: NetworkEthernetAddressNotification(void) :
  *  @brief
  *    This is the class initializer.
  *
- *  This initializes the Ethernet network interface MAC address
- *  property state change notification with the specified Ethernet MAC
- *  address.
+ *  This initializes the Ethernet network interface EUI-48 address
+ *  property state change notification with the specified Ethernet
+ *  EUI-48 address.
  *
  *  @param[in]  aEthernetAddress  An immutable reference to the
- *                                Ethernet MAC address that changed.
+ *                                Ethernet EUI-48 address that
+ *                                changed.
  *
  *  @retval  kStatus_Success  If successful.
  *
@@ -141,10 +142,11 @@ NetworkEthernetAddressNotification :: Init(const EthernetAddressType &aEthernetA
 
 /**
  *  @brief
- *    Return the Ethernet network interface MAC address property.
+ *    Return the Ethernet network interface EUI-48 address property.
  *
  *  @returns
- *    The MAC address of the Ethernet network interface that changed.
+ *    The EUI-48 address of the Ethernet network interface that
+ *    changed.
  *
  */
 const NetworkEthernetAddressNotification :: EthernetAddressType &

@@ -78,11 +78,11 @@ private:
 /**
  *  @brief
  *    Base regular expression object for HLX Ethernet network
- *    interface MAC address property.
+ *    interface EUI-48 address property.
  *
  *  This defines a base, common (that is, independent of requestor or
  *  responder) regular expression object for HLX Ethernet network
- *  interface MAC address property.
+ *  interface EUI-48 address property.
  *
  *  @ingroup common
  *  @ingroup command

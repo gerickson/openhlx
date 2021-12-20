@@ -63,7 +63,7 @@ namespace Client
 Command::Network::DHCPv4EnabledResponse  NetworkControllerBasis::kDHCPv4EnabledResponse;
 
 /**
- *  Class-scoped server network interface MAC address notification
+ *  Class-scoped server network interface EUI-48 address notification
  *  regular expression.
  *
  */
@@ -540,11 +540,11 @@ Parse(const uint8_t *aBuffer, const size_t &aBufferLength, NetworkModel::Etherne
 
 /**
  *  @brief
- *    Ethernet network interface MAC address changed client
+ *    Ethernet network interface EUI-48 address changed client
  *    unsolicited notification handler.
  *
  *  This handles an asynchronous, unsolicited client notification for
- *  the Ethernet network interface MAC address changed
+ *  the Ethernet network interface EUI-48 address changed
  *  notification.
  *
  *  @param[in]  aBuffer   An immutable pointer to the start of the
@@ -576,7 +576,7 @@ NetworkControllerBasis :: EthernetAddressNotificationReceivedHandler(const uint8
                     Common::Utilities::Distance(aMatches.at(1)),
                     lEthernetAddress);
 
-    // If the Ethernet MAC address is unchanged, SetEthernetAddress
+    // If the Ethernet EUI-48 address is unchanged, SetEthernetAddress
     // will return kStatus_ValueAlreadySet and there will be no need
     // to send a state change notification. If we receive
     // kStatus_Success, it is the first time set or a change and state
@@ -690,11 +690,11 @@ NetworkControllerBasis :: DHCPv4EnabledNotificationReceivedHandler(const uint8_t
 
 /**
  *  @brief
- *    Ethernet network interface MAC address changed client
+ *    Ethernet network interface EUI-48 address changed client
  *    unsolicited notification handler trampoline.
  *
  *  This invokes the handler for an unsolicited, asynchronous client
- *  notification for the Ethernet network interface MAC address
+ *  notification for the Ethernet network interface EUI-48 address
  *  changed notification.
  *
  *  @param[in]      aBuffer    An immutable pointer to the start of the

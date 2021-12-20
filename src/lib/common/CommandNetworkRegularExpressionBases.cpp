@@ -49,7 +49,7 @@ namespace Network
 const char * const DHCPv4EnabledRegularExpressionBasis::kRegexp   = "DHCP([01])";
 
 /**
- *  The Ethernet network interface MAC address regular expression
+ *  The Ethernet network interface EUI-48 address regular expression
  *  pattern string.
  *
  */
@@ -77,7 +77,7 @@ const char * const SDDPEnabledRegularExpressionBasis::kRegexp     = "SDDP([01])"
 const size_t DHCPv4EnabledRegularExpressionBasis::kExpectedMatches   = 2;
 
 /**
- *  The Ethernet network interface MAC address regular expression
+ *  The Ethernet network interface EUI-48 address regular expression
  *  pattern expected substring matches.
  *
  */
@@ -119,13 +119,14 @@ DHCPv4EnabledRegularExpressionBasis :: Init(RegularExpressionBasis &aRegularExpr
 
 /**
  *  @brief
- *    This initializes the Ethernet network interface MAC address
+ *    This initializes the Ethernet network interface EUI-48 address
  *    property regular expression.
  *
  *  @param[in,out]  aRegularExpression  A mutable reference to the
- *                                      Ethernet network interface MAC
- *                                      address property regular
- *                                      expression to initialize.
+ *                                      Ethernet network interface
+ *                                      EUI-48 address property
+ *                                      regular expression to
+ *                                      initialize.
  *
  *  @retval  kStatus_Success  If successful.
  *
