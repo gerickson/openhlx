@@ -172,12 +172,18 @@ done:
  *  This handles and generates the server command response for an
  *  network interface query request.
  *
- *  @param[in]      aInputBuffer   A pointer to a null-terminated
- *                                 C string containing the content to
- *                                 place into the response buffer.
- *  @param[in,out]  aOutputBuffer  A mutable reference to the shared
- *                                 pointer into which the response is
- *                                 to be generated.
+ *  @param[in]      aIsConfiguration  An immutable reference to a Boolean
+ *                                    indicating whether the query
+ *                                    request is coming from a query
+ *                                    current configuration (true) or
+ *                                    a network query (false) request.
+
+ *  @param[in]      aInputBuffer      A pointer to a null-terminated
+ *                                    C string containing the content to
+ *                                    place into the response buffer.
+ *  @param[in,out]  aOutputBuffer     A mutable reference to the shared
+ *                                    pointer into which the response is
+ *                                    to be generated.
  *
  *  @retval  kStatus_Success        If successful.
  *  @retval  kError_NotInitialized  If the network interface model has
@@ -186,13 +192,16 @@ done:
  *
  */
 Status
-NetworkControllerBasis :: HandleQueryReceived(const char *aInputBuffer, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer) const
+NetworkControllerBasis :: HandleQueryReceived(const bool &aIsConfiguration,
+                                              const char *aInputBuffer,
+                                              Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer) const
 {
-    NetworkModel::EnabledType  lDHCPv4Enabled;
-    NetworkModel::EnabledType  lSDDPEnabled;
-    const uint8_t *            lBuffer;
-    size_t                     lSize;
-    Status                     lRetval;
+    NetworkModel::EnabledType        lDHCPv4Enabled;
+    NetworkModel::EthernetEUI48Type  lEthernetEUI48;
+    NetworkModel::EnabledType        lSDDPEnabled;
+    const uint8_t *                  lBuffer;
+    size_t                           lSize;
+    Status                           lRetval;
 
 
     // Handle any data model-sourced response content.
@@ -202,6 +211,15 @@ NetworkControllerBasis :: HandleQueryReceived(const char *aInputBuffer, Common::
 
     lRetval = HandleDHCPv4EnabledResponse(lDHCPv4Enabled, aOutputBuffer);
     nlREQUIRE_SUCCESS(lRetval, done);
+
+    if (!aIsConfiguration)
+    {
+        lRetval = mNetworkModel.GetEthernetEUI48(lEthernetEUI48);
+        nlREQUIRE_SUCCESS(lRetval, done);
+
+        lRetval = HandleEthernetEUI48Response(lEthernetEUI48, aOutputBuffer);
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
 
     lRetval = mNetworkModel.GetSDDPEnabled(lSDDPEnabled);
     nlREQUIRE_SUCCESS(lRetval, done);
@@ -235,9 +253,9 @@ NetworkControllerBasis :: HandleQueryReceived(const char *aInputBuffer, Common::
  *  This handles and generates the server command response for an
  *  Ethernet network interface DHCPv4 enabled state request.
  *
- *  @param[in]      aEnabled   An immutable reference to the Ethernet network interface DHCPv4
- *                             enabled state for which the response
- *                             is to be formed.
+ *  @param[in]      aEnabled   An immutable reference to the Ethernet
+ *                             network interface DHCPv4 enabled state
+ *                             for which the response is to be formed.
  *  @param[in,out]  aBuffer    A mutable reference to the shared
  *                             pointer into which the response is to
  *                             be generated.
@@ -263,6 +281,51 @@ NetworkControllerBasis :: HandleDHCPv4EnabledResponse(const NetworkModel::Enable
 
     lBuffer = lDHCPv4EnabledResponse.GetBuffer();
     lSize = lDHCPv4EnabledResponse.GetSize();
+
+    lStatus = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return (lStatus);
+}
+
+/**
+ *  @brief
+ *    Handle and generate the server command response for an Ethernet
+ *    network interface EUI-48 address request.
+ *
+ *  This handles and generates the server command response for an
+ *  Ethernet network interface EUI-48 address request.
+ *
+ *  @param[in]      aEthernetEUI48   An immutable reference to the
+ *                                   Ethernet network interface EUI-48
+ *                                   address for which the response is
+ *                                   to be formed.
+ *  @param[in,out]  aBuffer          A mutable reference to the shared
+ *                                   pointer into which the response is
+ *                                   to be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
+NetworkControllerBasis :: HandleEthernetEUI48Response(const NetworkModel::EthernetEUI48Type &aEthernetEUI48, ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    Server::Command::Network::EthernetEUI48Response  lEthernetEUI48Response;
+    const uint8_t *                                  lBuffer;
+    size_t                                           lSize;
+    Status                                           lStatus;
+
+
+    lStatus = lEthernetEUI48Response.Init(aEthernetEUI48);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lBuffer = lEthernetEUI48Response.GetBuffer();
+    lSize = lEthernetEUI48Response.GetSize();
 
     lStatus = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
     nlREQUIRE_SUCCESS(lStatus, done);

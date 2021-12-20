@@ -72,7 +72,9 @@ protected:
 
     // Observation (Query) Command Request Instance Handlers
 
-    Common::Status HandleQueryReceived(const char *aInputBuffer, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer) const;
+    Common::Status HandleQueryReceived(const bool &aIsConfiguration,
+                                       const char *aInputBuffer,
+                                       Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer) const;
 
 protected:
     // Command Response Handlers
@@ -80,6 +82,7 @@ protected:
     // Command Response Class (Static) Handlers
 
     static Common::Status HandleDHCPv4EnabledResponse(const Model::NetworkModel::EnabledType &aEnabled, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    static Common::Status HandleEthernetEUI48Response(const Model::NetworkModel::EthernetEUI48Type &aEthernetEUI48, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
     static Common::Status HandleSDDPEnabledResponse(const Model::NetworkModel::EnabledType &aEnabled, Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
 
 protected:
