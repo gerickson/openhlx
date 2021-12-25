@@ -102,6 +102,85 @@ private:
 
 /**
  *  @brief
+ *    A object for a HLX client Ethernet network interface default
+ *    router IP address property data model command response regular
+ *    expression.
+ *
+ *  @ingroup client
+ *  @ingroup command
+ *  @ingroup network
+ *
+ */
+class IPDefaultRouterAddressResponse :
+    public ResponseBasis,
+    public Common::Command::Network::IPDefaultRouterAddressRegularExpressionBasis
+{
+public:
+    IPDefaultRouterAddressResponse(void) = default;
+    virtual ~IPDefaultRouterAddressResponse(void) = default;
+
+    Common::Status Init(void);
+
+private:
+    // Explicitly hide base class initializers
+
+    using ResponseBasis::Init;
+};
+
+/**
+ *  @brief
+ *    A object for a HLX client Ethernet network interface host IP
+ *    address property data model command response regular expression.
+ *
+ *  @ingroup client
+ *  @ingroup command
+ *  @ingroup network
+ *
+ */
+class IPHostAddressResponse :
+    public ResponseBasis,
+    public Common::Command::Network::IPHostAddressRegularExpressionBasis
+{
+public:
+    IPHostAddressResponse(void) = default;
+    virtual ~IPHostAddressResponse(void) = default;
+
+    Common::Status Init(void);
+
+private:
+    // Explicitly hide base class initializers
+
+    using ResponseBasis::Init;
+};
+
+/**
+ *  @brief
+ *    A object for a HLX client Ethernet network interface IP netmask
+ *    property data model command response regular expression.
+ *
+ *  @ingroup client
+ *  @ingroup command
+ *  @ingroup network
+ *
+ */
+class IPNetmaskResponse :
+    public ResponseBasis,
+    public Common::Command::Network::IPNetmaskRegularExpressionBasis
+{
+public:
+    IPNetmaskResponse(void) = default;
+    virtual ~IPNetmaskResponse(void) = default;
+
+    Common::Status Init(void);
+
+private:
+    // Explicitly hide base class initializers
+
+    using ResponseBasis::Init;
+};
+
+/**
+ *  @brief
  *    A object for a HLX client network data model query command request
  *    buffer.
  *

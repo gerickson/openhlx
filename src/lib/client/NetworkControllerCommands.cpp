@@ -89,6 +89,60 @@ EthernetEUI48Response :: Init(void)
  *  @brief
  *    This is the class default initializer.
  *
+ *  This initializes the Ethernet network interface default router IP
+ *  address property command response regular expression.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+IPDefaultRouterAddressResponse :: Init(void)
+{
+    return (IPDefaultRouterAddressRegularExpressionBasis::Init(*this));
+}
+
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the Ethernet network interface host IP address
+ *  property command response regular expression.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+IPHostAddressResponse :: Init(void)
+{
+    return (IPHostAddressRegularExpressionBasis::Init(*this));
+}
+
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the Ethernet network interface IP netmask
+ *  property command response regular expression.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+IPNetmaskResponse :: Init(void)
+{
+    return (IPNetmaskRegularExpressionBasis::Init(*this));
+}
+
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
  *  This initializes the Ethernet network interface query command
  *  request buffer.
  *
