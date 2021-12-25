@@ -54,10 +54,7 @@ namespace Proxy
 // The query network response contains both state and
 // configuration settings.
 
-static const char * const kQueryResponseBuffer = \
-"(IP192.168.1.48)\r\n"
-"(NM255.255.255.0)\r\n"
-"(GW192.168.1.1)\r\n";
+static const char * const kQueryResponseBuffer = NULL;
 
 // The query current configuration response contains ONLY
 // configuration settings.
