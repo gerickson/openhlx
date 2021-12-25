@@ -80,6 +80,7 @@ public:
     Status ToString(char *aBuffer, const size_t &aLength) const;
 
     Status SetAddress(const Version &aVersion, const void *aBytes, const size_t &aSize);
+    Status FromString(const char *aString, const size_t &aLength);
     Status FromString(const char *aString);
 
 private:

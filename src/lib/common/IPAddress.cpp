@@ -392,6 +392,65 @@ IPAddress :: SetAddress(const Version &aVersion, const void *aBytes, const size_
  *  ("x:x:x:x:x:x:x:x"), potentially with zero-suppression ("::x") and
  *  IPv4-mapping ("x:x:x:x:x:x:d.d.d.d").
  *
+ *  @param[in]  aString  A pointer to an immutable string buffer
+ *                       containing the IPv4 or IPv6 address to
+ *                       parse and convert to an IP address.
+ *  @param[in]  aLength  The length of the string buffer pointed to by
+ *                       @a aString.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -EINVAL                If @a aString was null, zero length,
+ *                                  or contained an invalid or
+ *                                  malformed IPv4 or IPv6 address.
+ */
+Status
+IPAddress :: FromString(const char *aString, const size_t &aLength)
+{
+    bool      lIsIPv6;
+    int       lFamily;
+    Version   lVersion;
+    Addresses lParsedAddresses;
+    void *    lParsedAddress;
+    size_t    lParsedAddressSize;
+    int       lStatus;
+    Status    lRetval = kStatus_Success;
+
+
+    nlREQUIRE_ACTION(aString != nullptr, done, lRetval = -EINVAL);
+    nlREQUIRE_ACTION(aLength > 0, done, lRetval = -EINVAL);
+
+    lIsIPv6            = (memchr(aString, ':', aLength) != nullptr);
+
+    lFamily            = (lIsIPv6 ? AF_INET6 : AF_INET);
+    lVersion           = (lIsIPv6 ? Version::kIPv6 : Version::kIPv4);
+    lParsedAddress     = (lIsIPv6 ? static_cast<void *>(&lParsedAddresses.mIPv6Address) :
+                          static_cast<void *>(&lParsedAddresses.mIPv4Address));
+
+    lStatus = inet_pton(lFamily, aString, lParsedAddress);
+    nlREQUIRE_ACTION(lStatus == 1, done, lRetval = ((lStatus < 0) ? -errno : -EINVAL));
+
+    lParsedAddressSize = (lIsIPv6 ? sizeof (lParsedAddresses.mIPv6Address) :
+                          sizeof (lParsedAddresses.mIPv4Address));
+
+    lRetval = SetAddress(lVersion, lParsedAddress, lParsedAddressSize);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Attempt to convert an IPv4 or IPv6 address from a conventional
+ *    text presentation format to this object.
+ *
+ *  This attempts to convert an IPv4 or IPv6 address from a
+ *  conventional text presentation format to this object. For IPv4
+ *  addresses, that is the dotted-decimal ("ddd.ddd.ddd.ddd")
+ *  format. For IPv6 addresses, that is the colon-separated format
+ *  ("x:x:x:x:x:x:x:x"), potentially with zero-suppression ("::x") and
+ *  IPv4-mapping ("x:x:x:x:x:x:d.d.d.d").
+ *
  *  @param[in]  aString  A pointer to an immutable null-terminated C
  *                       string containing the IPv4 or IPv6 address to
  *                       parse and convert to an IP address.
@@ -404,34 +463,11 @@ IPAddress :: SetAddress(const Version &aVersion, const void *aBytes, const size_
 Status
 IPAddress :: FromString(const char *aString)
 {
-    bool      lIsIPv6;
-    int       lFamily;
-    Version   lVersion;
-    Addresses lParsedAddresses;
-    void *    lParsedAddress;
-    uint8_t * lAddress;
-    size_t    lAddressSize;
-    int       lStatus;
-    Status    lRetval = kStatus_Success;
+    Status lRetval;
 
     nlREQUIRE_ACTION(aString != nullptr, done, lRetval = -EINVAL);
 
-    lIsIPv6        = (strchr(aString, ':') != nullptr);
-    lFamily        = (lIsIPv6 ? AF_INET6 : AF_INET);
-    lVersion       = (lIsIPv6 ? Version::kIPv6 : Version::kIPv4);
-    lParsedAddress = (lIsIPv6 ? static_cast<void *>(&lParsedAddresses.mIPv6Address) :
-                      static_cast<void *>(&lParsedAddresses.mIPv4Address));
-    lAddress       = (lIsIPv6 ? reinterpret_cast<uint8_t *>(&mAddresses.mIPv6Address) :
-                      reinterpret_cast<uint8_t *>(&mAddresses.mIPv4Address));
-
-    lStatus = inet_pton(lFamily, aString, lParsedAddress);
-    nlREQUIRE_ACTION(lStatus == 1, done, lRetval = ((lStatus < 0) ? -errno : -EINVAL));
-
-    lAddressSize   = (lIsIPv6 ? sizeof (mAddresses.mIPv6Address) :
-                      sizeof (mAddresses.mIPv4Address));
-
-    lRetval = SetAddress(lVersion, lAddress, lAddressSize);
-    nlREQUIRE_SUCCESS(lRetval, done);
+    lRetval = FromString(aString, strlen(aString));
 
  done:
     return (lRetval);
