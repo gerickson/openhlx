@@ -29,6 +29,7 @@
 
 #include <OpenHLX/Common/CommandQueryBufferBasis.hpp>
 #include <OpenHLX/Common/Errors.hpp>
+#include <OpenHLX/Common/IPAddress.hpp>
 #include <OpenHLX/Model/NetworkModel.hpp>
 
 
@@ -113,6 +114,82 @@ protected:
     virtual ~EthernetEUI48BufferBasis(void) = default;
 
     static Common::Status Init(Common::Command::BufferBasis &aBuffer, const EthernetEUI48Type &aEthernetEUI48);
+};
+
+/**
+ *  @brief
+ *    A derived object for composing a HLX command for mutating the
+ *    Ethernet network interface data model IP address property.
+ *
+ *  @ingroup common
+ *  @ingroup command
+ *
+ */
+class IPBufferBasis
+{
+protected:
+    IPBufferBasis(void) = default;
+    virtual ~IPBufferBasis(void) = default;
+
+    static Common::Status Init(Common::Command::BufferBasis &aBuffer, const char *aProperty, const IPAddress &aIPAddress);
+};
+
+/**
+ *  @brief
+ *    A derived object for composing a HLX command for mutating the
+ *    Ethernet network interface data model default router IP address
+ *    property.
+ *
+ *  @ingroup common
+ *  @ingroup command
+ *
+ */
+class IPDefaultRouterAddressBufferBasis :
+    public IPBufferBasis
+{
+protected:
+    IPDefaultRouterAddressBufferBasis(void) = default;
+    virtual ~IPDefaultRouterAddressBufferBasis(void) = default;
+
+    static Common::Status Init(Common::Command::BufferBasis &aBuffer, const IPAddress &aIPAddress);
+};
+
+/**
+ *  @brief
+ *    A derived object for composing a HLX command for mutating the
+ *    Ethernet network interface data model host IP address property.
+ *
+ *  @ingroup common
+ *  @ingroup command
+ *
+ */
+class IPHostAddressBufferBasis :
+    public IPBufferBasis
+{
+protected:
+    IPHostAddressBufferBasis(void) = default;
+    virtual ~IPHostAddressBufferBasis(void) = default;
+
+    static Common::Status Init(Common::Command::BufferBasis &aBuffer, const IPAddress &aIPAddress);
+};
+
+/**
+ *  @brief
+ *    A derived object for composing a HLX command for mutating the
+ *    Ethernet network interface data model IP netmask property.
+ *
+ *  @ingroup common
+ *  @ingroup command
+ *
+ */
+class IPNetmaskBufferBasis :
+    public IPBufferBasis
+{
+protected:
+    IPNetmaskBufferBasis(void) = default;
+    virtual ~IPNetmaskBufferBasis(void) = default;
+
+    static Common::Status Init(Common::Command::BufferBasis &aBuffer, const IPAddress &aIPAddress);
 };
 
 /**
