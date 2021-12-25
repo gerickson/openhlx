@@ -107,6 +107,93 @@ private:
 /**
  *  @brief
  *    Base regular expression object for HLX Ethernet network
+ *    interface default router IP address property.
+ *
+ *  This defines a base, common (that is, independent of requestor or
+ *  responder) regular expression object for HLX Ethernet network
+ *  interface default router IP address property.
+ *
+ *  @ingroup common
+ *  @ingroup command
+ *  @ingroup network
+ *
+ */
+class IPDefaultRouterAddressRegularExpressionBasis
+{
+protected:
+    IPDefaultRouterAddressRegularExpressionBasis(void) = default;
+    virtual ~IPDefaultRouterAddressRegularExpressionBasis(void) = default;
+
+    static Common::Status Init(RegularExpressionBasis &aRegularExpression);
+
+public:
+    static const size_t       kExpectedMatches;
+
+private:
+    static const char * const kRegexp;
+};
+
+/**
+ *  @brief
+ *    Base regular expression object for HLX Ethernet network
+ *    interface host IP address property.
+ *
+ *  This defines a base, common (that is, independent of requestor or
+ *  responder) regular expression object for HLX Ethernet network
+ *  interface host IP address property.
+ *
+ *  @ingroup common
+ *  @ingroup command
+ *  @ingroup network
+ *
+ */
+class IPHostAddressRegularExpressionBasis
+{
+protected:
+    IPHostAddressRegularExpressionBasis(void) = default;
+    virtual ~IPHostAddressRegularExpressionBasis(void) = default;
+
+    static Common::Status Init(RegularExpressionBasis &aRegularExpression);
+
+public:
+    static const size_t       kExpectedMatches;
+
+private:
+    static const char * const kRegexp;
+};
+
+/**
+ *  @brief
+ *    Base regular expression object for HLX Ethernet network
+ *    interface IP netmask property.
+ *
+ *  This defines a base, common (that is, independent of requestor or
+ *  responder) regular expression object for HLX Ethernet network
+ *  interface IP netmask property.
+ *
+ *  @ingroup common
+ *  @ingroup command
+ *  @ingroup network
+ *
+ */
+class IPNetmaskRegularExpressionBasis
+{
+protected:
+    IPNetmaskRegularExpressionBasis(void) = default;
+    virtual ~IPNetmaskRegularExpressionBasis(void) = default;
+
+    static Common::Status Init(RegularExpressionBasis &aRegularExpression);
+
+public:
+    static const size_t       kExpectedMatches;
+
+private:
+    static const char * const kRegexp;
+};
+
+/**
+ *  @brief
+ *    Base regular expression object for HLX Ethernet network
  *    interface query command.
  *
  *  This defines a base, common (that is, independent of requestor or
