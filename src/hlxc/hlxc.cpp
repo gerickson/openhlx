@@ -999,6 +999,48 @@ void HLXClient :: ControllerStateDidChange(Client::Application::ControllerBasis 
         }
         break;
 
+    case StateChange::kStateChangeType_NetworkIPDefaultRouterAddress:
+        {
+            const StateChange::NetworkIPDefaultRouterAddressNotification &lSCN = static_cast<const StateChange::NetworkIPDefaultRouterAddressNotification &>(aStateChangeNotification);
+            const Common::IPAddress &lIPAddress = lSCN.GetIPAddress();
+            char                     lBuffer[INET6_ADDRSTRLEN];
+            Status                   lStatus;
+
+            lStatus = lIPAddress.ToString(&lBuffer[0], ElementsOf(lBuffer));
+            nlREQUIRE_SUCCESS(lStatus, done);
+
+            Log::Debug().Write("Ethernet network interface default router IP address is %s\n", lBuffer);
+        }
+        break;
+
+    case StateChange::kStateChangeType_NetworkIPHostAddress:
+        {
+            const StateChange::NetworkIPHostAddressNotification &lSCN = static_cast<const StateChange::NetworkIPHostAddressNotification &>(aStateChangeNotification);
+            const Common::IPAddress &lIPAddress = lSCN.GetIPAddress();
+            char                     lBuffer[INET6_ADDRSTRLEN];
+            Status                   lStatus;
+
+            lStatus = lIPAddress.ToString(&lBuffer[0], ElementsOf(lBuffer));
+            nlREQUIRE_SUCCESS(lStatus, done);
+
+            Log::Debug().Write("Ethernet network interface host IP address is %s\n", lBuffer);
+        }
+        break;
+
+    case StateChange::kStateChangeType_NetworkIPNetmask:
+        {
+            const StateChange::NetworkIPNetmaskNotification &lSCN = static_cast<const StateChange::NetworkIPNetmaskNotification &>(aStateChangeNotification);
+            const Common::IPAddress &lIPAddress = lSCN.GetIPNetmask();
+            char                     lBuffer[INET6_ADDRSTRLEN];
+            Status                   lStatus;
+
+            lStatus = lIPAddress.ToString(&lBuffer[0], ElementsOf(lBuffer));
+            nlREQUIRE_SUCCESS(lStatus, done);
+
+            Log::Debug().Write("Ethernet network interface IP netmask is %s\n", lBuffer);
+        }
+        break;
+
     case StateChange::kStateChangeType_NetworkSDDPEnabled:
         {
             const StateChange::NetworkSDDPEnabledNotification &lSCN = static_cast<const StateChange::NetworkSDDPEnabledNotification &>(aStateChangeNotification);
