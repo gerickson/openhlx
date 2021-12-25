@@ -232,7 +232,7 @@ IPHostAddressRegularExpressionBasis :: Init(RegularExpressionBasis &aRegularExpr
  *  @retval  kStatus_Success  If successful.
  *
  */
-Status 
+Status
 IPNetmaskRegularExpressionBasis :: Init(RegularExpressionBasis &aRegularExpression)
 {
     return (aRegularExpression.Init(kRegexp, kExpectedMatches));
