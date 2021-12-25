@@ -48,16 +48,16 @@ namespace Model
  *
  */
 NetworkModel :: NetworkModel(void) :
-    mHLXAddressIsNull(true),
-    mHLXAddress(),
-    mPrefixLengthIsNull(true),
-    mPrefixLength(),
-    mGatewayAddressIsNull(true),
-    mGatewayAddress(),
-    mEthernetEUI48IsNull(true),
-    mEthernetEUI48(),
     mDHCPv4EnabledIsNull(true),
     mDHCPv4Enabled(false),
+    mEthernetEUI48IsNull(true),
+    mEthernetEUI48(),
+    mDefaultRouterAddressIsNull(true),
+    mDefaultRouterAddress(),
+    mHostAddressIsNull(true),
+    mHostAddress(),
+    mNetmaskIsNull(true),
+    mNetmask(),
     mSDDPEnabledIsNull(true),
     mSDDPEnabled(false)
 {
@@ -80,22 +80,18 @@ NetworkModel :: Init(void)
 {
     Status lRetval = kStatus_Success;
 
-    mHLXAddressIsNull      = true;
-    memset(mHLXAddress, 0, sizeof (mHLXAddress));
+    mDHCPv4EnabledIsNull        = true;
+    mDHCPv4Enabled              = false;
 
-    mPrefixLengthIsNull    = true;
-    mPrefixLength          = 0;
-
-    mGatewayAddressIsNull  = true;
-    memset(mGatewayAddress, 0, sizeof (mGatewayAddress));
-
-    mEthernetEUI48IsNull   = true;
+    mEthernetEUI48IsNull        = true;
     memset(mEthernetEUI48, 0, sizeof (mEthernetEUI48));
 
-    mDHCPv4EnabledIsNull   = true;
-    mDHCPv4Enabled         = false;
-    mSDDPEnabledIsNull     = true;
-    mSDDPEnabled           = false;
+    mDefaultRouterAddressIsNull = true;
+    mHostAddressIsNull          = true;
+    mNetmaskIsNull              = true;
+
+    mSDDPEnabledIsNull          = true;
+    mSDDPEnabled                = false;
 
     return (lRetval);
 }
@@ -140,22 +136,23 @@ NetworkModel :: Init(const NetworkModel &aNetworkModel)
 NetworkModel &
 NetworkModel :: operator =(const NetworkModel &aNetworkModel)
 {
-    mHLXAddressIsNull      = aNetworkModel.mHLXAddressIsNull;
-    memcpy(mHLXAddress, aNetworkModel.mHLXAddress, sizeof (mHLXAddress));
+    mDHCPv4EnabledIsNull         = aNetworkModel.mDHCPv4EnabledIsNull;
+    mDHCPv4Enabled               = aNetworkModel.mDHCPv4Enabled;
 
-    mPrefixLengthIsNull    = aNetworkModel.mPrefixLengthIsNull;
-    mPrefixLength          = aNetworkModel.mPrefixLength;
-
-    mGatewayAddressIsNull  = aNetworkModel.mGatewayAddressIsNull;
-    memcpy(mGatewayAddress, aNetworkModel.mGatewayAddress, sizeof (mGatewayAddress));
-
-    mEthernetEUI48IsNull   = aNetworkModel.mEthernetEUI48IsNull;
+    mEthernetEUI48IsNull         = aNetworkModel.mEthernetEUI48IsNull;
     memcpy(mEthernetEUI48, aNetworkModel.mEthernetEUI48, sizeof (mEthernetEUI48));
 
-    mDHCPv4EnabledIsNull   = aNetworkModel.mDHCPv4EnabledIsNull;
-    mDHCPv4Enabled         = aNetworkModel.mDHCPv4Enabled;
-    mSDDPEnabledIsNull     = aNetworkModel.mSDDPEnabledIsNull;
-    mSDDPEnabled           = aNetworkModel.mSDDPEnabled;
+    mDefaultRouterAddressIsNull  = aNetworkModel.mDefaultRouterAddressIsNull;
+    mDefaultRouterAddress        = aNetworkModel.mDefaultRouterAddress;
+
+    mHostAddressIsNull           = aNetworkModel.mHostAddressIsNull;
+    mHostAddress                 = aNetworkModel.mHostAddress;
+
+    mNetmaskIsNull               = aNetworkModel.mNetmaskIsNull;
+    mNetmask                     = aNetworkModel.mNetmask;
+
+    mSDDPEnabledIsNull           = aNetworkModel.mSDDPEnabledIsNull;
+    mSDDPEnabled                 = aNetworkModel.mSDDPEnabled;
 
     return (*this);
 }
@@ -167,7 +164,7 @@ NetworkModel :: operator =(const NetworkModel &aNetworkModel)
  *  This attempts to get the model HLX IP address, if it has been
  *  previously initialized or set.
  *
- *  @param[out]  aHLXAddress  A mutable reference to storage for the
+ *  @param[out]  aHostAddress  A mutable reference to storage for the
  *                            HLX IP address, if successful.
  *
  *  @retval  kStatus_Success        If successful.
@@ -175,17 +172,17 @@ NetworkModel :: operator =(const NetworkModel &aNetworkModel)
  *                                  been initialized with a known
  *                                  value.
  *
- *  @sa SetHLXAddress
+ *  @sa SetHostAddress
  *
  */
 Status
-NetworkModel :: GetHLXAddress(IPAddressType &aHLXAddress) const
+NetworkModel :: GetHostAddress(IPAddressType &aHostAddress) const
 {
-    Status lRetval = ((mHLXAddressIsNull) ? kError_NotInitialized : kStatus_Success);
+    Status lRetval = ((mHostAddressIsNull) ? kError_NotInitialized : kStatus_Success);
 
     if (lRetval == kStatus_Success)
     {
-        memcpy(aHLXAddress, mHLXAddress, sizeof (mHLXAddress));
+        aHostAddress = mHostAddress;
     }
 
     return (lRetval);
@@ -198,7 +195,7 @@ NetworkModel :: GetHLXAddress(IPAddressType &aHLXAddress) const
  *  This attempts to get the model HLX network IP address prefix
  *  length, if it has been previously initialized or set.
  *
- *  @param[out]  aPrefixLength  A mutable reference to storage for the
+ *  @param[out]  aNetmask  A mutable reference to storage for the
  *                              HLX network IP address prefix length, if
  *                              successful.
  *
@@ -207,17 +204,17 @@ NetworkModel :: GetHLXAddress(IPAddressType &aHLXAddress) const
  *                                  length has not been initialized
  *                                  with a known value.
  *
- *  @sa SetPrefixLength
+ *  @sa SetNetmask
  *
  */
 Status
-NetworkModel :: GetPrefixLength(PrefixLengthType &aPrefixLength) const
+NetworkModel :: GetNetmask(IPAddressType &aNetmask) const
 {
-    Status lRetval = ((mPrefixLengthIsNull) ? kError_NotInitialized : kStatus_Success);
+    Status lRetval = ((mNetmaskIsNull) ? kError_NotInitialized : kStatus_Success);
 
     if (lRetval == kStatus_Success)
     {
-        aPrefixLength = mPrefixLength;
+        aNetmask = mNetmask;
     }
 
     return (lRetval);
@@ -230,7 +227,7 @@ NetworkModel :: GetPrefixLength(PrefixLengthType &aPrefixLength) const
  *  This attempts to get the model gateway IP address, if it has been
  *  previously initialized or set.
  *
- *  @param[out]  aGatewayAddress  A mutable reference to storage for
+ *  @param[out]  aDefaultRouterAddress  A mutable reference to storage for
  *                                the gateway IP address, if
  *                                successful.
  *
@@ -239,17 +236,17 @@ NetworkModel :: GetPrefixLength(PrefixLengthType &aPrefixLength) const
  *                                  been initialized with a known
  *                                  value.
  *
- *  @sa SetGatewayAddress
+ *  @sa SetDefaultRouterAddress
  *
  */
 Status
-NetworkModel :: GetGatewayAddress(IPAddressType &aGatewayAddress) const
+NetworkModel :: GetDefaultRouterAddress(IPAddressType &aDefaultRouterAddress) const
 {
-    Status lRetval = ((mGatewayAddressIsNull) ? kError_NotInitialized : kStatus_Success);
+    Status lRetval = ((mDefaultRouterAddressIsNull) ? kError_NotInitialized : kStatus_Success);
 
     if (lRetval == kStatus_Success)
     {
-        memcpy(aGatewayAddress, mGatewayAddress, sizeof (mGatewayAddress));
+        aDefaultRouterAddress = mDefaultRouterAddress;
     }
 
     return (lRetval);
@@ -365,66 +362,65 @@ NetworkModel :: GetSDDPEnabled(EnabledType &aSDDPEnabled) const
  *
  *  This attempts to set the model with the specified HLX IP address.
  *
- *  @param[in]  aHLXAddress  An immutable reference to the HLX IP
+ *  @param[in]  aHostAddress  An immutable reference to the HLX IP
  *                           address to set.
  *
  *  @retval  kStatus_Success          If successful.
- *  @retval  kStatus_ValueAlreadySet  The specified @a aHLXAddress
+ *  @retval  kStatus_ValueAlreadySet  The specified @a aHostAddress
  *                                    value has already been set.
  *
  */
 Status
-NetworkModel :: SetHLXAddress(const IPAddressType &aHLXAddress)
+NetworkModel :: SetHostAddress(const IPAddressType &aHostAddress)
 {
     Status lRetval = kStatus_Success;
 
-    if (memcmp(mHLXAddress, aHLXAddress, sizeof (mHLXAddress)) == 0)
+    if (mHostAddress == aHostAddress)
     {
-        lRetval = ((mHLXAddressIsNull) ? kStatus_Success : kStatus_ValueAlreadySet);
+        lRetval = ((mHostAddressIsNull) ? kStatus_Success : kStatus_ValueAlreadySet);
     }
     else
     {
-        memcpy(mHLXAddress, aHLXAddress, sizeof (mHLXAddress));
+        mHostAddress = aHostAddress;
     }
 
-    mHLXAddressIsNull = false;
+    mHostAddressIsNull = false;
 
     return (lRetval);
 }
 
 /**
  *  @brief
- *    This sets the model HLX network IP address prefix length.
+ *    This sets the model HLX network IP netmask.
  *
  *  This attempts to set the model with the specified HLX network IP
- *  address prefix length.
+ *  netmask.
  *
- *  @param[in]  aPrefixLength  An immutable reference to the HLX
- *                             network IP address prefix length to
- *                             set.
+ *  @param[in]  aNetmask  An immutable reference to the HLX
+ *                        network IP netmask to set.
  *
  *  @retval  kStatus_Success          If successful.
- *  @retval  kStatus_ValueAlreadySet  The specified @a aPrefixLength
+ *  @retval  kStatus_ValueAlreadySet  The specified @a aNetmask
  *                                    value has already been set.
- *  @retval  -ERANGE                  The specified @a aPrefixLength
+ *  @retval  -ERANGE                  The specified @a aNetmask
  *                                    value is out of range.
  *
  */
 Status
-NetworkModel :: SetPrefixLength(const PrefixLengthType &aPrefixLength)
+NetworkModel :: SetNetmask(const IPAddressType &aNetmask)
 {
     Status lRetval = kStatus_Success;
 
-    if (mPrefixLength == aPrefixLength)
+    if (mNetmask == aNetmask)
     {
-        lRetval = ((mPrefixLengthIsNull) ? kStatus_Success : kStatus_ValueAlreadySet);
+        lRetval = ((mNetmaskIsNull) ? kStatus_Success : kStatus_ValueAlreadySet);
     }
     else
     {
-        mPrefixLength = aPrefixLength;
+        mNetmask = aNetmask;
     }
 
-    mPrefixLengthIsNull = false;
+    mNetmaskIsNull = false;
 
     return (lRetval);
 }
@@ -435,29 +431,29 @@ NetworkModel :: SetPrefixLength(const PrefixLengthType &aPrefixLength)
  *
  *  This attempts to set the model with the specified gateway IP address.
  *
- *  @param[in]  aGatewayAddress  An immutable reference to the gateway IP
+ *  @param[in]  aDefaultRouterAddress  An immutable reference to the gateway IP
  *                               address to set.
  *
  *  @retval  kStatus_Success          If successful.
- *  @retval  kStatus_ValueAlreadySet  The specified @a aGatewayAddress
+ *  @retval  kStatus_ValueAlreadySet  The specified @a aDefaultRouterAddress
  *                                    value has already been set.
  *
  */
 Status
-NetworkModel :: SetGatewayAddress(const IPAddressType &aGatewayAddress)
+NetworkModel :: SetDefaultRouterAddress(const IPAddressType &aDefaultRouterAddress)
 {
     Status lRetval = kStatus_Success;
 
-    if (memcmp(mGatewayAddress, aGatewayAddress, sizeof (mGatewayAddress)) == 0)
+    if (mDefaultRouterAddress == aDefaultRouterAddress)
     {
-        lRetval = ((mGatewayAddressIsNull) ? kStatus_Success : kStatus_ValueAlreadySet);
+        lRetval = ((mDefaultRouterAddressIsNull) ? kStatus_Success : kStatus_ValueAlreadySet);
     }
     else
     {
-        memcpy(mGatewayAddress, aGatewayAddress, sizeof (mGatewayAddress));
+        mDefaultRouterAddress = aDefaultRouterAddress;
     }
 
-    mGatewayAddressIsNull = false;
+    mDefaultRouterAddressIsNull = false;
 
     return (lRetval);
 }
@@ -587,18 +583,18 @@ NetworkModel :: SetSDDPEnabled(const EnabledType &aSDDPEnabled)
 bool
 NetworkModel :: operator ==(const NetworkModel &aNetworkModel) const
 {
-    return ((mHLXAddressIsNull      == aNetworkModel.mHLXAddressIsNull     ) &&
-            (mHLXAddress            == aNetworkModel.mHLXAddress           ) &&
-            (mPrefixLengthIsNull    == aNetworkModel.mPrefixLengthIsNull   ) &&
-            (mPrefixLength          == aNetworkModel.mPrefixLength         ) &&
-            (mGatewayAddressIsNull  == aNetworkModel.mGatewayAddressIsNull ) &&
-            (mGatewayAddress        == aNetworkModel.mGatewayAddress       ) &&
-            (mEthernetEUI48IsNull   == aNetworkModel.mEthernetEUI48IsNull  ) &&
-            (mEthernetEUI48         == aNetworkModel.mEthernetEUI48        ) &&
-            (mDHCPv4EnabledIsNull   == aNetworkModel.mDHCPv4EnabledIsNull  ) &&
-            (mDHCPv4Enabled         == aNetworkModel.mDHCPv4Enabled        ) &&
-            (mSDDPEnabledIsNull     == aNetworkModel.mSDDPEnabledIsNull    ) &&
-            (mSDDPEnabled           == aNetworkModel.mSDDPEnabled          ));
+    return ((mDHCPv4EnabledIsNull        == aNetworkModel.mDHCPv4EnabledIsNull       ) &&
+            (mDHCPv4Enabled              == aNetworkModel.mDHCPv4Enabled             ) &&
+            (mEthernetEUI48IsNull        == aNetworkModel.mEthernetEUI48IsNull       ) &&
+            (memcmp(mEthernetEUI48, aNetworkModel.mEthernetEUI48, sizeof (mEthernetEUI48)) == 0) &&
+            (mDefaultRouterAddressIsNull == aNetworkModel.mDefaultRouterAddressIsNull) &&
+            (mDefaultRouterAddress       == aNetworkModel.mDefaultRouterAddress      ) &&
+            (mHostAddressIsNull          == aNetworkModel.mHostAddressIsNull         ) &&
+            (mHostAddress                == aNetworkModel.mHostAddress               ) &&
+            (mNetmaskIsNull              == aNetworkModel.mNetmaskIsNull             ) &&
+            (mNetmask                    == aNetworkModel.mNetmask                   ) &&
+            (mSDDPEnabledIsNull          == aNetworkModel.mSDDPEnabledIsNull         ) &&
+            (mSDDPEnabled                == aNetworkModel.mSDDPEnabled               ));
 }
 
 }; // namespace Model
