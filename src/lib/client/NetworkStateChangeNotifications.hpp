@@ -30,6 +30,7 @@
 #include <OpenHLX/Client/StateChangeNotificationBasis.hpp>
 #include <OpenHLX/Client/StateChangeNotificationTypes.hpp>
 #include <OpenHLX/Common/Errors.hpp>
+#include <OpenHLX/Common/IPAddress.hpp>
 #include <OpenHLX/Model/NetworkModel.hpp>
 
 
@@ -49,7 +50,7 @@ namespace StateChange
  *    notification (SCN).
  *
  *  @ingroup client
- *  @ingroup front-panel
+ *  @ingroup network
  *  @ingroup state-change
  *
  */
@@ -83,7 +84,7 @@ private:
  *    notification (SCN).
  *
  *  @ingroup client
- *  @ingroup front-panel
+ *  @ingroup network
  *  @ingroup state-change
  *
  */
@@ -112,12 +113,116 @@ private:
 
 /**
  *  @brief
+ *    A base, derivable object for a HLX client physical Ethernet
+ *    network interface object IP address property data model state
+ *    change notification (SCN).
+ *
+ *  @ingroup client
+ *  @ingroup network
+ *  @ingroup state-change
+ *
+ */
+class NetworkIPAddressNotificationBasis :
+    public NotificationBasis
+{
+public:
+    typedef Common::IPAddress IPAddress;
+
+public:
+    virtual ~NetworkIPAddressNotificationBasis(void) = default;
+
+    const IPAddress &GetIPAddress(void) const;
+
+protected:
+    NetworkIPAddressNotificationBasis(void) = default;
+
+    Common::Status Init(const Type &aType, const IPAddress &aIPAddress);
+
+private:
+    IPAddress mIPAddress;
+};
+
+/**
+ *  @brief
+ *    An object for a HLX client physical Ethernet network interface
+ *    object default router IP address property data model state
+ *    change notification (SCN).
+ *
+ *  @ingroup client
+ *  @ingroup network
+ *  @ingroup state-change
+ *
+ */
+class NetworkIPDefaultRouterAddressNotification :
+    public NetworkIPAddressNotificationBasis
+{
+public:
+    NetworkIPDefaultRouterAddressNotification(void) = default;
+    virtual ~NetworkIPDefaultRouterAddressNotification(void) = default;
+
+    Common::Status Init(const IPAddress &aDefaultRouterIPAddress);
+};
+
+/**
+ *  @brief
+ *    An object for a HLX client physical Ethernet network interface
+ *    object host IP address property data model state change
+ *    notification (SCN).
+ *
+ *  @ingroup client
+ *  @ingroup network
+ *  @ingroup state-change
+ *
+ */
+class NetworkIPHostAddressNotification :
+    public NetworkIPAddressNotificationBasis
+{
+public:
+    NetworkIPHostAddressNotification(void) = default;
+    virtual ~NetworkIPHostAddressNotification(void) = default;
+
+    Common::Status Init(const IPAddress &aHostIPAddress);
+};
+
+/**
+ *  @brief
+ *    An object for a HLX client physical Ethernet network interface
+ *    object IP netmask property data model state change notification
+ *    (SCN).
+ *
+ *  @ingroup client
+ *  @ingroup network
+ *  @ingroup state-change
+ *
+ */
+class NetworkIPNetmaskNotification :
+    public NetworkIPAddressNotificationBasis
+{
+public:
+    NetworkIPNetmaskNotification(void) = default;
+    virtual ~NetworkIPNetmaskNotification(void) = default;
+
+    Common::Status Init(const IPAddress &aIPNetmask);
+
+    /**
+     *  @brief
+     *    Return the Ethernet network interface IP netmask property.
+     *
+     *  @returns
+     *    The IP netmask of the Ethernet network interface that changed.
+     *
+     */
+    inline const IPAddress &GetIPNetmask(void) const { return GetIPAddress(); }
+};
+
+/**
+ *  @brief
  *    An object for a HLX client physical Ethernet network interface
  *    object Control4 SDDP enabled property data model state change
  *    notification (SCN).
  *
  *  @ingroup client
- *  @ingroup front-panel
+ *  @ingroup network
  *  @ingroup state-change
  *
  */

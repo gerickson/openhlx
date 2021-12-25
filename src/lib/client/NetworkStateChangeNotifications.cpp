@@ -157,6 +157,130 @@ NetworkEthernetEUI48Notification :: GetEthernetEUI48(void) const
 
 /**
  *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the Ethernet network interface IP address
+ *  property state change notification with the specified IP address.
+ *
+ *  @param[in]  aType       An immutable reference to the state change
+ *                          notification type to initialize with. This
+ *                          indicates what object class and what
+ *                          property within that object class changed.
+ *  @param[in]  aIPAddress  An immutable reference to the IP address
+ *                          that changed.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+NetworkIPAddressNotificationBasis :: Init(const Type &aType, const IPAddress &aIPAddress)
+{
+    Status lRetval = kStatus_Success;
+
+    lRetval = NotificationBasis::Init(aType);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    mIPAddress = aIPAddress;
+
+ done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Return the Ethernet network interface IP address property.
+ *
+ *  @returns
+ *    The IP address of the Ethernet network interface that changed.
+ *
+ */
+const IPAddress &
+NetworkIPAddressNotificationBasis :: GetIPAddress(void) const
+{
+    return (mIPAddress);
+}
+
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the Ethernet network interface default router IP
+ *  address property state change notification with the specified IP
+ *  address.
+ *
+ *  @param[in]  aDefaultRouterIPAddress  An immutable reference to
+ *                                       the IP address that changed.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+NetworkIPDefaultRouterAddressNotification :: Init(const IPAddress &aDefaultRouterIPAddress)
+{
+    constexpr Type lType   = kStateChangeType_NetworkIPDefaultRouterAddress;
+    Status         lRetval = kStatus_Success;
+
+    lRetval = NetworkIPAddressNotificationBasis::Init(lType, aDefaultRouterIPAddress);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the Ethernet network interface host IP address
+ *  property state change notification with the specified IP address.
+ *
+ *  @param[in]  aHostIPAddress  An immutable reference to the IP
+ *                              address that changed.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+NetworkIPHostAddressNotification :: Init(const IPAddress &aHostIPAddress)
+{
+    constexpr Type lType   = kStateChangeType_NetworkIPHostAddress;
+    Status         lRetval = kStatus_Success;
+
+    lRetval = NetworkIPAddressNotificationBasis::Init(lType, aHostIPAddress);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the Ethernet network interface IP netmask
+ *  property state change notification with the specified IP netmask.
+ *
+ *  @param[in]  aIPNetmask  An immutable reference to the IP netmask
+ *                          that changed.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+NetworkIPNetmaskNotification :: Init(const IPAddress &aIPNetmask)
+{
+    constexpr Type lType   = kStateChangeType_NetworkIPNetmask;
+    Status         lRetval = kStatus_Success;
+
+    lRetval = NetworkIPAddressNotificationBasis::Init(lType, aIPNetmask);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
  *    This is the class default constructor.
  *
  */
