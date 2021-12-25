@@ -589,15 +589,16 @@ Parse(const uint8_t *aBuffer, const size_t &aBufferLength, NetworkModel::Etherne
 static Common::Status
 Parse(const uint8_t *aBuffer, const size_t &aBufferLength, Common::IPAddress &aIPAddress)
 {
-    char   lInputBuffer[INET6_ADDRSTRLEN];
-    char   lOutputBuffer[INET6_ADDRSTRLEN];
-    Status lRetval = kStatus_Success;
+    const size_t lLength = std::min(aBufferLength,
+                                    static_cast<size_t>(INET6_ADDRSTRLEN));
+    char         lBuffer[INET6_ADDRSTRLEN];
+    Status       lRetval = kStatus_Success;
 
 
-    memset(lInputBuffer, 0, INET6_ADDRSTRLEN);
-    memcpy(lInputBuffer, aBuffer, std::min(aBufferLength, static_cast<size_t>(INET6_ADDRSTRLEN)));
+    memset(lBuffer, 0, INET6_ADDRSTRLEN);
+    memcpy(lBuffer, aBuffer, lLength);
 
-    lRetval = aIPAddress.FromString(lInputBuffer);
+    lRetval = aIPAddress.FromString(lBuffer, lLength);
     nlREQUIRE_SUCCESS(lRetval, done);
 
  done:
