@@ -52,7 +52,7 @@ namespace Network
  *    This is the class initializer for a multi-character property of
  *    a Boolean value.
  *
- *  This initializes a operation with a specified value into the
+ *  This initializes an operation with a specified value into the
  *  specified command buffer.
  *
  *  @param[in,out]  aBuffer      A mutable reference to the command
@@ -167,6 +167,132 @@ EthernetEUI48BufferBasis :: Init(Common::Command::BufferBasis &aBuffer,
     }
 
     return (aBuffer.Init(lPropertyString.c_str(), lPropertyString.size()));
+}
+
+/**
+ *  @brief
+ *    This is the class initializer for a multi-character property of
+ *    an IP address.
+ *
+ *  This initializes an IP address command operation or notification
+ *  with a specified property and IP address into the specified
+ *  command buffer.
+ *
+ *  @param[in,out]  aBuffer      A mutable reference to the command
+ *                               buffer to compose the property
+ *                               mutation operation into.
+ *  @param[in]      aProperty    The property to mutate.
+ *  @param[in]      aIPAddress   An immutable reference to the IP
+ *                               address to use for the property
+ *                               mutation.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+IPBufferBasis :: Init(Common::Command::BufferBasis &aBuffer,
+                      const char *aProperty,
+                      const IPAddress &aIPAddress)
+{
+    char        lValueString[INET6_ADDRSTRLEN];
+    std::string lPropertyString;
+    Status      lRetval;
+
+
+    lRetval = aIPAddress.ToString(&lValueString[0], INET6_ADDRSTRLEN);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lPropertyString  = aProperty;
+    lPropertyString += lValueString;
+
+    lRetval = aBuffer.Init(lPropertyString.c_str(), lPropertyString.size());
+
+done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    This is the class initializer for a default router IP address.
+ *
+ *  This initializes a default router IP address command operation or
+ *  notification with a specified default router IP address into the
+ *  specified command buffer.
+ *
+ *  @param[in,out]  aBuffer                A mutable reference to the
+ *                                         command buffer to compose
+ *                                         the property mutation
+ *                                         operation or notification
+ *                                         into.
+ *  @param[in]      aDefaultRouterAddress  An immutable reference to
+ *                                         the default router IP
+ *                                         address to use for the
+ *                                         buffer.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+IPDefaultRouterAddressBufferBasis :: Init(Common::Command::BufferBasis &aBuffer, const IPAddress &aDefaultRouterAddress)
+{
+    static const char * const kIPDefaultRouterAddressProperty = "GW";
+
+    return (IPBufferBasis::Init(aBuffer, kIPDefaultRouterAddressProperty, aDefaultRouterAddress));
+}
+
+/**
+ *  @brief
+ *    This is the class initializer for a host IP address.
+ *
+ *  This initializes a host IP address command operation or
+ *  notification with a specified host IP address into the specified
+ *  command buffer.
+ *
+ *  @param[in,out]  aBuffer                A mutable reference to the
+ *                                         command buffer to compose
+ *                                         the property mutation
+ *                                         operation or notification
+ *                                         into.
+ *  @param[in]      aHostAddress           An immutable reference to
+ *                                         the host IP address to use
+ *                                         for the buffer.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+IPHostAddressBufferBasis :: Init(Common::Command::BufferBasis &aBuffer, const IPAddress &aHostAddress)
+{
+    static const char * const kIPHostAddressProperty = "IP";
+
+    return (IPBufferBasis::Init(aBuffer, kIPHostAddressProperty, aHostAddress));
+}
+
+/**
+ *  @brief
+ *    This is the class initializer for a IP netmask.
+ *
+ *  This initializes a IP netmask command operation or notification
+ *  with a specified IP netmask into the specified command buffer.
+ *
+ *  @param[in,out]  aBuffer                A mutable reference to the
+ *                                         command buffer to compose
+ *                                         the property mutation
+ *                                         operation or notification
+ *                                         into.
+ *  @param[in]      aHostAddress           An immutable reference to
+ *                                         the IP netmask to use for
+ *                                         the buffer.
+ *
+ *  @retval  kStatus_Success  If successful.
+ *
+ */
+Status
+IPNetmaskBufferBasis :: Init(Common::Command::BufferBasis &aBuffer, const IPAddress &aNetmask)
+{
+    static const char * const kIPNetmaskProperty = "NM";
+
+    return (IPBufferBasis::Init(aBuffer, kIPNetmaskProperty, aNetmask));
 }
 
 /**
