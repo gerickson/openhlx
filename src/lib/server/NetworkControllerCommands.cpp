@@ -144,6 +144,70 @@ EthernetEUI48Response :: Init(const Model::NetworkModel::EthernetEUI48Type &aEth
 
 /**
  *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the Ethernet network interface default router IP
+ *  address command response buffer.
+ *
+ *  @param[in]  aDefaultRouterAddress  An immutable reference to the
+ *                                     default router IP address for
+ *                                     which to form the response.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+IPDefaultRouterAddressResponse :: Init(const Common::IPAddress &aDefaultRouterAddress)
+{
+    return (IPDefaultRouterAddressBufferBasis::Init(*this, aDefaultRouterAddress));
+}
+
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the Ethernet network interface host IP address
+ *  command response buffer.
+ *
+ *  @param[in]  aHostAddress  An immutable reference to the host IP
+ *                            address for which to form the response.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+IPHostAddressResponse :: Init(const Common::IPAddress &aHostAddress)
+{
+    return (IPHostAddressBufferBasis::Init(*this, aHostAddress));
+}
+
+/**
+ *  @brief
+ *    This is the class initializer.
+ *
+ *  This initializes the Ethernet network interface IP netmask command
+ *  response buffer.
+ *
+ *  @param[in]  aNetmask  An immutable reference to the IP netmask for
+ *                        which to form the response.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+IPNetmaskResponse :: Init(const Common::IPAddress &aNetmask)
+{
+    return (IPNetmaskBufferBasis::Init(*this, aNetmask));
+}
+
+/**
+ *  @brief
  *    This is the class default initializer.
  *
  *  This initializes the set Ethernet network interface Control4 SDDP

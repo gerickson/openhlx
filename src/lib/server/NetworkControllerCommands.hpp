@@ -182,6 +182,84 @@ private:
 
 /**
  *  @brief
+ *    A object for a HLX server Ethernet network interface default
+ *    router IP address property data model command response buffer.
+ *
+ *  @ingroup server
+ *  @ingroup command
+ *  @ingroup network
+ *
+ */
+class IPDefaultRouterAddressResponse :
+    public ResponseBasis,
+    public Common::Command::Network::IPDefaultRouterAddressBufferBasis
+{
+public:
+    IPDefaultRouterAddressResponse(void) = default;
+    virtual ~IPDefaultRouterAddressResponse(void) = default;
+
+    Common::Status Init(const Common::IPAddress &aDefaultRouterAddress);
+
+private:
+    // Explicitly hide base class initializers
+
+    using ResponseBasis::Init;
+};
+
+/**
+ *  @brief
+ *    A object for a HLX server Ethernet network interface host IP
+ *    address property data model command response buffer.
+ *
+ *  @ingroup server
+ *  @ingroup command
+ *  @ingroup network
+ *
+ */
+class IPHostAddressResponse :
+    public ResponseBasis,
+    public Common::Command::Network::IPHostAddressBufferBasis
+{
+public:
+    IPHostAddressResponse(void) = default;
+    virtual ~IPHostAddressResponse(void) = default;
+
+    Common::Status Init(const Common::IPAddress &aHostAddress);
+
+private:
+    // Explicitly hide base class initializers
+
+    using ResponseBasis::Init;
+};
+
+/**
+ *  @brief
+ *    A object for a HLX server Ethernet network interface IP
+ *    netmask property data model command response buffer.
+ *
+ *  @ingroup server
+ *  @ingroup command
+ *  @ingroup network
+ *
+ */
+class IPNetmaskResponse :
+    public ResponseBasis,
+    public Common::Command::Network::IPNetmaskBufferBasis
+{
+public:
+    IPNetmaskResponse(void) = default;
+    virtual ~IPNetmaskResponse(void) = default;
+
+    Common::Status Init(const Common::IPAddress &aNetmask);
+
+private:
+    // Explicitly hide base class initializers
+
+    using ResponseBasis::Init;
+};
+
+/**
+ *  @brief
  *    A object for a HLX server Ethernet network interface Control4
  *    SDDP enabled data model property mutation command request
  *    regular expression.
