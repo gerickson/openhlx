@@ -96,7 +96,7 @@ private:
     // Observation (Query) Command Request Instance Handlers
 
     Common::Status HandleQueryReceived(const bool &aIsConfiguration,
-                                       Server::ConnectionBasis &aConnection, 
+                                       Server::ConnectionBasis &aConnection,
                                        Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
 };
 

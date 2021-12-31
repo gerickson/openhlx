@@ -972,7 +972,7 @@ ConnectionBasis :: GetIdentifier(void) const
  *                                      socket.
  *
  *  @retval  kStatus_Success          If successful.
- *  @retval  -EADDRNOTAVAIL           One or more of the requested 
+ *  @retval  -EADDRNOTAVAIL           One or more of the requested
  *                                    addresses was/were could not be
  *                                    retrieved.
  *  @retval  -EAFNOSUPPORT            An unsupported address family was
@@ -1038,7 +1038,7 @@ ConnectionBasis :: GetConfiguration(NetworkModel::EthernetEUI48Type *aEthernetEU
  *                                      socket.
  *
  *  @retval  kStatus_Success          If successful.
- *  @retval  -EADDRNOTAVAIL           One or more of the requested 
+ *  @retval  -EADDRNOTAVAIL           One or more of the requested
  *                                    addresses was/were could not be
  *                                    retrieved.
  *  @retval  -EAFNOSUPPORT            An unsupported address family was
@@ -1099,7 +1099,7 @@ ConnectionBasis :: GetConfiguration(NetworkModel::EthernetEUI48Type &aEthernetEU
  *                                      socket.
  *
  *  @retval  kStatus_Success          If successful.
- *  @retval  -EADDRNOTAVAIL           One or more of the requested 
+ *  @retval  -EADDRNOTAVAIL           One or more of the requested
  *                                    addresses was/were could not be
  *                                    retrieved.
  *  @retval  -EAFNOSUPPORT            An unsupported address family was

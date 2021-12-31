@@ -694,7 +694,7 @@ NetworkController :: SetSDDPEnabledRequestReceivedHandler(Server::ConnectionBasi
 
 Common::Status
 NetworkController :: HandleQueryReceived(const bool &aIsConfiguration,
-                                         Server::ConnectionBasis &aConnection, 
+                                         Server::ConnectionBasis &aConnection,
                                          Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     NetworkModel::EthernetEUI48Type  lEthernetEUI48;
@@ -702,7 +702,7 @@ NetworkController :: HandleQueryReceived(const bool &aIsConfiguration,
     IPAddress                        lHostAddress;
     IPAddress                        lNetmask;
     Status                           lRetval = kStatus_Success;
-    
+
 
     // Allow the server network controller basis to handle the common,
     // connection-independent query schema.

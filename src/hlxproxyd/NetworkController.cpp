@@ -18,7 +18,9 @@
 
 /**
  *    @file
- *      This file implements an object for....
+ *      This file implements an object for managing the proxied client-
+ *      to-server observation and mutation of a HLX Ethernet network
+ *      interface.
  *
  */
 
@@ -50,16 +52,6 @@ namespace HLX
 
 namespace Proxy
 {
-
-// The query network response contains both state and
-// configuration settings.
-
-static const char * const kQueryResponseBuffer = NULL;
-
-// The query current configuration response contains ONLY
-// configuration settings.
-
-static const char * const kQueryCurrentResponseBuffer = kQueryResponseBuffer;
 
 /**
  *  @brief
@@ -248,9 +240,7 @@ NetworkController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnect
     Status                lRetval = kStatus_Success;
 
 
-    (void)aConnection;
-
-    lRetval = HandleQueryReceived(kIsConfiguration, kQueryCurrentResponseBuffer, aBuffer);
+    lRetval = HandleQueryReceived(kIsConfiguration, aConnection, aBuffer);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -716,21 +706,23 @@ void NetworkController :: QueryRequestReceivedHandler(Server::ConnectionBasis &a
 
     nlREQUIRE_ACTION(aMatches.size() == Server::Command::Network::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
+
+    lStatus = lResponse.Init();
+    nlREQUIRE_SUCCESS(lStatus, done);
+
     lResponseBuffer.reset(new ConnectionBuffer);
     nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
 
     lStatus = lResponseBuffer->Init();
     nlREQUIRE_SUCCESS(lStatus, done);
 
-    // First, put the solicited notifications portion.
+    // First, put the solicited notifications portion, including both
+    // the connection-dependent and -independent schema content.
 
-    lStatus = HandleQueryReceived(!kIsConfiguration, kQueryResponseBuffer, lResponseBuffer);
+    lStatus = HandleQueryReceived(!kIsConfiguration, aConnection, lResponseBuffer);
     nlREQUIRE_SUCCESS(lStatus, done);
 
     // Second, put the response completion portion.
-
-    lStatus = lResponse.Init();
-    nlREQUIRE_SUCCESS(lStatus, done);
 
     lBuffer = lResponse.GetBuffer();
     lSize = lResponse.GetSize();
@@ -779,6 +771,72 @@ void NetworkController :: QueryRequestReceivedHandler(Server::ConnectionBasis &a
     {
         lController->QueryRequestReceivedHandler(aConnection, aBuffer, aSize, aMatches);
     }
+}
+
+// MARK: Observation (Query) Command Request Handlers
+
+// MARK: Observation (Query) Command Request Instance Handlers
+
+Common::Status
+NetworkController :: HandleQueryReceived(const bool &aIsConfiguration,
+                                         Server::ConnectionBasis &aConnection,
+                                         Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+{
+    NetworkModel::EthernetEUI48Type  lEthernetEUI48;
+    IPAddress                        lDefaultRouterAddress;
+    IPAddress                        lHostAddress;
+    IPAddress                        lNetmask;
+    Status                           lRetval = kStatus_Success;
+
+
+    (void)aConnection;
+
+    // Allow the server controller basis to handle the common,
+    // connection-independent query schema.
+
+    lRetval = Server::NetworkControllerBasis::HandleQueryReceived(aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // Handle the connection-dependent schema.
+
+    // Host IP address
+
+    lRetval = GetModel().GetHostAddress(lHostAddress);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = HandleHostAddressResponse(lHostAddress, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // IP netmask
+
+    lRetval = GetModel().GetNetmask(lNetmask);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = HandleNetmaskResponse(lNetmask, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // Default router IP address
+
+    lRetval = GetModel().GetDefaultRouterAddress(lDefaultRouterAddress);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = HandleDefaultRouterAddressResponse(lDefaultRouterAddress, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // Ethernet EUI-48, only if NOT in the context of a configuration
+    // query.
+
+    if (!aIsConfiguration)
+    {
+        lRetval = GetModel().GetEthernetEUI48(lEthernetEUI48);
+        nlREQUIRE_SUCCESS(lRetval, done);
+
+        lRetval = HandleEthernetEUI48Response(lEthernetEUI48, aBuffer);
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
+
+ done:
+    return (lRetval);
 }
 
 }; // namespace Proxy

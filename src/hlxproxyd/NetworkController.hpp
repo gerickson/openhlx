@@ -18,7 +18,9 @@
 
 /**
  *    @file
- *      This file defines an object for....
+ *      This file defines an object for managing the proxied client-
+ *      to-server observation and mutation of a HLX Ethernet network
+ *      interface.
  *
  */
 
@@ -52,7 +54,8 @@ namespace Proxy
 
 /**
  *  @brief
- *    An object for....
+ *    An object for managing the server-side observation and mutation
+ *    of a HLX Ethernet network interface.
  *
  *  @ingroup proxy
  *  @ingroup network
@@ -105,6 +108,14 @@ private:
     // Client-facing Server Command Completion Handlers
 
     void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+
+    // Client-facing Server Observation (Query) Command Request Handlers
+
+    // Client-facing Server Observation (Query) Command Request Instance Handlers
+
+    Common::Status HandleQueryReceived(const bool &aIsConfiguration,
+                                       Server::ConnectionBasis &aConnection,
+                                       Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
 
 private:
     // Explicitly hide base class initializers
