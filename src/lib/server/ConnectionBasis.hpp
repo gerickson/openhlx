@@ -28,6 +28,7 @@
 
 #include <stddef.h>
 
+#include <CoreFoundation/CFSocket.h>
 #include <CoreFoundation/CFURL.h>
 
 #include <OpenHLX/Common/ConnectionBasis.hpp>
@@ -72,6 +73,7 @@ public:
     virtual Common::Status Init(const Common::RunLoopParameters &aRunLoopParameters, const IdentifierType &aIdentifier);
     virtual Common::Status Connect(const int &aSocket, const Common::SocketAddress &aPeerAddress);
     virtual Common::Status Disconnect(void);
+            void           Close(void);
 
     IdentifierType GetIdentifier(void) const;
 
@@ -135,6 +137,7 @@ protected:
 
 private:
     IdentifierType             mIdentifier;
+    CFSocketNativeHandle       mConnectedSocket;
     State                      mState;
     ConnectionBasisDelegate *  mDelegate;
 };

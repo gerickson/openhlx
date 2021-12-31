@@ -65,6 +65,7 @@ namespace Server
 ConnectionBasis :: ConnectionBasis(CFStringRef aSchemeRef) :
     Common::ConnectionBasis(aSchemeRef),
     mIdentifier(0),
+    mConnectedSocket(-1),
     mState(kState_Unknown),
     mDelegate(nullptr)
 {
@@ -163,6 +164,8 @@ ConnectionBasis :: Connect(const int &aSocket, const Common::SocketAddress &aPee
     lRetval = SetPeerAddress(lPeerAddress);
     nlREQUIRE_SUCCESS(lRetval, done);
 
+    mConnectedSocket = aSocket;
+
  done:
     return (lRetval);
 }
@@ -184,6 +187,25 @@ ConnectionBasis :: Disconnect(void)
     Status lRetval = kStatus_Success;
 
     return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Attempt to close the socket associated with the HLX client peer.
+ *
+ *  If the socket associated with the HLX client peer is open, this
+ *  closes it.
+ *
+ */
+void
+ConnectionBasis :: Close(void)
+{
+    if (mConnectedSocket != -1)
+    {
+        close(mConnectedSocket);
+
+        mConnectedSocket = -1;
+    }
 }
 
 /**
