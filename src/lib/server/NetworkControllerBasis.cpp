@@ -293,6 +293,54 @@ NetworkControllerBasis :: HandleDHCPv4EnabledResponse(const NetworkModel::Enable
 /**
  *  @brief
  *    Handle and generate the server command response for an Ethernet
+ *    network interface default router IP address request.
+ *
+ *  This handles and generates the server command response for an
+ *  Ethernet network interface default router IP address request.
+ *
+ *  @param[in]      aDefaultRouterAddress  An immutable reference to
+ *                                         the Ethernet network
+ *                                         interface default router IP
+ *                                         address for which the
+ *                                         response is to be formed.
+ *  @param[in,out]  aBuffer                A mutable reference to the
+ *                                         shared pointer into which
+ *                                         the response is to be
+ *                                         generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
+NetworkControllerBasis :: HandleDefaultRouterAddressResponse(const IPAddress &aDefaultRouterAddress,
+                                                             Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    Server::Command::Network::IPDefaultRouterAddressResponse  lIPDefaultRouterAddressResponse;
+    const uint8_t *                                           lBuffer;
+    size_t                                                    lSize;
+    Status                                                    lStatus;
+
+
+    lStatus = lIPDefaultRouterAddressResponse.Init(aDefaultRouterAddress);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lBuffer = lIPDefaultRouterAddressResponse.GetBuffer();
+    lSize = lIPDefaultRouterAddressResponse.GetSize();
+
+    lStatus = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return (lStatus);
+}
+
+/**
+ *  @brief
+ *    Handle and generate the server command response for an Ethernet
  *    network interface EUI-48 request.
  *
  *  This handles and generates the server command response for an
@@ -327,6 +375,98 @@ NetworkControllerBasis :: HandleEthernetEUI48Response(const NetworkModel::Ethern
 
     lBuffer = lEthernetEUI48Response.GetBuffer();
     lSize = lEthernetEUI48Response.GetSize();
+
+    lStatus = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return (lStatus);
+}
+
+/**
+ *  @brief
+ *    Handle and generate the server command response for an Ethernet
+ *    network interface host IP address request.
+ *
+ *  This handles and generates the server command response for an
+ *  Ethernet network interface host IP address request.
+ *
+ *  @param[in]      aHostAddress  An immutable reference to the
+ *                                Ethernet network interface host IP
+ *                                address for which the response is to
+ *                                be formed.
+ *  @param[in,out]  aBuffer       A mutable reference to the shared
+ *                                pointer into which the response is
+ *                                to be generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
+NetworkControllerBasis :: HandleHostAddressResponse(const IPAddress &aHostAddress,
+                                                    Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    Server::Command::Network::IPHostAddressResponse  lIPHostAddressResponse;
+    const uint8_t *                                  lBuffer;
+    size_t                                           lSize;
+    Status                                           lStatus;
+
+
+    lStatus = lIPHostAddressResponse.Init(aHostAddress);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lBuffer = lIPHostAddressResponse.GetBuffer();
+    lSize = lIPHostAddressResponse.GetSize();
+
+    lStatus = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return (lStatus);
+}
+
+/**
+ *  @brief
+ *    Handle and generate the server command response for an Ethernet
+ *    network interface IP netmask request.
+ *
+ *  This handles and generates the server command response for an
+ *  Ethernet network interface IP netmask request.
+ *
+ *  @param[in]      aNetmask  An immutable reference to the Ethernet
+ *                            network interface default router IP
+ *                            address for which the response is to be
+ *                            formed.
+ *  @param[in,out]  aBuffer   A mutable reference to the shared
+ *                            pointer into which the response is to be
+ *                            generated.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  -ENOMEM                If the buffer-owned backing store
+ *                                  cannot be allocated.
+ *  @retval  -ENOSPC                If the requested size exceeds the
+ *                                  buffer capacity.
+ *
+ */
+/* static */ Status
+NetworkControllerBasis :: HandleNetmaskResponse(const IPAddress &aNetmask,
+                                                Common::ConnectionBuffer::MutableCountedPointer &aBuffer)
+{
+    Server::Command::Network::IPNetmaskResponse  lIPNetmaskResponse;
+    const uint8_t *                              lBuffer;
+    size_t                                       lSize;
+    Status                                       lStatus;
+
+
+    lStatus = lIPNetmaskResponse.Init(aNetmask);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lBuffer = lIPNetmaskResponse.GetBuffer();
+    lSize = lIPNetmaskResponse.GetSize();
 
     lStatus = Common::Utilities::Put(*aBuffer.get(), lBuffer, lSize);
     nlREQUIRE_SUCCESS(lStatus, done);
