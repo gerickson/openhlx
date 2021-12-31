@@ -35,10 +35,12 @@
 #include <OpenHLX/Common/ConnectionBuffer.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/HostURLAddress.hpp>
+#include <OpenHLX/Common/IPAddress.hpp>
 #include <OpenHLX/Common/RegularExpression.hpp>
 #include <OpenHLX/Common/RunLoopParameters.hpp>
 #include <OpenHLX/Common/SocketAddress.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
+#include <OpenHLX/Model/NetworkModel.hpp>
 
 
 namespace HLX
@@ -79,6 +81,14 @@ public:
 
     Common::Status SetDelegate(ConnectionBasisDelegate *aDelegate);
     ConnectionBasisDelegate *GetDelegate(void) const;
+
+    Common::Status GetConfiguration(Model::NetworkModel::EthernetEUI48Type &aEthernetEUI48,
+                                    Common::IPAddress &aHostAddress,
+                                    Common::IPAddress &aNetmask,
+                                    Common::IPAddress &aDefaultRouterAddress) const;
+    Common::Status GetConfiguration(Common::IPAddress &aHostAddress,
+                                    Common::IPAddress &aNetmask,
+                                    Common::IPAddress &aDefaultRouterAddress) const;
 
     /**
      *  @brief
@@ -134,6 +144,9 @@ protected:
     State GetState(void) const;
 
     Common::Status SetState(State aState);
+
+private:
+    Common::Status GetConfiguration(Model::NetworkModel::EthernetEUI48Type *aEthernetEUI48, Common::IPAddress &aHostAddress, Common::IPAddress &aNetmask, Common::IPAddress &aDefaultRouterAddress) const;
 
 private:
     IdentifierType             mIdentifier;
