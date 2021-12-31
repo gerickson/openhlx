@@ -26,6 +26,16 @@
 #include "ConnectionBasis.hpp"
 
 #include <errno.h>
+#include <ifaddrs.h>
+#include <unistd.h>
+
+#if defined(__MACH__)
+#include <net/if_dl.h>
+#include <net/if_types.h>
+#endif // defined(__MACH__)
+#include <net/route.h>
+
+#include <sys/types.h>
 
 #include <CoreFoundation/CFURL.h>
 
@@ -35,11 +45,14 @@
 
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
+#include <OpenHLX/Utilities/ElementsOf.hpp>
 
 #include "ConnectionBasisDelegate.hpp"
 
 
 using namespace HLX::Common;
+using namespace HLX::Model;
+using namespace HLX::Utilities;
 using namespace Nuovations;
 
 
@@ -48,6 +61,484 @@ namespace HLX
 
 namespace Server
 {
+
+namespace Detail
+{
+
+#if defined(__MACH__)
+typedef decltype(sockaddr::sa_len) sa_len_t;
+#endif
+
+struct RouteMessage
+{
+    struct rt_msghdr    mHeader;
+    union
+    {
+        uint8_t         mStorage[512];
+        struct sockaddr mSocketAddress;
+    } mUnion;
+};
+
+static Status
+SetAddress(IPAddress &aIPAddress, const SocketAddress &aSocketAddress)
+{
+    const sa_family_t lFamily = aSocketAddress.uSocketAddress.sa_family;
+    Status            lRetval;
+
+    switch (lFamily)
+    {
+
+    case AF_INET:
+        lRetval = aIPAddress.SetAddress(IPAddress::Version::kIPv4,
+                                        &aSocketAddress.uSocketAddressIPv4.sin_addr,
+                                        sizeof (struct in_addr));
+        nlREQUIRE_SUCCESS(lRetval, done);
+        break;
+
+    case AF_INET6:
+        lRetval = aIPAddress.SetAddress(IPAddress::Version::kIPv6,
+                                        &aSocketAddress.uSocketAddressIPv6.sin6_addr,
+                                        sizeof (struct in6_addr));
+        nlREQUIRE_SUCCESS(lRetval, done);
+        break;
+
+    default:
+        lRetval = -EAFNOSUPPORT;
+        break;
+
+    }
+
+ done:
+    return (lRetval);
+}
+
+static Status
+SetAddress(const sa_family_t &aFamily,
+           const struct sockaddr &aSocketAddress,
+           void *aAddress)
+{
+    Status lRetval;
+
+    switch (aFamily)
+    {
+
+    case AF_INET:
+    case AF_INET6:
+        {
+            if (aFamily == AF_INET) {
+                *((struct in_addr *)aAddress) = ((const struct sockaddr_in &)aSocketAddress).sin_addr;
+            } else if (aFamily == AF_INET6) {
+                *((struct in6_addr *)aAddress) = ((const struct sockaddr_in6 &)aSocketAddress).sin6_addr;
+            }
+
+            lRetval = kStatus_Success;
+        }
+        break;
+
+    default:
+        lRetval = -EAFNOSUPPORT;
+        break;
+
+    }
+
+    return (lRetval);
+}
+
+static Status
+GetDefaultRouterAddress(const sa_family_t &aSocketAddressFamily,
+                        const size_t &aSocketAddressLength,
+                        void *aAddress)
+{
+    const pid_t              lProcessId = getpid();
+    RouteMessage             lRouteMessage;
+    const struct rt_msghdr * lRouteMessageHeader;
+    const uint8_t *          lRouteMessageData;
+    const struct sockaddr *  lDefaultRouterAddress = nullptr;
+    int                      lSocket = -1;
+    ssize_t                  lStatus;
+    int                      lSequenceId = 0;
+    ssize_t                  lLength;
+    Status                   lRetval = -EADDRNOTAVAIL;
+
+    // Zero-out the route message
+
+    memset(&lRouteMessage, 0, sizeof(lRouteMessage));
+
+    // Initialize the route message
+
+    lRouteMessage.mHeader.rtm_type                = RTM_GET;
+    lRouteMessage.mHeader.rtm_version             = RTM_VERSION;
+    lRouteMessage.mHeader.rtm_addrs               = RTA_DST;
+    lRouteMessage.mHeader.rtm_flags               = (RTF_UP | RTF_GATEWAY);
+    lRouteMessage.mHeader.rtm_pid                 = lProcessId;
+    lRouteMessage.mHeader.rtm_seq                 = ++lSequenceId;
+
+    lRouteMessage.mUnion.mSocketAddress.sa_family = aSocketAddressFamily;
+#if defined(__MACH__)
+    lRouteMessage.mUnion.mSocketAddress.sa_len    = static_cast<sa_len_t>(aSocketAddressLength);
+#endif
+
+    lRouteMessage.mHeader.rtm_msglen  = lLength = static_cast<decltype(rt_msghdr::rtm_msglen)>((sizeof (struct rt_msghdr) + aSocketAddressLength));
+
+    // Establish the routing socket
+
+    lSocket = socket(PF_ROUTE, SOCK_RAW, AF_UNSPEC);
+    nlREQUIRE_ACTION(lSocket > 0, done, lRetval = -errno);
+
+    // Send the routing socket get request
+
+    lStatus = write(lSocket, reinterpret_cast<const uint8_t *>(&lRouteMessage), static_cast<size_t>(lLength));
+    nlREQUIRE_ACTION(lStatus == lLength, done, lRetval = -EIO);
+
+    // Receive the routing socket response
+
+    do
+    {
+        lStatus = read(lSocket, reinterpret_cast<char *>(&lRouteMessage), sizeof (lRouteMessage));
+        nlREQUIRE_ACTION(lStatus > 0, done, lRetval = -errno);
+    } while ((lStatus > 0) && ((lRouteMessage.mHeader.rtm_seq != lSequenceId) || (lRouteMessage.mHeader.rtm_pid != lProcessId)));
+
+
+    lRouteMessageHeader = &lRouteMessage.mHeader;
+    lRouteMessageData   = (reinterpret_cast<const uint8_t *>(lRouteMessageHeader + 1));
+
+    // Iterate through the returned routing socket response addresses
+    // if any address flags were set in the response.
+
+    if (lRouteMessageHeader->rtm_addrs)
+    {
+        for (int i = 1; i; i <<= 1)
+        {
+            if (i & lRouteMessageHeader->rtm_addrs)
+            {
+                const struct sockaddr *sa = reinterpret_cast<const struct sockaddr *>(lRouteMessageData);
+                if (i == RTA_GATEWAY)
+                {
+                    lDefaultRouterAddress = sa;
+                }
+
+                lRouteMessageData += aSocketAddressLength;
+            }
+        }
+    }
+
+    if (lDefaultRouterAddress != nullptr)
+    {
+        lRetval = SetAddress(aSocketAddressFamily, *lDefaultRouterAddress, aAddress);
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
+
+done:
+    if (lSocket >= 0)
+    {
+        close(lSocket);
+    }
+
+    return (lRetval);
+}
+
+static Status
+GetDefaultRouterAddress(const IPAddress &aHostAddress, IPAddress &aDefaultRouterAddress)
+{
+    IPAddress::Version lIPVersion;
+    SocketAddress      lSocketAddress;
+    Status             lRetval;
+
+    lRetval = aHostAddress.GetVersion(lIPVersion);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    if (lIPVersion == IPAddress::Version::kIPv4)
+    {
+        const sa_family_t lFamily  = AF_INET;
+        const size_t      lLength  = sizeof (struct sockaddr_in);
+        void *            lAddress = &lSocketAddress.uSocketAddressIPv4.sin_addr;
+
+        lRetval = GetDefaultRouterAddress(lFamily, lLength, lAddress);
+        nlREQUIRE_SUCCESS(lRetval, done);
+
+        lSocketAddress.uSocketAddress.sa_family = lFamily;
+    }
+    else if (lIPVersion == IPAddress::Version::kIPv6)
+    {
+        const sa_family_t lFamily  = AF_INET6;
+
+        const size_t      lLength  = sizeof (struct sockaddr_in6);
+        void *            lAddress = &lSocketAddress.uSocketAddressIPv6.sin6_addr;
+
+        lRetval = GetDefaultRouterAddress(lFamily, lLength, lAddress);
+        nlREQUIRE_SUCCESS(lRetval, done);
+
+        lSocketAddress.uSocketAddress.sa_family = lFamily;
+    }
+
+    lRetval = SetAddress(aDefaultRouterAddress, lSocketAddress);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+static Status
+GetHostAddress(const CFSocketNativeHandle &aSocket, IPAddress &aHostAddress)
+{
+    uint8_t          lBuffer[SOCK_MAXADDRLEN];
+    socklen_t        lBufferLength = ElementsOf(lBuffer);
+    SocketAddress *  lOurSocketAddress;
+    int              lStatus;
+    Status           lRetval = kStatus_Success;
+
+    nlREQUIRE_ACTION(aSocket > 0, done, lRetval = -ENOTCONN);
+
+    lOurSocketAddress = reinterpret_cast<SocketAddress *>(&lBuffer[0]);
+
+    lStatus = getsockname(aSocket, &lOurSocketAddress->uSocketAddress, &lBufferLength);
+    nlREQUIRE_ACTION(lStatus == 0, done, lRetval = -errno);
+
+    lRetval = SetAddress(aHostAddress, *lOurSocketAddress);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+static Status
+GetConfiguration(const char *                      aIfName,
+                 const sa_family_t &               aFamily,
+                 const struct ifaddrs *            aIfAddrs,
+                 NetworkModel::EthernetEUI48Type * aEthernetEUI48,
+                 IPAddress &                       aNetmask)
+{
+    bool                    lSetEthernetEUI48 = false;
+    bool                    lSetNetmask       = false;
+    const struct ifaddrs *  lIfAddr;
+    Status                  lRetval = -EADDRNOTAVAIL;
+
+
+    for (lIfAddr = aIfAddrs; lIfAddr != nullptr; lIfAddr = lIfAddr->ifa_next)
+    {
+        // Skip over any interface addresses that don't match the
+        // interface name we are looking for.
+
+        if (strcmp(aIfName, lIfAddr->ifa_name) != 0) {
+            continue;
+        }
+
+        if (lIfAddr->ifa_addr != nullptr)
+        {
+            const sa_family_t lFamily = lIfAddr->ifa_addr->sa_family;
+
+            // If requested, attempt to get the Ethernet EUI-48.
+
+            if (aEthernetEUI48 != nullptr)
+            {
+                const uint8_t *lOctets     = nullptr;
+                size_t         lOctetCount = 0;
+
+#if defined(__linux__)
+                if (lFamily == AF_PACKET)
+                {
+                    const struct sockaddr_ll * lLinkAddress = reinterpret_cast<struct sockaddr_ll *>(lIfAddr->ifa_addr);
+                }
+#else
+                if (lFamily == AF_LINK)
+                {
+                    const struct sockaddr_dl * lLinkAddress = reinterpret_cast<struct sockaddr_dl *>(lIfAddr->ifa_addr);
+
+                    if (lLinkAddress->sdl_alen > 0)
+                    {
+                        lOctets     = reinterpret_cast<const uint8_t *>(LLADDR(lLinkAddress));
+                        lOctetCount = lLinkAddress->sdl_alen;
+                    }
+                    else
+                    {
+                        static constexpr uint8_t kDefaultOctets[sizeof (*aEthernetEUI48)] = { 0, 0, 0, 0, 0, 0 };
+                        lOctets     = &kDefaultOctets[0];
+                        lOctetCount = ElementsOf(kDefaultOctets);
+                    }
+
+                    if ((lOctets != nullptr) && (lOctetCount > 0))
+                    {
+                        memcpy(*aEthernetEUI48, lOctets, std::min(sizeof (*aEthernetEUI48), lOctetCount));
+
+                        lSetEthernetEUI48 = true;
+                    }
+                }
+#endif // defined(__linux__)
+            }
+        }
+
+        if (lIfAddr->ifa_netmask != nullptr)
+        {
+            const sa_family_t lFamily = lIfAddr->ifa_netmask->sa_family;
+
+            if (lFamily == aFamily)
+            {
+                lRetval = SetAddress(aNetmask, *reinterpret_cast<const SocketAddress *>(lIfAddr->ifa_netmask));
+                nlREQUIRE_SUCCESS(lRetval, done);
+
+                lSetNetmask = true;
+            }
+        }
+
+        if (lSetNetmask && ((aEthernetEUI48 != nullptr) && lSetEthernetEUI48))
+        {
+            lRetval = kStatus_Success;
+            break;
+        }
+    }
+
+ done:
+    return (lRetval);
+}
+
+static bool
+operator ==(const IPAddress &aIPAddress, const SocketAddress &aSocketAddress)
+{
+    IPAddress  lIPAddress;
+    Status     lStatus;
+    bool       lRetval = false;
+
+    lStatus = SetAddress(lIPAddress, aSocketAddress);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+    lRetval = (aIPAddress == lIPAddress);
+
+ done:
+    return (lRetval);
+}
+
+static Status
+GetConfiguration(const struct ifaddrs *            aIfAddrs,
+                 const IPAddress &                 aHostAddress,
+                 NetworkModel::EthernetEUI48Type * aEthernetEUI48,
+                 IPAddress &                       aNetmask)
+{
+    const struct ifaddrs * lIfAddr;
+    sa_family_t            lHostAddressFamily;
+    const char *           lIfName = nullptr;
+    Status                 lRetval = -EADDRNOTAVAIL;
+
+    // Perform the first search to establish the interface name
+    // associated with the current host address.
+    //
+    // The host address is used to to filter and select one among many
+    // network interfaces in a O(2n) interface list search: once
+    // through the list to find the interface name associated with the
+    // current host address and again through the list to find the
+    // Ethernet EUI-48 and IP netmask for that interface name.
+
+    for (lIfAddr = aIfAddrs; lIfAddr != nullptr; lIfAddr = lIfAddr->ifa_next)
+    {
+        // Skip interface "addresses" with no host address since such
+        // addresses leave us nothing to compare against the specified
+        // host address.
+
+        if (lIfAddr->ifa_addr == nullptr)
+        {
+            continue;
+        }
+
+        lHostAddressFamily = lIfAddr->ifa_addr->sa_family;
+
+        // Skip interface addresses with host addresses that are
+        // neither IPv4 nor IPv6 addresses.
+
+        if ((lHostAddressFamily != AF_INET) && (lHostAddressFamily != AF_INET6))
+        {
+            continue;
+        }
+
+        // If the specified host address matches the interface host
+        // address, save the interface name for the second pass
+        // search.
+
+        if (aHostAddress == *reinterpret_cast<const SocketAddress *>(lIfAddr->ifa_addr))
+        {
+            lIfName = lIfAddr->ifa_name;
+
+            break;
+        }
+    }
+
+    // If we found an interface and name with a host address that
+    // matched, start the second pass search.
+
+    if (lIfName != nullptr)
+    {
+        lRetval = GetConfiguration(lIfName,
+                                   lHostAddressFamily,
+                                   aIfAddrs,
+                                   aEthernetEUI48,
+                                   aNetmask);
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
+
+ done:
+    return (lRetval);
+}
+
+static Status
+GetConfiguration(const IPAddress &aHostAddress,
+                 NetworkModel::EthernetEUI48Type *aEthernetEUI48,
+                 IPAddress &aNetmask)
+{
+    int                    lStatus;
+    struct ifaddrs *       lIfAddrs = nullptr;
+    Status                 lRetval  = kStatus_Success;
+
+
+    // Get the list of interface addresses.
+
+    lStatus = getifaddrs(&lIfAddrs);
+    nlREQUIRE_ACTION(lStatus == 0, done, lRetval = -errno);
+
+    // Get the Ethernet EUI-48 (optional) and netmask.
+
+    lRetval = GetConfiguration(lIfAddrs, aHostAddress, aEthernetEUI48, aNetmask);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    if (lIfAddrs != nullptr)
+    {
+        freeifaddrs(lIfAddrs);
+    }
+
+    return (lRetval);
+}
+
+static Status
+GetConfiguration(const CFSocketNativeHandle &aSocket,
+                 NetworkModel::EthernetEUI48Type *aEthernetEUI48,
+                 IPAddress &aHostAddress,
+                 IPAddress &aNetmask,
+                 IPAddress &aDefaultRouterAddress)
+{
+    Status  lRetval = kStatus_Success;
+
+
+    nlREQUIRE_ACTION(aSocket > 0, done, lRetval = -ENOTCONN);
+
+    // Get the host address.
+
+    lRetval = GetHostAddress(aSocket, aHostAddress);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // Get the Ethernet EUI-48 and IP address netmask.
+
+    lRetval = GetConfiguration(aHostAddress, aEthernetEUI48, aNetmask);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // Get the default router address, based on the version of the
+    // host address.
+
+    lRetval = GetDefaultRouterAddress(aHostAddress, aDefaultRouterAddress);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+}; // namespace Detail
 
 /**
  *  @brief
@@ -444,6 +935,201 @@ ConnectionBasis::IdentifierType
 ConnectionBasis :: GetIdentifier(void) const
 {
     return (mIdentifier);
+}
+
+/**
+ *  @brief
+ *    Get the network configuration associated with the
+ *    currently-connected server socket.
+ *
+ *  This attempts to get the network configuration associated with the
+ *  currently-connected server socket including the Ethernet EUI-48,
+ *  host IP address, IP netmask, and default router IP address.
+ *
+ *  @param[out]  aEthernetEUI48         An optional pointer to storage for the
+ *                                      Ethernet EUI-48 associated
+ *                                      with the host server network
+ *                                      interface for the
+ *                                      currently-connected socket. If
+ *                                      the pointer is null, the
+ *                                      Ethernet EUI-48 is not
+ *                                      retrieved and returned.
+ *  @param[out]  aHostAddress           A reference to storage for the
+ *                                      host IP address associated
+ *                                      with the host server network
+ *                                      interface for the
+ *                                      currently-connected socket.
+ *  @param[out]  aNetmask               A reference to storage for the
+ *                                      IP netmask associated with the
+ *                                      host server network interface
+ *                                      for the currently-connected
+ *                                      socket.
+ *  @param[out]  aDefaultRouterAddress  A reference to storage for the
+ *                                      default router IP address
+ *                                      associated with the host
+ *                                      server network interface for
+ *                                      the currently-connected
+ *                                      socket.
+ *
+ *  @retval  kStatus_Success          If successful.
+ *  @retval  -EADDRNOTAVAIL           One or more of the requested 
+ *                                    addresses was/were could not be
+ *                                    retrieved.
+ *  @retval  -EAFNOSUPPORT            An unsupported address family was
+ *                                    encountered.
+ *  @retval  -EIO                     An error occurred interacting with
+ *                                    the host route infrastructure.
+ *  @retval  -ENOTCONN                There is no currently-connected
+ *                                    server socket.
+ *  @retval  -ENOTSOCK                The currently-connected socket is
+ *                                    not actually a socket but some
+ *                                    other type of descriptor.
+ *
+ */
+Status
+ConnectionBasis :: GetConfiguration(NetworkModel::EthernetEUI48Type *aEthernetEUI48,
+                                    IPAddress &aHostAddress,
+                                    IPAddress &aNetmask,
+                                    IPAddress &aDefaultRouterAddress) const
+{
+    Status  lRetval;
+
+
+    lRetval = Detail::GetConfiguration(mConnectedSocket,
+                                       aEthernetEUI48,
+                                       aHostAddress,
+                                       aNetmask,
+                                       aDefaultRouterAddress);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Get the network configuration associated with the
+ *    currently-connected server socket.
+ *
+ *  This attempts to get the network configuration associated with the
+ *  currently-connected server socket including the Ethernet EUI-48,
+ *  host IP address, IP netmask, and default router IP address.
+ *
+ *  @param[out]  aEthernetEUI48         A reference to storage for the
+ *                                      Ethernet EUI-48 associated
+ *                                      with the host server network
+ *                                      interface for the
+ *                                      currently-connected socket.
+ *  @param[out]  aHostAddress           A reference to storage for the
+ *                                      host IP address associated
+ *                                      with the host server network
+ *                                      interface for the
+ *                                      currently-connected socket.
+ *  @param[out]  aNetmask               A reference to storage for the
+ *                                      IP netmask associated with the
+ *                                      host server network interface
+ *                                      for the currently-connected
+ *                                      socket.
+ *  @param[out]  aDefaultRouterAddress  A reference to storage for the
+ *                                      default router IP address
+ *                                      associated with the host
+ *                                      server network interface for
+ *                                      the currently-connected
+ *                                      socket.
+ *
+ *  @retval  kStatus_Success          If successful.
+ *  @retval  -EADDRNOTAVAIL           One or more of the requested 
+ *                                    addresses was/were could not be
+ *                                    retrieved.
+ *  @retval  -EAFNOSUPPORT            An unsupported address family was
+ *                                    encountered.
+ *  @retval  -EIO                     An error occurred interacting with
+ *                                    the host route infrastructure.
+ *  @retval  -ENOTCONN                There is no currently-connected
+ *                                    server socket.
+ *  @retval  -ENOTSOCK                The currently-connected socket is
+ *                                    not actually a socket but some
+ *                                    other type of descriptor.
+ *
+ */
+Status
+ConnectionBasis :: GetConfiguration(NetworkModel::EthernetEUI48Type &aEthernetEUI48,
+                                    Common::IPAddress &aHostAddress,
+                                    Common::IPAddress &aNetmask,
+                                    Common::IPAddress &aDefaultRouterAddress) const
+{
+    NetworkModel::EthernetEUI48Type *  lEthernetEUI48 = &aEthernetEUI48;
+    Status                             lRetval;
+
+
+    lRetval = GetConfiguration(lEthernetEUI48,
+                               aHostAddress,
+                               aNetmask,
+                               aDefaultRouterAddress);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Get the network configuration associated with the
+ *    currently-connected server socket.
+ *
+ *  This attempts to get the network configuration associated with the
+ *  currently-connected server socket including the host IP address,
+ *  IP netmask, and default router IP address.
+ *
+ *  @param[out]  aHostAddress           A reference to storage for the
+ *                                      host IP address associated
+ *                                      with the host server network
+ *                                      interface for the
+ *                                      currently-connected socket.
+ *  @param[out]  aNetmask               A reference to storage for the
+ *                                      IP netmask associated with the
+ *                                      host server network interface
+ *                                      for the currently-connected
+ *                                      socket.
+ *  @param[out]  aDefaultRouterAddress  A reference to storage for the
+ *                                      default router IP address
+ *                                      associated with the host
+ *                                      server network interface for
+ *                                      the currently-connected
+ *                                      socket.
+ *
+ *  @retval  kStatus_Success          If successful.
+ *  @retval  -EADDRNOTAVAIL           One or more of the requested 
+ *                                    addresses was/were could not be
+ *                                    retrieved.
+ *  @retval  -EAFNOSUPPORT            An unsupported address family was
+ *                                    encountered.
+ *  @retval  -EIO                     An error occurred interacting with
+ *                                    the host route infrastructure.
+ *  @retval  -ENOTCONN                There is no currently-connected
+ *                                    server socket.
+ *  @retval  -ENOTSOCK                The currently-connected socket is
+ *                                    not actually a socket but some
+ *                                    other type of descriptor.
+ *
+ */
+Status
+ConnectionBasis :: GetConfiguration(Common::IPAddress &aHostAddress,
+                                    Common::IPAddress &aNetmask,
+                                    Common::IPAddress &aDefaultRouterAddress) const
+{
+    NetworkModel::EthernetEUI48Type *  lEthernetEUI48 = nullptr;
+    Status                             lRetval;
+
+
+    lRetval = GetConfiguration(lEthernetEUI48,
+                               aHostAddress,
+                               aNetmask,
+                               aDefaultRouterAddress);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
 }
 
 /**
