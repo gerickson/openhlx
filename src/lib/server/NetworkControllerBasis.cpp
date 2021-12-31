@@ -268,7 +268,8 @@ NetworkControllerBasis :: HandleQueryReceived(const bool &aIsConfiguration,
  *
  */
 /* static */ Status
-NetworkControllerBasis :: HandleDHCPv4EnabledResponse(const NetworkModel::EnabledType &aEnabled, ConnectionBuffer::MutableCountedPointer &aBuffer)
+NetworkControllerBasis :: HandleDHCPv4EnabledResponse(const NetworkModel::EnabledType &aEnabled,
+                                                      ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
     Server::Command::Network::DHCPv4EnabledResponse  lDHCPv4EnabledResponse;
     const uint8_t *                                  lBuffer;
@@ -292,15 +293,15 @@ NetworkControllerBasis :: HandleDHCPv4EnabledResponse(const NetworkModel::Enable
 /**
  *  @brief
  *    Handle and generate the server command response for an Ethernet
- *    network interface EUI-48 address request.
+ *    network interface EUI-48 request.
  *
  *  This handles and generates the server command response for an
- *  Ethernet network interface EUI-48 address request.
+ *  Ethernet network interface EUI-48 request.
  *
  *  @param[in]      aEthernetEUI48   An immutable reference to the
  *                                   Ethernet network interface EUI-48
- *                                   address for which the response is
- *                                   to be formed.
+ *                                   for which the response is to be
+ *                                   formed.
  *  @param[in,out]  aBuffer          A mutable reference to the shared
  *                                   pointer into which the response is
  *                                   to be generated.
@@ -342,9 +343,10 @@ NetworkControllerBasis :: HandleEthernetEUI48Response(const NetworkModel::Ethern
  *  This handles and generates the server command response for an
  *  Ethernet network interface Control4 SDDP enabled state request.
  *
- *  @param[in]      aEnabled   An immutable reference to the Ethernet network interface Control4 SDDP
- *                             enabled state for which the response
- *                             is to be formed.
+ *  @param[in]      aEnabled   An immutable reference to the Ethernet
+ *                             network interface Control4 SDDP enabled
+ *                             state for which the response is to be
+ *                             formed.
  *  @param[in,out]  aBuffer    A mutable reference to the shared
  *                             pointer into which the response is to
  *                             be generated.
