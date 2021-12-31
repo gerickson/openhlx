@@ -72,9 +72,7 @@ protected:
 
     // Observation (Query) Command Request Instance Handlers
 
-    Common::Status HandleQueryReceived(const bool &aIsConfiguration,
-                                       const char *aInputBuffer,
-                                       Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer) const;
+    Common::Status HandleQueryReceived(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
 
 protected:
     // Command Response Handlers

@@ -166,22 +166,13 @@ done:
 
 /**
  *  @brief
- *    Handle and generate the server command response for a network
- *    interface query request.
+ *    Handle and generate the server connection-independent command
+ *    response schema for a network interface query request.
  *
- *  This handles and generates the server command response for an
- *  network interface query request.
+ *  This handles and generates the server connection-independent
+ *  command response schema for an network interface query request.
  *
- *  @param[in]      aIsConfiguration  An immutable reference to a Boolean
- *                                    indicating whether the query
- *                                    request is coming from a query
- *                                    current configuration (true) or
- *                                    a network query (false) request.
-
- *  @param[in]      aInputBuffer      A pointer to a null-terminated
- *                                    C string containing the content to
- *                                    place into the response buffer.
- *  @param[in,out]  aOutputBuffer     A mutable reference to the shared
+ *  @param[in,out]  aBuffer           A mutable reference to the shared
  *                                    pointer into which the response is
  *                                    to be generated.
  *
@@ -192,14 +183,10 @@ done:
  *
  */
 Status
-NetworkControllerBasis :: HandleQueryReceived(const bool &aIsConfiguration,
-                                              const char *aInputBuffer,
-                                              Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer) const
+NetworkControllerBasis :: HandleQueryReceived(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
     NetworkModel::EnabledType  lDHCPv4Enabled;
     NetworkModel::EnabledType  lSDDPEnabled;
-    const uint8_t *            lBuffer;
-    size_t                     lSize;
     Status                     lRetval;
 
 
@@ -208,21 +195,13 @@ NetworkControllerBasis :: HandleQueryReceived(const bool &aIsConfiguration,
     lRetval = mNetworkModel.GetDHCPv4Enabled(lDHCPv4Enabled);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = HandleDHCPv4EnabledResponse(lDHCPv4Enabled, aOutputBuffer);
+    lRetval = HandleDHCPv4EnabledResponse(lDHCPv4Enabled, aBuffer);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mNetworkModel.GetSDDPEnabled(lSDDPEnabled);
     nlREQUIRE_SUCCESS(lRetval, done);
 
-    lRetval = HandleSDDPEnabledResponse(lSDDPEnabled, aOutputBuffer);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    // Handle any remaining precanned response content.
-
-    lBuffer = reinterpret_cast<const uint8_t *>(aInputBuffer);
-    lSize = strlen(aInputBuffer);
-
-    lRetval = Common::Utilities::Put(*aOutputBuffer.get(), lBuffer, lSize);
+    lRetval = HandleSDDPEnabledResponse(lSDDPEnabled, aBuffer);
     nlREQUIRE_SUCCESS(lRetval, done);
 
  done:
