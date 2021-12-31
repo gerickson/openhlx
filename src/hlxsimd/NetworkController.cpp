@@ -55,36 +55,27 @@ namespace HLX
 namespace Simulator
 {
 
-// The query network response contains both state and
-// configuration settings.
-
-static const char * const kQueryResponseBuffer = \
-"(IP192.168.1.48)\r\n"
-"(NM255.255.255.0)\r\n"
-"(GW192.168.1.1)\r\n"
-"(MAC00-50-C2-D8-24-71)\r\n";
-
-// The query current configuration response contains ONLY
-// configuration settings.
-
-static const char * const kQueryCurrentResponseBuffer = \
-"(IP192.168.1.48)\r\n"
-"(NM255.255.255.0)\r\n"
-"(GW192.168.1.1)\r\n";
-
 /**
  *  @brief
  *    A object for representing default data for a HLX Ethernet
  *    network interface data model.
+ *
+ *  @note
+ *    For the simulator, the only two values that can be set to
+ *    reasonable defaults are the DHCPv4 and Control4 SDDP enabled
+ *    state settings. The Ethernet EUI-48 address, default router IP
+ *    address, host IP address, and IP netmask are all dependent on
+ *    the network interface over which a connection to the HLX server
+ *    is established and, consequently, are dynamic in nature.
  *
  *  @private
  *
  */
 struct NetworkModelDefaults
 {
-    NetworkModel::IPAddressType        mHLXAddress;
-    NetworkModel::PrefixLengthType     mPrefixLength;
-    NetworkModel::IPAddressType        mGatewayAddress;
+    NetworkModel::IPAddressType        mHostAddress;
+    NetworkModel::IPAddressType        mNetmask;
+    NetworkModel::IPAddressType        mDefaultRouterAddress;
     NetworkModel::EthernetEUI48Type    mEthernetEUI48;
     NetworkModel::EnabledType          mDHCPv4Enabled;
     NetworkModel::EnabledType          mSDDPEnabled;
@@ -96,7 +87,7 @@ static const NetworkModel::EnabledType     kSetSDDPEnabledDefault   = false;
 static const NetworkModelDefaults kNetworkModelDefaults =
 {
     { },
-    0,
+    { },
     { },
     { },
     kSetDHCPv4EnabledDefault,
@@ -215,12 +206,27 @@ void NetworkController :: QueryCurrentConfiguration(Server::ConnectionBasis &aCo
 {
     static const bool kIsConfiguration = true;
 
-    (void)aConnection;
-
-    HandleQueryReceived(kIsConfiguration, kQueryCurrentResponseBuffer, aBuffer);
+    HandleQueryReceived(kIsConfiguration, aConnection, aBuffer);
 }
 
-void NetworkController :: ResetToDefaultConfiguration(void)
+/**
+ *  @brief
+ *    Reset the network data model to defaults.
+ *
+ *  This is a configuration management delegate method that resets the
+ *  network data model to default values.
+ *
+ *  @note
+ *    For the simulator, the only two values that can be set to
+ *    reasonable defaults are the DHCPv4 and Control4 SDDP enabled
+ *    state settings. The Ethernet EUI-48 address, default router IP
+ *    address, host IP address, and IP netmask are all dependent on
+ *    the network interface over which a connection to the HLX server
+ *    is established and, consequently, are dynamic in nature.
+ *
+ */
+void
+NetworkController :: ResetToDefaultConfiguration(void)
 {
     Status lStatus;
 
@@ -511,9 +517,11 @@ void NetworkController :: QueryRequestReceivedHandler(Server::ConnectionBasis &a
     lStatus = lResponseBuffer->Init();
     nlREQUIRE_SUCCESS(lStatus, done);
 
-    // First, put the solicited notifications portion.
+    // First, put the solicited notifications portion, including both
+    // the connection-dependent and -independent schema content.
 
-    HandleQueryReceived(!kIsConfiguration, kQueryResponseBuffer, lResponseBuffer);
+    lStatus = HandleQueryReceived(!kIsConfiguration, aConnection, lResponseBuffer);
+    nlREQUIRE_SUCCESS(lStatus, done);
 
     // Second, put the response completion portion.
 
@@ -678,6 +686,68 @@ NetworkController :: SetSDDPEnabledRequestReceivedHandler(Server::ConnectionBasi
     {
         lController->SetSDDPEnabledRequestReceivedHandler(aConnection, aBuffer, aSize, aMatches);
     }
+}
+
+// MARK: Observation (Query) Command Request Handlers
+
+// MARK: Observation (Query) Command Request Instance Handlers
+
+Common::Status
+NetworkController :: HandleQueryReceived(const bool &aIsConfiguration,
+                                         Server::ConnectionBasis &aConnection, 
+                                         Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+{
+    NetworkModel::EthernetEUI48Type  lEthernetEUI48;
+    IPAddress                        lDefaultRouterAddress;
+    IPAddress                        lHostAddress;
+    IPAddress                        lNetmask;
+    Status                           lRetval = kStatus_Success;
+    
+
+    // Allow the server network controller basis to handle the common,
+    // connection-independent query schema.
+
+    lRetval = Server::NetworkControllerBasis::HandleQueryReceived(aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // Handle the connection-dependent schema.
+    //
+    // Only get the Ethernet EUI-48 if the query is NOT in a configuration
+    // retrieval context.
+
+    if (!aIsConfiguration)
+    {
+        lRetval = aConnection.GetConfiguration(lEthernetEUI48,
+                                               lHostAddress,
+                                               lNetmask,
+                                               lDefaultRouterAddress);
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
+    else
+    {
+        lRetval = aConnection.GetConfiguration(lHostAddress,
+                                               lNetmask,
+                                               lDefaultRouterAddress);
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
+
+    lRetval = HandleHostAddressResponse(lHostAddress, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = HandleNetmaskResponse(lNetmask, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = HandleDefaultRouterAddressResponse(lDefaultRouterAddress, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    if (!aIsConfiguration)
+    {
+        lRetval = HandleEthernetEUI48Response(lEthernetEUI48, aBuffer);
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
+
+ done:
+    return (lRetval);
 }
 
 }; // namespace Simulator
