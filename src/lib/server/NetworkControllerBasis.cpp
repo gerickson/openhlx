@@ -196,12 +196,11 @@ NetworkControllerBasis :: HandleQueryReceived(const bool &aIsConfiguration,
                                               const char *aInputBuffer,
                                               Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer) const
 {
-    NetworkModel::EnabledType        lDHCPv4Enabled;
-    NetworkModel::EthernetEUI48Type  lEthernetEUI48;
-    NetworkModel::EnabledType        lSDDPEnabled;
-    const uint8_t *                  lBuffer;
-    size_t                           lSize;
-    Status                           lRetval;
+    NetworkModel::EnabledType  lDHCPv4Enabled;
+    NetworkModel::EnabledType  lSDDPEnabled;
+    const uint8_t *            lBuffer;
+    size_t                     lSize;
+    Status                     lRetval;
 
 
     // Handle any data model-sourced response content.
@@ -211,15 +210,6 @@ NetworkControllerBasis :: HandleQueryReceived(const bool &aIsConfiguration,
 
     lRetval = HandleDHCPv4EnabledResponse(lDHCPv4Enabled, aOutputBuffer);
     nlREQUIRE_SUCCESS(lRetval, done);
-
-    if (!aIsConfiguration)
-    {
-        lRetval = mNetworkModel.GetEthernetEUI48(lEthernetEUI48);
-        nlREQUIRE_SUCCESS(lRetval, done);
-
-        lRetval = HandleEthernetEUI48Response(lEthernetEUI48, aOutputBuffer);
-        nlREQUIRE_SUCCESS(lRetval, done);
-    }
 
     lRetval = mNetworkModel.GetSDDPEnabled(lSDDPEnabled);
     nlREQUIRE_SUCCESS(lRetval, done);
