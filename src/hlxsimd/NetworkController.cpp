@@ -204,7 +204,7 @@ done:
 
 void NetworkController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
-    static const bool kIsConfiguration = true;
+    static constexpr bool kIsConfiguration = true;
 
     HandleQueryReceived(kIsConfiguration, aConnection, aBuffer);
 }
@@ -498,7 +498,7 @@ NetworkController :: SDDPSaveToBackupConfiguration(CFMutableDictionaryRef aNetwo
 
 void NetworkController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
-    static const bool                        kIsConfiguration = true;
+    static constexpr bool                    kIsConfiguration = true;
     Server::Command::Network::QueryResponse  lResponse;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
