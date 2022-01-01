@@ -707,8 +707,6 @@ void NetworkController :: QueryRequestReceivedHandler(Server::ConnectionBasis &a
     nlREQUIRE_ACTION(aMatches.size() == Server::Command::Network::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
 
-    lStatus = lResponse.Init();
-    nlREQUIRE_SUCCESS(lStatus, done);
 
     lResponseBuffer.reset(new ConnectionBuffer);
     nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
@@ -723,6 +721,9 @@ void NetworkController :: QueryRequestReceivedHandler(Server::ConnectionBasis &a
     nlREQUIRE_SUCCESS(lStatus, done);
 
     // Second, put the response completion portion.
+
+    lStatus = lResponse.Init();
+    nlREQUIRE_SUCCESS(lStatus, done);
 
     lBuffer = lResponse.GetBuffer();
     lSize = lResponse.GetSize();
