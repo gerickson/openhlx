@@ -1,5 +1,5 @@
 /*
- *    Copyright (c) 2018-2021 Grant Erickson
+ *    Copyright (c) 2018-2022 Grant Erickson
  *    All rights reserved.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -301,7 +301,7 @@ GetString(const Proxy::Application::ControllerDelegate::Roles &aRoles, const boo
 static const char *
 GetString(const Proxy::Application::ControllerDelegate::Roles &aRoles)
 {
-    static const bool kTitleCase = true;
+    static constexpr bool kTitleCase = true;
 
     return (GetString(aRoles, !kTitleCase));
 }
@@ -959,7 +959,7 @@ DecodeOptions(const char *inProgram,
               const struct option *inOptions,
               size_t & outConsumed)
 {
-    const bool      posixly_correct = true;
+    constexpr bool  posixly_correct = true;
     char const *    p;
     int             c;
     unsigned int    error = 0;
