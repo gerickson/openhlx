@@ -65,9 +65,8 @@ namespace Server
 namespace Detail
 {
 
-#if defined(__MACH__)
+#if !defined(__linux__)
 typedef decltype(sockaddr::sa_len) sa_len_t;
-#endif
 
 struct RouteMessage
 {
@@ -78,6 +77,7 @@ struct RouteMessage
         struct sockaddr mSocketAddress;
     } mUnion;
 };
+#endif // defined(__linux__)
 
 static Status
 SetAddress(IPAddress &aIPAddress, const SocketAddress &aSocketAddress)
@@ -144,6 +144,7 @@ SetAddress(const sa_family_t &aFamily,
     return (lRetval);
 }
 
+#if defined(__MACH__)
 static Status
 GetDefaultRouterAddress(const sa_family_t &aSocketAddressFamily,
                         const size_t &aSocketAddressLength,
@@ -236,6 +237,17 @@ done:
 
     return (lRetval);
 }
+#else
+static Status
+GetDefaultRouterAddress(const sa_family_t &aSocketAddressFamily,
+                        const size_t &aSocketAddressLength,
+                        void *aAddress)
+{
+    Status                   lRetval = -ENOSYS;
+
+    return (lRetval);
+}
+#endif // defined(__MACH__)
 
 static Status
 GetDefaultRouterAddress(const IPAddress &aHostAddress, IPAddress &aDefaultRouterAddress)
@@ -281,11 +293,17 @@ GetDefaultRouterAddress(const IPAddress &aHostAddress, IPAddress &aDefaultRouter
 static Status
 GetHostAddress(const CFSocketNativeHandle &aSocket, IPAddress &aHostAddress)
 {
-    uint8_t          lBuffer[SOCK_MAXADDRLEN];
-    socklen_t        lBufferLength = ElementsOf(lBuffer);
-    SocketAddress *  lOurSocketAddress;
-    int              lStatus;
-    Status           lRetval = kStatus_Success;
+#if defined(SOCK_MAXADDRLEN)
+    static constexpr size_t  kSocketAddressLengthMax = SOCK_MAXADDRLEN;
+#else
+    static constexpr size_t  kSocketAddressLengthMax = sizeof (struct sockaddr_storage);
+#endif // defined(SOCK_MAXADDRLEN)
+    uint8_t                  lBuffer[kSocketAddressLengthMax];
+    socklen_t                lBufferLength = ElementsOf(lBuffer);
+    SocketAddress *          lOurSocketAddress;
+    int                      lStatus;
+    Status                   lRetval = kStatus_Success;
+
 
     nlREQUIRE_ACTION(aSocket > 0, done, lRetval = -ENOTCONN);
 
