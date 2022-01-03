@@ -237,7 +237,7 @@ done:
 
     return (lRetval);
 }
-#else
+#else // defined(__MACH__)
 static Status
 GetDefaultRouterAddress(const sa_family_t &aSocketAddressFamily,
                         const size_t &aSocketAddressLength,
