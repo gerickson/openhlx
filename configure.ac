@@ -923,6 +923,7 @@ src/hlxsimd/Makefile
 src/include/Makefile
 src/lib/Makefile
 src/lib/client/Makefile
+src/lib/client/tests/Makefile
 src/lib/common/Makefile
 src/lib/common/tests/Makefile
 src/lib/model/Makefile
