@@ -1,5 +1,5 @@
 #
-#    Copyright (c) 2019-2021 Grant Erickson
+#    Copyright (c) 2019-2022 Grant Erickson
 #    All rights reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,6 +30,10 @@ lib_LIBRARIES                                               = \
 # targets from SUBDIRS that might depend on them.
 
 AM_RECURSIVE_TARGETS: $(LIBRARIES)
+
+SUBDIRS                                                     = \
+    tests                                                     \
+    $(NULL)
 
 noinst_HEADERS                                              = \
     $(NULL)
