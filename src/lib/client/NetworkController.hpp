@@ -1,5 +1,5 @@
 /*
- *    Copyright (c) 2018-2021 Grant Erickson
+ *    Copyright (c) 2018-2022 Grant Erickson
  *    All rights reserved.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,6 +29,7 @@
 #include <OpenHLX/Common/NetworkControllerBasis.hpp>
 #include <OpenHLX/Client/NetworkControllerBasis.hpp>
 #include <OpenHLX/Client/NetworkControllerCommands.hpp>
+#include <OpenHLX/Model/NetworkModel.hpp>
 
 
 namespace HLX
@@ -58,6 +59,14 @@ public:
 
     Common::Status Init(CommandManager &aCommandManager, const Common::Timeout &aTimeout) final;
 
+    // Observer Methods
+
+    Common::Status GetDHCPv4Enabled(Model::NetworkModel::EnabledType &aDHCPv4Enabled) const;
+    Common::Status GetEthernetEUI48(Model::NetworkModel::EthernetEUI48Type &aEthernetEUI48) const;
+    Common::Status GetDefaultRouterIPAddress(Model::NetworkModel::IPAddressType &aDefaultRouterAddress) const;
+    Common::Status GetHostIPAddress(Model::NetworkModel::IPAddressType &aHostAddress) const;
+    Common::Status GetIPNetmask(Model::NetworkModel::IPAddressType &aNetmask) const;
+    Common::Status GetSDDPEnabled(Model::NetworkModel::EnabledType &aSDDPEnabled) const;
 };
 
 }; // namespace Client
