@@ -23,17 +23,30 @@
  *
  */
 
+#if HAVE_CONFIG_H
+#include "openhlx-config.h"
+#endif
+
 #include "ConnectionBasis.hpp"
 
 #include <errno.h>
 #include <ifaddrs.h>
 #include <unistd.h>
 
+#if defined(__linux__)
+#include <linux/if_packet.h>
+#include <linux/netlink.h>
+#endif
+
 #if defined(__MACH__)
 #include <net/if_dl.h>
 #include <net/if_types.h>
 #endif // defined(__MACH__)
 #include <net/route.h>
+
+#if HAVE_NETLINK_ROUTE_ROUTE_H
+#include <netlink/route/route.h>
+#endif
 
 #include <sys/types.h>
 
@@ -112,6 +125,7 @@ SetAddress(IPAddress &aIPAddress, const SocketAddress &aSocketAddress)
     return (lRetval);
 }
 
+#if defined(__MACH__)
 static Status
 SetAddress(const sa_family_t &aFamily,
            const struct sockaddr &aSocketAddress,
@@ -144,7 +158,6 @@ SetAddress(const sa_family_t &aFamily,
     return (lRetval);
 }
 
-#if defined(__MACH__)
 static Status
 GetDefaultRouterAddress(const sa_family_t &aSocketAddressFamily,
                         const size_t &aSocketAddressLength,
@@ -237,7 +250,161 @@ done:
 
     return (lRetval);
 }
-#else // defined(__MACH__)
+#elif defined(__linux__)
+/**
+ *  @brief
+ *    Netlink protocol library suite @a rtnl_route_foreach_nexthop
+ *    route next hop iterator callback.
+ *
+ *  This attempts to get the route next hope gateway and, if present,
+ *  copies the address associated with it to @a aAddress.
+ *
+ *  @param[in]   aNextHop  A pointer to the route next hop for which
+ *                         to introspect the gateway.
+ *  @param[out]  aAddress  A pointer to storage in which to copy the
+ *                         gateway address, if one is found for the
+ *                         route next hop.
+ *
+ */
+static void
+NetlinkRouteNextHopForeachCallBack(struct rtnl_nexthop *aNextHop, void *aAddress)
+{
+    struct nl_addr *lGateway = nullptr;
+
+    lGateway = rtnl_route_nh_get_gateway(aNextHop);
+
+    if (lGateway != nullptr) {
+        memcpy(aAddress,
+               nl_addr_get_binary_addr(lGateway),
+               nl_addr_get_len(lGateway));
+    }
+}
+
+/**
+ *  @brief
+ *    Netlink protocol library suite @a nl_cache_foreach_filter
+ *    route cache entry iterator callback.
+ *
+ *  This attempts to get the route cache entry next hop table and, if
+ *  present, invokes the route next hop iterator on it.
+ *
+ *  @param[in]   aObject   A pointer to the route cache entry for
+ *                         which to introspect the route next hop
+ *                         table.
+ *  @param[out]  aAddress  A pointer to storage in which to copy the
+ *                         gateway address, if one is found in the
+ *                         route next hop table.
+ *
+ */
+static void
+NetlinkRouteCacheForeachCallBack(struct nl_object *aObject, void *aAddress)
+{
+    struct rtnl_route *lRoute = reinterpret_cast<struct rtnl_route *>(aObject);
+
+    rtnl_route_foreach_nexthop(lRoute,
+                               NetlinkRouteNextHopForeachCallBack,
+                               aAddress);
+}
+
+static Status
+GetDefaultRouterAddress(const sa_family_t &aSocketAddressFamily,
+                        const size_t &aSocketAddressLength,
+                        void *aAddress)
+{
+    int                  lDescriptor         = -1;
+    struct rtnl_route *  lRouteFilter        = nullptr;
+    struct nl_addr *     lDestinationAddress = nullptr;
+    struct nl_cache *    lRouteCache         = nullptr;
+    bool                 lEmpty;
+    struct nl_sock *     lSocket             = nullptr;
+    uint8_t              lOctet              = '0';
+    int                  lStatus;
+    Status               lRetval             = -EADDRNOTAVAIL;
+
+
+    (void)aSocketAddressLength;
+
+    // Establish the routing socket descriptor
+
+    lDescriptor = socket(PF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
+    nlREQUIRE_ACTION(lDescriptor > 0, done, lRetval = -errno);
+
+    // Create the netlink abstract socket object
+
+    lSocket = nl_socket_alloc();
+    nlREQUIRE_ACTION(lSocket != nullptr, done, lRetval = -ENOMEM);
+
+    // Associate the descriptor with the netlink abstract socket object
+
+    lStatus = nl_socket_set_fd(lSocket, NETLINK_ROUTE, lDescriptor);
+    nlREQUIRE_ACTION(lStatus == NLE_SUCCESS, done, lRetval = -EBADF);
+
+    // Attempt to allocate and fill a route cache for the operating
+    // system routing table entries from which our query should be
+    // satisfied.
+
+    lStatus = rtnl_route_alloc_cache(lSocket, aSocketAddressFamily, ROUTE_CACHE_CONTENT, &lRouteCache);
+    nlREQUIRE_ACTION(lStatus == NLE_SUCCESS, done, lRetval = -ENOMEM);
+
+    // The cache should have been filled and should not be empty. If
+    // it is, we cannot get the desired gateway address.
+
+    lEmpty = nl_cache_is_empty(lRouteCache);
+    nlREQUIRE_ACTION(!lEmpty, done, lRetval = -EADDRNOTAVAIL);
+
+    // Allocate a route object to serve as the filter for our default
+    // gateway search / query.
+
+    lRouteFilter = rtnl_route_alloc();
+    nlREQUIRE_ACTION(lRouteFilter != nullptr, done, lRetval = -ENOMEM);
+
+    // Build an empty "any" destination address for our search / query
+    // filter.
+
+    lDestinationAddress = nl_addr_build(aSocketAddressFamily, &lOctet, 0);
+    nlREQUIRE_ACTION(lDestinationAddress != nullptr, done, lRetval = -ENOMEM);
+
+    // Establish the search / query filter using the specified address
+    // family, universal scope, the main routing table, and the "any"
+    // destination address.
+
+    rtnl_route_set_scope(lRouteFilter, RT_SCOPE_UNIVERSE);
+    rtnl_route_set_family(lRouteFilter, static_cast<uint8_t>(aSocketAddressFamily));
+    rtnl_route_set_table(lRouteFilter, RT_TABLE_MAIN);
+    rtnl_route_set_dst(lRouteFilter, lDestinationAddress);
+
+    // Iterate over each entry returned from the cache applied against
+    // the filter. If there is a suitable match, the result will be
+    // copied to the 'aAddress' parameter we were passed.
+
+    nl_cache_foreach_filter(lRouteCache, reinterpret_cast<struct nl_object *>(lRouteFilter), NetlinkRouteCacheForeachCallBack, aAddress);
+
+    lRetval = kStatus_Success;
+
+ done:
+    if (lDestinationAddress != nullptr) {
+        nl_addr_put(lDestinationAddress);
+    }
+
+    if (lRouteFilter != nullptr) {
+        rtnl_route_put(lRouteFilter);
+    }
+
+    if (lRouteCache != nullptr) {
+        nl_cache_put(lRouteCache);
+    }
+
+    if (lSocket != nullptr) {
+        nl_socket_free(lSocket);
+    }
+
+    if (lDescriptor != -1) {
+        close(lDescriptor);
+    }
+
+    return (lRetval);
+}
+#else // (!defined(__MACH__) && !defined(__linux__))
 static Status
 GetDefaultRouterAddress(const sa_family_t &aSocketAddressFamily,
                         const size_t &aSocketAddressLength,
@@ -326,10 +493,11 @@ GetConfiguration(const char *                      aIfName,
                  NetworkModel::EthernetEUI48Type * aEthernetEUI48,
                  IPAddress &                       aNetmask)
 {
-    bool                    lSetEthernetEUI48 = false;
-    bool                    lSetNetmask       = false;
-    const struct ifaddrs *  lIfAddr;
-    Status                  lRetval = -EADDRNOTAVAIL;
+    static constexpr uint8_t  kDefaultEUI48Octets[sizeof (*aEthernetEUI48)] = { 0, 0, 0, 0, 0, 0 };
+    bool                      lSetEthernetEUI48 = false;
+    bool                      lSetNetmask       = false;
+    const struct ifaddrs *    lIfAddr;
+    Status                    lRetval = -EADDRNOTAVAIL;
 
 
     for (lIfAddr = aIfAddrs; lIfAddr != nullptr; lIfAddr = lIfAddr->ifa_next)
@@ -356,7 +524,12 @@ GetConfiguration(const char *                      aIfName,
                 if (lFamily == AF_PACKET)
                 {
                     const struct sockaddr_ll * lLinkAddress = reinterpret_cast<struct sockaddr_ll *>(lIfAddr->ifa_addr);
-                }
+
+                    if (lLinkAddress->sll_halen > 0)
+                    {
+                        lOctets     = &lLinkAddress->sll_addr[0];
+                        lOctetCount = lLinkAddress->sll_halen;
+                    }
 #else
                 if (lFamily == AF_LINK)
                 {
@@ -367,11 +540,11 @@ GetConfiguration(const char *                      aIfName,
                         lOctets     = reinterpret_cast<const uint8_t *>(LLADDR(lLinkAddress));
                         lOctetCount = lLinkAddress->sdl_alen;
                     }
+#endif // defined(__linux__)
                     else
                     {
-                        static constexpr uint8_t kDefaultOctets[sizeof (*aEthernetEUI48)] = { 0, 0, 0, 0, 0, 0 };
-                        lOctets     = &kDefaultOctets[0];
-                        lOctetCount = ElementsOf(kDefaultOctets);
+                        lOctets     = &kDefaultEUI48Octets[0];
+                        lOctetCount = ElementsOf(kDefaultEUI48Octets);
                     }
 
                     if ((lOctets != nullptr) && (lOctetCount > 0))
@@ -381,7 +554,6 @@ GetConfiguration(const char *                      aIfName,
                         lSetEthernetEUI48 = true;
                     }
                 }
-#endif // defined(__linux__)
             }
         }
 
