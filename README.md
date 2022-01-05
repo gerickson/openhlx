@@ -13,8 +13,8 @@ Open HLX
 # Introduction
 
 Open HLX provides a set of command line programs and associated
-libraries for interacting with the Audio Authority HLX Series Modular
-Matrix System High Definition Audio/Video Switching System, which has
+libraries for interacting with the [Audio Authority](https://www.audioauthority.com) [HLX Series Modular
+Matrix System High Definition Audio/Video Switching System](https://www.cs1.net/products/audio_authority/HLX.htm), which has
 gone end-of-life and, as a result, is no longer manufacturered or sold
 by Audio Authority.
 
@@ -66,7 +66,7 @@ among actively-sold and -produced competitive products.
 
 In most situations, an HLX system will find itself with its
 telnet-based Ethernet network interface disabled and tethered, via a
-serial cable to an AMX, Crestron, Control4, or other controller where
+serial cable to an [AMX](https://www.amx.com/), [Crestron](https://www.crestron.com), [Control4](https://www.control4.com), or other controller where
 those systems act as the primary user interface and experience surface
 with the HLX acting silently in the background.
 
