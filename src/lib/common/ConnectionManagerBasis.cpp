@@ -241,7 +241,7 @@ ConnectionManagerBasis :: Resolve(const char *aMaybeHost,
 
     OnIsResolving(aMaybeHost);
 
-    lGaiStatus = getaddrinfo(aMaybeHost, NULL, &lHints, &lAddresses);
+    lGaiStatus = getaddrinfo(aMaybeHost, nullptr, &lHints, &lAddresses);
     if (lGaiStatus != 0)
     {
         lRetval = MapGaiStatusToError(lGaiStatus);
@@ -254,7 +254,7 @@ ConnectionManagerBasis :: Resolve(const char *aMaybeHost,
     {
         const struct addrinfo * lAddress;
 
-        for (lAddress = lAddresses; lAddress != NULL; lAddress = lAddress->ai_next)
+        for (lAddress = lAddresses; lAddress != nullptr; lAddress = lAddress->ai_next)
         {
             IPAddress    lIPAddress;
             Status       lStatus;

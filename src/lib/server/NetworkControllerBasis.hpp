@@ -70,17 +70,32 @@ private:
 protected:
     // Observation (Query) Command Request Handlers
 
-    // Observation (Query) Command Request Class (Static) Handlers
+    // Observation (Query) Command Request Instance Handlers
 
-    static Common::Status HandleQueryReceived(const char *aInputBuffer, Common::ConnectionBuffer::MutableCountedPointer &aOutputBuffer);
+    Common::Status HandleQueryReceived(Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
 
 protected:
     // Command Response Handlers
 
     // Command Response Class (Static) Handlers
 
+    static Common::Status HandleDHCPv4EnabledResponse(const Model::NetworkModel::EnabledType &aEnabled,
+                                                      Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    static Common::Status HandleDefaultRouterAddressResponse(const Common::IPAddress &aDefaultRouterAddress,
+                                                             Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    static Common::Status HandleEthernetEUI48Response(const Model::NetworkModel::EthernetEUI48Type &aEthernetEUI48,
+                                                      Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    static Common::Status HandleHostAddressResponse(const Common::IPAddress &aHostAddress,
+                                                    Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    static Common::Status HandleNetmaskResponse(const Common::IPAddress &aNetmask,
+                                                Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+    static Common::Status HandleSDDPEnabledResponse(const Model::NetworkModel::EnabledType &aEnabled,
+                                                    Common::ConnectionBuffer::MutableCountedPointer &aBuffer);
+
 protected:
-    static Server::Command::Network::QueryRequest  kQueryRequest;
+    static Server::Command::Network::QueryRequest             kQueryRequest;
+    static Server::Command::Network::SetDHCPv4EnabledRequest  kSetDHCPv4EnabledRequest;
+    static Server::Command::Network::SetSDDPEnabledRequest    kSetSDDPEnabledRequest;
 };
 
 }; // namespace Server

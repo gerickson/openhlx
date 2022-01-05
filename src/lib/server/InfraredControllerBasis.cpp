@@ -199,7 +199,7 @@ InfraredControllerBasis :: HandleQueryReceived(Common::ConnectionBuffer::Mutable
 
 /**
  *  @brief
- *    Handle and generate the server command response for a infrared
+ *    Handle and generate the server command response for an infrared
  *    disabled state request.
  *
  *  This handles and generates the server command response for an

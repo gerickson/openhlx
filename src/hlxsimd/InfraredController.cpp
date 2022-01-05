@@ -224,6 +224,7 @@ Status InfraredController :: LoadFromBackupConfiguration(CFDictionaryRef aBackup
     {
         OnConfigurationIsDirty();
     }
+
  done:
     return (lRetval);
 }

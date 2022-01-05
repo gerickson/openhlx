@@ -106,7 +106,7 @@ BufferBasis :: Init(Common::Command::BufferBasis &aBuffer,
 
 /**
  *  @brief
- *    This is a class initializer for a infrared remote control
+ *    This is a class initializer for an infrared remote control
  *    disabled state set operation.
  *
  *  This initializes the infrared remote control disabled state

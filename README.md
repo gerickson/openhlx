@@ -13,8 +13,8 @@ Open HLX
 # Introduction
 
 Open HLX provides a set of command line programs and associated
-libraries for interacting with the Audio Authority HLX Series Modular
-Matrix System High Definition Audio/Video Switching System, which has
+libraries for interacting with the [Audio Authority](https://www.audioauthority.com) [HLX Series Modular
+Matrix System High Definition Audio/Video Switching System](https://www.cs1.net/products/audio_authority/HLX.htm), which has
 gone end-of-life and, as a result, is no longer manufacturered or sold
 by Audio Authority.
 
@@ -66,7 +66,7 @@ among actively-sold and -produced competitive products.
 
 In most situations, an HLX system will find itself with its
 telnet-based Ethernet network interface disabled and tethered, via a
-serial cable to an AMX, Crestron, Control4, or other controller where
+serial cable to an [AMX](https://www.amx.com/), [Crestron](https://www.crestron.com), [Control4](https://www.control4.com), or other controller where
 those systems act as the primary user interface and experience surface
 with the HLX acting silently in the background.
 
@@ -140,6 +140,7 @@ C++ Standard Template Library (STL), Open HLX depends on:
       - [OpenCFLite](https://github.com/gerickson/opencflite) (Linux only)
       - [OpenCFNetwork](https://github.com/gerickson/opencfnetwork) (Linux only)
   * [LogUtilities](https://github.com/Nuovations/LogUtilities)
+  * [libnl](https://www.infradead.org/~tgr/libnl/) (Linux only)
   * [libtelnet](https://github.com/seanmiddleditch/libtelnet)
   * [nlassert](https://github.com/nestlabs/nlassert)
   * [nlunit-test](https://github.com/nestlabs/nlunit-test)
@@ -166,7 +167,7 @@ satisfied by building them directly from source, or on system
 such as Linux, installing them using a package management system.
 For example, on Debian systems:
 
-    % sudo apt-get install libboost-dev libboost-filesystem-dev libboost-system-dev libtre-dev libcppunit-dev asciidoc xmlto
+    % sudo apt-get install libboost-dev libboost-filesystem-dev libboost-system-dev libnl-3-dev libnl-route-3-dev libtre-dev libcppunit-dev asciidoc xmlto
 
 ## Installing Open HLX
 

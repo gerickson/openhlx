@@ -18,7 +18,9 @@
 
 /**
  *    @file
- *      This file implements an object for....
+ *      This file implements an object for managing the proxied client-
+ *      to-server observation and mutation of a HLX Ethernet network
+ *      interface.
  *
  */
 
@@ -31,6 +33,8 @@
 
 #include <LogUtilities/LogUtilities.hpp>
 
+#include <OpenHLX/Client/NetworkControllerCommands.hpp>
+#include <OpenHLX/Client/NetworkStateChangeNotifications.hpp>
 #include <OpenHLX/Utilities/Assert.hpp>
 #include <OpenHLX/Utilities/ElementsOf.hpp>
 
@@ -48,27 +52,6 @@ namespace HLX
 
 namespace Proxy
 {
-
-// The query network response contains both state and
-// configuration settings.
-
-static const char * const kQueryResponseBuffer = \
-"(DHCP1)\r\n"
-"(IP192.168.1.48)\r\n"
-"(NM255.255.255.0)\r\n"
-"(GW192.168.1.1)\r\n"
-"(MAC00-50-C2-D8-24-71)\r\n"
-"(SDDP0)\r\n";
-
-// The query current configuration response contains ONLY
-// configuration settings.
-
-static const char * const kQueryCurrentResponseBuffer = \
-"(DHCP1)\r\n"
-"(IP192.168.1.48)\r\n"
-"(NM255.255.255.0)\r\n"
-"(GW192.168.1.1)\r\n"
-"(SDDP0)\r\n";
 
 /**
  *  @brief
@@ -182,9 +165,47 @@ done:
 Status
 NetworkController :: DoNotificationHandlers(const bool &aRegister)
 {
-    Status  lRetval = kStatus_Success;
+    static const NotificationHandlerBasis  lNotificationHandlers[] = {
+        {
+            kDHCPv4EnabledResponse,
+            NetworkController::DHCPv4EnabledNotificationReceivedHandler
+        },
 
+        {
+            kEthernetEUI48Response,
+            NetworkController::EthernetEUI48NotificationReceivedHandler
+        },
 
+        {
+            kIPDefaultRouterAddressResponse,
+            NetworkController::IPDefaultRouterAddressNotificationReceivedHandler
+        },
+
+        {
+            kIPHostAddressResponse,
+            NetworkController::IPHostAddressNotificationReceivedHandler
+        },
+
+        {
+            kIPNetmaskResponse,
+            NetworkController::IPNetmaskNotificationReceivedHandler
+        },
+
+        {
+            kSDDPEnabledResponse,
+            NetworkController::SDDPEnabledNotificationReceivedHandler
+        }
+    };
+    static constexpr size_t  lNotificationHandlerCount = ElementsOf(lNotificationHandlers);
+    Status                   lRetval = kStatus_Success;
+
+    lRetval = Client::ObjectControllerBasis::DoNotificationHandlers(&lNotificationHandlers[0],
+                                                                    &lNotificationHandlers[lNotificationHandlerCount],
+                                                                    this,
+                                                                    aRegister);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
     return (lRetval);
 }
 
@@ -215,22 +236,464 @@ done:
 Status
 NetworkController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    Status                                lRetval = kStatus_Success;
+    static constexpr bool kIsConfiguration = true;
+    Status                lRetval = kStatus_Success;
 
 
-    (void)aConnection;
-
-    lRetval = HandleQueryReceived(kQueryCurrentResponseBuffer, aBuffer);
+    lRetval = HandleQueryReceived(kIsConfiguration, aConnection, aBuffer);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
     return (lRetval);
 }
 
+// MARK: Server-facing Client Unsolicited Notification Handlers
+
+/**
+ *  @brief
+ *    Ethernet network interface DHCPv4 enabled changed client
+ *    unsolicited notification handler.
+ *
+ *  This handles an asynchronous, unsolicited client notification for
+ *  the Ethernet network interface DHCPv4 enabled changed
+ *  notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+NetworkController :: DHCPv4EnabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    Client::NetworkControllerBasis *  lController = static_cast<Client::NetworkControllerBasis *>(this);
+    Status                            lStatus;
+
+
+    lStatus = ProxyNotification(aBuffer,
+                                aSize,
+                                aMatches,
+                                Client::NetworkControllerBasis::DHCPv4EnabledNotificationReceivedHandler,
+                                lController);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Ethernet network interface EUI-48 address changed client
+ *    unsolicited notification handler.
+ *
+ *  This handles an asynchronous, unsolicited client notification for
+ *  the Ethernet network interface EUI-48 address changed
+ *  notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+NetworkController :: EthernetEUI48NotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    Client::NetworkControllerBasis *  lController = static_cast<Client::NetworkControllerBasis *>(this);
+    Status                            lStatus;
+
+
+    lStatus = ProxyNotification(aBuffer,
+                                aSize,
+                                aMatches,
+                                Client::NetworkControllerBasis::EthernetEUI48NotificationReceivedHandler,
+                                lController);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Ethernet network interface default router IP address changed
+ *    client unsolicited notification handler.
+ *
+ *  This handles an asynchronous, unsolicited client notification for
+ *  the Ethernet network interface default router IP address changed
+ *  notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+NetworkController :: IPDefaultRouterAddressNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    Client::NetworkControllerBasis *  lController = static_cast<Client::NetworkControllerBasis *>(this);
+    Status                            lStatus;
+
+
+    lStatus = ProxyNotification(aBuffer,
+                                aSize,
+                                aMatches,
+                                Client::NetworkControllerBasis::IPDefaultRouterAddressNotificationReceivedHandler,
+                                lController);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Ethernet network interface host IP address changed client
+ *    unsolicited notification handler.
+ *
+ *  This handles an asynchronous, unsolicited client notification for
+ *  the Ethernet network interface host IP address changed
+ *  notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+NetworkController :: IPHostAddressNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    Client::NetworkControllerBasis *  lController = static_cast<Client::NetworkControllerBasis *>(this);
+    Status                            lStatus;
+
+
+    lStatus = ProxyNotification(aBuffer,
+                                aSize,
+                                aMatches,
+                                Client::NetworkControllerBasis::IPHostAddressNotificationReceivedHandler,
+                                lController);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Ethernet network interface IP netmask changed client
+ *    unsolicited notification handler.
+ *
+ *  This handles an asynchronous, unsolicited client notification for
+ *  the Ethernet network interface IP netmask changed
+ *  notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+NetworkController :: IPNetmaskNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    Client::NetworkControllerBasis *  lController = static_cast<Client::NetworkControllerBasis *>(this);
+    Status                            lStatus;
+
+
+    lStatus = ProxyNotification(aBuffer,
+                                aSize,
+                                aMatches,
+                                Client::NetworkControllerBasis::IPNetmaskNotificationReceivedHandler,
+                                lController);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return;
+}
+
+/**
+ *  @brief
+ *    Ethernet network interface Control4 SDDP enabled changed client
+ *    unsolicited notification handler.
+ *
+ *  This handles an asynchronous, unsolicited client notification for
+ *  the Ethernet network interface Control4 SDDP enabled changed
+ *  notification.
+ *
+ *  @param[in]  aBuffer   An immutable pointer to the start of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aSize     An immutable reference to the size of the
+ *                        buffer extent containing the notification.
+ *  @param[in]  aMatches  An immutable reference to the regular
+ *                        expression substring matches associated
+ *                        with the client command response that
+ *                        triggered this handler.
+ *
+ */
+void
+NetworkController :: SDDPEnabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
+{
+    Client::NetworkControllerBasis *  lController = static_cast<Client::NetworkControllerBasis *>(this);
+    Status                            lStatus;
+
+
+    lStatus = ProxyNotification(aBuffer,
+                                aSize,
+                                aMatches,
+                                Client::NetworkControllerBasis::SDDPEnabledNotificationReceivedHandler,
+                                lController);
+    nlREQUIRE_SUCCESS(lStatus, done);
+
+ done:
+    return;
+}
+
+// MARK: Server-facing Client Unsolicited Notification Handler Trampolines
+
+/**
+ *  @brief
+ *    Ethernet network interface DHCPv4 enabled state changed client
+ *    unsolicited notification handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the Ethernet network interface DHCPv4 enabled
+ *  state changed notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+NetworkController :: DHCPv4EnabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    NetworkController *lController = static_cast<NetworkController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->DHCPv4EnabledNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Ethernet network interface EUI-48 address changed client
+ *    unsolicited notification handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the Ethernet network interface EUI-48 address
+ *  changed notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+NetworkController :: EthernetEUI48NotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    NetworkController *lController = static_cast<NetworkController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->EthernetEUI48NotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Ethernet network interface default router IP address changed
+ *    client unsolicited notification handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the Ethernet network interface default router IP
+ *  address changed notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+NetworkController :: IPDefaultRouterAddressNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    NetworkController *lController = static_cast<NetworkController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->IPDefaultRouterAddressNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Ethernet network interface host IP address changed client
+ *    unsolicited notification handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the Ethernet network interface host IP address
+ *  changed notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+NetworkController :: IPHostAddressNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    NetworkController *lController = static_cast<NetworkController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->IPHostAddressNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Ethernet network interface IP netmask changed client unsolicited
+ *    notification handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the Ethernet network interface IP netmask changed
+ *  notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+NetworkController :: IPNetmaskNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    NetworkController *lController = static_cast<NetworkController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->IPNetmaskNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
+/**
+ *  @brief
+ *    Ethernet network interface Control4 SDDP enabled state changed
+ *    client unsolicited notification handler trampoline.
+ *
+ *  This invokes the handler for an unsolicited, asynchronous client
+ *  notification for the Ethernet network interface Control4 SDDP
+ *  enabled state changed notification.
+ *
+ *  @param[in]      aBuffer    An immutable pointer to the start of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aSize      An immutable reference to the size of the
+ *                             buffer extent containing the
+ *                             notification.
+ *  @param[in]      aMatches   An immutable reference to the regular
+ *                             expression substring matches associated
+ *                             with the client command response that
+ *                             triggered this handler.
+ *  @param[in,out]  aContext   A pointer to the controller class
+ *                             instance that registered this
+ *                             trampoline to call back into from
+ *                             the trampoline.
+ *
+ */
+void
+NetworkController :: SDDPEnabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches, void *aContext)
+{
+    NetworkController *lController = static_cast<NetworkController *>(aContext);
+
+    if (lController != nullptr)
+    {
+        lController->SDDPEnabledNotificationReceivedHandler(aBuffer, aSize, aMatches);
+    }
+}
+
 // MARK: Client-facing Server Command Request Completion Handlers
 
 void NetworkController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches)
 {
+    static constexpr bool                    kIsConfiguration = true;
     Server::Command::Network::QueryResponse  lResponse;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;
     Status                                   lStatus;
@@ -243,15 +706,18 @@ void NetworkController :: QueryRequestReceivedHandler(Server::ConnectionBasis &a
 
     nlREQUIRE_ACTION(aMatches.size() == Server::Command::Network::QueryRequest::kExpectedMatches, done, lStatus = kError_BadCommand);
 
+
+
     lResponseBuffer.reset(new ConnectionBuffer);
     nlREQUIRE_ACTION(lResponseBuffer, done, lStatus = -ENOMEM);
 
     lStatus = lResponseBuffer->Init();
     nlREQUIRE_SUCCESS(lStatus, done);
 
-    // First, put the solicited notifications portion.
+    // First, put the solicited notifications portion, including both
+    // the connection-dependent and -independent schema content.
 
-    lStatus = HandleQueryReceived(kQueryResponseBuffer, lResponseBuffer);
+    lStatus = HandleQueryReceived(!kIsConfiguration, aConnection, lResponseBuffer);
     nlREQUIRE_SUCCESS(lStatus, done);
 
     // Second, put the response completion portion.
@@ -269,9 +735,25 @@ void NetworkController :: QueryRequestReceivedHandler(Server::ConnectionBasis &a
     if (lStatus >= kStatus_Success)
     {
         lStatus = SendResponse(aConnection, lResponseBuffer);
-        nlVERIFY_SUCCESS(lStatus);
+        nlREQUIRE_SUCCESS(lStatus, exit);
     }
-    else
+    else if (lStatus == kError_NotInitialized)
+    {
+        lStatus = ProxyObservationCommand(aConnection,
+                                          aBuffer,
+                                          aSize,
+                                          aMatches,
+                                          kQueryResponse,
+                                          Client::NetworkControllerBasis::QueryCompleteHandler,
+                                          Client::NetworkControllerBasis::CommandErrorHandler,
+                                          NetworkController::QueryRequestReceivedHandler,
+                                          static_cast<Client::NetworkControllerBasis *>(this),
+                                          this);
+        nlREQUIRE_SUCCESS(lStatus, exit);
+    }
+
+ exit:
+    if (lStatus < kStatus_Success)
     {
         lStatus = SendErrorResponse(aConnection);
         nlVERIFY_SUCCESS(lStatus);
@@ -290,6 +772,72 @@ void NetworkController :: QueryRequestReceivedHandler(Server::ConnectionBasis &a
     {
         lController->QueryRequestReceivedHandler(aConnection, aBuffer, aSize, aMatches);
     }
+}
+
+// MARK: Observation (Query) Command Request Handlers
+
+// MARK: Observation (Query) Command Request Instance Handlers
+
+Common::Status
+NetworkController :: HandleQueryReceived(const bool &aIsConfiguration,
+                                         Server::ConnectionBasis &aConnection,
+                                         Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const
+{
+    NetworkModel::EthernetEUI48Type  lEthernetEUI48;
+    IPAddress                        lDefaultRouterAddress;
+    IPAddress                        lHostAddress;
+    IPAddress                        lNetmask;
+    Status                           lRetval = kStatus_Success;
+
+
+    (void)aConnection;
+
+    // Allow the server controller basis to handle the common,
+    // connection-independent query schema.
+
+    lRetval = Server::NetworkControllerBasis::HandleQueryReceived(aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // Handle the connection-dependent schema.
+
+    // Host IP address
+
+    lRetval = GetModel().GetHostAddress(lHostAddress);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = HandleHostAddressResponse(lHostAddress, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // IP netmask
+
+    lRetval = GetModel().GetNetmask(lNetmask);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = HandleNetmaskResponse(lNetmask, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // Default router IP address
+
+    lRetval = GetModel().GetDefaultRouterAddress(lDefaultRouterAddress);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    lRetval = HandleDefaultRouterAddressResponse(lDefaultRouterAddress, aBuffer);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+    // Ethernet EUI-48, only if NOT in the context of a configuration
+    // query.
+
+    if (!aIsConfiguration)
+    {
+        lRetval = GetModel().GetEthernetEUI48(lEthernetEUI48);
+        nlREQUIRE_SUCCESS(lRetval, done);
+
+        lRetval = HandleEthernetEUI48Response(lEthernetEUI48, aBuffer);
+        nlREQUIRE_SUCCESS(lRetval, done);
+    }
+
+ done:
+    return (lRetval);
 }
 
 }; // namespace Proxy

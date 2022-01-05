@@ -53,6 +53,96 @@ namespace Network
  *  @brief
  *    This is the class default initializer.
  *
+ *  This initializes the Ethernet network interface DHCPv4 enabled
+ *  property command response regular expression.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+DHCPv4EnabledResponse :: Init(void)
+{
+    return (DHCPv4EnabledRegularExpressionBasis::Init(*this));
+}
+
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the Ethernet network interface EUI-48 address
+ *  property command response regular expression.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+EthernetEUI48Response :: Init(void)
+{
+    return (EthernetEUI48RegularExpressionBasis::Init(*this));
+}
+
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the Ethernet network interface default router IP
+ *  address property command response regular expression.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+IPDefaultRouterAddressResponse :: Init(void)
+{
+    return (IPDefaultRouterAddressRegularExpressionBasis::Init(*this));
+}
+
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the Ethernet network interface host IP address
+ *  property command response regular expression.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+IPHostAddressResponse :: Init(void)
+{
+    return (IPHostAddressRegularExpressionBasis::Init(*this));
+}
+
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the Ethernet network interface IP netmask
+ *  property command response regular expression.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+IPNetmaskResponse :: Init(void)
+{
+    return (IPNetmaskRegularExpressionBasis::Init(*this));
+}
+
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
  *  This initializes the Ethernet network interface query command
  *  request buffer.
  *
@@ -112,6 +202,24 @@ Query :: Init(void)
 
  done:
     return (lRetval);
+}
+
+/**
+ *  @brief
+ *    This is the class default initializer.
+ *
+ *  This initializes the Ethernet network interface Control4 SDDP
+ *  enabled property command response regular expression.
+ *
+ *  @retval  kStatus_Success              If successful.
+ *  @retval  -ENOMEM                      If memory could not be allocated.
+ *  @retval  kError_InitializationFailed  If initialization otherwise failed.
+ *
+ */
+Status
+SDDPEnabledResponse :: Init(void)
+{
+    return (SDDPEnabledRegularExpressionBasis::Init(*this));
 }
 
 }; // namespace Network

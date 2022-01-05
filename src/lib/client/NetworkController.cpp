@@ -123,6 +123,191 @@ done:
     return (lRetval);
 }
 
+// MARK: Observer Methods
+
+/**
+ *  @brief
+ *    Attempt to get the HLX server IPv4 Dynamic Host Control Protocol
+ *    (DHCP) enabled state.
+ *
+ *  This attempts to get the HLX server IPv4 Dynamic Host Control
+ *  Protocol (DHCP) enabled state, if it has been previously
+ *  initialized or set.
+ *
+ *  @param[out]  aDHCPv4Enabled  A mutable reference to storage for
+ *                               the IPv4 Dynamic Host Control
+ *                               Protocol (DHCP) enabled state, if
+ *                               successful.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  kError_NotInitialized  If the IPv4 Dynamic Host Control
+ *                                  Protocol (DHCP) enabled state has
+ *                                  not been initialized with a known
+ *                                  value.
+ *
+ */
+Status
+NetworkController :: GetDHCPv4Enabled(Model::NetworkModel::EnabledType &aDHCPv4Enabled) const
+{
+    Status lRetval;
+
+    lRetval = GetModel().GetDHCPv4Enabled(aDHCPv4Enabled);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Attempt to get the HLX server network interface hardware
+ *    address.
+ *
+ *  This attempts to get the HLX server network interface hardware
+ *  address, if it has been previously initialized or set.
+ *
+ *  @param[out]  aEthernetEUI48    A mutable reference to storage for
+ *                                 the network interface EUI-48
+ *                                 address, if successful.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  kError_NotInitialized  If the network interface
+ *                                  hardware address has not been
+ *                                  initialized with a known value.
+ *
+ */
+Status
+NetworkController :: GetEthernetEUI48(Model::NetworkModel::EthernetEUI48Type &aEthernetEUI48) const
+{
+    Status lRetval;
+
+    lRetval = GetModel().GetEthernetEUI48(aEthernetEUI48);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Attempt to get the HLX server default router (that is, gateway)
+ *    IP address.
+ *
+ *  This attempts to get the HLX server default router (that is,
+ *  gateway) IP address, if it has been previously initialized or set.
+ *
+ *  @param[out]  aDefaultRouterAddress  A mutable reference to storage
+ *                                      for the default router IP
+ *                                      address, if successful.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  kError_NotInitialized  If the default router IP address
+ *                                  has not been initialized with a
+ *                                  known value.
+ *
+ */
+Status
+NetworkController :: GetDefaultRouterIPAddress(Model::NetworkModel::IPAddressType &aDefaultRouterAddress) const
+{
+    Status lRetval;
+
+    lRetval = GetModel().GetDefaultRouterAddress(aDefaultRouterAddress);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Attempt to get the HLX server host IP address.
+ *
+ *  This attempts to get the HLX server host IP address, if it has
+ *  been previously initialized or set.
+ *
+ *  @param[out]  aHostAddress           A mutable reference to storage
+ *                                      for the host IP address, if
+ *                                      successful.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  kError_NotInitialized  If the host IP address has not
+ *                                  been initialized with a known
+ *                                  value.
+ *
+ */
+Status
+NetworkController :: GetHostIPAddress(Model::NetworkModel::IPAddressType &aHostAddress) const
+{
+    Status lRetval;
+
+    lRetval = GetModel().GetHostAddress(aHostAddress);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Attempt to get the HLX server IP netmask.
+ *
+ *  This attempts to get the HLX server IP netmask, if it has been
+ *  previously initialized or set.
+ *
+ *  @param[out]  aNetmask               A mutable reference to storage
+ *                                      for the IP netmask, if
+ *                                      successful.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  kError_NotInitialized  If the IP netmask has not been
+ *                                  initialized with a known value.
+ *
+ */
+Status
+NetworkController :: GetIPNetmask(Model::NetworkModel::IPAddressType &aNetmask) const
+{
+    Status lRetval;
+
+    lRetval = GetModel().GetNetmask(aNetmask);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
+/**
+ *  @brief
+ *    Attempt to get the HLX server Control4 Simple Device Discovery
+ *    Protocol (SDDP) enabled state.
+ *
+ *  This attempts to get the HLX server Control4 Simple Device
+ *  Discovery Protocol (SDDP) enabled state, if it has been previously
+ *  initialized or set.
+ *
+ *  @param[out]  aSDDPEnabled  A mutable reference to storage for
+ *                             the Control4 Simple Device Discovery
+ *                             Protocol (SDDP) enabled state, if
+ *                             successful.
+ *
+ *  @retval  kStatus_Success        If successful.
+ *  @retval  kError_NotInitialized  If the Control4 Simple Device
+ *                                  Discovery Protocol (SDDP) enabled
+ *                                  state has not been initialized
+ *                                  with a known value.
+ *
+ */
+Status
+NetworkController :: GetSDDPEnabled(Model::NetworkModel::EnabledType &aSDDPEnabled) const
+{
+    Status lRetval;
+
+    lRetval = GetModel().GetSDDPEnabled(aSDDPEnabled);
+    nlREQUIRE_SUCCESS(lRetval, done);
+
+ done:
+    return (lRetval);
+}
+
 }; // namespace Client
 
 }; // namespace HLX

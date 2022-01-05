@@ -231,9 +231,9 @@ FrontPanelControllerBasis :: DoNotificationHandlers(const bool &aRegister)
     Status                   lRetval = kStatus_Success;
 
     lRetval = Client::ObjectControllerBasis::DoNotificationHandlers(&lNotificationHandlers[0],
-                                                              &lNotificationHandlers[lNotificationHandlerCount],
-                                                              this,
-                                                              aRegister);
+                                                                    &lNotificationHandlers[lNotificationHandlerCount],
+                                                                    this,
+                                                                    aRegister);
     nlREQUIRE_SUCCESS(lRetval, done);
 
 done:
@@ -713,8 +713,8 @@ FrontPanelControllerBasis :: BrightnessNotificationReceivedHandler(const uint8_t
 
 /**
  *  @brief
- *    Front panel disabled/locked changed client unsolicited notification handler
- *    trampoline.
+ *    Front panel disabled/locked changed client unsolicited
+ *    notification handler trampoline.
  *
  *  This invokes the handler for an unsolicited, asynchronous client
  *  notification for the front panel disabled/locked changed notification.

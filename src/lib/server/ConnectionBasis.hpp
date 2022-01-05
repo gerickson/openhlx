@@ -28,16 +28,19 @@
 
 #include <stddef.h>
 
+#include <CoreFoundation/CFSocket.h>
 #include <CoreFoundation/CFURL.h>
 
 #include <OpenHLX/Common/ConnectionBasis.hpp>
 #include <OpenHLX/Common/ConnectionBuffer.hpp>
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/HostURLAddress.hpp>
+#include <OpenHLX/Common/IPAddress.hpp>
 #include <OpenHLX/Common/RegularExpression.hpp>
 #include <OpenHLX/Common/RunLoopParameters.hpp>
 #include <OpenHLX/Common/SocketAddress.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
+#include <OpenHLX/Model/NetworkModel.hpp>
 
 
 namespace HLX
@@ -72,11 +75,20 @@ public:
     virtual Common::Status Init(const Common::RunLoopParameters &aRunLoopParameters, const IdentifierType &aIdentifier);
     virtual Common::Status Connect(const int &aSocket, const Common::SocketAddress &aPeerAddress);
     virtual Common::Status Disconnect(void);
+            void           Close(void);
 
     IdentifierType GetIdentifier(void) const;
 
     Common::Status SetDelegate(ConnectionBasisDelegate *aDelegate);
     ConnectionBasisDelegate *GetDelegate(void) const;
+
+    Common::Status GetConfiguration(Model::NetworkModel::EthernetEUI48Type &aEthernetEUI48,
+                                    Common::IPAddress &aHostAddress,
+                                    Common::IPAddress &aNetmask,
+                                    Common::IPAddress &aDefaultRouterAddress) const;
+    Common::Status GetConfiguration(Common::IPAddress &aHostAddress,
+                                    Common::IPAddress &aNetmask,
+                                    Common::IPAddress &aDefaultRouterAddress) const;
 
     /**
      *  @brief
@@ -134,7 +146,11 @@ protected:
     Common::Status SetState(State aState);
 
 private:
+    Common::Status GetConfiguration(Model::NetworkModel::EthernetEUI48Type *aEthernetEUI48, Common::IPAddress &aHostAddress, Common::IPAddress &aNetmask, Common::IPAddress &aDefaultRouterAddress) const;
+
+private:
     IdentifierType             mIdentifier;
+    CFSocketNativeHandle       mConnectedSocket;
     State                      mState;
     ConnectionBasisDelegate *  mDelegate;
 };

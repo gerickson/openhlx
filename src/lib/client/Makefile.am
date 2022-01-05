@@ -1,5 +1,5 @@
 #
-#    Copyright (c) 2019-2021 Grant Erickson
+#    Copyright (c) 2019-2022 Grant Erickson
 #    All rights reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,6 +30,10 @@ lib_LIBRARIES                                               = \
 # targets from SUBDIRS that might depend on them.
 
 AM_RECURSIVE_TARGETS: $(LIBRARIES)
+
+SUBDIRS                                                     = \
+    tests                                                     \
+    $(NULL)
 
 noinst_HEADERS                                              = \
     $(NULL)
@@ -98,6 +102,7 @@ libopenhlx_client_a_include_HEADERS                         = \
     NetworkController.hpp                                     \
     NetworkControllerBasis.hpp                                \
     NetworkControllerCommands.hpp                             \
+    NetworkStateChangeNotifications.hpp                       \
     ObjectControllerBasis.hpp                                 \
     ObjectControllerBasisDelegate.hpp                         \
     ObjectControllerBasisErrorDelegate.hpp                    \
@@ -175,6 +180,7 @@ libopenhlx_client_a_SOURCES                                 = \
     NetworkController.cpp                                     \
     NetworkControllerBasis.cpp                                \
     NetworkControllerCommands.cpp                             \
+    NetworkStateChangeNotifications.cpp                       \
     ObjectControllerBasis.cpp                                 \
     SourceStateChangeNotificationBasis.cpp                    \
     SourcesController.cpp                                     \

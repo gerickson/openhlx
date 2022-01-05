@@ -100,7 +100,6 @@ private:
 
 private:
     telnet_t *                                       mTelnet;
-    CFSocketNativeHandle                             mConnectedSocket;
     CFReadStreamRef                                  mReadStreamRef;
     CFWriteStreamRef                                 mWriteStreamRef;
     bool                                             mReadStreamReady;

@@ -29,6 +29,8 @@
 #include <stddef.h>
 
 #include <OpenHLX/Common/Errors.hpp>
+#include <OpenHLX/Common/IPAddress.hpp>
+
 
 namespace HLX
 {
@@ -53,17 +55,17 @@ public:
     typedef bool    EnabledType;
 
     /**
-     *  A type for the Ethernet network interface hardware address.
+     *  A type for the Ethernet network interface EUI-48 address.
      *
      */
-    typedef uint8_t EthernetAddressType[6];
+    typedef uint8_t EthernetEUI48Type[6];
 
     /**
      *  A type for the Ethernet network interface IPv4 or IPv6 network
      *  address.
      *
      */
-    typedef uint8_t IPAddressType[17];
+    typedef Common::IPAddress IPAddressType;
 
     /**
      *  A type for the Ethernet network interface IPv4 or IPv6 network
@@ -81,33 +83,33 @@ public:
 
     NetworkModel &operator =(const NetworkModel &aNetworkModel);
 
-    Common::Status GetHLXAddress(IPAddressType &aHLXAddress) const;
-    Common::Status GetPrefixLength(PrefixLengthType &aPrefixLength) const;
-    Common::Status GetGatewayAddress(IPAddressType &aGatewayAddress) const;
-    Common::Status GetEthernetAddress(EthernetAddressType &aEthernetAddress) const;
+    Common::Status GetHostAddress(IPAddressType &aHostAddress) const;
+    Common::Status GetNetmask(IPAddressType &aNetmask) const;
+    Common::Status GetDefaultRouterAddress(IPAddressType &aDefaultRouterAddress) const;
+    Common::Status GetEthernetEUI48(EthernetEUI48Type &aEthernetEUI48) const;
     Common::Status GetDHCPv4Enabled(EnabledType &aDHCPv4Enabled) const;
     Common::Status GetSDDPEnabled(EnabledType &aSDDPEnabled) const;
 
-    Common::Status SetHLXAddress(const IPAddressType &aHLXAddress);
-    Common::Status SetPrefixLength(const PrefixLengthType &aPrefixLength);
-    Common::Status SetGatewayAddress(const IPAddressType &aGatewayAddress);
-    Common::Status SetEthernetAddress(const EthernetAddressType &aEthernetAddress);
+    Common::Status SetHostAddress(const IPAddressType &aHostAddress);
+    Common::Status SetNetmask(const IPAddressType &aNetmask);
+    Common::Status SetDefaultRouterAddress(const IPAddressType &aDefaultRouterAddress);
+    Common::Status SetEthernetEUI48(const EthernetEUI48Type &aEthernetEUI48);
     Common::Status SetDHCPv4Enabled(const EnabledType &aDHCPv4Enabled);
     Common::Status SetSDDPEnabled(const EnabledType &aSDDPEnabled);
 
     bool operator ==(const NetworkModel &aNetworkModel) const;
 
 private:
-    bool                 mHLXAddressIsNull;
-    IPAddressType        mHLXAddress;
-    bool                 mPrefixLengthIsNull;
-    PrefixLengthType     mPrefixLength;
-    bool                 mGatewayAddressIsNull;
-    IPAddressType        mGatewayAddress;
-    bool                 mEthernetAddressIsNull;
-    EthernetAddressType  mEthernetAddress;
     bool                 mDHCPv4EnabledIsNull;
     EnabledType          mDHCPv4Enabled;
+    bool                 mEthernetEUI48IsNull;
+    EthernetEUI48Type    mEthernetEUI48;
+    bool                 mDefaultRouterAddressIsNull;
+    IPAddressType        mDefaultRouterAddress;
+    bool                 mHostAddressIsNull;
+    IPAddressType        mHostAddress;
+    bool                 mNetmaskIsNull;
+    IPAddressType        mNetmask;
     bool                 mSDDPEnabledIsNull;
     EnabledType          mSDDPEnabled;
 };

@@ -82,7 +82,6 @@ CFStringRef ConnectionTelnet :: kScheme = CFSTR("telnet");
 ConnectionTelnet :: ConnectionTelnet(void) :
     ConnectionBasis(kScheme),
     mTelnet(nullptr),
-    mConnectedSocket(-1),
     mReadStreamRef(nullptr),
     mWriteStreamRef(nullptr),
     mReadStreamReady(false),
@@ -332,6 +331,8 @@ ConnectionTelnet :: Connect(const int &aSocket,
  done:
     if (lRetval != kStatus_Success)
     {
+        Close();
+
         SetState(lCurrentState);
 
         OnDidNotAccept(lRetval);
@@ -340,8 +341,6 @@ ConnectionTelnet :: Connect(const int &aSocket,
     }
     else
     {
-        mConnectedSocket = aSocket;
-
         SetState(kState_Accepted);
 
         OnDidAccept();
@@ -380,11 +379,7 @@ ConnectionTelnet :: CloseStreams(void)
         }
     }
 
-    if (mConnectedSocket != -1)
-    {
-        close(mConnectedSocket);
-        mConnectedSocket = -1;
-    }
+    ConnectionBasis::Close();
 
     return (lRetval);
 }

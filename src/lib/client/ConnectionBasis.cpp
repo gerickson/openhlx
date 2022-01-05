@@ -209,7 +209,6 @@ ConnectionBasis :: Disconnect(const Common::Error &aError)
         mURLRef = nullptr;
     }
 
- done:
     return (lRetval);
 }
 

@@ -1,5 +1,5 @@
 /*
- *    Copyright (c) 2020-2021 Grant Erickson
+ *    Copyright (c) 2020-2022 Grant Erickson
  *    All rights reserved.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -1248,7 +1248,7 @@ ZonesController :: HandleSetMute(const bool &aConditionally, const Model::ZoneMo
 Status
 ZonesController :: HandleSetMuteConditionally(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const VolumeModel::MuteType &aMute, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    const bool kConditionally = true;
+    static constexpr bool kConditionally = true;
 
     return (HandleSetMute(kConditionally, aZoneIdentifier, aMute, aBuffer));
 }
@@ -1256,7 +1256,7 @@ ZonesController :: HandleSetMuteConditionally(const Model::ZoneModel::Identifier
 Status
 ZonesController :: HandleSetMuteUnconditionally(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const VolumeModel::MuteType &aMute, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    const bool kConditionally = true;
+    static constexpr bool kConditionally = true;
 
     return (HandleSetMute(!kConditionally, aZoneIdentifier, aMute, aBuffer));
 }
@@ -1299,7 +1299,7 @@ ZonesController :: HandleSetSoundMode(const bool &aConditionally, const Model::Z
 Status
 ZonesController :: HandleSetSoundModeConditionally(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const SoundModel::SoundMode &aSoundMode, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    const bool kConditionally = true;
+    static constexpr bool kConditionally = true;
 
     return (HandleSetSoundMode(kConditionally, aZoneIdentifier, aSoundMode, aBuffer));
 }
@@ -1307,7 +1307,7 @@ ZonesController :: HandleSetSoundModeConditionally(const Model::ZoneModel::Ident
 Status
 ZonesController :: HandleSetSoundModeUnconditionally(const Model::ZoneModel::IdentifierType &aZoneIdentifier, const SoundModel::SoundMode &aSoundMode, ConnectionBuffer::MutableCountedPointer &aBuffer)
 {
-    const bool kConditionally = true;
+    static constexpr bool kConditionally = true;
 
     return (HandleSetSoundMode(!kConditionally, aZoneIdentifier, aSoundMode, aBuffer));
 }
@@ -1465,8 +1465,8 @@ ZonesController :: HandleSetEqualizerBandReceived(const Model::ZoneModel::Identi
 
 void ZonesController :: QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, ConnectionBuffer::MutableCountedPointer &aBuffer) const
 {
-    static const bool kIsConfiguration = true;
-    Status            lStatus;
+    static constexpr bool kIsConfiguration = true;
+    Status                lStatus;
 
 
     (void)aConnection;
@@ -2679,7 +2679,7 @@ void ZonesController :: MuteRequestReceivedHandler(Server::ConnectionBasis &aCon
 
 void ZonesController :: QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const RegularExpression::Matches &aMatches)
 {
-    static const bool                        kIsConfiguration = true;
+    static constexpr bool                    kIsConfiguration = true;
     ZoneModel::IdentifierType                lZoneIdentifier;
     Server::Command::Zones::QueryResponse    lResponse;
     ConnectionBuffer::MutableCountedPointer  lResponseBuffer;

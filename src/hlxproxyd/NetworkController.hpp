@@ -18,7 +18,9 @@
 
 /**
  *    @file
- *      This file defines an object for....
+ *      This file defines an object for managing the proxied client-
+ *      to-server observation and mutation of a HLX Ethernet network
+ *      interface.
  *
  */
 
@@ -52,7 +54,8 @@ namespace Proxy
 
 /**
  *  @brief
- *    An object for....
+ *    An object for managing the server-side observation and mutation
+ *    of a HLX Ethernet network interface.
  *
  *  @ingroup proxy
  *  @ingroup network
@@ -76,6 +79,15 @@ public:
 
     Common::Status QueryCurrentConfiguration(Server::ConnectionBasis &aConnection, Common::ConnectionBuffer::MutableCountedPointer &aBuffer) final;
 
+    // Server-facing Client Notification Handler Trampolines
+
+    static void DHCPv4EnabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void EthernetEUI48NotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void IPDefaultRouterAddressNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void IPHostAddressNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void IPNetmaskNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void SDDPEnabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+
     // Client-facing Server Command Request Handler Trampolines
 
     static void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
@@ -84,9 +96,26 @@ private:
     Common::Status DoNotificationHandlers(const bool &aRegister);
     Common::Status DoRequestHandlers(const bool &aRegister);
 
+    // Server-facing Client Notification Handlers
+
+    void DHCPv4EnabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void EthernetEUI48NotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void IPDefaultRouterAddressNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void IPHostAddressNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void IPNetmaskNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void SDDPEnabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+
     // Client-facing Server Command Completion Handlers
 
     void QueryRequestReceivedHandler(Server::ConnectionBasis &aConnection, const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+
+    // Client-facing Server Observation (Query) Command Request Handlers
+
+    // Client-facing Server Observation (Query) Command Request Instance Handlers
+
+    Common::Status HandleQueryReceived(const bool &aIsConfiguration,
+                                       Server::ConnectionBasis &aConnection,
+                                       Common::ConnectionBuffer::MutableCountedPointer &aBuffer) const;
 
 private:
     // Explicitly hide base class initializers

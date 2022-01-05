@@ -72,6 +72,13 @@ protected:
 
     // Notification Handler Trampolines
 
+    static void DHCPv4EnabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void EthernetEUI48NotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void IPDefaultRouterAddressNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void IPHostAddressNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void IPNetmaskNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+    static void SDDPEnabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches, void *aContext);
+
 protected:
     // Implementation
 
@@ -86,6 +93,13 @@ private:
 
     // Notification Handlers
 
+    void DHCPv4EnabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void EthernetEUI48NotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void IPDefaultRouterAddressNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void IPHostAddressNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void IPNetmaskNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+    void SDDPEnabledNotificationReceivedHandler(const uint8_t *aBuffer, const size_t &aSize, const Common::RegularExpression::Matches &aMatches);
+
 private:
     // Implementation
 
@@ -95,7 +109,13 @@ private:
     Model::NetworkModel & mNetworkModel;
 
 protected:
-    static Command::Network::QueryResponse          kQueryResponse;
+    static Command::Network::DHCPv4EnabledResponse           kDHCPv4EnabledResponse;
+    static Command::Network::EthernetEUI48Response           kEthernetEUI48Response;
+    static Command::Network::IPDefaultRouterAddressResponse  kIPDefaultRouterAddressResponse;
+    static Command::Network::IPHostAddressResponse           kIPHostAddressResponse;
+    static Command::Network::IPNetmaskResponse               kIPNetmaskResponse;
+    static Command::Network::QueryResponse                   kQueryResponse;
+    static Command::Network::SDDPEnabledResponse             kSDDPEnabledResponse;
 };
 
 }; // namespace Client
