@@ -287,22 +287,23 @@ NetworkModel :: GetEthernetEUI48(EthernetEUI48Type &aEthernetEUI48) const
 
 /**
  *  @brief
- *    Attempt to get the model IPv4 Dynamic Host Control Protocl
+ *    Attempt to get the model IPv4 Dynamic Host Control Protocol
  *    (DHCP) enabled state.
  *
- *  This attempts to get the model IPv4 Dynamic Host Control Protocl
+ *  This attempts to get the model IPv4 Dynamic Host Control Protocol
  *  (DHCP) enabled state, if it has been previously initialized or
  *  set.
  *
  *  @param[out]  aDHCPv4Enabled  A mutable reference to storage for
- *                               the IPv4 Dynamic Host Control Protocl
+ *                               the IPv4 Dynamic Host Control Protocol
  *                               (DHCP) enabled state, if
  *                               successful.
  *
  *  @retval  kStatus_Success        If successful.
- *  @retval  kError_NotInitialized  If the IPv4 Dynamic Host Control Protocl
- *                                  (DHCP) enabled state has not been
- *                                  initialized with a known value.
+ *  @retval  kError_NotInitialized  If the IPv4 Dynamic Host Control
+ *                                  Protocol (DHCP) enabled state has
+ *                                  not been initialized with a known
+ *                                  value.
  *
  *  @sa SetDHCPv4Enabled
  *
@@ -495,14 +496,14 @@ NetworkModel :: SetEthernetEUI48(const EthernetEUI48Type &aEthernetEUI48)
 
 /**
  *  @brief
- *    This sets the model IPv4 Dynamic Host Control Protocl (DHCP)
+ *    This sets the model IPv4 Dynamic Host Control Protocol (DHCP)
  *    enabled state.
  *
  *  This attempts to set the model with the specified IPv4 Dynamic
- *  Host Control Protocl (DHCP) enabled state.
+ *  Host Control Protocol (DHCP) enabled state.
  *
  *  @param[in]  aDHCPv4Enabled  An immutable reference to the IPv4
- *                              Dynamic Host Control Protocl (DHCP)
+ *                              Dynamic Host Control Protocol (DHCP)
  *                              enabled state to set.
  *
  *  @retval  kStatus_Success          If successful.
