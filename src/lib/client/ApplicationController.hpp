@@ -1,5 +1,5 @@
 /*
- *    Copyright (c) 2018-2021 Grant Erickson
+ *    Copyright (c) 2018-2022 Grant Erickson
  *    All rights reserved.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,6 +49,7 @@
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Common/Timeout.hpp>
 #include <OpenHLX/Model/GroupModel.hpp>
+#include <OpenHLX/Model/NetworkModel.hpp>
 #include <OpenHLX/Model/SourceModel.hpp>
 #include <OpenHLX/Model/VolumeModel.hpp>
 #include <OpenHLX/Model/ZoneModel.hpp>
@@ -132,6 +133,15 @@ public:
 
     Common::Status GroupAddZone(const Model::GroupModel::IdentifierType &aGroupIdentifier, const Model::ZoneModel::IdentifierType &aZoneIdentifier);
     Common::Status GroupRemoveZone(const Model::GroupModel::IdentifierType &aGroupIdentifier, const Model::ZoneModel::IdentifierType &aZoneIdentifier);
+
+    // Network Commands
+
+    Common::Status NetworkGetDHCPv4Enabled(Model::NetworkModel::EnabledType &aDHCPv4Enabled) const;
+    Common::Status NetworkGetEthernetEUI48(Model::NetworkModel::EthernetEUI48Type &aEthernetEUI48) const;
+    Common::Status NetworkGetDefaultRouterIPAddress(Model::NetworkModel::IPAddressType &aDefaultRouterAddress) const;
+    Common::Status NetworkGetHostIPAddress(Model::NetworkModel::IPAddressType &aHostAddress) const;
+    Common::Status NetworkGetIPNetmask(Model::NetworkModel::IPAddressType &aNetmask) const;
+    Common::Status NetworkGetSDDPEnabled(Model::NetworkModel::EnabledType &aSDDPEnabled) const;
 
     // Source Commands
 
