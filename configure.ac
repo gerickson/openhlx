@@ -344,6 +344,7 @@ AC_MSG_RESULT(${with_corefoundation_source})
 #
 # At minimum, the following packages are required:
 #
+#   * Boost
 #   * CFUtilities
 #   * LogUtilities
 #   * libtelnet
@@ -351,6 +352,7 @@ AC_MSG_RESULT(${with_corefoundation_source})
 #
 # The following packages are optional, depending on configuration:
 #
+#   * libnl (Netlink Protocol Library Suite)
 #   * nlunit-test
 #   * [Open]CFLite
 #   * TRE
@@ -490,6 +492,39 @@ fi
 
 AC_SUBST(LOGUTILITIES_SUBDIRS, [${maybe_logutilities_dirstem}])
 AM_CONDITIONAL([OPENHLX_WITH_LOGUTILITIES_INTERNAL], [test "${nl_with_logutilities}" = "internal"])
+
+#
+# Libnl
+#
+
+case ${nl_filtered_target_os} in
+
+    *linux*)
+        NL_WITH_REQUIRED_EXTERNAL_PACKAGE([libnl],
+            [LIBNL],
+            [libnl],
+            [-lnl-3 -lnl-route-3],
+            [
+                # Check for required libnl and libnl-route library headers.
+
+                AC_LANG_PUSH([C])
+
+                    AC_CHECK_HEADERS([netlink/addr.h] [netlink/cache.h] [netlink/socket.h] [netlink/route/route.h],
+                        [],
+                        [
+                            AC_MSG_ERROR(The libnl header "$ac_header" is required but cannot be found.)
+                        ]
+                        )
+
+               AC_LANG_POP
+            ]
+        )
+        ;;
+
+    *)
+        ;;
+
+esac
 
 #
 # Libtelnet
@@ -837,6 +872,12 @@ CPPFLAGS="${CPPFLAGS} ${LOGUTILITIES_CPPFLAGS}"
 LDFLAGS="${LDFLAGS} ${LOGUTILITIES_LDFLAGS}"
 LIBS="${LIBS} ${LOGUTILITIES_LIBS}"
 
+# Add any libnl CPPFLAGS, LDFLAGS, and LIBS
+
+CPPFLAGS="${CPPFLAGS} ${LIBNL_CPPFLAGS}"
+LDFLAGS="${LDFLAGS} ${LIBNL_LDFLAGS}"
+LIBS="${LIBS} ${LIBNL_LIBS}"
+
 # Add any libtelnet CPPFLAGS, LDFLAGS, and LIBS
 
 CPPFLAGS="${CPPFLAGS} ${LIBTELNET_CPPFLAGS}"
@@ -958,6 +999,9 @@ AC_MSG_NOTICE([
   Target system                             : ${target}
   Target architecture                       : ${target_cpu}
   Target OS                                 : ${target_os}
+  Filtered target system                    : ${nl_filtered_target}
+  Filtered target architecture              : ${nl_filtered_target_cpu}
+  Filtered target OS                        : ${nl_filtered_target_os}
   Cross compiling                           : ${cross_compiling}
   Build shared libraries                    : ${enable_shared}
   Build static libraries                    : ${enable_static}
@@ -985,6 +1029,9 @@ AC_MSG_NOTICE([
   CoreFoundation compile flags              : ${CF_CPPFLAGS:--}
   CoreFoundation link flags                 : ${CF_LDFLAGS:--}
   CoreFoundation link libraries             : ${CF_LIBS:--}
+  Libnl compile flags                       : ${LIBNL_CPPFLAGS:--}
+  Libnl link flags                          : ${LIBNL_LDFLAGS:--}
+  Libnl link libraries                      : ${LIBNL_LIBS:--}
   Libtelnet source                          : ${nl_with_libtelnet:--}
   Libtelnet compile flags                   : ${LIBTELNET_CPPFLAGS:--}
   Libtelnet link flags                      : ${LIBTELNET_LDFLAGS:--}
