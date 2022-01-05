@@ -56,7 +56,7 @@ jobs:
 
     - name: Install Open HLX Host Package Dependencies
       run: |
-        sudo apt-get -y install libboost-dev libboost-filesystem-dev libboost-system-dev libtre-dev libcppunit-dev asciidoc xmlto doxygen
+        sudo apt-get -y install libboost-dev libboost-filesystem-dev libboost-system-dev libnl-3-dev libnl-route-3-dev libtre-dev libcppunit-dev asciidoc xmlto doxygen
 
     - name: Download OpenCFLite Distribution Archive Dependencies
       run: |
@@ -128,7 +128,7 @@ jobs:
     - name: Bootstrap and Configure
       run: |
         export PATH="$(brew --prefix m4)/bin:${PATH}"
-        ./bootstrap-configure -C ${{matrix.configuration['options']}} --enable-coverage --with-boost=/usr/local --with-corefoundation-source=cflite --disable-docs
+        ./bootstrap-configure -C ${{matrix.configuration['options']}} --enable-coverage --with-boost=/usr/local --with-libnl-includes=/usr/include/libnl3 --with-corefoundation-source=cflite --disable-docs
 
     - name: Coding Style
       run: |

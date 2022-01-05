@@ -140,6 +140,7 @@ C++ Standard Template Library (STL), Open HLX depends on:
       - [OpenCFLite](https://github.com/gerickson/opencflite) (Linux only)
       - [OpenCFNetwork](https://github.com/gerickson/opencfnetwork) (Linux only)
   * [LogUtilities](https://github.com/Nuovations/LogUtilities)
+  * [libnl](https://www.infradead.org/~tgr/libnl/) (Linux only)
   * [libtelnet](https://github.com/seanmiddleditch/libtelnet)
   * [nlassert](https://github.com/nestlabs/nlassert)
   * [nlunit-test](https://github.com/nestlabs/nlunit-test)
@@ -166,7 +167,7 @@ satisfied by building them directly from source, or on system
 such as Linux, installing them using a package management system.
 For example, on Debian systems:
 
-    % sudo apt-get install libboost-dev libboost-filesystem-dev libboost-system-dev libtre-dev libcppunit-dev asciidoc xmlto
+    % sudo apt-get install libboost-dev libboost-filesystem-dev libboost-system-dev libnl-3-dev libnl-route-3-dev libtre-dev libcppunit-dev asciidoc xmlto
 
 ## Installing Open HLX
 
