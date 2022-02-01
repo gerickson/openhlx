@@ -1,3 +1,14 @@
+# Changes and What's New in Open HLX
+
+1.2.1 (2022-02-01)
+
+* Addressed a resource leak in libopenhlx-client and, by extension, in
+  hlxc and hlxproxyd that would leak the URL scheme string (for
+  example, "telnet") on each new client-to-server connection.
+
+* Added support in contrib/systemd for a systemd service configuration
+  and default command line options for hlxproxyd.
+
 1.2 (2022-01-05)
 
 * Added full, first-class observe (that is, read-only) support for HLX
@@ -12,7 +23,7 @@
   - The `hlxproxyd` program fully proxies these properties rather than
     returning previously-composed, canned data.
 
-  - Finally, `hlxsimd` and the server library accurately generate the
+  - Finally, `hlxsimd` and the server library accurately generates the
     property data based on the connection in use.
 
   - Even though physical HLX hardware only ever supported IPv4, the
