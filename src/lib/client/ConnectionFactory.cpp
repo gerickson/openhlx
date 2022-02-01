@@ -1,5 +1,5 @@
 /*
- *    Copyright (c) 2018-2021 Grant Erickson
+ *    Copyright (c) 2018-2022 Grant Erickson
  *    All rights reserved.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -154,11 +154,12 @@ ConnectionFactory :: GetConnection(CFURLRef aURLRef) const
     DeclareScopedFunctionTracer(lTracer);
     Connections::const_iterator  lCurrent, lEnd;
     ConnectionBasis *            lConnection = nullptr;
-    CFString                     lRequestedScheme;
+    CFStringRef                  lRequestedScheme = nullptr;
 
     nlREQUIRE(aURLRef != nullptr, done);
 
     lRequestedScheme = CFURLCopyScheme(aURLRef);
+    nlREQUIRE(lRequestedScheme != nullptr, done);
 
     lCurrent = mConnections.begin();
     lEnd = mConnections.end();
@@ -167,7 +168,7 @@ ConnectionFactory :: GetConnection(CFURLRef aURLRef) const
     {
         const CFString lCurrentScheme(lCurrent->first);
 
-        if (lRequestedScheme == lCurrentScheme)
+        if (lCurrentScheme == lRequestedScheme)
         {
             lConnection = lCurrent->second;
             break;
@@ -177,6 +178,8 @@ ConnectionFactory :: GetConnection(CFURLRef aURLRef) const
     }
 
 done:
+    CFURelease(lRequestedScheme);
+
     return (lConnection);
 }
 
