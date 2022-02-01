@@ -40,7 +40,7 @@ noinst_HEADERS                                                             = \
     ZonesController.hpp                                                      \
     $(NULL)
 
-bin_PROGRAMS                                                               = \
+sbin_PROGRAMS                                                              = \
     hlxproxyd                                                                \
     $(NULL)
 

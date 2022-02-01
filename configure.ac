@@ -976,6 +976,7 @@ src/lib/utilities/tests/Makefile
 tests/Makefile
 doc/Makefile
 doc/man/Makefile
+contrib/systemd/Makefile
 ])
 
 #
