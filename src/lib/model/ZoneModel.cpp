@@ -1,5 +1,5 @@
 /*
- *    Copyright (c) 2018-2021 Grant Erickson
+ *    Copyright (c) 2018-2024 Grant Erickson
  *    All rights reserved.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,12 +43,6 @@ namespace Model
 {
 
 /**
- *  The maximum allowed length, in bytes, of a zone name.
- *
- */
-const size_t ZoneModel::kNameLengthMax = NameModel::kNameLengthMax;
-
-/**
  *  @brief
  *    This is the class default initializer.
  *
@@ -65,22 +59,16 @@ ZoneModel :: Init(void)
 {
     Status lRetval = kStatus_Success;
 
-    lRetval = mIdentifier.Init();
-    nlREQUIRE(lRetval >= kStatus_Success, done);
+    lRetval = OutputModelBasis::Init();
+    nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mBalance.Init();
-    nlREQUIRE(lRetval >= kStatus_Success, done);
-
-    lRetval = mName.Init();
     nlREQUIRE(lRetval >= kStatus_Success, done);
 
     lRetval = mSoundModel.Init();
     nlREQUIRE(lRetval >= kStatus_Success, done);
 
     lRetval = mSourceIdentifier.Init();
-    nlREQUIRE(lRetval >= kStatus_Success, done);
-
-    lRetval = mVolume.Init();
     nlREQUIRE(lRetval >= kStatus_Success, done);
 
  done:
@@ -114,22 +102,16 @@ ZoneModel :: Init(const char *aName, const IdentifierType &aIdentifier)
 {
     Status lRetval = kStatus_Success;
 
-    lRetval = mIdentifier.Init(aIdentifier);
-    nlREQUIRE(lRetval >= kStatus_Success, done);
+    lRetval = OutputModelBasis::Init(aName, aIdentifier);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mBalance.Init();
-    nlREQUIRE(lRetval >= kStatus_Success, done);
-
-    lRetval = mName.Init(aName);
     nlREQUIRE(lRetval >= kStatus_Success, done);
 
     lRetval = mSoundModel.Init();
     nlREQUIRE(lRetval >= kStatus_Success, done);
 
     lRetval = mSourceIdentifier.Init();
-    nlREQUIRE(lRetval >= kStatus_Success, done);
-
-    lRetval = mVolume.Init();
     nlREQUIRE(lRetval >= kStatus_Success, done);
 
  done:
@@ -166,22 +148,16 @@ ZoneModel :: Init(const char *aName, const size_t &aNameLength, const Identifier
 {
     Status lRetval = kStatus_Success;
 
-    lRetval = mIdentifier.Init(aIdentifier);
-    nlREQUIRE(lRetval >= kStatus_Success, done);
+    lRetval = OutputModelBasis::Init(aName, aNameLength, aIdentifier);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mBalance.Init();
-    nlREQUIRE(lRetval >= kStatus_Success, done);
-
-    lRetval = mName.Init(aName, aNameLength);
     nlREQUIRE(lRetval >= kStatus_Success, done);
 
     lRetval = mSoundModel.Init();
     nlREQUIRE(lRetval >= kStatus_Success, done);
 
     lRetval = mSourceIdentifier.Init();
-    nlREQUIRE(lRetval >= kStatus_Success, done);
-
-    lRetval = mVolume.Init();
     nlREQUIRE(lRetval >= kStatus_Success, done);
 
  done:
@@ -215,22 +191,16 @@ ZoneModel :: Init(const std::string &aName, const IdentifierType &aIdentifier)
 {
     Status lRetval = kStatus_Success;
 
-    lRetval = mIdentifier.Init(aIdentifier);
-    nlREQUIRE(lRetval >= kStatus_Success, done);
+    lRetval = OutputModelBasis::Init(aName, aIdentifier);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mBalance.Init();
-    nlREQUIRE(lRetval >= kStatus_Success, done);
-
-    lRetval = mName.Init(aName);
     nlREQUIRE(lRetval >= kStatus_Success, done);
 
     lRetval = mSoundModel.Init();
     nlREQUIRE(lRetval >= kStatus_Success, done);
 
     lRetval = mSourceIdentifier.Init();
-    nlREQUIRE(lRetval >= kStatus_Success, done);
-
-    lRetval = mVolume.Init();
     nlREQUIRE(lRetval >= kStatus_Success, done);
 
  done:
@@ -260,22 +230,16 @@ ZoneModel :: Init(const ZoneModel &aZoneModel)
 {
     Status lRetval = kStatus_Success;
 
-    lRetval = mIdentifier.Init(aZoneModel.mIdentifier);
-    nlREQUIRE(lRetval >= kStatus_Success, done);
+    lRetval = OutputModelBasis::Init(aZoneModel);
+    nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mBalance.Init(aZoneModel.mBalance);
-    nlREQUIRE(lRetval >= kStatus_Success, done);
-
-    lRetval = mName.Init(aZoneModel.mName);
     nlREQUIRE(lRetval >= kStatus_Success, done);
 
     lRetval = mSoundModel.Init(aZoneModel.mSoundModel);
     nlREQUIRE(lRetval >= kStatus_Success, done);
 
     lRetval = mSourceIdentifier.Init(aZoneModel.mSourceIdentifier);
-    nlREQUIRE(lRetval >= kStatus_Success, done);
-
-    lRetval = mVolume.Init(aZoneModel.mVolume);
     nlREQUIRE(lRetval >= kStatus_Success, done);
 
  done:
@@ -306,79 +270,13 @@ ZoneModel :: Init(const ZoneModel &aZoneModel)
 ZoneModel &
 ZoneModel :: operator =(const ZoneModel &aZoneModel)
 {
-    mIdentifier       = aZoneModel.mIdentifier;
+    OutputModelBasis::operator =(aZoneModel);
+
     mBalance          = aZoneModel.mBalance;
-    mName             = aZoneModel.mName;
     mSoundModel       = aZoneModel.mSoundModel;
     mSourceIdentifier = aZoneModel.mSourceIdentifier;
-    mVolume           = aZoneModel.mVolume;
 
     return (*this);
-}
-
-/**
- *  @brief
- *    Attempt to get the zone identifier.
- *
- *  This attempts to get the zone identifier, if it has been
- *  previously initialized or set.
- *
- *  @param[out]  aIdentifier  A mutable reference to storage for the
- *                            zone identifier, if successful.
- *
- *  @retval  kStatus_Success        If successful.
- *  @retval  kError_NotInitialized  If the zone identifier
- *                                  value has not been initialized
- *                                  with a known value.
- *
- *  @sa Init
- *  @sa SetIdentifier
- *
- */
-Status
-ZoneModel :: GetIdentifier(IdentifierType &aIdentifier) const
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = mIdentifier.GetIdentifier(aIdentifier);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-/**
- *  @brief
- *    Attempt to get the zone name
- *
- *  This attempts to get the zone name, if it has been previously
- *  initialized or set.
- *
- *  @param[out]  aName  A reference to pointer to an immutable
- *                      null-terminated C string for the zone
- *                      name, if successful.
- *
- *  @retval  kStatus_Success        If successful.
- *  @retval  kError_NotInitialized  If the zone name value has
- *                                  not been initialized with a known
- *                                  value.
- *
- *  @sa Init
- *  @sa SetIdentifier
- *
- *  @ingroup name
- *
- */
-Status
-ZoneModel :: GetName(const char *&aName) const
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = mName.GetName(aName);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
 }
 
 /**
@@ -726,37 +624,6 @@ ZoneModel :: GetLowpassFrequency(CrossoverModel::FrequencyType &aLowpassFrequenc
 
 /**
  *  @brief
- *    Attempt to get the model zone volume mute state.
- *
- *  This attempts to get the model zone volume mute state, if it has
- *  been previously initialized or set.
- *
- *  @param[out]  aMute  A mutable reference to storage for the
- *                      zone volume mute state, if successful.
- *
- *  @retval  kStatus_Success        If successful.
- *  @retval  kError_NotInitialized  If the zone volume mute state
- *                                  value has not been initialized
- *                                  with a known value.
- *
- *  @sa SetMute
- *  @sa ToggleMute
- *
- */
-Status
-ZoneModel :: GetMute(MuteType &aMute) const
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = mVolume.GetMute(aMute);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-/**
- *  @brief
  *    Attempt to get the model equalizer sound mode.
  *
  *  This attempts to get the model equalizer sound mode, if it has
@@ -867,38 +734,6 @@ ZoneModel :: GetTreble(ToneModel::LevelType &aTreble) const
     Status lRetval = kStatus_Success;
 
     lRetval = mSoundModel.GetTreble(aTreble);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-/**
- *  @brief
- *    Attempt to get the model zone volume level.
- *
- *  This attempts to get the model zone volume level, if it has been
- *  previously initialized or set.
- *
- *  @param[out]  aLevel  A mutable reference to storage for the
- *                       zone volume level, if successful.
- *
- *  @retval  kStatus_Success        If successful.
- *  @retval  kError_NotInitialized  If the zone volume level value
- *                                  has not been initialized with a
- *                                  known value.
- *
- *  @sa SetVolume
- *
- *  @ingroup volume
- *
- */
-Status
-ZoneModel :: GetVolume(LevelType &aLevel) const
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = mVolume.GetVolume(aLevel);
     nlREQUIRE_SUCCESS(lRetval, done);
 
  done:
@@ -1130,170 +965,6 @@ ZoneModel :: IncreaseTreble(ToneModel::LevelType &aOutTreble)
 
 /**
  *  @brief
- *    Decrease the model zone volume level by one (1) unit.
- *
- *  This attempts to decrease the model zone volume level by one (1)
- *  unit.
- *
- *  @param[out]  aOutLevel  A mutable reference to storage for the
- *                          resulting zone volume level, if
- *                          successful.
- *
- *  @retval  kStatus_Success        If successful.
- *  @retval  kError_NotInitialized  If the zone volume level value
- *                                  has not been initialized with a
- *                                  known value.
- *  @retval  -ERANGE                The attempted adjustment would result
- *                                  in a level that would exceed the
- *                                  minimum zone volume level.
- *
- *  @sa SetVolume
- *
- *  @ingroup volume
- *
- */
-Status
-ZoneModel :: DecreaseVolume(LevelType &aOutLevel)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = mVolume.DecreaseVolume(aOutLevel);
-    nlREQUIRE(lRetval >= kStatus_Success, done);
-
- done:
-    return (lRetval);
-}
-
-/**
- *  @brief
- *    Increase the model zone volume level by one (1) unit.
- *
- *  This attempts to increase the model zone volume level by one (1)
- *  unit.
- *
- *  @param[out]  aOutLevel  A mutable reference to storage for the
- *                          resulting zone volume level, if
- *                          successful.
- *
- *  @retval  kStatus_Success        If successful.
- *  @retval  kError_NotInitialized  If the zone volume level value
- *                                  has not been initialized with a
- *                                  known value.
- *  @retval  -ERANGE                The attempted adjustment would result
- *                                  in a level that would exceed the
- *                                  maximum zone volume level.
- *
- *  @sa SetVolume
- *
- *  @ingroup volume
- *
- */
-Status
-ZoneModel :: IncreaseVolume(LevelType &aOutLevel)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = mVolume.IncreaseVolume(aOutLevel);
-    nlREQUIRE(lRetval >= kStatus_Success, done);
-
- done:
-    return (lRetval);
-}
-
-/**
- *  @brief
- *    This sets the model zone identifier.
- *
- *  This attempts to set the model with the zone
- *  identifier.
- *
- *  @param[in]  aIdentifier  An immutable reference to the zone
- *                           identifier to set.
- *
- *  @retval  kStatus_Success          If successful.
- *  @retval  kStatus_ValueAlreadySet  The specified @a aIdentifier value
- *                                    has already been set.
- *  @retval  -EINVAL                  The specified @a aIdentifier value
- *                                    is invalid.
- *
- */
-Status
-ZoneModel :: SetIdentifier(const IdentifierType &aIdentifier)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = mIdentifier.SetIdentifier(aIdentifier);
-    nlREQUIRE(lRetval >= kStatus_Success, done);
-
- done:
-    return (lRetval);
-}
-
-/**
- *  @brief
- *    This sets the model zone name.
- *
- *  This attempts to set the model with the specified zone name.
- *
- *  @param[in]  aName        A pointer to the start of the null-
- *                           terminated C string name to set.
- *
- *  @retval  kStatus_Success          If successful.
- *  @retval  kStatus_ValueAlreadySet  The specified name has already
- *                                    been set.
- *  @retval  -EINVAL                  If @a aName was null.
- *  @retval  -ENAMETOOLONG            If @a aName was too long.
- *
- *  @ingroup name
- *
- */
-Status
-ZoneModel :: SetName(const char *aName)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = mName.SetName(aName);
-    nlREQUIRE(lRetval >= kStatus_Success, done);
-
- done:
-    return (lRetval);
-}
-
-/**
- *  @brief
- *    This sets the model zone name.
- *
- *  This attempts to set the model with the specified zone name
- *  extent.
- *
- *  @param[in]  aName        A pointer to the start of the string name
- *                           to set.
- *  @param[in]  aNameLength  An immutable reference to the length,
- *                           in bytes, of @a aName.
- *
- *  @retval  kStatus_Success          If successful.
- *  @retval  kStatus_ValueAlreadySet  The specified name has already
- *                                    been set.
- *  @retval  -EINVAL                  If @a aName was null.
- *  @retval  -ENAMETOOLONG            If @a aNameLength was too long.
- *
- *  @ingroup name
- *
- */
-Status
-ZoneModel :: SetName(const char *aName, const size_t &aNameLength)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = mName.SetName(aName, aNameLength);
-    nlREQUIRE(lRetval >= kStatus_Success, done);
-
- done:
-    return (lRetval);
-}
-
-/**
- *  @brief
  *    This sets the model stereophonic channel balance.
  *
  *  This initializes the model with the specified stereophonic channel
@@ -1446,35 +1117,6 @@ ZoneModel :: SetLowpassFrequency(const CrossoverModel::FrequencyType &aLowpassFr
 
 /**
  *  @brief
- *    This sets the model zone volume mute state.
- *
- *  This attempts to set the model with the specified zone volume
- *  mute state.
- *
- *  @param[in]  aMute  An immutable reference to the zone
- *                     volume mute state to set.
- *
- *  @retval  kStatus_Success          If successful.
- *  @retval  kStatus_ValueAlreadySet  The specified @a aMute value
- *                                    has already been set.
- *
- *  @ingroup volume
- *
- */
-Status
-ZoneModel :: SetMute(const MuteType &aMute)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = mVolume.SetMute(aMute);
-    nlREQUIRE(lRetval >= kStatus_Success, done);
-
- done:
-    return (lRetval);
-}
-
-/**
- *  @brief
  *    Attempt to set the model equalizer sound mode.
  *
  *  This attempts to set the model with the specified equalizer sound
@@ -1594,37 +1236,6 @@ ZoneModel :: SetTreble(const ToneModel::LevelType &aTreble)
 
 /**
  *  @brief
- *    This sets the model zone volume level.
- *
- *  This attempts to set the model with the specified zone volume
- *  level.
- *
- *  @param[in]  aLevel  An immutable reference to the zone volume
- *                      level to set.
- *
- *  @retval  kStatus_Success          If successful.
- *  @retval  kStatus_ValueAlreadySet  The specified @a aLevel value
- *                                    has already been set.
- *  @retval  -ERANGE                  The specified @a aLevel value
- *                                    is out of range.
- *
- *  @ingroup volume
- *
- */
-Status
-ZoneModel :: SetVolume(const LevelType &aLevel)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = mVolume.SetVolume(aLevel);
-    nlREQUIRE(lRetval >= kStatus_Success, done);
-
- done:
-    return (lRetval);
-}
-
-/**
- *  @brief
  *    This sets the model volume fixed/locked state.
  *
  *  This attempts to set the model with the specified volume
@@ -1654,36 +1265,6 @@ ZoneModel :: SetVolumeFixed(const VolumeFixedType &aVolumeFixed)
 
 /**
  *  @brief
- *    Attempt to toggle (flip) the model zone volume mute state.
- *
- *  This attempts to toggle (flip) the model zone volume mute state.
- *
- *  @param[out]  aOutMute  A mutable reference to storage for the
- *                         resulting zone volume mute state, if
- *                         successful.
- *
- *  @retval  kStatus_Success        If successful.
- *  @retval  kError_NotInitialized  If the zone volume mute state
- *                                  value has not been initialized
- *                                  with a known value.
- *
- *  @ingroup volume
- *
- */
-Status
-ZoneModel :: ToggleMute(MuteType &aOutMute)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = mVolume.ToggleMute(aOutMute);
-    nlREQUIRE(lRetval >= kStatus_Success, done);
-
- done:
-    return (lRetval);
-}
-
-/**
- *  @brief
  *    This is a class equality operator.
  *
  *  This compares the provided zone model against this one to
@@ -1699,12 +1280,10 @@ ZoneModel :: ToggleMute(MuteType &aOutMute)
  */
 bool ZoneModel :: operator ==(const ZoneModel &aZoneModel) const
 {
-    return ((mIdentifier       == aZoneModel.mIdentifier      ) &&
-            (mName             == aZoneModel.mName            ) &&
-            (mBalance          == aZoneModel.mBalance         ) &&
-            (mSoundModel       == aZoneModel.mSoundModel      ) &&
-            (mSourceIdentifier == aZoneModel.mSourceIdentifier) &&
-            (mVolume           == aZoneModel.mVolume          ));
+    return (OutputModelBasis::operator ==(aZoneModel)                   &&
+            (mBalance                  == aZoneModel.mBalance         ) &&
+            (mSoundModel               == aZoneModel.mSoundModel      ) &&
+            (mSourceIdentifier         == aZoneModel.mSourceIdentifier));
 }
 
 }; // namespace Model
