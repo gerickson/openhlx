@@ -1,5 +1,5 @@
 /*
- *    Copyright (c) 2019-2021 Grant Erickson
+ *    Copyright (c) 2019-2024 Grant Erickson
  *    All rights reserved.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,8 @@
 
 /**
  *    @file
- *      This file defines an object for managing a HLX group data model.
+ *      This file defines an object for managing a HLX group data
+ *      model.
  *
  */
 
@@ -32,10 +33,8 @@
 
 #include <OpenHLX/Common/Errors.hpp>
 #include <OpenHLX/Model/IdentifiersCollection.hpp>
-#include <OpenHLX/Model/IdentifierModel.hpp>
-#include <OpenHLX/Model/NameModel.hpp>
+#include <OpenHLX/Model/OutputModelBasis.hpp>
 #include <OpenHLX/Model/SourceModel.hpp>
-#include <OpenHLX/Model/VolumeModel.hpp>
 #include <OpenHLX/Model/ZoneModel.hpp>
 
 
@@ -53,31 +52,10 @@ namespace Model
  *  @ingroup group
  *
  */
-class GroupModel
+class GroupModel :
+    public OutputModelBasis
 {
 public:
-    static const size_t kNameLengthMax;
-
-    /**
-     *  Convenience type redeclaring @a IdentifierType from the
-     *  identifier model.
-     *
-     */
-    typedef IdentifierModel::IdentifierType IdentifierType;
-    /**
-     *  Convenience type redeclaring @a MuteType from the
-     *  volume model.
-     *
-     */
-    typedef VolumeModel::MuteType           MuteType;
-
-    /**
-     *  Convenience type redeclaring @a LevelType from the
-     *  volume model.
-     *
-     */
-    typedef VolumeModel::LevelType          LevelType;
-
     /**
      *  Type for a collection of group source (input) identifiers.
      *
@@ -98,33 +76,20 @@ public:
 
     bool   ContainsZone(const ZoneModel::IdentifierType &aZoneIdentifier) const;
 
-    Common::Status GetIdentifier(IdentifierType &aIdentifier) const;
-    Common::Status GetName(const char *&aName) const;
-    Common::Status GetMute(MuteType &aMute) const;
     Common::Status GetSources(size_t &aCount) const;
     Common::Status GetSources(SourceModel::IdentifierType *aSourceIdentifiers, size_t &aCount) const;
     Common::Status GetSources(Sources &aSourceIdentifiers) const;
-    Common::Status GetVolume(LevelType &aVolume) const;
     Common::Status GetZones(size_t &aCount) const;
     Common::Status GetZones(ZoneModel::IdentifierType *aZoneIdentifiers, size_t &aCount) const;
 
     Common::Status AddSource(const SourceModel::IdentifierType &aSourceIdentifier);
     Common::Status AddZone(const ZoneModel::IdentifierType &aZoneIdentifier);
     Common::Status ClearZones(void);
-    Common::Status DecreaseVolume(LevelType &aOutLevel);
-    Common::Status IncreaseVolume(LevelType &aOutLevel);
     Common::Status RemoveSource(const SourceModel::IdentifierType &aSourceIdentifier);
     Common::Status RemoveZone(const ZoneModel::IdentifierType &aZoneIdentifier);
-    Common::Status SetIdentifier(const IdentifierType &aIdentifier);
-    Common::Status SetName(const char *aName);
-    Common::Status SetName(const char *aName, const size_t &aNameLength);
-    Common::Status SetMute(const MuteType &aMute);
     Common::Status SetSource(const SourceModel::IdentifierType &aSourceIdentifier);
     Common::Status SetSources(const SourceModel::IdentifierType *aSourceIdentifiers, const size_t &aCount);
     Common::Status SetSources(const Sources &aSourceIdentifiers);
-
-    Common::Status SetVolume(const LevelType &aVolume);
-    Common::Status ToggleMute(MuteType &aOutMute);
 
     bool operator ==(const GroupModel &aGroupModel) const;
 
@@ -142,10 +107,7 @@ private:
      */
     typedef IdentifiersCollection  Zones;
 
-    IdentifierModel  mIdentifier;
-    NameModel        mName;
     Sources          mSources;
-    VolumeModel      mVolume;
     Zones            mZones;
 };
 
