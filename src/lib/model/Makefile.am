@@ -64,6 +64,7 @@ libopenhlx_model_a_include_HEADERS                          = \
     InfraredModel.hpp                                         \
     NameModel.hpp                                             \
     NetworkModel.hpp                                          \
+    OutputModelBasis.hpp                                      \
     SoundModel.hpp                                            \
     SourceModel.hpp                                           \
     SourcesModel.hpp                                          \
@@ -96,6 +97,7 @@ libopenhlx_model_a_SOURCES                                  = \
     InfraredModel.cpp                                         \
     NameModel.cpp                                             \
     NetworkModel.cpp                                          \
+    OutputModelBasis.cpp                                      \
     SoundModel.cpp                                            \
     SourceModel.cpp                                           \
     SourcesModel.cpp                                          \
