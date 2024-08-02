@@ -184,6 +184,7 @@ AC_CHECK_TOOL(STRIP, strip)
 
 # Check for other host tools.
 
+AC_PROG_EGREP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 
