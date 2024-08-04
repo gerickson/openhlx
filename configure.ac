@@ -392,7 +392,7 @@ NL_WITH_REQUIRED_EXTERNAL_PACKAGE([Boost],
 # CFUtilities
 #
 
-NL_WITH_PACKAGE(
+NL_WITH_REQUIRED_INTERNAL_PACKAGE(
     [CFUtilities],
     [CFUTILITIES],
     [cfutilities],
@@ -445,7 +445,7 @@ AM_CONDITIONAL([OPENHLX_WITH_CFUTILITIES_INTERNAL], [test "${nl_with_cfutilities
 # LogUtilities
 #
 
-NL_WITH_PACKAGE(
+NL_WITH_REQUIRED_INTERNAL_PACKAGE(
     [LogUtilities],
     [LOGUTILITIES],
     [logutilities],
@@ -531,7 +531,7 @@ esac
 # Libtelnet
 #
 
-NL_WITH_PACKAGE(
+NL_WITH_REQUIRED_INTERNAL_PACKAGE(
     [Libtelnet],
     [LIBTELNET],
     [libtelnet],
@@ -584,7 +584,7 @@ AM_CONDITIONAL([OPENHLX_WITH_LIBTELNET_INTERNAL], [test "${nl_with_libtelnet}" =
 # Nlassert
 #
 
-NL_WITH_PACKAGE(
+NL_WITH_REQUIRED_INTERNAL_PACKAGE(
     [Nlassert],
     [NLASSERT],
     [nlassert],
@@ -638,7 +638,7 @@ AM_CONDITIONAL([OPENHLX_WITH_NLASSERT_INTERNAL], [test "${nl_with_nlassert}" = "
 #
 
 if test "${nl_cv_build_tests}" = "yes"; then
-    NL_WITH_PACKAGE(
+    NL_WITH_REQUIRED_INTERNAL_PACKAGE(
         [Nlunit-test],
         [NLUNIT_TEST],
         [nlunit_test],
