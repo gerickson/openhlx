@@ -1,8 +1,9 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 #
-#    Copyright 2014-2018 Nest Labs Inc. All Rights Reserved.
-#    Copyright 2018 Google LLC. All Rights Reserved.
+#    Copyright (c) 2020 Project nlbuild-autotools Authors. All Rights Reserved.
+#    Copyright (c) 2018 Google LLC. All Rights Reserved.
+#    Copyright (c) 2014-2018 Nest Labs Inc. All Rights Reserved.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License");
 #    you may not use this file except in compliance with the License.
@@ -81,6 +82,16 @@ verbose() {
 }
 
 #
+# verbose_progress <action> [ <...> ]
+#
+# Display to standard error the specified progress action and optional
+# action arguments, separated by white space.
+#
+verbose_progress() {
+    printf "  %-13s %s\n" "${1}" "${@:2}" >&2
+}
+
+#
 # separator
 #
 # Display to standard error a log separator.
@@ -136,7 +147,7 @@ find_archive() {
     for extension in ${*}; do
         local maybe_archive="${subdir}/${package}.${extension}"
 
-        verbose "  FIND     ${maybe_archive}"
+        verbose_progress "FIND" "${maybe_archive}"
 
         if [ -r "${maybe_archive}" ]; then
             archive="${maybe_archive}"
@@ -186,11 +197,11 @@ fetch_url_with_command() {
     local status=1
 
     shift 2
-    
+
     if [ -x "${executable}" ]; then
         cd "${fetchdir}"
-        
-            verbose "  `echo ${1} | tr '[[:lower:]]' '[[:upper:]]'`     ${url}"
+
+            verbose_progress "`echo ${1} | tr '[[:lower:]]' '[[:upper:]]'`" "${url}"
 
             ${*} "${url}"
 
@@ -202,7 +213,7 @@ fetch_url_with_command() {
 
         cd "${curdir}"
     fi
-    
+
     return ${status}
 }
 
@@ -248,7 +259,7 @@ fetch_package() {
     # If no archive was found, attempt to fetch it.
 
     if [ -z "${archive}" ]; then
-        verbose "  FETCH    ${url}"
+        verbose_progress "FETCH" "${url}"
 
         fetch_url "${fetchdir}" "${url}"
 
@@ -274,6 +285,17 @@ removetmp() {
 }
 
 #
+# file_extension
+#
+# Returns a filename's extension, if any.
+#
+file_extension() {
+    ext=${1##*.}
+    [[ $ext != $1 ]] || ext=
+    echo $ext
+}
+
+#
 # patch_directory <directory> <patch arguments> <patch file> [ ... ]
 #
 # Patch the specified directory by applying the provided patched files
@@ -287,14 +309,12 @@ patch_directory() {
 
     shift 2
 
-    verbose "  PATCH    ${directory}"
+    verbose_progress "PATCH" "${directory}"
 
     for patch in "${*}"; do
-        verbose "  PATCH    ${patch}"
+        verbose_progress "PATCH" "${patch}"
 
-        extension=`echo "${patch}" | awk -F . '{if (NF > 1) {print $$NF}}'`;
-
-        case "${extension}" in
+        case $(file_extension "${patch}") in
 
             bz2)
                 uncompressor="bunzip2 -c"
@@ -328,6 +348,31 @@ patch_directory() {
 }
 
 #
+# Determine the number of CPU threads available to this process
+#
+nthreads() {
+    local nthreads
+
+    case `uname -s` in
+
+    Darwin)
+        nthreads=$(sysctl -n hw.ncpu)
+        ;;
+
+    Linux)
+        nthreads=$(nproc)
+        ;;
+
+    *)
+        nthreads=1
+        ;;
+
+    esac
+
+    echo "${nthreads}"
+}
+
+#
 # build_package <package> <version> <host> <patchdir> <archivedir> <builddir> <destdir>
 #
 # Build the specified package version for <host> in <builddir> from
@@ -346,8 +391,9 @@ build_package() {
     local fqpackage="${package}-${version}"
     local curdir=`pwd`
     local archive
+    local jobs
 
-    verbose "  CHECK    ${package}"
+    verbose_progress "CHECK" "${package}"
 
     archive="`find_versioned_or_nonverioned_archive ${archivedir} ${package} ${version} ${EXTENSIONS}`"
 
@@ -357,14 +403,15 @@ build_package() {
     fi
 
     if [ ! -d "${archivedir}/${fqpackage}" ]; then
-        verbose "  TAR      ${archive}"
+        verbose_progress "TAR" "${archive}"
+
         tar --directory "${archivedir}" -xf "${archive}" || exit ${?}
     fi
 
     # If necessary, patch the expanded package.
 
     if [ -d "${patchdir}" ]; then
-	patch_directory "${archivedir}/${fqpackage}" "-s -p1" ${patchdir}/*.patch*
+        patch_directory "${archivedir}/${fqpackage}" "-s -p1" ${patchdir}/*.patch*
     fi
 
     # If possible, attempt to be self-sufficient, relying on GNU autotools
@@ -378,6 +425,8 @@ build_package() {
         export PATH="${destdir}/bin:${PATH}"
     fi
 
+    verbose_progress "PATH" "${PATH}"
+
     export ACLOCAL=`which aclocal`
     export AUTOCONF="`which autoconf`"
     export AUTOHEADER="`which autoheader`"
@@ -385,6 +434,14 @@ build_package() {
     export AUTOMAKE="`which automake`"
     export LIBTOOLIZE="`which libtoolize || which glibtoolize`"
     export M4=`which m4`
+
+    verbose_progress "ACLOCAL" "${ACLOCAL}"
+    verbose_progress "AUTOCONF" "${AUTOCONF}"
+    verbose_progress "AUTOHEADER" "${AUTOHEADER}"
+    verbose_progress "AUTOM4TE" "${AUTOM4TE}"
+    verbose_progress "AUTOMAKE" "${AUTOMAKE}"
+    verbose_progress "LIBTOOLIZE" "${LIBTOOLIZE}"
+    verbose_progress "M4" "${M4}"
 
     # Establish, if necessary, some SDK-specific directories needed to
     # override various paths in GNU autotools that otherwise expect to be
@@ -394,11 +451,21 @@ build_package() {
         if [ -d "${destdir}/share/autoconf" ]; then
             export AC_MACRODIR="${destdir}/share/autoconf"
 
+            verbose_progress "AC_MACRODIR" "${AC_MACRODIR}"
+
             export autom4te_perllibdir="${destdir}/share/autoconf"
+
+            if [ -f "${destdir}/share/autoconf/autoconf/trailer.m4" ]; then
+                export trailer_m4="${destdir}/share/autoconf/autoconf/trailer.m4"
+
+                verbose_progress "trailer_m4 " "${trailer_m4}"
+            fi
         fi
 
         if [ -d "${destdir}/share/automake-1.14" ]; then
             export PERL5LIB="${destdir}/share/automake-1.14:${PERL5LIB}"
+
+            verbose_progress "PERL5LIB   " "${PERL5LIB}"
         fi
     fi
 
@@ -434,7 +501,7 @@ build_package() {
         CONFIGURE_FLAGS="--quiet"
     fi
 
-    verbose "  CONFIG   ${package}"
+    verbose_progress "CONFIG" "${package}"
 
     cd "${builddir}"
 
@@ -444,15 +511,19 @@ build_package() {
 
     # Build the package
 
-    verbose "  MAKE     ${package}"
+    jobs=$(nthreads)
 
-    make V=${VERBOSE} -C "${builddir}" all || exit ${?}
+    verbose_progress "JOBS" "${jobs}"
+
+    verbose_progress "MAKE" "${package}"
+
+    make -j ${jobs} V=${VERBOSE} -C "${builddir}" all || exit ${?}
 
     # Install / stage the package
 
-    verbose "  INSTALL  ${package}"
+    verbose_progress "INSTALL  ${package}"
 
-    make V=${VERBOSE} -C "${builddir}" DESTDIR="${destdir}" install || exit ${?}
+    make -j ${jobs} V=${VERBOSE} -C "${builddir}" DESTDIR="${destdir}" install || exit ${?}
 
     # Remove any temporary files created.
 
@@ -548,15 +619,17 @@ for package in ${PACKAGES}; do
     version="`cat ${SRCDIR}/${package}/${package}.version`"
     patchdir="${SRCDIR}/${package}/${package}.patches"
 
+    separator
+
     # Fetch, if necessary, the package from the canonical source location.
 
-    subbanner "  CHECK    ${package}"
+    verbose_progress "CHECK" "${package}"
 
     fetch_package "${SRCDIR}/${package}" "${BUILDDIR}" "${package}" "${version}" "${url}"
 
     # Build and install the package.
 
-    verbose "  MKDIR    ${BUILDDIR}/build/${ARCH}/${package}-${version}"
+    verbose_progress "MKDIR" "${BUILDDIR}/build/${ARCH}/${package}-${version}"
 
     mkdir -p "${BUILDDIR}/build/${ARCH}/${package}-${version}" || exit ${?}
 

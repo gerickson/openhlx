@@ -26,7 +26,7 @@
 #
 # Declare autoconf version requirements
 #
-AC_PREREQ([2.68])
+AC_PREREQ([2.72])
 
 #
 # Initialize autoconf for the package
@@ -178,6 +178,7 @@ AC_CHECK_TOOL(STRIP, strip)
 
 # Check for other host tools.
 
+AC_PROG_EGREP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 
@@ -236,6 +237,11 @@ NL_ENABLE_OPTIMIZATION([yes])
 AM_CONDITIONAL([@PACKAGE_SHORT_UPPER@_BUILD_OPTIMIZED], [test "${nl_cv_build_optimized}" = "yes"])
 
 #
+# Treat Compiler Warnings as Errors
+#
+NL_ENABLE_WERROR([no])
+
+#
 # Tests
 #
 AC_MSG_NOTICE([checking whether to build tests])
@@ -282,7 +288,7 @@ AC_PATH_PROG([PKG_CONFIG],[pkg-config])
 # #
 #
 # if test "${nl_cv_build_tests}" = "yes"; then
-#     NL_WITH_PACKAGE(
+#     NL_WITH_REQUIRED_INTERNAL_PACKAGE(
 #         [Nlunit-test],
 #         [NLUNIT_TEST],
 #         [nlunit_test],
@@ -335,7 +341,6 @@ AC_PATH_PROG([PKG_CONFIG],[pkg-config])
 # Check for headers
 #
 AC_HEADER_STDBOOL
-AC_HEADER_STDC
 
 AC_CHECK_HEADERS([stdint.h])
 AC_CHECK_HEADERS([string.h])
@@ -388,6 +393,7 @@ NL_RESTORE_WERROR
 #
 # if test "${nl_with_nlunit_test}" = "internal"; then
 #     AC_CONFIG_SUBDIRS([third_party/nlunit-test/repo])
+#     AC_SUBST(NLUNIT_TEST_FOREIGN_SUBDIR_DEPENDENCY,["${ac_pwd}/third_party/nlunit-test/repo/src"])
 # fi
 
 #
@@ -414,46 +420,50 @@ AC_MSG_NOTICE([
 
   Configuration Summary
   ---------------------
-  Package                                   : ${PACKAGE_NAME}
-  Version                                   : ${PACKAGE_VERSION}
-  Interface                                 : ${LIB@PACKAGE_SHORT_UPPER@_VERSION_INFO//:/.}
-  Build system                              : ${build}
-  Host system                               : ${host}
-  Target system                             : ${target}
-  Target architecture                       : ${target_cpu}
-  Target OS                                 : ${target_os}
-  Cross compiling                           : ${cross_compiling}
-  Build shared libraries                    : ${enable_shared}
-  Build static libraries                    : ${enable_static}
-  Build debug libraries                     : ${nl_cv_build_debug}
-  Build optimized libraries                 : ${nl_cv_build_optimized}
-  Build coverage libraries                  : ${nl_cv_build_coverage}
-  Build coverage reports                    : ${nl_cv_build_coverage_reports}
-  Lcov                                      : ${LCOV:--}
-  Genhtml                                   : ${GENHTML:--}
-  Build tests                               : ${nl_cv_build_tests}
-  Prefix                                    : ${prefix}
-  Shadow directory program                  : ${LNDIR}
-  Documentation support                     : ${nl_cv_build_docs}
-  Doxygen                                   : ${DOXYGEN:--}
-  GraphViz dot                              : ${DOT:--}
-  PERL                                      : ${PERL:--}
-  Nlunit-test source                        : ${nl_with_nlunit_test:--}
-  Nlunit-test compile flags                 : ${NLUNIT_TEST_CPPFLAGS:--}
-  Nlunit-test link flags                    : ${NLUNIT_TEST_LDFLAGS:--}
-  Nlunit-test link libraries                : ${NLUNIT_TEST_LIBS:--}
-  C Preprocessor                            : ${CPP}
-  C Compiler                                : ${CC}
-  C++ Preprocessor                          : ${CXXCPP}
-  C++ Compiler                              : ${CXX}
-  Archiver                                  : ${AR}
-  Archive Indexer                           : ${RANLIB}
-  Symbol Stripper                           : ${STRIP}
-  Object Copier                             : ${OBJCOPY}
-  C Preprocessor flags                      : ${CPPFLAGS:--}
-  C Compile flags                           : ${CFLAGS:--}
-  C++ Compile flags                         : ${CXXFLAGS:--}
-  Link flags                                : ${LDFLAGS:--}
-  Link libraries                            : ${LIBS}
+  Package                                     : ${PACKAGE_NAME}
+  Version                                     : ${PACKAGE_VERSION}
+  Interface                                   : ${LIB@PACKAGE_SHORT_UPPER@_VERSION_INFO//:/.}
+  Build system                                : ${build}
+  Host system                                 : ${host}
+  Target system                               : ${target}
+  Target architecture                         : ${target_cpu}
+  Target OS                                   : ${target_os}
+  Filtered target system                      : ${nl_filtered_target}
+  Filtered target architecture                : ${nl_filtered_target_cpu}
+  Filtered target OS                          : ${nl_filtered_target_os}
+  Cross compiling                             : ${cross_compiling}
+  Build shared libraries                      : ${enable_shared}
+  Build static libraries                      : ${enable_static}
+  Build debug libraries                       : ${nl_cv_build_debug}
+  Build optimized libraries                   : ${nl_cv_build_optimized}
+  Build coverage libraries                    : ${nl_cv_build_coverage}
+  Build coverage reports                      : ${nl_cv_build_coverage_reports}
+  Lcov                                        : ${LCOV:--}
+  Genhtml                                     : ${GENHTML:--}
+  Build tests                                 : ${nl_cv_build_tests}
+  Prefix                                      : ${prefix}
+  Shadow directory program                    : ${LNDIR}
+  Documentation support                       : ${nl_cv_build_docs}
+  Doxygen                                     : ${DOXYGEN:--}
+  GraphViz dot                                : ${DOT:--}
+  PERL                                        : ${PERL:--}
+  Nlunit-test source                          : ${nl_with_nlunit_test:--}
+  Nlunit-test compile flags                   : ${NLUNIT_TEST_CPPFLAGS:--}
+  Nlunit-test link flags                      : ${NLUNIT_TEST_LDFLAGS:--}
+  Nlunit-test link libraries                  : ${NLUNIT_TEST_LIBS:--}
+  Nlunit-test foreign subdirectory dependency : ${NLUNIT_TEST_FOREIGN_SUBDIR_DEPENDENCY:--}
+  C Preprocessor                              : ${CPP}
+  C Compiler                                  : ${CC}
+  C++ Preprocessor                            : ${CXXCPP}
+  C++ Compiler                                : ${CXX}
+  Archiver                                    : ${AR}
+  Archive Indexer                             : ${RANLIB}
+  Symbol Stripper                             : ${STRIP}
+  Object Copier                               : ${OBJCOPY}
+  C Preprocessor flags                        : ${CPPFLAGS:--}
+  C Compile flags                             : ${CFLAGS:--}
+  C++ Compile flags                           : ${CXXFLAGS:--}
+  Link flags                                  : ${LDFLAGS:--}
+  Link libraries                              : ${LIBS}
 
 ])

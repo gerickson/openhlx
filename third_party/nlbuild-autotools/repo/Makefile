@@ -94,12 +94,12 @@ VERSION                            = $(PACKAGE_VERSION)
 #
 _NL_V_COPY                         = $(_NL_V_COPY_$(V))
 _NL_V_COPY_                        = $(_NL_V_COPY_$(NL_DEFAULT_VERBOSITY))
-_NL_V_COPY_0                       = @for file in $(DISTFILES); do echo "  COPY     $${file}"; done;
+_NL_V_COPY_0                       = @for file in $(DISTFILES); do echo "  COPY          $${file}"; done;
 _NL_V_COPY_1                       = 
 
 _NL_V_MAKE                         = $(_NL_V_MAKE_$(V))
 _NL_V_MAKE_                        = $(_NL_V_MAKE_$(NL_DEFAULT_VERBOSITY))
-_NL_V_MAKE_0                       = @echo "  MAKE     dist-hook";
+_NL_V_MAKE_0                       = @echo "  MAKE          dist-hook";
 _NL_V_MAKE_1                       = 
 
 #
@@ -125,13 +125,13 @@ _NL_V_MAKE_1                       =
 #
 define check-file
 $(NL_V_AT)set -e;                                   \
-echo '  CHECK    $(@)';                             \
+echo '  CHECK         $(@)';                        \
 $(MKDIR) -p $(dir $(@));                            \
 $(call check-file-$(1),$(<),$(@).N);                \
 if [ -r "$(@)" ] && $(CMP) -s "$(@)" "$(@).N"; then \
     $(RM) -f "$(@).N";                              \
 else                                                \
-    echo '  GEN      $(@)';                         \
+    echo '  GEN           $(@)';                    \
     $(MV) -f "$(@).N" "$(@)";                       \
 fi
 endef # check-file

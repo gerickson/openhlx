@@ -3,8 +3,8 @@ Nest Labs Build - GNU Autotools
 
 [![Build Status][nlbuild-autotools-travis-svg]][nlbuild-autotools-travis]
 
-[nlbuild-autotools-travis]: https://travis-ci.org/nestlabs/nlbuild-autotools
-[nlbuild-autotools-travis-svg]: https://travis-ci.org/nestlabs/nlbuild-autotools.svg?branch=master
+[nlbuild-autotools-travis]: https://travis-ci.com/nestlabs/nlbuild-autotools
+[nlbuild-autotools-travis-svg]: https://travis-ci.com/nestlabs/nlbuild-autotools.svg?branch=master
 
 # Introduction
 
@@ -123,13 +123,14 @@ The nlbuild-autotools package is laid out as follows:
 | tools/host/x86_64-apple-darwin/      | Pre-built instances of GNU autotools for 64-bit Mac OS X (if installed).                 |
 | tools/host/x86_64-unknown-linux-gnu/ | Pre-built instances of GNU autotools for 64-bit Linux (if installed).                    |
 | tools/packages/                      | Qualified packages for GNU autotools.                                                    |
+
 ## Internal Package Dependencies and Repositories
 
 Your package may have dependencies on other packages that can either
 be inlined into your package or can be specified externally. If your
 package has such dependencies, nlbuild-autotools contains support to
 facilitate easy standalone tests and a successful 'make distcheck'
-target (which effectively reqires 'configure' with no arguments to
+target (which effectively requires 'configure' with no arguments to
 produce a successful build) without incurring the costs of inlining
 these dependencies into your own package.
 

@@ -1,3 +1,154 @@
+1.7.8 (2024-08-02)
+
+        * Added GitHub Workflow Action continuous integration (CI)
+          support.
+
+        * Addressed an issue in which
+          'automake/{pre/macros,post/rules}/foreigndeps.am' were not
+          included in the package distribution.
+
+1.7.7 (2024-08-02)
+
+        * Updated the autotools packages to the following versions:
+
+            Package	Version
+
+            autoconf	2.72
+            automake	1.17
+            coreutils	9.5
+            libtool	2.4.7
+            m4	        1.4.19
+            make	4.4.1
+
+        * Auxiliary build scripts / tools in third_party/autoconf are
+          updated from automake-1.17 and libtool-2.4.7.
+
+        * The example/configure.ac is updated for autoconf-2.72.
+
+1.7.6 (2024-08-02)
+
+        * Updated the following autoconf archive M4 macro files:
+
+          * ax_compare_version.m4
+          * ax_cxx_compile_stdcxx.m4
+          * ax_cxx_compile_stdcxx_0x.m4
+          * ax_cxx_compile_stdcxx_11.m4
+          * ax_cxx_compile_stdcxx_14.m4
+          * ax_jni_include_dir.m4
+          * ax_pthread.m4
+
+        * Added the following autoconf archive M4 macro file:
+
+          * ax_cxx_compile_stdcxx_17.m4
+
+1.7.5 (2021-03-02)
+
+        * Deduplicate PRETTY_FILES when using the default definition.
+
+1.7.4 (2020-05-18)
+
+        * Ensure that 'make help' displays help for generated make
+          files in addition to the bootstrap make file for the all,
+          check, coverage, dist, distcheck, doc, docdist, install,
+          install-headers, manifest, repos, and clean-repos targets.
+
+1.7.3 (2020-05-11)
+
+        * Addressed an issue in which NL_ENABLE_COVERAGE,
+          NL_ENABLE_DEBUG, and NL_ENABLE_OPTIMIZATION failed to
+          correctly transform their respective flags when the values
+          they control are satisfied from the configuration cache.
+
+1.7.2 (2020-04-22)
+
+        * Incorporated changes to refactor makedirs to use sentinel
+          files rather than forced phony targets. Renamed makedirs
+          (MAKEDIRS and MAKEDIRS_TARGETS) to foreign dependencies
+          (NLFOREIGN_SUBDIR_DEPENDENCIES and
+          NLFOREIGN_FILE_DEPENDENCIES).
+
+        * Added foreign dependency examples to the project skeleton.
+
+        * Addressed an issue to allow nl-check-file-with-subroutine to
+          tolerate parallel builds.
+
+        * Addressed shellcheck and other minor issues with
+          bootstrap-configure.
+
+1.7.1 (2020-04-15)
+
+        * Addressed an issue in which the use of MAKDIRS and
+          MAKEDIRS_TARGETS resulted in undesireable target rebuilds.
+
+1.7.0 (2020-04-14)
+
+        * Added support for project-global targets and target
+          subdirectories that can be used to allow for "build from
+          anywhere plus dependencies" functionality that does not
+          first require a top-level build.
+
+        * Added jobs support for tools/packages/build to take
+          advantage of multi-CPUs/-cores when available.
+
+1.6.24 (2020-04-08)
+
+        * Ensure that 'coverage-recursive' is included in the
+          canonical set of known recursive targets such that
+          dependency rules like "$(RECURSIVE_TARGETS):
+          $(lib_LIBRARIES)" work correctly.
+
+1.6.23 (2020-04-07)
+
+        * Collapse generate-coverage-report and
+          generate-coverage-report-with-filter into a single function.
+
+1.6.22 (2020-04-07)
+
+        * Suppress non-failure diagnostic output from bootstrap tool actions
+          unless there is failure status from those actions or the
+          verbose flag has been asserted.
+
+        * Ensure failure status from bootstrap tool actions is
+          captured and passed to invoking processes.
+
+1.6.21 (2020-03-30)
+
+        * Allow examples/bootstrap may be run from anywhere.
+
+        * Added AUTHORS.md.
+
+1.6.20 (2020-03-26)
+
+        * Ensure that several scripts that use bashisms specify bash
+          for the shebang. Additionally, invoke bash through env to
+          maximize downrev shell compatibility.
+
+        * Add tools/host/... to .gitignore.
+
+1.6.19 (2020-03-18)
+
+        * Fix awk invocation error in tools/packages/build triggered by
+          'make tools'.
+
+1.6.18 (2020-03-18)
+
+        * Address a typo in bootstrap scripts introduced in 1.6.17.
+
+1.6.17 (2020-03-17)
+
+        * Avoid potential disagreement among srcdir and abs_srcdir for
+          bootstrap scripts.
+
+        * Address shellcheck warnings.
+
+1.6.16 (2020-01-23)
+
+        * Allow absolute paths in PRETTY_FILES.
+
+1.6.15 (2019-12-06)
+
+        * Remove redundant libtool m4 libraries.
+
 1.6.14 (2019-07-16)
 
         * Update MANIFEST to ensure that 'make dist' works correctly.
