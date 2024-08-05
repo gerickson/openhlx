@@ -31,10 +31,14 @@ jobs:
     runs-on: ubuntu-latest
     name: "Linux ${{matrix.compiler['name']}} [${{matrix.configuration['name']}}]"
 
+    # Coverage seems to have a problem on Linux with clang due to an
+    # 'atexit' issue during linking of the test executables. So, only
+    # assert '--enable-coverage' for GCC.
+
     strategy:
       matrix:
         compiler:
-          - { name: GCC,        c: gcc,   cxx: g++,     options: "" }
+          - { name: GCC,        c: gcc,   cxx: g++,     options: "--enable-coverage" }
           - { name: clang/LLVM, c: clang, cxx: clang++, options: "" }
         configuration:
           - { name: "Debug",   options: "--enable-debug" }
@@ -128,7 +132,7 @@ jobs:
     - name: Bootstrap and Configure
       run: |
         export PATH="$(brew --prefix m4)/bin:${PATH}"
-        ./bootstrap-configure -C ${{matrix.configuration['options']}} --enable-coverage --with-boost=/usr/local --with-libnl-includes=/usr/include/libnl3 --with-corefoundation-source=cflite --disable-docs
+        ./bootstrap-configure -C ${{matrix.configuration['options']}} ${{matrix.compiler['options']}} --with-boost=/usr/local --with-libnl-includes=/usr/include/libnl3 --with-corefoundation-source=cflite --disable-docs
 
     - name: Coding Style
       run: |
