@@ -31,7 +31,7 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
-/* Define to 1 if you have the `CoreFoundation' library (-lCoreFoundation). */
+/* Define to 1 if you have the 'CoreFoundation' library (-lCoreFoundation). */
 #undef HAVE_LIBCOREFOUNDATION
 
 /* Define to 1 if you have the <libtelnet.h> header file. */
@@ -40,11 +40,8 @@
 /* Define to 1 if you have the <LogUtilities/LogUtilities.hpp> header file. */
 #undef HAVE_LOGUTILITIES_LOGUTILITIES_HPP
 
-/* Define to 1 if you have the `memcpy' function. */
+/* Define to 1 if you have the 'memcpy' function. */
 #undef HAVE_MEMCPY
-
-/* Define to 1 if you have the <memory.h> header file. */
-#undef HAVE_MEMORY_H
 
 /* Define to 1 if you have the <netlink/addr.h> header file. */
 #undef HAVE_NETLINK_ADDR_H
@@ -67,7 +64,7 @@
 /* Define to 1 if you have the <regex.h> header file. */
 #undef HAVE_REGEX_H
 
-/* Define to 1 if you have the `regnexec' function. */
+/* Define to 1 if you have the 'regnexec' function. */
 #undef HAVE_REGNEXEC
 
 /* Define to 1 if stdbool.h conforms to C99. */
@@ -75,6 +72,9 @@
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdio.h> header file. */
+#undef HAVE_STDIO_H
 
 /* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H
@@ -97,11 +97,10 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
-/* Define to 1 if the system has the type `_Bool'. */
+/* Define to 1 if the system has the type '_Bool'. */
 #undef HAVE__BOOL
 
-/* Define to the sub-directory in which libtool stores uninstalled libraries.
-   */
+/* Define to the sub-directory where libtool stores uninstalled libraries. */
 #undef LT_OBJDIR
 
 /* Define to 1 if your C compiler doesn't accept -c and -o together. */
@@ -136,7 +135,9 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
-/* Define to 1 if you have the ANSI C header files. */
+/* Define to 1 if all of the C89 standard headers exist (not just the ones
+   required in a freestanding environment). This macro is provided for
+   backward compatibility; new code need not use it. */
 #undef STDC_HEADERS
 
 /* Define for Solaris 2.5.1 so the uint32_t typedef from <sys/synch.h>,
