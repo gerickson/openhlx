@@ -27,15 +27,15 @@ SUBDIRS                                         = \
     man                                           \
     $(NULL)
 
-EXTRA_DIST                                                                     = \
-    $(srcdir)/doc/controllers/openhlx-object-controller-inheritance-overview.svg \
-    $(srcdir)/doc/proxy/openhlx-proxy-notification-flow.svg                      \
-    $(srcdir)/doc/proxy/openhlx-proxy-read-flow.svg                              \
-    $(srcdir)/doc/proxy/openhlx-proxy-write-flow.svg                             \
-    $(srcdir)/Doxyfile.in                                                        \
-    $(srcdir)/groups.dox                                                         \
-    $(srcdir)/index.dox                                                          \
-    $(srcdir)/namespaces.dox                                                     \
+EXTRA_DIST                                                                 = \
+    $(srcdir)/controllers/openhlx-object-controller-inheritance-overview.svg \
+    $(srcdir)/proxy/openhlx-proxy-notification-flow.svg                      \
+    $(srcdir)/proxy/openhlx-proxy-read-flow.svg                              \
+    $(srcdir)/proxy/openhlx-proxy-write-flow.svg                             \
+    $(srcdir)/Doxyfile.in                                                    \
+    $(srcdir)/groups.dox                                                     \
+    $(srcdir)/index.dox                                                      \
+    $(srcdir)/namespaces.dox                                                 \
     $(NULL)
 
 #
