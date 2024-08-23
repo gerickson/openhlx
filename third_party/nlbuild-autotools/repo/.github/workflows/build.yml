@@ -1,0 +1,56 @@
+#
+#    Copyright 2024 Project nlbuild-autotools Authors. All Rights Reserved.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+#
+
+#
+#    Description:
+#      This file is the GitHub Actions hosted, distributed continuous
+#      integration configuration file for the Nest Labs nlbuild-autotools
+#      package.
+#
+
+---
+name: Build
+
+on: [push, pull_request]
+
+jobs:
+
+  build:
+
+    runs-on: ${{matrix.os['runs-on']}}
+    name: "${{matrix.os['name']}}"
+
+    strategy:
+      matrix:
+        os:
+          - { name: macOS, runs-on: macos-latest  }
+          - { name: Linux, runs-on: ubuntu-latest }
+
+    # At present, simply ensure that several targets can be
+    # successfully built.
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Build Distribution
+      run: make -j dist
+
+    - name: Build Host Tools
+      run: make -j tools
+
+    - name: Build Host Tools Distribution
+      run: make -j toolsdist

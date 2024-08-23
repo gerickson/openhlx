@@ -101,18 +101,20 @@ NL_FILTERED_CANONICAL_HOST
 NL_FILTERED_CANONICAL_TARGET
 
 #
-# Configure automake with the desired options, indicating that this is not
-# a native GNU package, that we want "silent" build rules, that we want
-# objects built in the same subdirectory as their source rather than collapsed
-# together at the top-level directory, that we want support for the
-# PAX format for 'make dist', and that we do not want emission of
-# 'PACKAGE' and 'VERSION' since AC_INIT already emits 'PACKAGE_NAME'
-# and 'PACKAGE_VERSION'.
+# Configure automake with the desired options, indicating that this is
+# not a native GNU package, that we want "silent" build rules, that we
+# want objects built in the same subdirectory as their source rather
+# than collapsed together at the top-level directory, that we want
+# support for the tar PAX format for 'make dist', that we do not want
+# emission of 'PACKAGE' and 'VERSION' since AC_INIT already emits
+# 'PACKAGE_NAME' and 'PACKAGE_VERSION', and that we want xz-compressed
+# distribution archives in addition to gzip-compressed distribution
+# archives.
 #
 # Disable silent build rules by either passing --disable-silent-rules to
 # configure or passing V=1 to make
 #
-AM_INIT_AUTOMAKE([1.14 foreign silent-rules subdir-objects tar-pax no-define])
+AM_INIT_AUTOMAKE([1.14 foreign silent-rules subdir-objects tar-pax no-define dist-xz])
 
 #
 # Silent build rules requires at least automake-1.11. Employ
@@ -184,6 +186,7 @@ AC_CHECK_TOOL(STRIP, strip)
 
 # Check for other host tools.
 
+AC_PROG_EGREP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 
@@ -391,7 +394,7 @@ NL_WITH_REQUIRED_EXTERNAL_PACKAGE([Boost],
 # CFUtilities
 #
 
-NL_WITH_PACKAGE(
+NL_WITH_REQUIRED_INTERNAL_PACKAGE(
     [CFUtilities],
     [CFUTILITIES],
     [cfutilities],
@@ -444,7 +447,7 @@ AM_CONDITIONAL([OPENHLX_WITH_CFUTILITIES_INTERNAL], [test "${nl_with_cfutilities
 # LogUtilities
 #
 
-NL_WITH_PACKAGE(
+NL_WITH_REQUIRED_INTERNAL_PACKAGE(
     [LogUtilities],
     [LOGUTILITIES],
     [logutilities],
@@ -530,7 +533,7 @@ esac
 # Libtelnet
 #
 
-NL_WITH_PACKAGE(
+NL_WITH_REQUIRED_INTERNAL_PACKAGE(
     [Libtelnet],
     [LIBTELNET],
     [libtelnet],
@@ -583,7 +586,7 @@ AM_CONDITIONAL([OPENHLX_WITH_LIBTELNET_INTERNAL], [test "${nl_with_libtelnet}" =
 # Nlassert
 #
 
-NL_WITH_PACKAGE(
+NL_WITH_REQUIRED_INTERNAL_PACKAGE(
     [Nlassert],
     [NLASSERT],
     [nlassert],
@@ -637,7 +640,7 @@ AM_CONDITIONAL([OPENHLX_WITH_NLASSERT_INTERNAL], [test "${nl_with_nlassert}" = "
 #
 
 if test "${nl_cv_build_tests}" = "yes"; then
-    NL_WITH_PACKAGE(
+    NL_WITH_REQUIRED_INTERNAL_PACKAGE(
         [Nlunit-test],
         [NLUNIT_TEST],
         [nlunit_test],
@@ -822,7 +825,6 @@ AC_DEFINE_UNQUOTED([OPENHLX_CF_SOURCE_CFLITE],[${OPENHLX_CF_SOURCE_CFLITE}],[Def
 # Check for headers
 #
 AC_HEADER_STDBOOL
-AC_HEADER_STDC
 
 AC_CHECK_HEADERS([regex.h])
 AC_CHECK_HEADERS([stdint.h])
