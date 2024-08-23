@@ -27,51 +27,56 @@ include ../Common.mak
 # Build directories
 #
 
-builddir         := .
-top_builddir     := ..
-abs_builddir     := $(CURDIR)
-abs_top_builddir := $(abspath $(top_builddir))
+builddir           := .
+top_builddir       := ..
+abs_builddir       := $(CURDIR)
+abs_top_builddir   := $(abspath $(top_builddir))
 
 #
 # Source directories
 #
 
-srcdir           := .
-top_srcdir       := ..
-abs_srcdir       := $(CURDIR)
-abs_top_srcdir   := $(abspath $(top_srcdir))
+srcdir             := .
+top_srcdir         := ..
+abs_srcdir         := $(CURDIR)
+abs_top_srcdir     := $(abspath $(top_srcdir))
 
 # Figure out what sort of build host we are running on, stripping off
 # any trailing version number information typically included on Darwin
 # / Mac OS X.
 
-host             := $(shell $(top_srcdir)/third_party/autoconf/config.guess | $(SED) -e 's/[[:digit:].]*$$//g')
+host               := $(shell $(top_srcdir)/third_party/autoconf/config.guess | $(SED) -e 's/[[:digit:].]*$$//g')
 
-distdir           = $(PACKAGE)-$(VERSION)
+distdir             = $(PACKAGE)-$(VERSION)
 
-dist_tgz_TARGETS  = ${top_builddir}/${PACKAGE}-common-$(VERSION)$(TGZ_EXTENSION) \
-                    ${top_builddir}/${PACKAGE}-${host}-$(VERSION)$(TGZ_EXTENSION)
+dist_tgz_TARGETS    = ${top_builddir}/${PACKAGE}-common-$(VERSION)$(TGZ_EXTENSION) \
+                      ${top_builddir}/${PACKAGE}-${host}-$(VERSION)$(TGZ_EXTENSION)
 
-dist_txz_TARGETS  = ${top_builddir}/${PACKAGE}-common-$(VERSION)$(TXZ_EXTENSION) \
-                    ${top_builddir}/${PACKAGE}-${host}-$(VERSION)$(TXZ_EXTENSION)
+dist_txz_TARGETS    = ${top_builddir}/${PACKAGE}-common-$(VERSION)$(TXZ_EXTENSION) \
+                      ${top_builddir}/${PACKAGE}-${host}-$(VERSION)$(TXZ_EXTENSION)
 
-dist_common_DIRS  = share include
-dist_arch_DIRS    = $(host)
+dist_common_DIRS    = share include
+dist_arch_DIRS      = $(host)
 
-PACKAGE_VERSION   = $(shell $(CAT) $(top_builddir)/.local-version)
+PACKAGE_VERSION     = $(shell $(CAT) $(top_builddir)/.local-version)
 
-VERSION           = $(PACKAGE_VERSION)
+VERSION             = $(PACKAGE_VERSION)
 
-DIST_TMPDIR      := $(shell mktemp -u -d /tmp/tmp.$(PACKAGE)-$(VERSION)XXXXXX)
-TOOLS_TMPDIR     := $(shell mktemp -u -d /tmp/tmp.$(PACKAGE)-$(VERSION)XXXXXX)
+DIST_TMPDIR        := $(shell mktemp -u -d /tmp/tmp.$(PACKAGE)-$(VERSION)XXXXXX)
+TOOLS_TMPDIR       := $(shell mktemp -u -d /tmp/tmp.$(PACKAGE)-$(VERSION)XXXXXX)
 
 #
 # Verbosity
 #
-_NL_V_BUILD       = $(_NL_V_BUILD_$(V))
-_NL_V_BUILD_      = $(_NL_V_BUILD_$(NL_DEFAULT_VERBOSITY))
-_NL_V_BUILD_0     = @echo "  BUILD";
-_NL_V_BUILD_1     = 
+_NL_V_BUILD         = $(_NL_V_BUILD_$(V))
+_NL_V_BUILD_        = $(_NL_V_BUILD_$(NL_DEFAULT_VERBOSITY))
+_NL_V_BUILD_0       = @echo "  BUILD";
+_NL_V_BUILD_1       =
+
+_NL_V_BUILD_FLAGS   = $(_NL_V_BUILD_FLAGS_$(V))
+_NL_V_BUILD_FLAGS_  = $(_NL_V_BUILD_FLAGS_$(NL_DEFAULT_VERBOSITY))
+_NL_V_BUILD_FLAGS_0 =
+_NL_V_BUILD_FLAGS_1 = --verbose
 
 dist-tgz: $(dist_tgz_TARGETS)
 
@@ -85,7 +90,7 @@ dist-txz: $(dist_txz_TARGETS)
 tools:
 	$(call nl-remove-dir,$(TOOLS_TMPDIR))
 	$(call nl-create-dir,$(TOOLS_TMPDIR))
-	$(_NL_V_BUILD)${srcdir}/packages/build --arch ${host} --srcdir ${abs_srcdir}/packages --builddir "${TOOLS_TMPDIR}" --destdir "${abs_top_srcdir}/tools/host"
+	$(_NL_V_BUILD)${srcdir}/packages/build ${_NL_V_BUILD_FLAGS} --arch ${host} --srcdir ${abs_srcdir}/packages --builddir "${TOOLS_TMPDIR}" --destdir "${abs_top_srcdir}/tools/host"
 	$(call nl-remove-dir,$(TOOLS_TMPDIR))
 
 #
@@ -102,7 +107,7 @@ dist toolsdist: $(DIST_TARGETS)
 stage:
 	$(call nl-remove-dir,$(DIST_TMPDIR))
 	$(call nl-create-dir,$(DIST_TMPDIR))
-	$(_NL_V_BUILD)${srcdir}/packages/build --arch ${host} --srcdir ${abs_srcdir}/packages --builddir "${DIST_TMPDIR}" --destdir "${DIST_TMPDIR}"
+	$(_NL_V_BUILD)${srcdir}/packages/build ${_NL_V_BUILD_FLAGS} --arch ${host} --srcdir ${abs_srcdir}/packages --builddir "${DIST_TMPDIR}" --destdir "${DIST_TMPDIR}"
 
 #
 # Produce prebuilt GNU autotools architecture-independent binaries for

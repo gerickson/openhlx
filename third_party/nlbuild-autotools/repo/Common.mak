@@ -42,7 +42,7 @@ SED                  ?= sed
 TAR                  ?= tar
 XZ                   ?= xz
 
-dist_tar_ARCHIVE      = $(TAR) -chof -
+dist_tar_ARCHIVE      = $(TAR) --format=posix -chof -
 
 dist_tgz_ARCHIVE      = $(dist_tar_ARCHIVE)
 dist_tgz_COMPRESS     = $(GZIP) --best -c
@@ -69,27 +69,27 @@ NL_V_AT_1             =
 
 NL_V_MAKE             = $(NL_V_MAKE_$(V))
 NL_V_MAKE_            = $(NL_V_MAKE_$(NL_DEFAULT_VERBOSITY))
-NL_V_MAKE_0           = @echo "  MAKE     $(@)";
+NL_V_MAKE_0           = @echo "  MAKE          $(@)";
 NL_V_MAKE_1           = 
 
 NL_V_MKDIR_P          = $(NL_V_MKDIR_P_$(V))
 NL_V_MKDIR_P_         = $(NL_V_MKDIR_P_$(NL_DEFAULT_VERBOSITY))
-NL_V_MKDIR_P_0        = @echo "  MKDIR    $(1)";
+NL_V_MKDIR_P_0        = @echo "  MKDIR         $(1)";
 NL_V_MKDIR_P_1        = 
 
 NL_V_RMDIR            = $(NL_V_RMDIR_$(V))
 NL_V_RMDIR_           = $(NL_V_RMDIR_$(NL_DEFAULT_VERBOSITY))
-NL_V_RMDIR_0          = @echo "  RMDIR    $(1)";
+NL_V_RMDIR_0          = @echo "  RMDIR         $(1)";
 NL_V_RMDIR_1          = 
 
 NL_V_TGZ              = $(NL_V_TGZ_$(V))
 NL_V_TGZ_             = $(NL_V_TGZ_$(NL_DEFAULT_VERBOSITY))
-NL_V_TGZ_0            = @echo "  TGZ      $(@)";
+NL_V_TGZ_0            = @echo "  TGZ           $(@)";
 NL_V_TGZ_1            = 
 
 NL_V_TXZ              = $(NL_V_TXZ_$(V))
 NL_V_TXZ_             = $(NL_V_TXZ_$(NL_DEFAULT_VERBOSITY))
-NL_V_TXZ_0            = @echo "  TXZ      $(@)";
+NL_V_TXZ_0            = @echo "  TXZ           $(@)";
 NL_V_TXZ_1            = 
 
 #
@@ -99,7 +99,7 @@ NL_V_TXZ_1            =
 # that may not exist.
 #
 define nl-create-dir
-$(NL_V_AT)echo "  MKDIR    $(1)"; \
+$(NL_V_AT)echo "  MKDIR         $(1)"; \
 $(MKDIR) -p "$(1)"
 endef # nl-create-dir
 

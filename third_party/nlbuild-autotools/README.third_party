@@ -1,0 +1,13 @@
+Name: Nest Labs Build - GNU Autotools 
+Short Name: nlbuild-autotools
+URL: https://github.com/Nuovations/nlbuild-autotools/releases/download/1.7.8/nlbuild-autotools-1.7.8.tar.gz
+Version: 1.7.8
+Date: 2024-08-02T19:19:46-07:00
+License: Apache 2.0
+
+Description:
+The Nest Labs Build - GNU Autotools (nlbuild-autotools) provides a customized,
+turnkey build system framework, based on GNU autotools, for standalone Nest
+Labs (or other) software packages that need to support not only building on and
+targeting against standalone build host systems but also embedded target
+systems using GCC-based or -compatible (such as clang/LLVM) toolchains.

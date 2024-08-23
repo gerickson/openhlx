@@ -31,10 +31,14 @@ jobs:
     runs-on: ubuntu-latest
     name: "Linux ${{matrix.compiler['name']}} [${{matrix.configuration['name']}}]"
 
+    # Coverage seems to have a problem on Linux with clang due to an
+    # 'atexit' issue during linking of the test executables. So, only
+    # assert '--enable-coverage' for GCC.
+
     strategy:
       matrix:
         compiler:
-          - { name: GCC,        c: gcc,   cxx: g++,     options: "" }
+          - { name: GCC,        c: gcc,   cxx: g++,     options: "--enable-coverage" }
           - { name: clang/LLVM, c: clang, cxx: clang++, options: "" }
         configuration:
           - { name: "Debug",   options: "--enable-debug" }
@@ -127,8 +131,7 @@ jobs:
 
     - name: Bootstrap and Configure
       run: |
-        export PATH="$(brew --prefix m4)/bin:${PATH}"
-        ./bootstrap-configure -C ${{matrix.configuration['options']}} --enable-coverage --with-boost=/usr/local --with-libnl-includes=/usr/include/libnl3 --with-corefoundation-source=cflite --disable-docs
+        ./bootstrap-configure -C ${{matrix.configuration['options']}} ${{matrix.compiler['options']}} --with-boost=/usr/local --with-libnl-includes=/usr/include/libnl3 --with-corefoundation-source=cflite --disable-docs
 
     - name: Coding Style
       run: |
@@ -146,8 +149,15 @@ jobs:
       run: |
         bash <(curl -s https://codecov.io/bash) -g 'src/*' -G 'src/lib/*/tests/*' -G 'tests/*' -G 'third_party/*'
 
+  # On macOS, Intel versus Apple silicon has created variability as
+  # far as Homebrew is concerned. On the former, Homebrew formulae are
+  # installed in /usr/local and on the latter, in
+  # /opt/homebrew. There's no way to know apriori on which
+  # architecture the job will run. Consequently, we attempt to handle
+  # both.
+
   macos:
-    runs-on: macos-10.15
+    runs-on: macos-latest
     name: "macOS ${{matrix.compiler['name']}} [${{matrix.configuration['name']}}]"
     strategy:
       matrix:
@@ -160,7 +170,10 @@ jobs:
     env:
       CC: ${{matrix.compiler['c']}}
       CXX: ${{matrix.compiler['cxx']}}
-      XML_CATALOG_FILES: /usr/local/etc/xml/catalog
+      CPPFLAGS: "-I/opt/homebrew/include -I/usr/local/include"
+      LDFLAGS: "-L/opt/homebrew/lib -L/usr/local/lib"
+      XML_CATALOG_FILES: "/opt/homebrew/etc/xml/catalog /usr/local/etc/xml/catalog"
+
     steps:
 
     - name: Checkout
@@ -172,8 +185,9 @@ jobs:
 
     - name: Bootstrap and Configure
       run: |
+        eval "$(brew shellenv)"
         export PATH="$(brew --prefix m4)/bin:${PATH}"
-        ./bootstrap-configure -C ${{matrix.configuration['options']}} --enable-coverage --with-boost=/usr/local --disable-docs
+        ./bootstrap-configure -C ${{matrix.configuration['options']}} --enable-coverage --with-boost="$(brew --prefix boost)" --with-cppunit="$(brew --prefix cppunit)" --disable-docs
 
     - name: Coding Style
       run: |

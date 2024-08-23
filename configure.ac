@@ -184,6 +184,7 @@ AC_CHECK_TOOL(STRIP, strip)
 
 # Check for other host tools.
 
+AC_PROG_EGREP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 
@@ -391,7 +392,7 @@ NL_WITH_REQUIRED_EXTERNAL_PACKAGE([Boost],
 # CFUtilities
 #
 
-NL_WITH_PACKAGE(
+NL_WITH_REQUIRED_INTERNAL_PACKAGE(
     [CFUtilities],
     [CFUTILITIES],
     [cfutilities],
@@ -444,7 +445,7 @@ AM_CONDITIONAL([OPENHLX_WITH_CFUTILITIES_INTERNAL], [test "${nl_with_cfutilities
 # LogUtilities
 #
 
-NL_WITH_PACKAGE(
+NL_WITH_REQUIRED_INTERNAL_PACKAGE(
     [LogUtilities],
     [LOGUTILITIES],
     [logutilities],
@@ -530,7 +531,7 @@ esac
 # Libtelnet
 #
 
-NL_WITH_PACKAGE(
+NL_WITH_REQUIRED_INTERNAL_PACKAGE(
     [Libtelnet],
     [LIBTELNET],
     [libtelnet],
@@ -583,7 +584,7 @@ AM_CONDITIONAL([OPENHLX_WITH_LIBTELNET_INTERNAL], [test "${nl_with_libtelnet}" =
 # Nlassert
 #
 
-NL_WITH_PACKAGE(
+NL_WITH_REQUIRED_INTERNAL_PACKAGE(
     [Nlassert],
     [NLASSERT],
     [nlassert],
@@ -637,7 +638,7 @@ AM_CONDITIONAL([OPENHLX_WITH_NLASSERT_INTERNAL], [test "${nl_with_nlassert}" = "
 #
 
 if test "${nl_cv_build_tests}" = "yes"; then
-    NL_WITH_PACKAGE(
+    NL_WITH_REQUIRED_INTERNAL_PACKAGE(
         [Nlunit-test],
         [NLUNIT_TEST],
         [nlunit_test],
@@ -822,7 +823,6 @@ AC_DEFINE_UNQUOTED([OPENHLX_CF_SOURCE_CFLITE],[${OPENHLX_CF_SOURCE_CFLITE}],[Def
 # Check for headers
 #
 AC_HEADER_STDBOOL
-AC_HEADER_STDC
 
 AC_CHECK_HEADERS([regex.h])
 AC_CHECK_HEADERS([stdint.h])
