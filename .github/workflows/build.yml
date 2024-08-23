@@ -175,8 +175,9 @@ jobs:
 
     - name: Bootstrap and Configure
       run: |
+        eval "$(brew shellenv)"
         export PATH="$(brew --prefix m4)/bin:${PATH}"
-        ./bootstrap-configure -C ${{matrix.configuration['options']}} --enable-coverage --with-boost=/usr/local --disable-docs
+        ./bootstrap-configure -C ${{matrix.configuration['options']}} --enable-coverage --with-boost="$(brew --prefix boost)" --disable-docs
 
     - name: Coding Style
       run: |
