@@ -1,5 +1,20 @@
 # Changes and What's New in Open HLX
 
+1.2.2 (2024-08-23)
+
+* Rebased the group and zone model classes on a common ancestor.
+
+* Updated the CFUtilities package to 1.3.2.
+
+* Updated the LogUtilities package to 1.0.4.
+
+* Updated the nlbuild-autotools package to 1.7.8.
+
+* Ensured that GitHub Action Workflow continuous integration (CI)
+  works on Apple Silicon and the latest release of macOS.
+
+* Enabled xz-compressed distribution archvies.
+
 1.2.1 (2022-02-01)
 
 * Addressed a resource leak in libopenhlx-client and, by extension, in
