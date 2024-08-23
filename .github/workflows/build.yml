@@ -149,6 +149,13 @@ jobs:
       run: |
         bash <(curl -s https://codecov.io/bash) -g 'src/*' -G 'src/lib/*/tests/*' -G 'tests/*' -G 'third_party/*'
 
+  # On macOS, Intel versus Apple silicon has created variability as
+  # far as Homebrew is concerned. On the former, Homebrew formulae are
+  # installed in /usr/local and on the latter, in
+  # /opt/homebrew. There's no way to know apriori on which
+  # architecture the job will run. Consequently, we attempt to handle
+  # both.
+
   macos:
     runs-on: macos-10.15
     name: "macOS ${{matrix.compiler['name']}} [${{matrix.configuration['name']}}]"
@@ -163,7 +170,10 @@ jobs:
     env:
       CC: ${{matrix.compiler['c']}}
       CXX: ${{matrix.compiler['cxx']}}
-      XML_CATALOG_FILES: /usr/local/etc/xml/catalog
+      CPPFLAGS: "-I/opt/homebrew/include -I/usr/local/include"
+      LDFLAGS: "-L/opt/homebrew/lib -L/usr/local/lib"
+      XML_CATALOG_FILES: "/opt/homebrew/etc/xml/catalog /usr/local/etc/xml/catalog"
+
     steps:
 
     - name: Checkout
