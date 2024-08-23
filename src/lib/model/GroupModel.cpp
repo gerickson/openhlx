@@ -1,5 +1,5 @@
 /*
- *    Copyright (c) 2019-2021 Grant Erickson
+ *    Copyright (c) 2019-2024 Grant Erickson
  *    All rights reserved.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,12 +40,6 @@ namespace Model
 {
 
 /**
- *  The maximum allowed length, in bytes, of a group name.
- *
- */
-const size_t GroupModel::kNameLengthMax = NameModel::kNameLengthMax;
-
-/**
  *  @brief
  *    This is the class default initializer.
  *
@@ -62,16 +56,10 @@ GroupModel :: Init(void)
 {
     Status lRetval = kStatus_Success;
 
-    lRetval = mIdentifier.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = mName.Init();
+    lRetval = OutputModelBasis::Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mSources.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = mVolume.Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mZones.Init();
@@ -103,16 +91,10 @@ GroupModel :: Init(const char *aName, const IdentifierType &aIdentifier)
 {
     Status lRetval = kStatus_Success;
 
-    lRetval = mIdentifier.Init(aIdentifier);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = mName.Init(aName);
+    lRetval = OutputModelBasis::Init(aName, aIdentifier);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mSources.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = mVolume.Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mZones.Init();
@@ -147,16 +129,10 @@ GroupModel :: Init(const char *aName, const size_t &aNameLength, const Identifie
 {
     Status lRetval = kStatus_Success;
 
-    lRetval = mIdentifier.Init(aIdentifier);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = mName.Init(aName, aNameLength);
+    lRetval = OutputModelBasis::Init(aName, aNameLength, aIdentifier);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mSources.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = mVolume.Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mZones.Init();
@@ -188,16 +164,10 @@ GroupModel :: Init(const std::string &aName, const IdentifierType &aIdentifier)
 {
     Status lRetval = kStatus_Success;
 
-    lRetval = mIdentifier.Init(aIdentifier);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = mName.Init(aName);
+    lRetval = OutputModelBasis::Init(aName, aIdentifier);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mSources.Init();
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = mVolume.Init();
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mZones.Init();
@@ -224,16 +194,10 @@ GroupModel :: Init(const GroupModel &aGroupModel)
 {
     Status lRetval = kStatus_Success;
 
-    lRetval = mIdentifier.Init(aGroupModel.mIdentifier);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = mName.Init(aGroupModel.mName);
+    lRetval = OutputModelBasis::Init(aGroupModel);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mSources.Init(aGroupModel.mSources);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
-    lRetval = mVolume.Init(aGroupModel.mVolume);
     nlREQUIRE_SUCCESS(lRetval, done);
 
     lRetval = mZones.Init(aGroupModel.mZones);
@@ -262,10 +226,9 @@ GroupModel :: Init(const GroupModel &aGroupModel)
 GroupModel &
 GroupModel :: operator =(const GroupModel &aGroupModel)
 {
-    mIdentifier = aGroupModel.mIdentifier;
-    mName       = aGroupModel.mName;
+    OutputModelBasis::operator =(aGroupModel);
+
     mSources    = aGroupModel.mSources;
-    mVolume     = aGroupModel.mVolume;
     mZones      = aGroupModel.mZones;
 
     return (*this);
@@ -296,104 +259,6 @@ bool
 GroupModel :: ContainsZone(const ZoneModel::IdentifierType &aZoneIdentifier) const
 {
     return (mZones.ContainsIdentifier(aZoneIdentifier));
-}
-
-/**
- *  @brief
- *    Attempt to get the group identifier.
- *
- *  This attempts to get the group identifier, if it has been
- *  previously initialized or set.
- *
- *  @param[out]  aIdentifier  A mutable reference to storage for the
- *                            group identifier, if successful.
- *
- *  @retval  kStatus_Success        If successful.
- *  @retval  kError_NotInitialized  If the group identifier
- *                                  value has not been initialized
- *                                  with a known value.
- *
- *  @sa Init
- *  @sa SetIdentifier
- *
- */
-Status
-GroupModel :: GetIdentifier(IdentifierType &aIdentifier) const
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = mIdentifier.GetIdentifier(aIdentifier);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-/**
- *  @brief
- *    Attempt to get the group name
- *
- *  This attempts to get the group name, if it has been previously
- *  initialized or set.
- *
- *  @param[out]  aName  A reference to pointer to an immutable
- *                      null-terminated C string for the group
- *                      name, if successful.
- *
- *  @retval  kStatus_Success        If successful.
- *  @retval  kError_NotInitialized  If the group name value has
- *                                  not been initialized with a known
- *                                  value.
- *
- *  @sa Init
- *  @sa SetName
- *
- *  @ingroup name
- *
- */
-Status
-GroupModel :: GetName(const char *&aName) const
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = mName.GetName(aName);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
-}
-
-/**
- *  @brief
- *    Attempt to get the model group volume mute state.
- *
- *  This attempts to get the model group volume mute state, if it has
- *  been previously initialized or set.
- *
- *  @param[out]  aMute  A mutable reference to storage for the
- *                      group volume mute state, if successful.
- *
- *  @retval  kStatus_Success        If successful.
- *  @retval  kError_NotInitialized  If the group volume mute state
- *                                  value has not been initialized
- *                                  with a known value.
- *
- *  @sa SetMute
- *  @sa ToggleMute
- *
- *  @ingroup volume
- *
- */
-Status
-GroupModel :: GetMute(MuteType &aMute) const
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = mVolume.GetMute(aMute);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
-    return (lRetval);
 }
 
 /**
@@ -483,38 +348,6 @@ GroupModel :: GetSources(Sources &aSourceIdentifiers) const
 
     aSourceIdentifiers = mSources;
 
-    return (lRetval);
-}
-
-/**
- *  @brief
- *    Attempt to get the model group volume level.
- *
- *  This attempts to get the model group volume level, if it has been
- *  previously initialized or set.
- *
- *  @param[out]  aLevel  A mutable reference to storage for the
- *                       group volume level, if successful.
- *
- *  @retval  kStatus_Success        If successful.
- *  @retval  kError_NotInitialized  If the group volume level value
- *                                  has not been initialized with a
- *                                  known value.
- *
- *  @sa SetVolume
- *
- *  @ingroup volume
- *
- */
-Status
-GroupModel :: GetVolume(LevelType &aLevel) const
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = mVolume.GetVolume(aLevel);
-    nlREQUIRE_SUCCESS(lRetval, done);
-
- done:
     return (lRetval);
 }
 
@@ -640,78 +473,6 @@ GroupModel :: ClearZones(void)
 
 /**
  *  @brief
- *    Decrease the model group volume level by one (1) unit.
- *
- *  This attempts to decrease the model group volume level by one (1)
- *  unit.
- *
- *  @param[out]  aOutLevel  A mutable reference to storage for the
- *                          resulting group volume level, if
- *                          successful.
- *
- *  @retval  kStatus_Success        If successful.
- *  @retval  kError_NotInitialized  If the group volume level value
- *                                  has not been initialized with a
- *                                  known value.
- *  @retval  -ERANGE                The attempted adjustment would result
- *                                  in a level that would exceed the
- *                                  minimum group volume level.
- *
- *  @sa SetVolume
- *
- *  @ingroup volume
- *
- */
-Status
-GroupModel :: DecreaseVolume(LevelType &aOutLevel)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = mVolume.DecreaseVolume(aOutLevel);
-    nlREQUIRE(lRetval >= kStatus_Success, done);
-
- done:
-    return (lRetval);
-}
-
-/**
- *  @brief
- *    Increase the model group volume level by one (1) unit.
- *
- *  This attempts to increase the model group volume level by one (1)
- *  unit.
- *
- *  @param[out]  aOutLevel  A mutable reference to storage for the
- *                          resulting group volume level, if
- *                          successful.
- *
- *  @retval  kStatus_Success        If successful.
- *  @retval  kError_NotInitialized  If the group volume level value
- *                                  has not been initialized with a
- *                                  known value.
- *  @retval  -ERANGE                The attempted adjustment would result
- *                                  in a level that would exceed the
- *                                  maximum group volume level.
- *
- *  @sa SetVolume
- *
- *  @ingroup volume
- *
- */
-Status
-GroupModel :: IncreaseVolume(LevelType &aOutLevel)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = mVolume.IncreaseVolume(aOutLevel);
-    nlREQUIRE(lRetval >= kStatus_Success, done);
-
- done:
-    return (lRetval);
-}
-
-/**
- *  @brief
  *    Attempt to remove (disassociate) a source (input) identifier
  *    from the group model.
  *
@@ -755,126 +516,6 @@ Status
 GroupModel :: RemoveZone(const ZoneModel::IdentifierType &aZoneIdentifier)
 {
     return (RemoveIdentifier(mZones, aZoneIdentifier));
-}
-
-/**
- *  @brief
- *    This sets the model group identifier.
- *
- *  This attempts to set the model with the group identifier.
- *
- *  @param[in]  aIdentifier  An immutable reference to the group
- *                           identifier to set.
- *
- *  @retval  kStatus_Success          If successful.
- *  @retval  kStatus_ValueAlreadySet  The specified @a aIdentifier value
- *                                    has already been set.
- *  @retval  -EINVAL                  The specified @a aIdentifier value
- *                                    is invalid.
- *
- */
-Status
-GroupModel :: SetIdentifier(const IdentifierType &aIdentifier)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = mIdentifier.SetIdentifier(aIdentifier);
-    nlREQUIRE(lRetval >= kStatus_Success, done);
-
- done:
-    return (lRetval);
-}
-
-/**
- *  @brief
- *    This sets the model group name.
- *
- *  This attempts to set the model with the specified group name.
- *
- *  @param[in]  aName        A pointer to the start of the null-
- *                           terminated C string name to set.
- *
- *  @retval  kStatus_Success          If successful.
- *  @retval  kStatus_ValueAlreadySet  The specified name has already
- *                                    been set.
- *  @retval  -EINVAL                  If @a aName was null.
- *  @retval  -ENAMETOOLONG            If @a aName was too long.
- *
- *  @ingroup name
- *
- */
-Status
-GroupModel :: SetName(const char *aName)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = mName.SetName(aName);
-    nlREQUIRE(lRetval >= kStatus_Success, done);
-
- done:
-    return (lRetval);
-}
-
-/**
- *  @brief
- *    This sets the model group name.
- *
- *  This attempts to set the model with the specified group name
- *  extent.
- *
- *  @param[in]  aName        A pointer to the start of the string name
- *                           to set.
- *  @param[in]  aNameLength  An immutable reference to the length,
- *                           in bytes, of @a aName.
- *
- *  @retval  kStatus_Success          If successful.
- *  @retval  kStatus_ValueAlreadySet  The specified name has already
- *                                    been set.
- *  @retval  -EINVAL                  If @a aName was null.
- *  @retval  -ENAMETOOLONG            If @a aNameLength was too long.
- *
- *  @ingroup name
- *
- */
-Status
-GroupModel :: SetName(const char *aName, const size_t &aNameLength)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = mName.SetName(aName, aNameLength);
-    nlREQUIRE(lRetval >= kStatus_Success, done);
-
- done:
-    return (lRetval);
-}
-
-/**
- *  @brief
- *    This sets the model group volume mute state.
- *
- *  This attempts to set the model with the specified group volume
- *  mute state.
- *
- *  @param[in]  aMute  An immutable reference to the group
- *                     volume mute state to set.
- *
- *  @retval  kStatus_Success          If successful.
- *  @retval  kStatus_ValueAlreadySet  The specified @a aMute value
- *                                    has already been set.
- *
- *  @ingroup volume
- *
- */
-Status
-GroupModel :: SetMute(const MuteType &aMute)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = mVolume.SetMute(aMute);
-    nlREQUIRE(lRetval >= kStatus_Success, done);
-
- done:
-    return (lRetval);
 }
 
 /**
@@ -998,67 +639,6 @@ GroupModel :: SetSources(const Sources &aSourceIdentifiers)
 
 /**
  *  @brief
- *    This sets the model group volume level.
- *
- *  This attempts to set the model with the specified group volume
- *  level.
- *
- *  @param[in]  aLevel  An immutable reference to the group volume
- *                      level to set.
- *
- *  @retval  kStatus_Success          If successful.
- *  @retval  kStatus_ValueAlreadySet  The specified @a aLevel value
- *                                    has already been set.
- *  @retval  -ERANGE                  The specified @a aLevel value
- *                                    is out of range.
- *
- *  @ingroup volume
- *
- */
-Status
-GroupModel :: SetVolume(const LevelType &aLevel)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = mVolume.SetVolume(aLevel);
-    nlREQUIRE(lRetval >= kStatus_Success, done);
-
- done:
-    return (lRetval);
-}
-
-/**
- *  @brief
- *    Attempt to toggle (flip) the model group volume mute state.
- *
- *  This attempts to toggle (flip) the model group volume mute state.
- *
- *  @param[out]  aOutMute  A mutable reference to storage for the
- *                         resulting group volume mute state, if
- *                         successful.
- *
- *  @retval  kStatus_Success        If successful.
- *  @retval  kError_NotInitialized  If the group volume mute state
- *                                  value has not been initialized
- *                                  with a known value.
- *
- *  @ingroup volume
- *
- */
-Status
-GroupModel :: ToggleMute(MuteType &aOutMute)
-{
-    Status lRetval = kStatus_Success;
-
-    lRetval = mVolume.ToggleMute(aOutMute);
-    nlREQUIRE(lRetval >= kStatus_Success, done);
-
- done:
-    return (lRetval);
-}
-
-/**
- *  @brief
  *    This is a class equality operator.
  *
  *  This compares the provided group model against this one to
@@ -1075,11 +655,9 @@ GroupModel :: ToggleMute(MuteType &aOutMute)
 bool
 GroupModel :: operator ==(const GroupModel &aGroupModel) const
 {
-    return ((mIdentifier       == aGroupModel.mIdentifier) &&
-            (mName             == aGroupModel.mName      ) &&
-            (mSources          == aGroupModel.mSources   ) &&
-            (mVolume           == aGroupModel.mVolume    ) &&
-            (mZones            == aGroupModel.mZones     ));
+    return (OutputModelBasis::operator ==(aGroupModel)          &&
+            (mSources                  == aGroupModel.mSources) &&
+            (mZones                    == aGroupModel.mZones  ));
 }
 
 /**
