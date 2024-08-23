@@ -177,7 +177,7 @@ jobs:
       run: |
         eval "$(brew shellenv)"
         export PATH="$(brew --prefix m4)/bin:${PATH}"
-        ./bootstrap-configure -C ${{matrix.configuration['options']}} --enable-coverage --with-boost="$(brew --prefix boost)" --disable-docs
+        ./bootstrap-configure -C ${{matrix.configuration['options']}} --enable-coverage --with-boost="$(brew --prefix boost)" --with-cppunit="$(brew --prefix cppunit)" --disable-docs
 
     - name: Coding Style
       run: |
