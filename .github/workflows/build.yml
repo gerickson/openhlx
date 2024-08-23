@@ -131,7 +131,6 @@ jobs:
 
     - name: Bootstrap and Configure
       run: |
-        export PATH="$(brew --prefix m4)/bin:${PATH}"
         ./bootstrap-configure -C ${{matrix.configuration['options']}} ${{matrix.compiler['options']}} --with-boost=/usr/local --with-libnl-includes=/usr/include/libnl3 --with-corefoundation-source=cflite --disable-docs
 
     - name: Coding Style
