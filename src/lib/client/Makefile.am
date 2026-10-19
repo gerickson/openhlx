@@ -122,7 +122,11 @@ libopenhlx_client_a_include_HEADERS                         = \
     ZonesStateChangeNotifications.hpp                         \
     $(NULL)
 
+# Ensure CoreFoundation (opencflite) assertion macros (in particular,
+# 'check') do not interfere with the Boost and C++ STL functions.
+
 libopenhlx_client_a_CPPFLAGS                                = \
+    -D__ASSERT_MACROS_DEFINE_VERSIONS_WITHOUT_UNDERSCORES=0   \
     -I$(top_srcdir)/third_party/CFUtilities/repo/include      \
     -I$(top_srcdir)/third_party/LogUtilities/repo/include     \
     -I$(top_srcdir)/third_party/libtelnet/repo                \
