@@ -1009,7 +1009,7 @@ void HLXClient :: ControllerStateDidChange(Client::Application::ControllerBasis 
             lStatus = lIPAddress.ToString(&lBuffer[0], ElementsOf(lBuffer));
             nlREQUIRE_SUCCESS(lStatus, done);
 
-            Log::Debug().Write("Ethernet network interface default router IP address is %s\n", lBuffer);
+            Log::Debug().Write("Ethernet network interface default router IP address is %s\n", static_cast<const char *>(lBuffer));
         }
         break;
 
@@ -1023,7 +1023,7 @@ void HLXClient :: ControllerStateDidChange(Client::Application::ControllerBasis 
             lStatus = lIPAddress.ToString(&lBuffer[0], ElementsOf(lBuffer));
             nlREQUIRE_SUCCESS(lStatus, done);
 
-            Log::Debug().Write("Ethernet network interface host IP address is %s\n", lBuffer);
+            Log::Debug().Write("Ethernet network interface host IP address is %s\n", static_cast<const char *>(lBuffer));
         }
         break;
 
@@ -1037,7 +1037,7 @@ void HLXClient :: ControllerStateDidChange(Client::Application::ControllerBasis 
             lStatus = lIPAddress.ToString(&lBuffer[0], ElementsOf(lBuffer));
             nlREQUIRE_SUCCESS(lStatus, done);
 
-            Log::Debug().Write("Ethernet network interface IP netmask is %s\n", lBuffer);
+            Log::Debug().Write("Ethernet network interface IP netmask is %s\n", static_cast<const char *>(lBuffer));
         }
         break;
 
