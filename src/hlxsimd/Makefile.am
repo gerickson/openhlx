@@ -49,7 +49,11 @@ sbin_PROGRAMS                                                              = \
     hlxsimd                                                                  \
     $(NULL)
 
+# Ensure CoreFoundation (opencflite) assertion macros (in particular,
+# 'check') do not interfere with the Boost and C++ STL functions.
+
 hlxsimd_CPPFLAGS                                                           = \
+    -D__ASSERT_MACROS_DEFINE_VERSIONS_WITHOUT_UNDERSCORES=0                  \
     -DHLXSIMD_DEFAULT_CONFIG_PATH=\"${HLXSIMD_DEFAULT_CONFIG_PATH}\"         \
     -I$(top_srcdir)/third_party/CFUtilities/repo/include                     \
     -I$(top_srcdir)/third_party/LogUtilities/repo/include                    \
